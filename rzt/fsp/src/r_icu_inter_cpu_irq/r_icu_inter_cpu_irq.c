@@ -1,0 +1,225 @@
+/***********************************************************************************************************************
+ * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ *
+ * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
+ * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
+ * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
+ * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
+ * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
+ * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
+ * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
+ * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
+ * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
+ * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
+ * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
+ * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
+ * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
+ * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
+ * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
+ **********************************************************************************************************************/
+
+/**********************************************************************************************************************
+ * Includes
+ *********************************************************************************************************************/
+#include "r_icu_inter_cpu_irq.h"
+#include "r_icu_inter_cpu_irq_cfg.h"
+
+/**********************************************************************************************************************
+ * Macro definitions
+ *********************************************************************************************************************/
+
+/* "ICUI" in ASCII, used to determine if channel is open. */
+#define ICU_INTER_CPU_IRQ_OPEN                   (0x49435549U)
+
+#define ICU_INTER_CPU_IRQ_PRV_INTCPU0_CHANNEL    (0U)
+#define ICU_INTER_CPU_IRQ_PRV_INTCPU1_CHANNEL    (1U)
+#define ICU_INTER_CPU_IRQ_PRV_INTCPU2_CHANNEL    (2U)
+#define ICU_INTER_CPU_IRQ_PRV_INTCPU3_CHANNEL    (3U)
+#define ICU_INTER_CPU_IRQ_PRV_INTCPU4_CHANNEL    (4U)
+#define ICU_INTER_CPU_IRQ_PRV_INTCPU5_CHANNEL    (5U)
+#define ICU_INTER_CPU_IRQ_PRV_INTCPU6_CHANNEL    (6U)
+#define ICU_INTER_CPU_IRQ_PRV_INTCPU7_CHANNEL    (7U)
+
+#define ICU_INTER_CPU_IRQ_INTCPU0_MASK           (0x01U)
+#define ICU_INTER_CPU_IRQ_INTCPU1_MASK           (0x02U)
+#define ICU_INTER_CPU_IRQ_INTCPU2_MASK           (0x04U)
+#define ICU_INTER_CPU_IRQ_INTCPU3_MASK           (0x08U)
+#define ICU_INTER_CPU_IRQ_INTCPU4_MASK           (0x10U)
+#define ICU_INTER_CPU_IRQ_INTCPU5_MASK           (0x20U)
+#define ICU_INTER_CPU_IRQ_INTCPU6_MASK           (0x01U)
+#define ICU_INTER_CPU_IRQ_INTCPU7_MASK           (0x02U)
+
+/**********************************************************************************************************************
+ * Typedef definitions
+ *********************************************************************************************************************/
+
+/**********************************************************************************************************************
+ * Private function prototypes
+ *********************************************************************************************************************/
+
+void r_icu_inter_cpu_irq_isr(void);
+
+/**********************************************************************************************************************
+ * Private global variables
+ *********************************************************************************************************************/
+
+/**********************************************************************************************************************
+ * Global variables
+ *********************************************************************************************************************/
+
+/* ICU implementation of ICU_INTER_CPU_IRQ API. */
+const icu_inter_cpu_irq_api_t g_icu_inter_cpu_irq_on_icu =
+{
+    .open     = R_ICU_INTER_CPU_IRQ_Open,
+    .generate = R_ICU_INTER_CPU_IRQ_Generate,
+    .close    = R_ICU_INTER_CPU_IRQ_Close,
+};
+
+/*******************************************************************************************************************//**
+ * @addtogroup ICU_INTER_CPU_IRQ
+ * @{
+ *********************************************************************************************************************/
+
+/**********************************************************************************************************************
+ * Functions
+ *********************************************************************************************************************/
+
+/******************************************************************************************************************//**
+ * Opens the icu_inter_cpu_irq driver. Implements @ref icu_inter_cpu_irq_api_t::open().
+ *
+ * @retval  FSP_SUCCESS                       opened successfully.
+ * @retval FSP_ERR_IP_CHANNEL_NOT_PRESENT     The channel requested in p_cfg is not available on the device selected in
+ *                                            r_bsp_cfg.h.
+ * @retval  FSP_ERR_ALREADY_OPEN              Module is already open.
+ * @retval  FSP_ERR_ASSERTION                 Parameter check failure due to one or more reasons below:
+ *                                            1. p_api_ctrl or p_cfg is NULL.
+ *                                            2. Callback parameter is NULL.
+ *********************************************************************************************************************/
+fsp_err_t R_ICU_INTER_CPU_IRQ_Open (icu_inter_cpu_irq_ctrl_t * const      p_api_ctrl,
+                                    icu_inter_cpu_irq_cfg_t const * const p_cfg)
+{
+    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_api_ctrl;
+
+#if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl != NULL);
+    FSP_ASSERT(p_cfg != NULL);
+    FSP_ASSERT(p_cfg->p_callback != NULL);
+    FSP_ERROR_RETURN(0 != ((1U << p_cfg->channel) & BSP_FEATURE_ICU_INTER_CPU_IRQ_CHANNELS_MASK),
+                     FSP_ERR_IP_CHANNEL_NOT_PRESENT);
+
+    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN != p_ctrl->open, FSP_ERR_ALREADY_OPEN);
+#endif
+
+    /* Initialize control block. */
+    p_ctrl->p_cfg      = p_cfg;
+    p_ctrl->p_callback = p_cfg->p_callback;
+    p_ctrl->p_context  = p_cfg->p_context;
+
+    /* NOTE: User can have the driver opened when the IRQ is not in the vector table. This is for use cases
+     * that use INTCPU interrupts and do not notify themselves of the interrupts.
+     * In such cases we will not set the GIC registers but will continue with the processing.
+     */
+    if (BSP_IRQ_DISABLED != p_cfg->ipl)
+    {
+        R_BSP_IrqCfgEnable(p_ctrl->p_cfg->irq, p_cfg->ipl, p_ctrl);
+    }
+
+    /* Mark the control block as open */
+    p_ctrl->open = ICU_INTER_CPU_IRQ_OPEN;
+
+    return FSP_SUCCESS;
+}
+
+/******************************************************************************************************************//**
+ * Generate software interrupt. Implements @ref icu_inter_cpu_irq_api_t::generate().
+ *
+ *
+ * @retval  FSP_SUCCESS        Function executed without issue.
+ * @retval  FSP_ERR_ASSERTION  p_api_ctrl or p_src is NULL.
+ * @retval  FSP_ERR_NOT_OPEN   Device is not open.
+ *********************************************************************************************************************/
+fsp_err_t R_ICU_INTER_CPU_IRQ_Generate (icu_inter_cpu_irq_ctrl_t * const p_api_ctrl)
+{
+    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_api_ctrl;
+
+#if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl != NULL);
+
+    /* Check if the device is even open, return an error if not */
+    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    uint32_t swint = (uint32_t) (1U << p_ctrl->p_cfg->channel);
+
+    if (BSP_FEATURE_ICU_INTER_CPU_IRQ_NS_SWINT_MASK & swint)
+    {
+        R_ICU_NS->NS_SWINT = swint;
+    }
+    else if (BSP_FEATURE_ICU_INTER_CPU_IRQ_S_SWINT_MASK & swint)
+    {
+        R_ICU->S_SWINT = swint >> BSP_FEATURE_ICU_INTER_CPU_IRQ_S_SWINT_SHIFT;
+    }
+    else
+    {
+        /* Do nothing. Not supported this channel. */
+    }
+
+    return FSP_SUCCESS;
+}
+
+/******************************************************************************************************************//**
+ * Closes the icu_inter_cpu_irq. Implements @ref icu_inter_cpu_irq_api_t::close().
+ *
+ * @retval  FSP_SUCCESS         Device closed successfully.
+ * @retval  FSP_ERR_NOT_OPEN    Device not opened.
+ * @retval  FSP_ERR_ASSERTION   p_api_ctrl is NULL.
+ *********************************************************************************************************************/
+fsp_err_t R_ICU_INTER_CPU_IRQ_Close (icu_inter_cpu_irq_ctrl_t * const p_api_ctrl)
+{
+    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_api_ctrl;
+
+#if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl != NULL);
+
+    /* Check if the device is even open, return an error if not */
+    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Cleanup. Disable interrupt */
+
+    /* Disable the interrupt, and then clear the interrupt pending bits and interrupt status. */
+    R_BSP_IrqDisable(p_ctrl->p_cfg->irq);
+    R_FSP_IsrContextSet(p_ctrl->p_cfg->irq, NULL);
+
+    /* The device is now considered closed */
+    p_ctrl->open = 0U;
+
+    return FSP_SUCCESS;
+}
+
+/******************************************************************************************************************//**
+ * @} (end addtogroup ICU_INTER_CPU_IRQ)
+ *********************************************************************************************************************/
+
+/******************************************************************************************************************//**
+ * ICU_INTER_CPU_IRQ ISR.
+ *********************************************************************************************************************/
+void r_icu_inter_cpu_irq_isr (void)
+{
+    /* Save context if RTOS is used */
+    FSP_CONTEXT_SAVE
+
+    IRQn_Type irq = R_FSP_CurrentIrqGet();
+    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
+
+    if ((NULL != p_ctrl) && (NULL != p_ctrl->p_callback))
+    {
+        /* Set data to identify callback to user, then call user callback. */
+        icu_inter_cpu_irq_callback_args_t args;
+        args.p_context = p_ctrl->p_context;
+        p_ctrl->p_callback(&args);
+    }
+
+    /* Restore context if RTOS is used */
+    FSP_CONTEXT_RESTORE
+}

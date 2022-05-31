@@ -1,0 +1,143 @@
+/***********************************************************************************************************************
+ * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ *
+ * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
+ * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
+ * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
+ * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
+ * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
+ * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
+ * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
+ * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
+ * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
+ * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
+ * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
+ * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
+ * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
+ * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
+ * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
+ **********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @addtogroup BSC
+ * @{
+ **********************************************************************************************************************/
+#ifndef R_BSC_H
+#define R_BSC_H
+
+/***********************************************************************************************************************
+ * Includes
+ **********************************************************************************************************************/
+#include "bsp_api.h"
+#include "r_bsc_cfg.h"
+#include "r_external_bus_api.h"
+
+/* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
+FSP_HEADER
+
+/***********************************************************************************************************************
+ * Typedef definitions
+ **********************************************************************************************************************/
+
+/** Memory type connected to a CS space */
+typedef enum e_bsc_memory_type
+{
+    BSC_MEMORY_TYPE_SRAM = 0x00,       ///< Normal space (SRAM)
+} bsc_memory_type_t;
+
+/** Number of insertion idle cycle between access cycles */
+typedef enum e_bsc_idle_cycle
+{
+    BSC_IDLE_CYCLE_0 = 0x0,            ///< No idle cycle insertion
+    BSC_IDLE_CYCLE_1,                  ///< 1 idle cycle insertion
+    BSC_IDLE_CYCLE_2,                  ///< 2 idle cycle insertion
+    BSC_IDLE_CYCLE_4,                  ///< 4 idle cycle insertion
+    BSC_IDLE_CYCLE_6,                  ///< 6 idle cycle insertion
+    BSC_IDLE_CYCLE_8,                  ///< 8 idle cycle insertion
+    BSC_IDLE_CYCLE_10,                 ///< 10 idle cycle insertion
+    BSC_IDLE_CYCLE_12,                 ///< 12 idle cycle insertion
+} bsc_idle_cycle_t;
+
+/** Number of insertion access wait cycle */
+typedef enum e_bsc_access_wait_cycle
+{
+    BSC_ACCESS_WAIT_CYCLE_0 = 0x00,                   ///< No wait insertion
+    BSC_ACCESS_WAIT_CYCLE_1,                          ///< 1 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_2,                          ///< 2 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_3,                          ///< 3 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_4,                          ///< 4 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_5,                          ///< 5 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_6,                          ///< 6 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_8,                          ///< 8 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_10,                         ///< 10 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_12,                         ///< 12 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_14,                         ///< 14 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_18,                         ///< 18 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_24,                         ///< 24 access wait cycle insertion
+    BSC_ACCESS_WAIT_CYCLE_SAME_AS_READ_ACCESS = 0xFF, ///< Insert the same weight cycle when read access (Used only for Write access wait settings)
+} bsc_access_wait_cycle_t;
+
+/** Number of insertion CS wait cycle */
+typedef enum e_bsc_cs_wait_cycle_t
+{
+    BSC_CS_WAIT_CYCLE_0_5,             ///< CS wait 0.5 cycle insertion
+    BSC_CS_WAIT_CYCLE_1_5,             ///< CS wait 1.5 cycle insertion
+    BSC_CS_WAIT_CYCLE_2_5,             ///< CS wait 2.5 cycle insertion
+    BSC_CS_WAIT_CYCLE_3_5,             ///< CS wait 3.5 cycle insertion
+} bsc_cs_wait_cycle_t;
+
+/** Extended configuration. */
+typedef struct st_bsc_extended_cfg
+{
+    bsc_memory_type_t memory_type;     ///< Configure memory type
+
+    /** Idle cycle between Read-Read cycles in the same CS space */
+    bsc_idle_cycle_t r_r_same_space_idle_cycle;
+
+    /** Idle cycle between Read-Read cycles in the different CS space */
+    bsc_idle_cycle_t r_r_different_space_idle_cycle;
+
+    /** Idle cycle between Read-Write cycles in the same CS space */
+    bsc_idle_cycle_t r_w_same_space_idle_cycle;
+
+    /** Idle cycle between Read-Write cycles in the different CS space */
+    bsc_idle_cycle_t r_w_different_space_idle_cycle;
+
+    /** Idle cycle between Write-Read cycles and Write-Write cycles */
+    bsc_idle_cycle_t w_r_w_w_idle_cycle;
+
+    bsc_access_wait_cycle_t read_access_wait_cycle;  ///< Number of read access cycle waits
+    bsc_access_wait_cycle_t write_access_wait_cycle; ///< Number of write access cycle waits
+
+    bsc_cs_wait_cycle_t cs_pullup_lag;               ///< Duration to de-assert CS line after RD#,WE# de-assert
+    bsc_cs_wait_cycle_t cs_pulldown_lead;            ///< Duration to assert CS line before RD#,WE# assert
+} bsc_extended_cfg_t;
+
+/** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref external_bus_api_t::open is called */
+typedef struct st_bsc_instance_ctrl
+{
+    uint32_t open;                     // Whether or not driver is open
+    external_bus_cfg_t const * p_cfg;  // Pointer to initial configuration
+} bsc_instance_ctrl_t;
+
+/**********************************************************************************************************************
+ * Exported global variables
+ **********************************************************************************************************************/
+
+/** @cond INC_HEADER_DEFS_SEC */
+/** Filled in Interface API structure for this Instance. */
+extern const external_bus_api_t g_external_bus_on_bsc;
+
+/** @endcond */
+
+fsp_err_t R_BSC_Open(external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * const p_cfg);
+fsp_err_t R_BSC_Close(external_bus_ctrl_t * p_ctrl);
+
+/* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
+FSP_FOOTER
+
+#endif
+
+/*******************************************************************************************************************//**
+ * @} (end defgroup BSC)
+ **********************************************************************************************************************/
