@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Microsoft Visio 11.0、SVG Export v1.0 により生成 r_cmtw_one_shot_output.svg ページ - 1 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events"
+		xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/" width="9.18103in" height="3.63542in"
+		viewBox="0 0 661.034 261.75" xml:space="preserve" color-interpolation-filters="sRGB" class="st7">
+	<v:documentProperties v:langID="1033" v:metric="true" v:viewMarkup="false"/>
+
+	<style type="text/css">
+	<![CDATA[
+		.st1 {fill:none;stroke:none;stroke-linecap:butt;stroke-width:0.75}
+		.st2 {fill:#000000;font-family:Arial;font-size:1.75001em}
+		.st3 {fill:#000000;font-family:Arial;font-size:0.75em}
+		.st4 {fill:none}
+		.st5 {stroke:#000000;stroke-linecap:butt;stroke-width:0.75}
+		.st6 {font-size:1em}
+		.st7 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+	]]>
+	</style>
+
+	<g v:mID="0" v:index="1" v:groupContext="foregroundPage">
+		<title>ページ - 1</title>
+		<v:pageProperties v:drawingScale="1" v:pageScale="1" v:drawingUnits="19" v:shadowOffsetX="9" v:shadowOffsetY="-9"/>
+		<g id="shape21-1" v:mID="21" v:groupContext="shape" transform="translate(0.75,-235.8)">
+			<title>シート.21</title>
+			<desc>CMTW One-Shot Output</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="329.767" cy="249.15" width="659.54" height="25.2"/>
+			<rect x="0" y="236.55" width="659.534" height="25.2" class="st1"/>
+			<text x="214.81" y="255.45" class="st2" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>CMTW One-Shot Output</text>		</g>
+		<g id="shape4-4" v:mID="4" v:groupContext="shape" transform="translate(176.925,-21.5809) rotate(-45)">
+			<title>シート.4</title>
+			<desc>timer_period_t::counts</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="99.025" cy="256.35" width="198.06" height="10.8"/>
+			<rect x="0" y="250.95" width="198.05" height="10.8" class="st1"/>
+			<text x="54.5" y="259.05" class="st3" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>timer_period_t::counts</text>		</g>
+		<g id="group1-7" transform="translate(0.75,-4.04989)" v:mID="1" v:groupContext="group">
+			<title>シート.1</title>
+			<g id="shape2-8" v:mID="2" v:groupContext="shape" transform="translate(188.906,-119.25)">
+				<title>シート.2</title>
+				<path d="M0 261.75 L420 261.75 L0 261.75 Z" class="st4"/>
+				<path d="M0 261.75 L420 261.75" class="st5"/>
+			</g>
+			<g id="shape3-11" v:mID="3" v:groupContext="shape" transform="translate(399.281,-111.75)">
+				<title>シート.3</title>
+				<path d="M0 261.75 L0 246.75 L0 261.75 Z" class="st4"/>
+				<path d="M0 261.75 L0 246.75" class="st5"/>
+			</g>
+			<g id="shape5-14" v:mID="5" v:groupContext="shape" transform="translate(250.031,-111.75)">
+				<title>シート.5</title>
+				<path d="M0 261.75 L0 246.75 L0 261.75 Z" class="st4"/>
+				<path d="M0 261.75 L0 246.75" class="st5"/>
+			</g>
+			<g id="shape6-17" v:mID="6" v:groupContext="shape" transform="translate(-4.26085,22.6648) rotate(-45)">
+				<title>シート.6</title>
+				<desc>0</desc>
+				<v:textBlock v:margins="rect(0,0,0,0)"/>
+				<v:textRect cx="112.525" cy="256.35" width="225.06" height="10.8"/>
+				<rect x="0" y="250.95" width="225.05" height="10.8" class="st1"/>
+				<text x="110.02" y="259.05" class="st3" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>0</text>			</g>
+			<g id="shape7-20" v:mID="7" v:groupContext="shape" transform="translate(0.2808,-58.95)">
+				<title>シート.7</title>
+				<desc>One-shot mode, cmtw_output_pin_t = CMTW_OUTPUT_PIN_START_LEVE...</desc>
+				<v:textBlock v:margins="rect(0,0,0,0)"/>
+				<v:textRect cx="92.5308" cy="256.35" width="185.07" height="10.8"/>
+				<rect x="0" y="250.95" width="185.062" height="10.8" class="st1"/>
+				<text x="17.36" y="253.65" class="st3" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>One-shot mode, cmtw_output_pin_t = <v:newlineChar/><tspan
+							x="1.01" dy="1.2em" class="st6">CMTW</tspan>_OUTPUT_PIN_START_LEVEL_LOW</text>			</g>
+			<g id="shape8-24" v:mID="8" v:groupContext="shape" transform="translate(579.281,-112.5)">
+				<title>シート.8</title>
+				<path d="M0 261.75 L0 246.75 L0 261.75 Z" class="st4"/>
+				<path d="M0 261.75 L0 246.75" class="st5"/>
+			</g>
+			<g id="shape9-27" v:mID="9" v:groupContext="shape" transform="translate(387.197,-44.8352) rotate(-45)">
+				<title>シート.9</title>
+				<desc>2 * timer_period_t::counts</desc>
+				<v:textBlock v:margins="rect(0,0,0,0)"/>
+				<v:textRect cx="61.6945" cy="256.35" width="123.39" height="10.8"/>
+				<rect x="0" y="250.95" width="123.389" height="10.8" class="st1"/>
+				<text x="10.42" y="259.05" class="st3" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>2 * timer_period_t::counts</text>			</g>
+			<g id="shape10-30" v:mID="10" v:groupContext="shape" transform="translate(188.906,-59.25)">
+				<title>シート.10</title>
+				<path d="M0 261.75 L60 261.75 L0 261.75 Z" class="st4"/>
+				<path d="M0 261.75 L60 261.75" class="st5"/>
+			</g>
+			<g id="shape11-33" v:mID="11" v:groupContext="shape" transform="translate(248.906,-59.25)">
+				<title>シート.11</title>
+				<path d="M0 231.75 L0 261.75 L0 231.75 Z" class="st4"/>
+				<path d="M0 231.75 L0 261.75" class="st5"/>
+			</g>
+			<g id="shape12-36" v:mID="12" v:groupContext="shape" transform="translate(398.906,-59.25)">
+				<title>シート.12</title>
+				<path d="M0 231.75 L0 261.75 L0 231.75 Z" class="st4"/>
+				<path d="M0 231.75 L0 261.75" class="st5"/>
+			</g>
+			<g id="shape13-39" v:mID="13" v:groupContext="shape" transform="translate(248.906,-89.25)">
+				<title>シート.13</title>
+				<path d="M150 261.75 L0 261.75 L150 261.75 Z" class="st4"/>
+				<path d="M150 261.75 L0 261.75" class="st5"/>
+			</g>
+			<g id="shape14-42" v:mID="14" v:groupContext="shape" transform="translate(398.906,-59.25)">
+				<title>シート.14</title>
+				<path d="M0 261.75 L210 261.75 L0 261.75 Z" class="st4"/>
+				<path d="M0 261.75 L210 261.75" class="st5"/>
+			</g>
+			<g id="shape15-45" v:mID="15" v:groupContext="shape" transform="translate(0,-1.35)">
+				<title>シート.15</title>
+				<desc>One-shot mode, cmtw_output_pin_t = CMTW_OUTPUT_PIN_START_LEVE...</desc>
+				<v:textBlock v:margins="rect(0,0,0,0)"/>
+				<v:textRect cx="92.5308" cy="256.35" width="185.07" height="10.8"/>
+				<rect x="0" y="250.95" width="185.062" height="10.8" class="st1"/>
+				<text x="17.36" y="253.65" class="st3" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>One-shot mode, cmtw_output_pin_t =<v:newlineChar/><tspan
+							x="0.01" dy="1.2em" class="st6">CMTW</tspan>_OUTPUT_PIN_START_LEVEL_HIGH</text>			</g>
+			<g id="shape16-49" v:mID="16" v:groupContext="shape" transform="translate(188.531,-29.25)">
+				<title>シート.16</title>
+				<path d="M0 261.75 L60 261.75 L0 261.75 Z" class="st4"/>
+				<path d="M0 261.75 L60 261.75" class="st5"/>
+			</g>
+			<g id="shape17-52" v:mID="17" v:groupContext="shape" transform="translate(248.906,5.68434E-014)">
+				<title>シート.17</title>
+				<path d="M0 231.75 L0 261.75 L0 231.75 Z" class="st4"/>
+				<path d="M0 231.75 L0 261.75" class="st5"/>
+			</g>
+			<g id="shape18-55" v:mID="18" v:groupContext="shape" transform="translate(398.906,5.68434E-014)">
+				<title>シート.18</title>
+				<path d="M0 231.75 L0 261.75 L0 231.75 Z" class="st4"/>
+				<path d="M0 231.75 L0 261.75" class="st5"/>
+			</g>
+			<g id="shape19-58" v:mID="19" v:groupContext="shape" transform="translate(249.281,5.68434E-014)">
+				<title>シート.19</title>
+				<path d="M149.62 261.75 L0 261.37 L149.62 261.75 Z" class="st4"/>
+				<path d="M149.62 261.75 L0 261.37" class="st5"/>
+			</g>
+			<g id="shape20-61" v:mID="20" v:groupContext="shape" transform="translate(398.906,-29.25)">
+				<title>シート.20</title>
+				<path d="M0 261.75 L210 261.75 L0 261.75 Z" class="st4"/>
+				<path d="M0 261.75 L210 261.75" class="st5"/>
+			</g>
+			<g id="shape22-64" v:mID="22" v:groupContext="shape" transform="translate(17.1576,-115.8)">
+				<title>シート.22</title>
+				<desc>Time after start</desc>
+				<v:textBlock v:margins="rect(0,0,0,0)"/>
+				<v:textRect cx="84.3768" cy="256.35" width="168.76" height="10.8"/>
+				<rect x="0" y="250.95" width="168.754" height="10.8" class="st1"/>
+				<text x="54.12" y="259.05" class="st3" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>Time after start</text>			</g>
+		</g>
+	</g>
+</svg>
