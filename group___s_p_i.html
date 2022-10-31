@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.0.0</span>
+   &#160;<span id="projectnumber">Release v1.1.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -392,7 +392,7 @@ Clock Configuration</h2>
 <h2><a class="anchor" id="r-spi-pin-configuration"></a>
 Pin Configuration</h2>
 <p>This module uses MOSI, MISO, RSPCK, and SSL pins to communicate with on board devices.</p>
-<dl class="section note"><dt>Note</dt><dd>At high bitrates, it might be nessecary to configure the pins with IOPORT_CFG_DRIVE_HIGH.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>At high bitrates, it might be necessary to configure the pins with IOPORT_CFG_DRIVE_HIGH.</dd></dl>
 <h1><a class="anchor" id="r-spi-usage_notes"></a>
 Usage Notes</h1>
 <h2>Performance</h2>
@@ -583,7 +583,7 @@ Receive FIFO threshold (0~3) </td></tr>
 <td class="fieldname">
 receive_data_ready_detect_adjustment</td>
 <td class="fielddoc">
-Receive data ready detect timing(0~255PCLKLSPIn) </td></tr>
+Receive data ready detect timing(0~255PCLKSPIn) </td></tr>
 </table>
 
 </div>
@@ -604,7 +604,7 @@ Receive data ready detect timing(0~255PCLKLSPIn) </td></tr>
 <tr><td colspan="2"><h3>Data Fields</h3></td></tr>
 <tr class="memitem:ac9844deca6b567e54920c08c7106fe79"><td class="memItemLeft" align="right" valign="top"><a id="ac9844deca6b567e54920c08c7106fe79"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_p_i.html#ac9844deca6b567e54920c08c7106fe79">open</a></td></tr>
-<tr class="memdesc:ac9844deca6b567e54920c08c7106fe79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates whether the <a class="el" href="group___s_p_i.html#ac9844deca6b567e54920c08c7106fe79" title="Indicates whether the open() API has been successfully called. ">open()</a> API has been successfully called. <br /></td></tr>
+<tr class="memdesc:ac9844deca6b567e54920c08c7106fe79"><td class="mdescLeft">&#160;</td><td class="mdescRight">Indicates whether the open API has been successfully called. <br /></td></tr>
 <tr class="separator:ac9844deca6b567e54920c08c7106fe79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7cb96da456d8da01386d7be6f17a9f4d"><td class="memItemLeft" align="right" valign="top"><a id="a7cb96da456d8da01386d7be6f17a9f4d"></a>
 <a class="el" href="group___s_p_i___a_p_i.html#structspi__cfg__t">spi_cfg_t</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_p_i.html#a7cb96da456d8da01386d7be6f17a9f4d">p_cfg</a></td></tr>
@@ -881,7 +881,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <p>This functions initializes a channel for SPI communication mode. Implements <a class="el" href="group___s_p_i___a_p_i.html#a97177a6162ebad73907c7f23c1411426">spi_api_t::open</a>.</p>
 <p>This function performs the following tasks:</p><ul>
 <li>Performs parameter checking and processes error conditions.</li>
-<li>Configures the pperipheral registers acording to the configuration.</li>
+<li>Configures the peripheral registers according to the configuration.</li>
 <li>Initialize the control structure for use in other <a class="el" href="group___s_p_i___a_p_i.html">SPI Interface</a> functions.</li>
 </ul>
 <dl class="retval"><dt>Return values</dt><dd>
@@ -1222,7 +1222,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.0.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

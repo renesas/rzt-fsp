@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.0.0</span>
+   &#160;<span id="projectnumber">Release v1.1.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -404,7 +404,7 @@ Enabled</li>
 <li>
 Enabled w/truncate</li>
 </ul>
-</td><td>config.driver.canfd.dlc_check.disabled </td><td>When enabled received messages will be rejected if their DLC field is less than the value configured in the associated AFL rule. If 'Enabled w/truncate' is selected and a message passes the DLC check the DLC field is set to the value in the associated AFL rule and any excess data is discarded. </td></tr>
+</td><td>Disabled </td><td>When enabled received messages will be rejected if their DLC field is less than the value configured in the associated AFL rule. If 'Enabled w/truncate' is selected and a message passes the DLC check the DLC field is set to the value in the associated AFL rule and any excess data is discarded. </td></tr>
 <tr>
 <td>Clock Source</td><td>PCLKCAN</td><td>PCLKCAN </td><td>Select the CANFD clock source. </td></tr>
 </table>
@@ -482,7 +482,7 @@ Overload</li>
 <h2><a class="anchor" id="r-canfd-clock-configuration"></a>
 Clock Configuration</h2>
 <p>The CANFD peripheral uses PCLKCAN as its clock source. The FSP Configuration editor will attempt to get as close as possible to the supplied bitrate with the configured clock source. To achieve an exact bitrate the CANFD source clock or divisor may need to be adjusted to meet the criteria in the formula below:</p>
-<div class="fragment"><div class="line">bitrate = canfd_clock_hz / ((time_segment_1 + time_segment_2 + 1) * prescalar)</div></div><!-- fragment --><p>For CANFD, the possible values for each element are as follows:</p>
+<div class="fragment"><div class="line">bitrate = canfd_clock_hz / ((time_segment_1 + time_segment_2 + 1) * prescaler)</div></div><!-- fragment --><p>For CANFD, the possible values for each element are as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Element </th><th>Min </th><th>Max (Nominal) </th><th>Max (Data)  </th></tr>
@@ -495,7 +495,7 @@ Clock Configuration</h2>
 <tr>
 <td><a class="el" href="group___c_a_n_f_d.html#r-canfd-sync-jump-width">Sync Jump Width</a> </td><td>2 Tq (Nominal) / 1 Tq (Data)</td><td>Time Segment 2 </td><td>Time Segment 2 </td></tr>
 <tr>
-<td>Prescalar </td><td>1 </td><td>1024 </td><td>256 </td></tr>
+<td>Prescaler </td><td>1 </td><td>1024 </td><td>256 </td></tr>
 </table>
 <p>Use the <b>Clocks</b> tab of the FSP Configuration editor to configure the CANFD clock source/divisor as well as to set the frequency of PCLKCAN. To change the clock frequency at run-time, use the CGC Interface. Refer to the CGC module guide for more information on configuring clocks.</p>
 <h2><a class="anchor" id="r-canfd-pin-configuration"></a>
@@ -544,7 +544,7 @@ Flexible Data (FD)</h2>
 <h2>Bit Rate Calculation</h2>
 <p>For convenience, the baudrate of the CAN peripheral is automatically set through the FSP Configuration editor using a best effort approach. To increase compliance and reliability two extra options are provided: Link Prescalers and Delay Compensation.</p>
 <p>When Link Prescalers is enabled the prescalers for Nominal and Data bitrates will be kept the same, improving clock tolerance in networks using FD frames. This option somewhat limits the available options for bitrate settings, so be sure to check that the automatically generated values are acceptable.</p>
-<p>Enabling Delay Compensation instructs the CANFD peripheral to measure TX to RX tranceiver delay and automatically adjust for it, improving the reliability of high-speed FD messages. This option may severely limit available bitrate settings depending on the source clock; it is highly recommended to check the generated values when enabled.</p>
+<p>Enabling Delay Compensation instructs the CANFD peripheral to measure TX to RX transceiver delay and automatically adjust for it, improving the reliability of high-speed FD messages. This option may severely limit available bitrate settings depending on the source clock; it is highly recommended to check the generated values when enabled.</p>
 <p>If the auto-generated baud settings cause deviation that is not tolerable by the application the user can override the auto-generated settings and put in manually calculated values through the FSP Configuration editor. For more details on how the bitrate is calculated refer to the <a class="el" href="group___c_a_n_f_d.html#r-canfd-clock-configuration">Clock Configuration</a> section above.</p>
 <h3><a class="anchor" id="r-canfd-sync-jump-width"></a>
 Sync Jump Width</h3>
@@ -1224,7 +1224,7 @@ Global configuration (global error callback channel only) </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.0.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

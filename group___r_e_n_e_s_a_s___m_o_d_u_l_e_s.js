@@ -1,6 +1,7 @@
 var group___r_e_n_e_s_a_s___m_o_d_u_l_e_s =
 [
     [ "Analog to Digital Converter (r_adc)", "group___a_d_c.html", "group___a_d_c" ],
+    [ "Bus State Controller (BSC) SDRAM (r_bsc_sdram)", "group___b_s_c___s_d_r_a_m.html", "group___b_s_c___s_d_r_a_m" ],
     [ "Bus State Controller (r_bsc)", "group___b_s_c.html", "group___b_s_c" ],
     [ "Clock Generation Circuit (r_cgc)", "group___c_g_c.html", "group___c_g_c" ],
     [ "Compare Match Timer (r_cmt)", "group___c_m_t.html", "group___c_m_t" ],

@@ -21,6 +21,8 @@ var searchData=
   ['sedm',['sedm',['../group___d_s_m_i_f.html#ab9f7da99a2d39658762b5df173ec8669',1,'dsmif_extended_cfg_t']]],
   ['seeh',['seeh',['../group___d_s_m_i_f.html#af7ec0d3c725d8282c28d8a061573fd69',1,'dsmif_extended_cfg_t']]],
   ['seel',['seel',['../group___d_s_m_i_f.html#a969ca5685c82c43b6970162a0dd5fb25',1,'dsmif_extended_cfg_t']]],
+  ['selfrefreshenter',['selfRefreshEnter',['../group___s_d_r_a_m___a_p_i.html#a9f0995e20936e538c8793d68311f58ad',1,'sdram_api_t']]],
+  ['selfrefreshexit',['selfRefreshExit',['../group___s_d_r_a_m___a_p_i.html#ac3c083bb66ce9c318f2a708adcd1467f',1,'sdram_api_t']]],
   ['semaphore_5freg',['semaphore_reg',['../group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#a61d392f1a85494bd9407f7ea420bae58',1,'shared_memory_cfg_t']]],
   ['set',['set',['../group___g_p_t___p_h_a_s_e___c_o_u_n_t___a_p_i.html#ad51942e39ddcbe48ab6f669edb5e598f',1,'gpt_phase_count_api_t']]],
   ['setupget',['setupGet',['../group___u_s_b___a_p_i.html#a4071ec30a3255c3ea18f8554bd68da50',1,'usb_api_t']]],

@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.0.0</span>
+   &#160;<span id="projectnumber">Release v1.1.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -322,8 +322,29 @@ Clock Configuration</h2>
 <h1><a class="anchor" id="r-bsc-usage_notes"></a>
 Usage Notes</h1>
 <h2>BSC Memory Mapped Access</h2>
-<p>After <a class="el" href="group___b_s_c.html#ga7c3d30081be56f6d48df4ec233d65560">R_BSC_Open()</a> completes successfully, the connected BSC device contents are mapped to address 0x70000000(External address space) or 0x50000000(Mirror area External address space) and can be read like internal memory.</p>
-<p>When not using the cache, access the memory via the mirror area.</p>
+<p>After <a class="el" href="group___b_s_c.html#ga7c3d30081be56f6d48df4ec233d65560">R_BSC_Open()</a> completes successfully, the connected BSC device contents are mapped to address 0x70000000(External address space) or 0x50000000(Mirror space of External address space) and can be read like internal memory.</p>
+<p>When not using the cache, access the memory via the mirror space.</p>
+<p>The address map for the external address space is as follows:</p>
+<table class="doxtable">
+<tr>
+<th>Address </th><th>Space  </th></tr>
+<tr>
+<td>0x50000000 to 0x53FFFFFF </td><td>CS0 mirror space </td></tr>
+<tr>
+<td>0x54000000 to 0x57FFFFFF </td><td>CS2 mirror space </td></tr>
+<tr>
+<td>0x58000000 to 0x5BFFFFFF </td><td>CS3 mirror space </td></tr>
+<tr>
+<td>0x5C000000 to 0x5FFFFFFF </td><td>CS5 mirror space </td></tr>
+<tr>
+<td>0x70000000 to 0x73FFFFFF </td><td>CS0 space </td></tr>
+<tr>
+<td>0x74000000 to 0x77FFFFFF </td><td>CS2 space </td></tr>
+<tr>
+<td>0x78000000 to 0x7BFFFFFF </td><td>CS3 space </td></tr>
+<tr>
+<td>0x7C000000 to 0x7FFFFFFF </td><td>CS5 space </td></tr>
+</table>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -639,7 +660,7 @@ Duration to assert CS line before RD#,WE# assert. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.0.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

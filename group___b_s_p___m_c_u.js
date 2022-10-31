@@ -39,6 +39,8 @@ var group___b_s_p___m_c_u =
       [ "BSP_RESET_CPU1", "group___b_s_p___m_c_u.html#gga6e8909ce807437506d18010fe094ef4baa7bfe7da0bed4a4ccead479eb965f788", null ]
     ] ],
     [ "bsp_module_reset_t", "group___b_s_p___m_c_u.html#ga2ad788416478d6d6ea7398fd9ca84289", [
+      [ "BSP_MODULE_RESET_XSPI0", "group___b_s_p___m_c_u.html#gga2ad788416478d6d6ea7398fd9ca84289a9b2d9d8115b8f528aa7d8c00a4e458a6", null ],
+      [ "BSP_MODULE_RESET_XSPI1", "group___b_s_p___m_c_u.html#gga2ad788416478d6d6ea7398fd9ca84289af74126804309271033ef11051c56eef7", null ],
       [ "BSP_MODULE_RESET_GMAC_ACLK", "group___b_s_p___m_c_u.html#gga2ad788416478d6d6ea7398fd9ca84289a603d2696f1d8b8d93a14dd5202533320", null ],
       [ "BSP_MODULE_RESET_GMAC_HCLK", "group___b_s_p___m_c_u.html#gga2ad788416478d6d6ea7398fd9ca84289a400f8e4bcd7f710d09e43126c36a0485", null ],
       [ "BSP_MODULE_RESET_ETHSW", "group___b_s_p___m_c_u.html#gga2ad788416478d6d6ea7398fd9ca84289abf4c0c302043418bdb15614e9b88aeb2", null ],

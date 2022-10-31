@@ -2,6 +2,8 @@ var searchData=
 [
   ['sci_5fuart_5fextended_5fcfg_5ft',['sci_uart_extended_cfg_t',['../group___s_c_i___u_a_r_t.html#structsci__uart__extended__cfg__t',1,'']]],
   ['sci_5fuart_5finstance_5fctrl_5ft',['sci_uart_instance_ctrl_t',['../group___s_c_i___u_a_r_t.html#structsci__uart__instance__ctrl__t',1,'']]],
+  ['sdram_5fapi_5ft',['sdram_api_t',['../group___s_d_r_a_m___a_p_i.html#structsdram__api__t',1,'']]],
+  ['sdram_5fcfg_5ft',['sdram_cfg_t',['../group___s_d_r_a_m___a_p_i.html#structsdram__cfg__t',1,'']]],
   ['shared_5fmemory_5fapi_5ft',['shared_memory_api_t',['../group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__api__t',1,'']]],
   ['shared_5fmemory_5fcallback_5fargs_5ft',['shared_memory_callback_args_t',['../group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t',1,'']]],
   ['shared_5fmemory_5fcfg_5ft',['shared_memory_cfg_t',['../group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__cfg__t',1,'']]],

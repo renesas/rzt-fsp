@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Microsoft Visio 11.0、SVG Export v1.0 により生成 r_elc_eventset.svg ページ - 1 -->
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:ev="http://www.w3.org/2001/xml-events"
+		xmlns:v="http://schemas.microsoft.com/visio/2003/SVGExtensions/" width="7.42743in" height="4.8344in"
+		viewBox="0 0 534.775 348.077" xml:space="preserve" color-interpolation-filters="sRGB" class="st12">
+	<v:documentProperties v:langID="1033" v:metric="true" v:viewMarkup="false"/>
+
+	<style type="text/css">
+	<![CDATA[
+		.st1 {fill:none}
+		.st2 {stroke:#000000;stroke-linecap:butt;stroke-width:1.125}
+		.st3 {fill:#000000;stroke:#000000;stroke-linecap:butt;stroke-width:1.125}
+		.st4 {fill:#ffffff;stroke:#000000;stroke-linecap:butt;stroke-width:1.125}
+		.st5 {fill:none;stroke:none;stroke-linecap:butt;stroke-width:0.75}
+		.st6 {fill:#000000;font-family:Arial;font-size:0.75em;font-weight:bold}
+		.st7 {fill:#000000;font-family:Arial;font-size:1.125em}
+		.st8 {stroke:#000000;stroke-dasharray:4.5,2.25;stroke-linecap:butt;stroke-width:1.125}
+		.st9 {fill:#ffffff;stroke:#000000;stroke-dasharray:4.5,2.25;stroke-linecap:butt;stroke-width:1.125}
+		.st10 {font-size:1em}
+		.st11 {fill:#000000;font-family:Arial;font-size:1.16666em;font-weight:bold}
+		.st12 {fill:none;fill-rule:evenodd;font-size:12px;overflow:visible;stroke-linecap:square;stroke-miterlimit:3}
+	]]>
+	</style>
+
+	<g v:mID="0" v:index="1" v:groupContext="foregroundPage">
+		<title>ページ - 1</title>
+		<v:pageProperties v:drawingScale="1" v:pageScale="1" v:drawingUnits="19" v:shadowOffsetX="9" v:shadowOffsetY="-9"/>
+		<g id="shape2-1" v:mID="2" v:groupContext="shape" transform="translate(324.4,-201.12)">
+			<title>シート.2</title>
+			<path d="M0 348.08 L67.09 347.85 L0 348.08 Z" class="st1"/>
+			<path d="M0 348.08 L67.09 347.85" class="st2"/>
+		</g>
+		<g id="shape3-4" v:mID="3" v:groupContext="shape" transform="translate(389.508,-197.4)">
+			<title>シート.3</title>
+			<path d="M7.88 344.11 L0.02 348.08 L1.98 344.13 L0 340.2 L7.88 344.11 Z" class="st3"/>
+		</g>
+		<g id="shape4-6" v:mID="4" v:groupContext="shape" transform="translate(624.102,65.4767) rotate(90)">
+			<title>シート.4</title>
+			<path d="M0 348.08 L23.93 299.7 L139.2 299.7 L163.12 348.08 L0 348.08 Z" class="st4"/>
+		</g>
+		<g id="shape5-8" v:mID="5" v:groupContext="shape" transform="translate(643.302,60.9767) rotate(90)">
+			<title>シート.5</title>
+			<desc>ELC_PERIPHERAL_ADC120</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="85.525" cy="342.677" width="171.06" height="10.8"/>
+			<rect x="0" y="337.277" width="171.05" height="10.8" class="st5"/>
+			<text x="25.26" y="345.38" class="st6" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>ELC_PERIPHERAL_ADC120</text>		</g>
+		<g id="shape6-11" v:mID="6" v:groupContext="shape" transform="translate(184.9,-171.225)">
+			<title>シート.6</title>
+			<path d="M0 348.08 L33.75 348.08 L56.92 339.08 L83.51 339.08 L0 348.08 Z" class="st1"/>
+			<path d="M0 348.08 L33.75 348.08 L56.92 339.08 L83.51 339.08" class="st2"/>
+		</g>
+		<g id="shape7-14" v:mID="7" v:groupContext="shape" transform="translate(266.44,-176.288)">
+			<title>シート.7</title>
+			<path d="M7.88 344.14 L0 348.08 L1.97 344.14 L0 340.2 L7.88 344.14 Z" class="st3"/>
+		</g>
+		<g id="shape8-16" v:mID="8" v:groupContext="shape" transform="translate(72.4,-159.975)">
+			<title>シート.8</title>
+			<rect x="0" y="325.577" width="112.5" height="22.5" class="st4"/>
+		</g>
+		<g id="shape9-18" v:mID="9" v:groupContext="shape" transform="translate(41.25,-197.925)">
+			<title>シート.9</title>
+			<desc>GPT0 Overflow</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="87.775" cy="339.977" width="175.56" height="16.2"/>
+			<rect x="0" y="331.877" width="175.55" height="16.2" class="st5"/>
+			<text x="41.64" y="344.03" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>GPT0 Overflow</text>		</g>
+		<g id="shape10-21" v:mID="10" v:groupContext="shape" transform="translate(184.9,-137.475)">
+			<title>シート.10</title>
+			<path d="M0 348.08 L33.75 348.08 L56.47 329.63 L83.06 329.63 L0 348.08 Z" class="st1"/>
+			<path d="M0 348.08 L33.75 348.08 L56.47 329.63 L83.06 329.63" class="st2"/>
+		</g>
+		<g id="shape11-24" v:mID="11" v:groupContext="shape" transform="translate(265.99,-151.988)">
+			<title>シート.11</title>
+			<path d="M7.88 344.14 L0 348.08 L1.97 344.14 L0 340.2 L7.88 344.14 Z" class="st3"/>
+		</g>
+		<g id="shape12-26" v:mID="12" v:groupContext="shape" transform="translate(72.4,-126.225)">
+			<title>シート.12</title>
+			<rect x="0" y="325.577" width="112.5" height="22.5" class="st4"/>
+		</g>
+		<g id="shape13-28" v:mID="13" v:groupContext="shape" transform="translate(33.75,-126.225)">
+			<title>シート.13</title>
+			<desc>GPT0 Underflow</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="94.525" cy="336.827" width="189.06" height="22.5"/>
+			<rect x="0" y="325.577" width="189.05" height="22.5" class="st5"/>
+			<text x="44.63" y="340.88" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>GPT0 Underflow</text>		</g>
+		<g id="shape14-31" v:mID="14" v:groupContext="shape" transform="translate(184.9,-103.725)">
+			<title>シート.14</title>
+			<path d="M0 348.08 L33.75 348.08 L56.47 318.83 L83.06 318.83 L0 348.08 Z" class="st1"/>
+			<path d="M0 348.08 L33.75 348.08 L56.47 318.83 L83.06 318.83" class="st8"/>
+		</g>
+		<g id="shape15-34" v:mID="15" v:groupContext="shape" transform="translate(265.99,-129.038)">
+			<title>シート.15</title>
+			<path d="M7.88 344.14 L0 348.08 L1.97 344.14 L0 340.2 L7.88 344.14 Z" class="st3"/>
+		</g>
+		<g id="shape16-36" v:mID="16" v:groupContext="shape" transform="translate(72.4,-92.4753)">
+			<title>シート.16</title>
+			<path d="M0 348.08 L112.5 348.08 L112.5 325.58 L0 325.58 L0 348.08 Z" class="st9"/>
+		</g>
+		<g id="shape18-38" v:mID="18" v:groupContext="shape" transform="translate(184.9,-200.925)">
+			<title>シート.18</title>
+			<path d="M0 344.03 L33.75 344.03 L57.37 348.08 L83.96 348.08 L0 344.03 Z" class="st1"/>
+			<path d="M0 344.03 L33.75 344.03 L57.37 348.08 L83.96 348.08" class="st2"/>
+		</g>
+		<g id="shape19-41" v:mID="19" v:groupContext="shape" transform="translate(266.89,-196.988)">
+			<title>シート.19</title>
+			<path d="M7.88 344.14 L0 348.08 L1.97 344.14 L0 340.2 L7.88 344.14 Z" class="st3"/>
+		</g>
+		<g id="shape20-43" v:mID="20" v:groupContext="shape" transform="translate(72.4,-193.725)">
+			<title>シート.20</title>
+			<rect x="0" y="325.577" width="112.5" height="22.5" class="st4"/>
+		</g>
+		<g id="shape21-45" v:mID="21" v:groupContext="shape" transform="translate(47.25,-231.675)">
+			<title>シート.21</title>
+			<desc>GPT0 Match D</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="81.025" cy="339.977" width="162.06" height="16.2"/>
+			<rect x="0" y="331.877" width="162.05" height="16.2" class="st5"/>
+			<text x="36.39" y="344.03" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>GPT0 Match D</text>		</g>
+		<g id="shape22-48" v:mID="22" v:groupContext="shape" transform="translate(184.9,-268.875)">
+			<title>シート.22</title>
+			<path d="M0 310.73 L33.75 310.73 L56.47 348.08 L83.06 348.08 L0 310.73 Z" class="st1"/>
+			<path d="M0 310.73 L33.75 310.73 L56.47 348.08 L83.06 348.08" class="st8"/>
+		</g>
+		<g id="shape23-51" v:mID="23" v:groupContext="shape" transform="translate(265.99,-264.938)">
+			<title>シート.23</title>
+			<path d="M7.88 344.14 L0 348.08 L1.97 344.14 L0 340.2 L7.88 344.14 Z" class="st3"/>
+		</g>
+		<g id="shape24-53" v:mID="24" v:groupContext="shape" transform="translate(72.4,-294.975)">
+			<title>シート.24</title>
+			<path d="M0 348.08 L112.5 348.08 L112.5 325.58 L0 325.58 L0 348.08 Z" class="st9"/>
+		</g>
+		<g id="shape26-55" v:mID="26" v:groupContext="shape" transform="translate(184.9,-246.825)">
+			<title>シート.26</title>
+			<path d="M0 322.43 L33.75 322.43 L56.47 348.08 L83.06 348.08 L0 322.43 Z" class="st1"/>
+			<path d="M0 322.43 L33.75 322.43 L56.47 348.08 L83.06 348.08" class="st2"/>
+		</g>
+		<g id="shape27-58" v:mID="27" v:groupContext="shape" transform="translate(265.99,-242.888)">
+			<title>シート.27</title>
+			<path d="M7.88 344.14 L0 348.08 L1.97 344.14 L0 340.2 L7.88 344.14 Z" class="st3"/>
+		</g>
+		<g id="shape28-60" v:mID="28" v:groupContext="shape" transform="translate(72.4,-261.225)">
+			<title>シート.28</title>
+			<rect x="0" y="325.577" width="112.5" height="22.5" class="st4"/>
+		</g>
+		<g id="shape29-62" v:mID="29" v:groupContext="shape" transform="translate(47.2536,-294.975)">
+			<title>シート.29</title>
+			<desc>· · ·</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="81.025" cy="336.827" width="162.06" height="22.5"/>
+			<rect x="0" y="325.577" width="162.05" height="22.5" class="st5"/>
+			<text x="70.53" y="340.88" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>· · ·</text>		</g>
+		<g id="shape30-65" v:mID="30" v:groupContext="shape" transform="translate(184.9,-224.325)">
+			<title>シート.30</title>
+			<path d="M0 333.68 L33.75 333.68 L56.47 348.08 L83.06 348.08 L0 333.68 Z" class="st1"/>
+			<path d="M0 333.68 L33.75 333.68 L56.47 348.08 L83.06 348.08" class="st2"/>
+		</g>
+		<g id="shape31-68" v:mID="31" v:groupContext="shape" transform="translate(265.99,-220.388)">
+			<title>シート.31</title>
+			<path d="M7.88 344.14 L0 348.08 L1.97 344.14 L0 340.2 L7.88 344.14 Z" class="st3"/>
+		</g>
+		<g id="shape32-70" v:mID="32" v:groupContext="shape" transform="translate(72.4,-227.475)">
+			<title>シート.32</title>
+			<rect x="0" y="325.577" width="112.5" height="22.5" class="st4"/>
+		</g>
+		<g id="shape33-72" v:mID="33" v:groupContext="shape" transform="translate(47.8286,-261.225)">
+			<title>シート.33</title>
+			<desc>GPT0 Match D</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="80.45" cy="336.827" width="160.91" height="22.5"/>
+			<rect x="0" y="325.577" width="160.9" height="22.5" class="st5"/>
+			<text x="35.81" y="340.88" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>GPT0 Match D</text>		</g>
+		<g id="shape34-75" v:mID="34" v:groupContext="shape" transform="translate(398.65,-173.475)">
+			<title>シート.34</title>
+			<rect x="0" y="291.827" width="135" height="56.25" class="st4"/>
+		</g>
+		<g id="shape35-77" v:mID="35" v:groupContext="shape" transform="translate(412.15,-173.475)">
+			<title>シート.35</title>
+			<path d="M0 291.83 L0 348.08 L0 291.83 ZM108 291.83 L108 348.08 L108 291.83 Z" class="st1"/>
+			<path d="M0 291.83 L0 348.08M108 291.83 L108 348.08" class="st2"/>
+		</g>
+		<g id="shape36-80" v:mID="36" v:groupContext="shape" transform="translate(411.775,-173.475)">
+			<title>シート.36</title>
+			<desc>ADC120 Start Conversion A</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="54" cy="319.952" width="108" height="56.25"/>
+			<rect x="0" y="291.827" width="108" height="56.25" class="st5"/>
+			<text x="12.36" y="315.9" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>ADC120 Start <tspan
+						x="13.48" dy="1.2em" class="st10">Conversion A</tspan></text>		</g>
+		<g id="shape37-84" v:mID="37" v:groupContext="shape" transform="translate(246.85,-36.2253)">
+			<title>シート.37</title>
+			<path d="M0 348.08 L53.48 348.08 L53.48 252.68 L0 348.08 Z" class="st1"/>
+			<path d="M0 348.08 L53.48 348.08 L53.48 252.68" class="st2"/>
+		</g>
+		<g id="shape38-87" v:mID="38" v:groupContext="shape" transform="translate(27.4,-24.9753)">
+			<title>シート.38</title>
+			<path d="M0 348.08 L11.1 325.58 L225 325.58 L213.9 348.08 L0 348.08 Z" class="st4"/>
+		</g>
+		<g id="shape39-89" v:mID="39" v:groupContext="shape" transform="translate(0.75,-30.6003)">
+			<title>シート.39</title>
+			<desc>ELC_EVENT_GPT0_COUNTER_OVERFLOW</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="139.525" cy="342.677" width="279.05" height="10.8"/>
+			<rect x="0" y="337.277" width="279.05" height="10.8" class="st5"/>
+			<text x="45.51" y="345.38" class="st6" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>ELC_EVENT_GPT0_COUNTER_OVERFLOW</text>		</g>
+		<g id="shape42-92" v:mID="42" v:groupContext="shape" transform="translate(398.275,-233.1)">
+			<title>シート.42</title>
+			<desc>Peripheral Function</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="67.7813" cy="342.677" width="135.57" height="10.8"/>
+			<rect x="0" y="337.277" width="135.563" height="10.8" class="st5"/>
+			<text x="9.25" y="346.73" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>Peripheral Function</text>		</g>
+		<g id="shape1-95" v:mID="1" v:groupContext="shape" transform="translate(33.7536,-159.975)">
+			<title>シート.1</title>
+			<desc>GPT0 Overflow</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="94.525" cy="336.827" width="189.06" height="22.5"/>
+			<rect x="0" y="325.577" width="189.05" height="22.5" class="st5"/>
+			<text x="48.39" y="340.88" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>GPT0 Overflow</text>		</g>
+		<g id="shape17-98" v:mID="17" v:groupContext="shape" transform="translate(33.7536,-193.725)">
+			<title>シート.17</title>
+			<desc>GPT0 Match F</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="94.525" cy="336.827" width="189.06" height="22.5"/>
+			<rect x="0" y="325.577" width="189.05" height="22.5" class="st5"/>
+			<text x="50.64" y="340.88" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>GPT0 Match F</text>		</g>
+		<g id="shape25-101" v:mID="25" v:groupContext="shape" transform="translate(47.8286,-227.475)">
+			<title>シート.25</title>
+			<desc>GPT0 Match E</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="80.45" cy="336.827" width="160.91" height="22.5"/>
+			<rect x="0" y="325.577" width="160.9" height="22.5" class="st5"/>
+			<text x="36.19" y="340.88" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>GPT0 Match E</text>		</g>
+		<g id="shape40-104" v:mID="40" v:groupContext="shape" transform="translate(47.9736,-92.4753)">
+			<title>シート.40</title>
+			<desc>· · ·</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="81.025" cy="336.827" width="162.06" height="22.5"/>
+			<rect x="0" y="325.577" width="162.05" height="22.5" class="st5"/>
+			<text x="70.53" y="340.88" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>· · ·</text>		</g>
+		<g id="shape41-107" v:mID="41" v:groupContext="shape" transform="translate(261.025,-290.7)">
+			<title>シート.41</title>
+			<desc>ELC</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="39.375" cy="342.677" width="78.75" height="10.8"/>
+			<rect x="0" y="337.277" width="78.75" height="10.8" class="st5"/>
+			<text x="25.38" y="346.88" class="st11" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>ELC</text>		</g>
+		<g id="shape43-110" v:mID="43" v:groupContext="shape" transform="translate(58.525,-334.577)">
+			<title>シート.43</title>
+			<desc>Available events</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="67.7813" cy="342.677" width="135.57" height="10.8"/>
+			<rect x="0" y="337.277" width="135.563" height="10.8" class="st5"/>
+			<text x="18.63" y="346.73" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>Available events</text>		</g>
+		<g id="shape44-113" v:mID="44" v:groupContext="shape" transform="translate(27.025,-2.70027)">
+			<title>シート.44</title>
+			<desc>Selected event</desc>
+			<v:textBlock v:margins="rect(0,0,0,0)"/>
+			<v:textRect cx="108" cy="342.677" width="216" height="10.8"/>
+			<rect x="0" y="337.277" width="216" height="10.8" class="st5"/>
+			<text x="63.34" y="346.73" class="st7" v:langID="1041"><v:paragraph v:horizAlign="1"/><v:tabList/>Selected event</text>		</g>
+	</g>
+</svg>

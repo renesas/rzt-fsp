@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.0.0</span>
+   &#160;<span id="projectnumber">Release v1.1.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -130,7 +130,7 @@ Functions</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the CGC peripheral on RZ microprocessor. This module implements the <a class="el" href="group___c_g_c___a_p_i.html">CGC Interface</a>. </p>
-<dl class="section note"><dt>Note</dt><dd><b>This module is not required for the initial clock configuration. Initial clock settings are configurable on the **Clocks</b> tab of the FSP Configuration editor. The initial clock settings are applied by the BSP during the startup process before main.**</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This module is not required for the initial clock configuration. Initial clock settings are configurable on the <b>Clocks</b> tab of the FSP Configuration editor. The initial clock settings are applied by the BSP during the startup process before main.</dd></dl>
 <h1><a class="anchor" id="r-cgc-overview"></a>
 Overview</h1>
 <h2><a class="anchor" id="r-cgc-features"></a>
@@ -142,7 +142,7 @@ Features</h2>
 <li>Supports changing the clock supplied to CANFD (PCLKCAN)<a class="anchor" id="um_cgc_canfd_set"></a></li>
 <li>Supports changing the Ethernet PHY reference clock (PLL1 divider clock or Main clock oscillator)<a class="anchor" id="um_cgc_PHY_reference_clock_set_PLL1_main_osc"></a></li>
 <li>Supports changing SCI asynchronous serial clock (PCLKSCIn)<a class="anchor" id="um_cgc_sci_async_clock_set"></a></li>
-<li>Supoorts changing SPI asynchronous serial clock (PCLKSPIn)<a class="anchor" id="um_cgc_spi_async_clock_set"></a></li>
+<li>Supports changing SPI asynchronous serial clock (PCLKSPIn)<a class="anchor" id="um_cgc_spi_async_clock_set"></a></li>
 <li>Supports changing the frequency of the clock provided to CPU core (CPUnCLK)<a class="anchor" id="um_cgc_cpu_clock_set"></a></li>
 <li>Supports changing the base clock frequency for peripheral clocks (ICLK, PCLKH, PCLKM, PCLKL, PCLKADC, PCLKGPTL)<a class="anchor" id="um_cgc_base_clock_frequency_set"></a></li>
 </ul>
@@ -161,12 +161,12 @@ Features</h2>
 <li>CPU0CLK/CPU1CLK: Core clock used for CPU0/1 core</li>
 <li>ICLK: Clock used for DMAC, ICU, CPU AXIM, ENCIF and BSC</li>
 <li>PCLKH/PCLKM/PCLKL/PCLKADC/PCLKGPTL: Peripheral clocks, refer to the table "Specifications of Clock Generation Circuit (Internal Clock)" in the hardware manual to see which peripherals are controlled by which clocks.</li>
-<li>PCLKCAN: Peripheral modue clock for CANFD</li>
+<li>PCLKCAN: Peripheral module clock for CANFD</li>
 <li>BSC_CLK/CKIO: External bus clock</li>
 <li>XSPI_CLKn: xSPIn serial clock</li>
 <li>ETHn_REFCLK: Reference clock to the external Ethernet PHY</li>
 <li>PCLKSPIn: Peripheral module clock for SPIn (Asynchronous serial clock)</li>
-<li>PCLKSCIn: Periperal module clock for SCIn (Asynchronous serial clock)</li>
+<li>PCLKSCIn: Peripheral module clock for SCIn (Asynchronous serial clock)</li>
 </ul>
 <dl class="section warning"><dt>Warning</dt><dd>If CPU0CLK is used at 800MHz or 600MHz, MDW setting must be 1 (ATCM 1-wait state).</dd></dl>
 <h1><a class="anchor" id="r-cgc-configuration"></a>
@@ -907,7 +907,7 @@ Enumerations</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.0.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

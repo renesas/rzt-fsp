@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.0.0</span>
+   &#160;<span id="projectnumber">Release v1.1.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -214,7 +214,6 @@ Enable</li>
 </td><td>module.driver.ether.phylink.DISABLE </td><td>Enable or disable callback by PHYLINK change. </td></tr>
 </table>
 </p>
-<p><a class="anchor" id="um_ether_configuration_for_connection_mode"></a><a class="anchor" id="um_ether_configuration_of_mac_address"></a> </p>
 <h2><a class="anchor" id="r-ether-interrupt-configuration"></a>
 Interrupt Configuration</h2>
 <p>The first <a class="el" href="group___e_t_h_e_r.html#gac8d170941e53c56274bb64c9a6124d3f">R_GMAC_Open</a> function call sets SDB and PMT interrupts. The user could provide callback function which would be invoked when SDB and PMT interrupt handler has been completed. The callback arguments will contain information about a channel number, the GMAC status, the event code, and a pointer to the user defined context.</p>
@@ -622,10 +621,9 @@ Partner pause bits got from PHY. </td></tr>
 <p>The Link up processing, the Link down processing, and the magic packet detection processing are executed. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a125ca4ee69c6c63e1db42708324c0fb3">ether_api_t::linkProcess</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Link is up. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_LINK</td><td>Link is down. </td></tr>
     <tr><td class="paramname">FSP_ERR_ETHER_ERROR_PHY_COMMUNICATION</td><td>When reopening the PHY interface initialization of the PHY-LSI failed. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>When reopening the PHY interface it was already opened. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_CHANNEL</td><td>When reopening the PHY interface an invalid channel was passed. </td></tr>
@@ -672,7 +670,7 @@ Partner pause bits got from PHY. </td></tr>
 <p>Get link status of specificed port. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a3490dbcf5163ad1409fb3899aafccbfe">ether_api_t::getLinkStatus</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Link is up. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Value of the pointer is NULL. </td></tr>
@@ -876,7 +874,7 @@ Partner pause bits got from PHY. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.0.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.0.0</span>
+   &#160;<span id="projectnumber">Release v1.1.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -296,9 +296,39 @@ Pin Configuration</h2>
 <dl class="section note"><dt>Note</dt><dd>It is recommended to configure the pins with IOPORT_CFG_DRIVE_HIGH.</dd></dl>
 <h1><a class="anchor" id="r-xspi-qspi-usage_notes"></a>
 Usage Notes</h1>
-<h2>xSPI_QSPI Memory Mapped Access</h2>
-<p>After <a class="el" href="group___x_s_p_i___q_s_p_i.html#ga6e1ddbaec6b1d04c6425b3a271d9093a">R_XSPI_QSPI_Open()</a> completes successfully, the QSPI flash device contents are mapped to address 0x60000000(External address space xSPIn) or 0x40000000(Mirror area of external address space xSPIn) and can be read like on-chip flash.</p>
-<p>When not using the cache, access the memory via the mirror area.</p>
+<h2><a class="anchor" id="r-xspi-qspi-memory_mapped_access"></a>
+xSPI_QSPI Memory Mapped Access</h2>
+<p>After <a class="el" href="group___x_s_p_i___q_s_p_i.html#ga6e1ddbaec6b1d04c6425b3a271d9093a">R_XSPI_QSPI_Open()</a> completes successfully, the QSPI flash device contents are mapped to address 0x60000000(External address space xSPIn) or 0x40000000(Mirror space of external address space xSPIn) and can be read like on-chip flash.</p>
+<p>When not using the cache, access the memory via the mirror space.</p>
+<p>The address map for the external address space xSPI unit 0 is as follows:</p>
+<table class="doxtable">
+<tr>
+<th>Address </th><th>Space  </th></tr>
+<tr>
+<td>0x40000000 to 0x43FFFFFF </td><td>CS0 mirror space </td></tr>
+<tr>
+<td>0x44000000 to 0x47FFFFFF </td><td>CS1 mirror space </td></tr>
+<tr>
+<td>0x60000000 to 0x63FFFFFF </td><td>CS0 </td></tr>
+<tr>
+<td>0x64000000 to 0x67FFFFFF </td><td>CS1 </td></tr>
+</table>
+<p>The address map for the external address space xSPI unit 1 is as follows:</p>
+<table class="doxtable">
+<tr>
+<th>Address </th><th>Space  </th></tr>
+<tr>
+<td>0x48000000 to 0x4BFFFFFF </td><td>CS0 mirror space </td></tr>
+<tr>
+<td>0x4C000000 to 0x4FFFFFFF </td><td>CS1 mirror space </td></tr>
+<tr>
+<td>0x68000000 to 0x6BFFFFFF </td><td>CS0 </td></tr>
+<tr>
+<td>0x6C000000 to 0x6FFFFFFF </td><td>CS1 </td></tr>
+</table>
+<h2><a class="anchor" id="r-xspi-qspi-limitations"></a>
+Limitations</h2>
+<p>When using the xSPI_QSPI driver, it is necessary to set the MPU with External address space xSPIn (0x60000000 - 0x6FFFFFFF) as the cacheable area and Mirror area of external address space xSPIn (0x40000000 - 0x4FFFFFFF) as the non-cacheable area.</p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -487,9 +517,9 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga8c59ecaa03a56fa5db80924c81ff6fccafd2c195951167330e5b7a90ae262d361"></a>XSPI_QSPI_PREFETCH_FUNCTION_DISABLE&#160;</td><td class="fielddoc"><p>Prefetch funtion disable. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga8c59ecaa03a56fa5db80924c81ff6fccafd2c195951167330e5b7a90ae262d361"></a>XSPI_QSPI_PREFETCH_FUNCTION_DISABLE&#160;</td><td class="fielddoc"><p>Prefetch function disable. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga8c59ecaa03a56fa5db80924c81ff6fcca152b74d0c0cf97d6a36343f724a8d6ee"></a>XSPI_QSPI_PREFETCH_FUNCTION_ENABLE&#160;</td><td class="fielddoc"><p>Prefetch funtion enable. </p>
+<tr><td class="fieldname"><a id="gga8c59ecaa03a56fa5db80924c81ff6fcca152b74d0c0cf97d6a36343f724a8d6ee"></a>XSPI_QSPI_PREFETCH_FUNCTION_ENABLE&#160;</td><td class="fielddoc"><p>Prefetch function enable. </p>
 </td></tr>
 </table>
 
@@ -1001,7 +1031,7 @@ Enumerations</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.0.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

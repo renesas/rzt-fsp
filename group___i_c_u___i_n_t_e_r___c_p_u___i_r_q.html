@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.0.0</span>
+   &#160;<span id="projectnumber">Release v1.1.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -116,7 +116,7 @@ Overview</h1>
 <h2><a class="anchor" id="r-icu-inter-cpu-irq-features"></a>
 Features</h2>
 <p><a class="anchor" id="um_icu_inter_cpu_irq_open_self_int_cpu"></a></p><ul>
-<li>Inter-CPUs interrupt is not supported in FSP version 1.0.0.</li>
+<li>Inter-CPUs interrupt is not supported in FSP version 1.1.0.</li>
 <li>Supports only configuring interrupts for software interrupt to its own CPU.<ul>
 <li>Generating interrupt.</li>
 </ul>
@@ -166,15 +166,24 @@ Pin Configuration</h2>
 Usage Notes</h1>
 <h2>Use case 1) Software interrupt (Single core usage)</h2>
 <p>When using INTCPU0 to generate a software interrupt for CPU0 itself, it needs to set "Software interrupt priority".</p>
-<ul>
-<li>CPU0 project<ul>
-<li>Name: g_icu_inter_cpu_irq0</li>
-<li>Channel: 0</li>
-<li>Software interrupt priority: 12</li>
-<li>Callback: cpu0_ic0_callback</li>
-</ul>
-</li>
-</ul>
+<p>Property setting example</p>
+<table class="doxtable">
+<tr>
+<th>stack </th><th>config </th><th>CPU0  </th></tr>
+<tr>
+<td>0 </td><td>Name </td><td>g_icu_inter_cpu_irq0 </td></tr>
+<tr>
+<td>0 </td><td>Channel </td><td>0 </td></tr>
+<tr>
+<td>0 </td><td>Software interrupt priority </td><td>12 </td></tr>
+<tr>
+<td>0 </td><td>Callback </td><td>cpu0_ic0_callback </td></tr>
+</table>
+<p>Image of single core software interrupt operation</p>
+<div class="image">
+<object type="image/svg+xml" data="r_icu_inter_cpu_irq_Single_core_usage.svg">r_icu_inter_cpu_irq_Single_core_usage.svg</object>
+<div class="caption">
+ICU INTER CPU IRQ Single core usage</div></div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga66367184ba4bd716b174d1c960d77cae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga66367184ba4bd716b174d1c960d77cae">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Open()</h2>
@@ -278,7 +287,7 @@ Usage Notes</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.0.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

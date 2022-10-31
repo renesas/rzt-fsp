@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.0.0</span>
+   &#160;<span id="projectnumber">Release v1.1.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -162,6 +162,10 @@ EtherCAT + EtherCAT + Ethernet MAC</li>
 EtherCAT + EtherCAT + Ethernet Switch</li>
 <li>
 EtherCAT + EtherCAT + EtherCAT</li>
+<li>
+Ethernet Switch + EtherCAT + EtherCAT</li>
+<li>
+Ethernet Switch + EtherCAT + Ethernet Switch</li>
 </ul>
 </td><td>Ethernet Switch + Ethernet Switch + Ethernet Switch </td><td>Select Mode Port 0 + Port 1 + Port 2 </td></tr>
 </table>
@@ -209,7 +213,7 @@ RGMII</li>
 <li>
 10Mbps</li>
 </ul>
-</td><td>1000Mbps </td><td>Specify whether to use 100Mbps or 1000Mbps or 10Mbps. </td></tr>
+</td><td>1000Mbps </td><td>Specify whether to use 100Mbps or 1000Mbps or 10Mbps. (1000Mbps is valid only for RGMII) </td></tr>
 <tr>
 <td>Converter Duplex</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -315,6 +319,7 @@ Pointer to Ethernet Subsystem peripheral registers. </td></tr>
     <tr><td class="paramname">FSP_SUCCESS</td><td>Ethernet port configuration set successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER_SELECTOR control block or configuration structure is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_CHANNEL</td><td>Invalid channel number is given. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Configuration parameter error. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>R_ETHER_SELECTOR_Open has already been called for this p_ctrl. </td></tr>
   </table>
   </dd>
@@ -353,12 +358,13 @@ Pointer to Ethernet Subsystem peripheral registers. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the converter speed and duplex after initilaize. Implements <a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ae6e21f979464b89e5a2d57cd22c304df">ether_selector_api_t::converterSet</a>.</p>
+<p>Set the converter speed and duplex after initilaize. Speed 1000Mbps is valid for only RGMII. Implements <a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ae6e21f979464b89e5a2d57cd22c304df">ether_selector_api_t::converterSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Speed adn duplex seetings successfully changed. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Invalid parameter in the argument. </td></tr>
   </table>
   </dd>
 </dl>
@@ -424,7 +430,7 @@ Pointer to Ethernet Subsystem peripheral registers. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.0.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>
