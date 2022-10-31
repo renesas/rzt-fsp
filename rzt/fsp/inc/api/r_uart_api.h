@@ -56,7 +56,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define UART_API_VERSION_MAJOR    (1U)
-#define UART_API_VERSION_MINOR    (0U)
+#define UART_API_VERSION_MINOR    (1U)
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -240,7 +240,7 @@ typedef struct st_uart_api
     /**
      * Specify callback function and optional context pointer and working memory pointer.
      * @par Implemented as
-     * - R_SCI_Uart_CallbackSet()
+     * - R_SCI_UART_CallbackSet()
      *
      * @param[in]   p_ctrl                   Pointer to the UART control block.
      * @param[in]   p_callback               Callback function

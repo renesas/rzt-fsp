@@ -175,7 +175,6 @@ void R_USB_HstdReturnEnuMGR (uint16_t cls_result)
 }                                      /* End of function R_USB_HstdReturnEnuMGR() */
 
  #endif
- #if 0
 
 /***********************************************************************************************************************
  * Function Name   : R_USB_HstdChangeDeviceState
@@ -185,10 +184,10 @@ void R_USB_HstdReturnEnuMGR (uint16_t cls_result)
  *              : uint16_t member          : Device address/pipe number
  * Return          : usb_er_t                 : USB_OK etc
  ***********************************************************************************************************************/
-usb_er_t R_USB_HstdChangeDeviceState (usb_utr_cb_t complete, uint16_t msginfo, uint16_t member)
+usb_er_t R_USB_HstdChangeDeviceState (usb_utr_t * ptr, usb_cb_t complete, uint16_t msginfo, uint16_t member)
 {
-    st_usb_utr_t * p_blf;
-    usb_er_t       err;
+    usb_utr_t * p_blf;
+    usb_er_t    err;
 
     /* Get mem pool blk */
     err = USB_PGET_BLK(USB_MGR_MPL, &p_blf);
@@ -198,6 +197,8 @@ usb_er_t R_USB_HstdChangeDeviceState (usb_utr_cb_t complete, uint16_t msginfo, u
         p_blf->msginfo  = msginfo;
         p_blf->keyword  = member;
         p_blf->complete = (usb_cb_t) complete;
+        p_blf->ip       = ptr->ip;
+        p_blf->ipp      = ptr->ipp;
 
         /* Send message */
         err = USB_SND_MSG(USB_MGR_MBX, (usb_msg_t *) p_blf);
@@ -218,8 +219,6 @@ usb_er_t R_USB_HstdChangeDeviceState (usb_utr_cb_t complete, uint16_t msginfo, u
 
     return err;
 }                                      /* End of function R_USB_HstdChangeDeviceState() */
-
- #endif /* 0 */
 
 /***********************************************************************************************************************
  * Function Name   : R_USB_HstdSetPipe

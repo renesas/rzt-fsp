@@ -96,6 +96,10 @@ void R_USB_isr (void)
     if (USB00_AHB_INT == (int_state & USB00_AHB_INT))
     {
         USB00->INTSTATUS |= USB00_AHB_INT;
+        while (1)
+        {
+            ;
+        }
     }
     else if ((USB00_USBH_INTA == (int_state & USB00_USBH_INTA)) || (USB00_USBH_INTB == (int_state & USB00_USBH_INTB))) /* EHCI or OHCI interrupt */
     {

@@ -1575,7 +1575,7 @@ void ether_phy_write_esc (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t 
     /* Write PHY register */
     p_Reg_Esc->PHY_ADR       = p_instance_ctrl->p_ether_phy_cfg->phy_lsi_address;
     p_Reg_Esc->PHY_REG_ADR   = (uint8_t) reg_addr;
-    p_Reg_Esc->PHY_DATA      = (uint8_t) data;
+    p_Reg_Esc->PHY_DATA      = (uint16_t) data;
     p_Reg_Esc->MII_CONT_STAT = (2 << 8) | (1 << 0); ///< Write command
 
     /* WAIT_LOOP */

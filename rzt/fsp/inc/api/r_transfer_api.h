@@ -50,7 +50,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define TRANSFER_API_VERSION_MAJOR            (1U)
-#define TRANSFER_API_VERSION_MINOR            (0U)
+#define TRANSFER_API_VERSION_MINOR            (1U)
 
 #define TRANSFER_SETTINGS_MODE_BITS           (30U)
 #define TRANSFER_SETTINGS_SIZE_BITS           (28U)

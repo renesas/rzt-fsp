@@ -103,6 +103,11 @@
 #define XSPI_OSPI_PRV_CCCTL2_CARDCMD_OFFSET                (16U)
 #define XSPI_OSPI_PRV_CCCTL2_CARDCMD_VALUE_MASK            (0xFFFFU)
 
+#define XSPI_OSPI_PRV_COMSTT_MEMACC_OFFSET                 (0U)
+#define XSPI_OSPI_PRV_COMSTT_MEMACC_VALUE_MASK             (0x01U)
+#define XSPI_OSPI_PRV_COMSTT_WRBUFNE_OFFSET                (6U)
+#define XSPI_OSPI_PRV_COMSTT_WRBUFNE_VALUE_MASK            (0x01U)
+
 #define XSPI_OSPI_PRV_INTC_CMDCMPC_OFFSET                  (0U)
 
 #define XSPI_OSPI_PRV_MAX_COMBINE_SIZE                     (64U)
@@ -398,6 +403,8 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     FSP_ERROR_RETURN(false == r_xspi_ospi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit),
                      FSP_ERR_DEVICE_BUSY);
 
+    r_xspi_ospi_write_enable(p_instance_ctrl);
+
     uint32_t i = 0;
 
     /* Word access */
@@ -407,13 +414,6 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
         uint32_t * p_word_aligned_src  = (uint32_t *) p_src;
         for (i = 0; i < byte_count / XSPI_OSPI_PRV_WORD_ACCESS_SIZE; i++)
         {
-            if (i == byte_count / XSPI_OSPI_PRV_WORD_ACCESS_SIZE - 1)
-            {
-                /* Since the write process is done in the final loop,
-                 * need to issue a write enable to memory. */
-                r_xspi_ospi_write_enable(p_instance_ctrl);
-            }
-
             *p_word_aligned_dest = *p_word_aligned_src;
             p_word_aligned_dest++;
             p_word_aligned_src++;
@@ -426,13 +426,6 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
         uint16_t * p_half_word_aligned_src  = (uint16_t *) p_src;
         for (i = 0; i < byte_count / XSPI_OSPI_PRV_HALF_WORD_ACCESS_SIZE; i++)
         {
-            if (i == byte_count / XSPI_OSPI_PRV_HALF_WORD_ACCESS_SIZE - 1)
-            {
-                /* Since the write process is done in the final loop,
-                 * need to issue a write enable to memory. */
-                r_xspi_ospi_write_enable(p_instance_ctrl);
-            }
-
             *p_half_word_aligned_dest = *p_half_word_aligned_src;
             p_half_word_aligned_dest++;
             p_half_word_aligned_src++;
@@ -443,24 +436,16 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     {
         for (i = 0; i < byte_count; i++)
         {
-            if (i == byte_count - 1)
-            {
-                /* Since the write process is done in the final loop,
-                 * need to issue a write enable to memory. */
-                r_xspi_ospi_write_enable(p_instance_ctrl);
-            }
-
             p_dest[i] = p_src[i];
         }
     }
 
+    /* Ensure that all write data is in the xSPI write buffer. */
+    __asm volatile ("dsb");
+
     /* Request to push the pending data */
     if (XSPI_OSPI_PRV_MAX_COMBINE_SIZE > byte_count)
     {
-        /* Since the write process is done in the final loop,
-         * need to issue a write enable to memory. */
-        r_xspi_ospi_write_enable(p_instance_ctrl);
-
         /* Push the pending data. */
         p_instance_ctrl->p_reg->BMCTL1_b.MWRPUSH = 1;
     }
@@ -552,8 +537,23 @@ fsp_err_t R_XSPI_OSPI_StatusGet (spi_flash_ctrl_t * p_ctrl, spi_flash_status_t *
     FSP_ERROR_RETURN(XSPI_OSPI_PRV_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
+    /* If R_XSPI_OSPI_StatusGet is called immediately after R_XSPI_OSPI_Write is called, the result could be WIP = 0.
+     *
+     * This occurs because the Read Status Register instruction command is issued
+     * before the Program command due to the xSPI write buffer operation.
+     * In this case, OSPI has not started the write operation, so WIP = 0.
+     *
+     * This is unintended behavior because R_XSPI_OSPI_StatusGet determines the end of the OSPI write operation.
+     * Therefore, it is necessary to judge as "Write In Progress" when data is in the write buffer. */
+    uint32_t comstt  = p_instance_ctrl->p_reg->COMSTT;
+    bool     memacc  = (bool) ((comstt >> XSPI_OSPI_PRV_COMSTT_MEMACC_OFFSET) & XSPI_OSPI_PRV_COMSTT_MEMACC_VALUE_MASK);
+    bool     wrbufne =
+        (bool) ((comstt >> XSPI_OSPI_PRV_COMSTT_WRBUFNE_OFFSET) & XSPI_OSPI_PRV_COMSTT_WRBUFNE_VALUE_MASK);
+
     /* Read device status. */
-    p_status->write_in_progress = r_xspi_ospi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit);
+    bool write_in_progress = r_xspi_ospi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit);
+
+    p_status->write_in_progress = (bool) (wrbufne | memacc | write_in_progress);
 
     return FSP_SUCCESS;
 }

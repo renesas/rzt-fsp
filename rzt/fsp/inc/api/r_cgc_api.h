@@ -58,7 +58,7 @@ FSP_HEADER
 
 /* Version Number of API. */
 #define CGC_API_VERSION_MAJOR    (1U)
-#define CGC_API_VERSION_MINOR    (0U)
+#define CGC_API_VERSION_MINOR    (1U)
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -151,7 +151,7 @@ typedef enum e_cgc_pll_mul
     CGC_PLL_MUL_UNSUPPORTED = 0xFF,
 } cgc_pll_mul_t;
 
-/** System clock divider vlues - The individually selectable divider of each of the system clocks, ICLK, BCLK, FCLK,
+/** System clock divider values - The individually selectable divider of each of the system clocks, ICLK, BCLK, FCLK,
  * PCLKS A-D.  */
 typedef enum e_cgc_sys_clock_div
 {

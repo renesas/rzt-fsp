@@ -49,7 +49,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define SPI_FLASH_API_VERSION_MAJOR        (1U)
-#define SPI_FLASH_API_VERSION_MINOR        (0U)
+#define SPI_FLASH_API_VERSION_MINOR        (1U)
 
 #define SPI_FLASH_ERASE_SIZE_CHIP_ERASE    (UINT32_MAX)
 
@@ -202,7 +202,8 @@ typedef struct st_spi_flash_cfg
 
 /** SPI flash control block.  Allocate an instance specific control block to pass into the SPI flash API calls.
  * @par Implemented as
- * - qspi_instance_ctrl_t
+ * - xspi_ospi_instance_ctrl_t
+ * - xspi_qspi_instance_ctrl_t
  */
 typedef void spi_flash_ctrl_t;
 

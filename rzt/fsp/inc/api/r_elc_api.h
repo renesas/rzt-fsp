@@ -45,7 +45,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define ELC_API_VERSION_MAJOR    (1U)
-#define ELC_API_VERSION_MINOR    (0U)
+#define ELC_API_VERSION_MINOR    (1U)
 
 #define ELC_PERIPHERAL_NUM       (55U)
 

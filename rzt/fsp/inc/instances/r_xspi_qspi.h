@@ -41,7 +41,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define XSPI_QSPI_CODE_VERSION_MAJOR    (1U)
-#define XSPI_QSPI_CODE_VERSION_MINOR    (0U)
+#define XSPI_QSPI_CODE_VERSION_MINOR    (1U)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -112,8 +112,8 @@ typedef struct st_qspi_timing_setting
 /* Prefetch function settings */
 typedef enum e_xspi_qspi_prefetch_function
 {
-    XSPI_QSPI_PREFETCH_FUNCTION_DISABLE = 0x00, ///< Prefetch funtion disable
-    XSPI_QSPI_PREFETCH_FUNCTION_ENABLE  = 0x01, ///< Prefetch funtion enable
+    XSPI_QSPI_PREFETCH_FUNCTION_DISABLE = 0x00, ///< Prefetch function disable
+    XSPI_QSPI_PREFETCH_FUNCTION_ENABLE  = 0x01, ///< Prefetch function enable
 } xspi_qspi_prefetch_function_t;
 
 /* Extended configuration. */
@@ -123,7 +123,7 @@ typedef struct st_xspi_qspi_extended_cfg
     xspi_qspi_chip_select_t            chip_select;       ///< Device number to be used for memory device
     xspi_qspi_memory_size_t            memory_size;       ///< Size of memory device
     xspi_qspi_timing_setting_t const * p_timing_settings; ///< Memory mapped timing settings
-    xspi_qspi_prefetch_function_t      prefetch_en;       ///< Prefetch funtion settings
+    xspi_qspi_prefetch_function_t      prefetch_en;       ///< Prefetch function settings
 } xspi_qspi_extended_cfg_t;
 
 /** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref spi_flash_api_t::open is called */

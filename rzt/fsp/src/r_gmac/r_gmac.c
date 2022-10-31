@@ -202,42 +202,7 @@
 /* GMAC_NO_DATA is the return value that indicates that no received data. */
 #define GMAC_NO_DATA                                   (0)
 
-/* Define DATA1 of Management-Tag */
-#define GMAC_RX_MGTAG_DATA1_PORT_MASK                  0x0F
-#define GMAC_RX_MGTAG_DATA1_PORT_SHIFT                 0
-#define GMAC_RX_MGTAG_DATA1_TIME_MASK                  0x30
-#define GMAC_RX_MGTAG_DATA1_TIME_SHIFT                 4
-#define GMAC_RX_MGTAG_DATA1_RED                        (1 << 6)
-
-/* Define management tag for transmit */
-#define GMAC_TX_MGTAG_DATA1_FORWARD_FORCE              (1UL << 0)
-#define GMAC_TX_MGTAG_DATA1_TIMESTAMP                  (1UL << 3)
-#define GMAC_TX_MGTAG_DATA1_ONE_STEP                   (1UL << 4)
-#define GMAC_TX_MGTAG_DATA1_PRP_SUPPRESS               (1UL << 5)
-#define GMAC_TX_MGTAG_DATA1_PRP_FORCE                  (1UL << 6)
-#define GMAC_TX_MGTAG_DATA1_PRP_SEQUENCE               (1UL << 7)
-#define GMAC_TX_MGTAG_DATA1_QUE_NUM                    (1UL << 9)
-#define GMAC_TX_MGTAG_DATA1_TIM_NUM                    (1UL << 13)
-
-#define GMAC_TX_MGTAG_DATA1_QUE_NUM_SHIFT              (10U)
-#define GMAC_TX_MGTAG_DATA1_QUE_NUM_MASK               (0x7 << GMAC_TX_MGTAG_DATA1_QUE_NUM_SHIFT)
-#define GMAC_TX_MGTAG_DATA1_TIM_NUM_SHIFT              (14U)
-#define GMAC_TX_MGTAG_DATA1_TIM_NUM_MASK               (0x1 << GMAC_TX_MGTAG_DATA1_TIM_NUM_SHIFT)
-
-#define GMAC_TX_MGTAG_DATA2_PORT_SHIFT                 0
-#define GMAC_TX_MGTAG_DATA2_PORT_MASK                  (0x7 << GMAC_TX_MGTAG_DATA2_PORT_SHIFT)
-
-#ifdef WS2                             /* FPGA Ver2 */
- #define GMAC_TX_MGTAG_DATA2_TSID_SHIFT                (9U)
- #define GMAC_TX_MGTAG_DATA2_TSID_MASK                 (0x7F << GMAC_TX_MGTAG_DATA2_TSID_SHIFT)
-#else /* !WS2 */ /* FPGA Ver1 */
- #define GMAC_TX_MGTAG_DATA2_TSID_SHIFT                (12U)
- #define GMAC_TX_MGTAG_DATA2_TSID_MASK                 (0xF << GMAC_TX_MGTAG_DATA2_TSID_SHIFT)
-#endif                                                                     /* !WS2 */ /* FPGA Ver1 */
-
 #define GMAC_8BIT_MASK                                 (0xff)
-
-#define GMAC_MGTAG_ID                                  ((uint16_t) 0xE001) /* Management-tag ID */
 
 /* Define for TCM */
 #define TCM_CPU_ADR_END                                (0x0FFFFFFF)
@@ -660,10 +625,9 @@ fsp_err_t R_GMAC_RxBufferUpdate (ether_ctrl_t * const p_ctrl, void * const p_buf
  * The Link up processing, the Link down processing, and the magic packet detection processing are executed.
  * Implements @ref ether_api_t::linkProcess.
  *
- * @retval  FSP_SUCCESS                             Link is up.
+ * @retval  FSP_SUCCESS                             Processing completed successfully.
  * @retval  FSP_ERR_ASSERTION                       Pointer to ETHER control block is NULL.
  * @retval  FSP_ERR_NOT_OPEN                        The control block has not been opened.
- * @retval  FSP_ERR_ETHER_ERROR_LINK                Link is down.
  * @retval  FSP_ERR_ETHER_ERROR_PHY_COMMUNICATION   When reopening the PHY interface initialization of the PHY-LSI failed.
  * @retval  FSP_ERR_ALREADY_OPEN                    When reopening the PHY interface it was already opened.
  * @retval  FSP_ERR_INVALID_CHANNEL                 When reopening the PHY interface an invalid channel was passed.
@@ -725,7 +689,7 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
         if (NULL != pp_phy_instance[i])
         {
             /* Open Ether-Phy */
-            err = gmac_link_process(p_instance_ctrl, i);
+            (void) gmac_link_process(p_instance_ctrl, i);
         }
     }
 
@@ -773,7 +737,7 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
  * Get link status of specificed port.
  * Implements @ref ether_api_t::getLinkStatus.
  *
- * @retval  FSP_SUCCESS                                 Link is up.
+ * @retval  FSP_SUCCESS                                 Processing completed successfully.
  * @retval  FSP_ERR_ASSERTION                           Pointer to ETHER control block is NULL.
  * @retval  FSP_ERR_NOT_OPEN                            The control block has not been opened.
  * @retval  FSP_ERR_INVALID_POINTER                     Value of the pointer is NULL.

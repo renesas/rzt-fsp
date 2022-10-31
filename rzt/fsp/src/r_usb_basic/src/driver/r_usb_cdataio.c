@@ -63,6 +63,7 @@
 /******************************************************************************
  * Macro definitions
  ******************************************************************************/
+#define USB_VAL_1024    1024U
 
 /******************************************************************************
  * Private global variables and functions
@@ -222,6 +223,11 @@ uint8_t g_usb_pcdc_serialstate_table[USB_PCDC_SETUP_TBL_BSIZE] =
 
 usb_pipe_table_t g_usb_pipe_table[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1];
 uint16_t         g_usb_cstd_bemp_skip[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
+
+#if USB_IP_EHCI_OHCI == 1
+uint8_t  g_data_read_buf[USB_NUM_USBIP][USB_VAL_1024]  USB_BUFFER_PLACE_IN_SECTION;
+uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR + 1];
+#endif
 
 /******************************************************************************
  * Renesas Abstracted common data I/O functions
@@ -469,19 +475,22 @@ usb_er_t usb_data_read (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t si
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
  #if (BSP_CFG_RTOS == 2)
         p_tran_data = &tran_data;
- #else                                                             /* #if (BSP_CFG_RTOS == 2) */
+ #else                                                                   /* #if (BSP_CFG_RTOS == 2) */
         p_tran_data = &g_usb_hdata[p_ctrl->module_number][pipe];
  #endif /* #if (BSP_CFG_RTOS == 2) */
 
-        p_tran_data->read_req_len = size;                          /* Save Read Request Length */
+        p_tran_data->read_req_len = size;                                /* Save Read Request Length */
 
-        p_tran_data->keyword   = pipe;                             /* Pipe No */
-        p_tran_data->p_tranadr = buf;                              /* Data address */
-        p_tran_data->tranlen   = size;                             /* Data Size */
-        p_tran_data->complete  = g_usb_callback[p_ctrl->type * 2]; /* Callback function */
+        p_tran_data->keyword   = pipe;                                   /* Pipe No */
+        p_tran_data->p_tranadr = g_data_read_buf[p_ctrl->module_number]; /* Data address */
+        p_tran_data->tranlen   = size;                                   /* Data Size */
+        p_tran_data->complete  = g_usb_callback[p_ctrl->type * 2];       /* Callback function */
         p_tran_data->segment   = USB_TRAN_END;
         p_tran_data->ip        = p_ctrl->module_number;
         p_tran_data->ipp       = usb_hstd_get_usb_ip_adr(p_ctrl->module_number);
+
+        g_data_buf_addr[p_tran_data->ip][p_ctrl->device_address] = (uint32_t) buf;
+
  #if (USB_CFG_DMA == USB_CFG_ENABLE)
         if (0 != p_ctrl->p_transfer_tx)
         {
@@ -578,14 +587,16 @@ usb_er_t usb_data_write (usb_instance_ctrl_t * p_ctrl, uint8_t const * const buf
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
  #if (BSP_CFG_RTOS == 2)
         p_tran_data = &tran_data;
- #else                                                                   /* #if (BSP_CFG_RTOS == 2) */
+ #else                                 /* #if (BSP_CFG_RTOS == 2) */
         p_tran_data = &g_usb_hdata[p_ctrl->module_number][pipe];
  #endif /* #if (BSP_CFG_RTOS == 2) */
 
-        p_tran_data->keyword   = pipe;                                   /* Pipe No */
-        p_tran_data->p_tranadr = buf;                                    /* Data address */
-        p_tran_data->tranlen   = size;                                   /* Data Size */
-        p_tran_data->complete  = g_usb_callback[(p_ctrl->type * 2) + 1]; /* Callback function */
+        memcpy(g_temp_data_buf[p_tran_data->ip][p_ctrl->device_address], buf, size);
+
+        p_tran_data->keyword   = pipe;                                                      /* Pipe No */
+        p_tran_data->p_tranadr = &g_temp_data_buf[p_tran_data->ip][p_ctrl->device_address]; /* Data address */
+        p_tran_data->tranlen   = size;                                                      /* Data Size */
+        p_tran_data->complete  = g_usb_callback[(p_ctrl->type * 2) + 1];                    /* Callback function */
         p_tran_data->segment   = USB_TRAN_END;
         p_tran_data->ip        = p_ctrl->module_number;
         p_tran_data->ipp       = usb_hstd_get_usb_ip_adr(p_ctrl->module_number);

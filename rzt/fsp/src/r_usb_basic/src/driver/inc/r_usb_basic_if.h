@@ -132,10 +132,7 @@ usb_er_t R_USB_HstdTransferEnd(uint16_t pipe_id);
 usb_er_t R_USB_HstdDriverRegistration(st_usb_hcdreg_t * callback);
 void     R_USB_HstdReturnEnuMGR(uint16_t cls_result);
 
-#if 0
-usb_er_t R_USB_HstdChangeDeviceState(usb_utr_cb_t complete, uint16_t msginfo, uint16_t member);
-
-#endif
+usb_er_t R_USB_HstdChangeDeviceState(usb_utr_t * ptr, usb_cb_t complete, uint16_t msginfo, uint16_t member);
 
 usb_er_t R_USB_HstdClearPipe(uint16_t devaddr);
 void     R_USB_HstdMgrTask(void);

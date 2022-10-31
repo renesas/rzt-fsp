@@ -51,7 +51,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define I2C_SLAVE_API_VERSION_MAJOR    (1U)
-#define I2C_SLAVE_API_VERSION_MINOR    (0U)
+#define I2C_SLAVE_API_VERSION_MINOR    (1U)
 
 /**********************************************************************************************************************
  * Typedef definitions

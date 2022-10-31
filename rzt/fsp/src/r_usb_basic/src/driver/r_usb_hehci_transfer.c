@@ -46,14 +46,15 @@
 /***********************************************************************************************************************
  * External variables and functions
  ***********************************************************************************************************************/
-#ifdef USB_HOST_COMPLIANCE_MODE
-extern uint8_t g_usb_hstd_test_packet_parameter_flag;
-#endif                                 /* USB_HOST_COMPLIANCE_MODE */
 
 /***********************************************************************************************************************
  * Private global variables and functions
  ***********************************************************************************************************************/
 #if  USB_IP_EHCI_OHCI == 1
+
+ #ifdef USB_HOST_COMPLIANCE_MODE
+extern uint8_t g_usb_hstd_test_packet_parameter_flag;
+ #endif                                /* USB_HOST_COMPLIANCE_MODE */
 
 /***********************************************************************************************************************
  * Static variables and functions
@@ -381,6 +382,7 @@ void usb_hstd_ehci_transfer_end_qh (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr_
     /* =============== */
     /*  Callback Func  */
     /* =============== */
+    ptr->keyword = p_tr_req->bit.devadrs;
     g_usb_hstd_hci_callback.tr_end_cb(ptr, p_tr_req->utr_p, p_tr_req->actual_size, status);
 }                                      /* End of function usb_hstd_ehci_transfer_end_qh() */
 
@@ -716,12 +718,21 @@ static void usb_hstd_ehci_make_cntrol_bulk_interrupt_request (st_usb_hci_tr_req_
  #ifdef USB_HOST_COMPLIANCE_MODE
     if (g_usb_hstd_test_packet_parameter_flag)
     {
+  #if 0
         p_qtd_head_tmp = (st_usb_ehci_qtd_t *) r_usb_pa_to_va((uint32_t) (p_qh->qtd_head));
         p_qtd_head_tmp->transfer_info.bit.status_active = 0;
         p_qtd_head_tmp->next_qtd.pointer->transfer_info.bit.status_active = 0;
 
         p_qtd_end_tmp = (st_usb_ehci_qtd_t *) r_usb_pa_to_va((uint32_t) (p_qh->qtd_end));
         p_qtd_end_tmp->transfer_info.bit.status_active = 0;
+  #else
+        p_qtd_head_tmp = (st_usb_ehci_qtd_t *) p_qh->qtd_head;
+        p_qtd_head_tmp->transfer_info.bit.status_active = 0;
+        p_qtd_head_tmp->next_qtd.pointer->transfer_info.bit.status_active = 0;
+
+        p_qtd_end_tmp = (st_usb_ehci_qtd_t *) p_qh->qtd_end;
+        p_qtd_end_tmp->transfer_info.bit.status_active = 0;
+  #endif
     }
  #endif                                     /* USB_HOST_COMPLIANCE_MODE */
 
@@ -775,8 +786,13 @@ static void usb_hstd_ehci_make_cntrol_bulk_interrupt_request (st_usb_hci_tr_req_
  #ifdef USB_HOST_COMPLIANCE_MODE
     if (g_usb_hstd_test_packet_parameter_flag)
     {
+  #if 0
         p_qtd_head_tmp = (st_usb_ehci_qtd_t *) r_usb_pa_to_va((uint32_t) (p_qh->qtd_head));
         p_qtd_end_tmp  = (st_usb_ehci_qtd_t *) r_usb_pa_to_va((uint32_t) (p_qh->qtd_end));
+  #else
+        p_qtd_head_tmp = (st_usb_ehci_qtd_t *) p_qh->qtd_head;
+        p_qtd_end_tmp  = (st_usb_ehci_qtd_t *) p_qh->qtd_end;
+  #endif
 
         p_qtd_head_tmp->transfer_info.bit.status_active = 1;                   /* Setup stage */
         r_usb_hstd_hci_wait_time(15000);

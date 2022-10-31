@@ -157,7 +157,8 @@ usb_utr_t * g_p_usb_hstd_pipe[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
 
 /* Hi-speed enable */
 uint16_t         g_usb_hstd_hs_enable[USB_NUM_USBIP];
-usb_ctrl_trans_t g_usb_ctrl_request[USB_NUM_USBIP][USB_MAXDEVADDR + 1];
+usb_ctrl_trans_t g_usb_ctrl_request[USB_NUM_USBIP][USB_MAXDEVADDR + 1] USB_BUFFER_PLACE_IN_SECTION;
+uint8_t          g_temp_data_buf[USB_NUM_USBIP][USB_MAXDEVADDR + 1][USB_VAL_1024] USB_BUFFER_PLACE_IN_SECTION;
 
  #if BSP_CFG_RTOS == 0
 uint16_t g_usb_hstd_pipe_request[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
@@ -1041,7 +1042,11 @@ usb_er_t usb_hstd_clr_feature (usb_utr_t * ptr, uint16_t addr, uint16_t epnum, u
     usb_shstd_clr_stall_ctrl[ptr->ip].ip  = ptr->ip;
     usb_shstd_clr_stall_ctrl[ptr->ip].ipp = ptr->ipp;
 
+ #if USB_IP_EHCI_OHCI == 0
     ret_code = usb_hstd_transfer_start_req(&usb_shstd_clr_stall_ctrl[ptr->ip]);
+ #else
+    ret_code = usb_hstd_transfer_start(&usb_shstd_clr_stall_ctrl[ptr->ip]);
+ #endif
 
  #if (BSP_CFG_RTOS == 2)
     if (USB_QOVR == ret_code)
@@ -1076,6 +1081,7 @@ usb_er_t usb_hstd_clr_feature (usb_utr_t * ptr, uint16_t addr, uint16_t epnum, u
  *               : usb_cb_t complete    : Callback function
  * Return value    : uint16_t             : Error info.
  ******************************************************************************/
+ #if USB_IP_EHCI_OHCI == 0
 usb_er_t usb_hstd_clr_stall (usb_utr_t * ptr, uint16_t pipe, usb_cb_t complete)
 {
     usb_er_t err;
@@ -1091,15 +1097,33 @@ usb_er_t usb_hstd_clr_stall (usb_utr_t * ptr, uint16_t pipe, usb_cb_t complete)
     devsel = usb_hstd_get_device_address(ptr, pipe);
 
     err = usb_hstd_clr_feature(ptr, (uint16_t) (devsel >> USB_DEVADDRBIT), (uint16_t) dir_ep, complete);
- #if (BSP_CFG_RTOS == 2)
+  #if (BSP_CFG_RTOS == 2)
     if (USB_OK == err)
     {
         usb_cstd_clr_stall(ptr, usb_shstd_clr_stall_pipe[ptr->ip]);
         hw_usb_set_sqclr(ptr, usb_shstd_clr_stall_pipe[ptr->ip]); /* SQCLR */
     }
- #endif /* #if (BSP_CFG_RTOS == 2) */
+  #endif /* #if (BSP_CFG_RTOS == 2) */
     return err;
 }/* End of function usb_hstd_clr_stall() */
+
+ #else
+usb_er_t usb_hstd_clr_stall (usb_utr_t * ptr, uint16_t pipe, usb_cb_t complete)
+{
+    usb_er_t err;
+    uint16_t epnum;
+    uint16_t dev_addr;
+
+    epnum    = usb_hstd_get_epnum(pipe);
+    epnum   |= usb_hstd_get_pipe_dir(pipe);
+    dev_addr = usb_hstd_get_dev_addr(pipe);
+
+    err = usb_hstd_clr_feature(ptr, dev_addr, epnum, complete);
+
+    return err;
+}                                      /* End of function usbh1_hstd_clear_stall() */
+
+ #endif
 
 /******************************************************************************
  * End of function usb_hstd_clr_stall

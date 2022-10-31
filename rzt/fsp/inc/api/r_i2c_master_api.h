@@ -52,7 +52,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define I2C_MASTER_API_VERSION_MAJOR    (1U)
-#define I2C_MASTER_API_VERSION_MINOR    (0U)
+#define I2C_MASTER_API_VERSION_MINOR    (1U)
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -136,7 +136,7 @@ typedef struct st_i2c_master_api
      * @par Implemented as
      * - @ref R_IIC_MASTER_Read()
      *
-     * @param[in] p_ctrl    Pointer to control block set in i2c_api_master_t::open call.
+     * @param[in] p_ctrl    Pointer to control block set in i2c_master_api_t::open call.
      * @param[in] p_dest    Pointer to the location to store read data.
      * @param[in] bytes     Number of bytes to read.
      * @param[in] restart   Specify if the restart condition should be issued after reading.
@@ -148,7 +148,7 @@ typedef struct st_i2c_master_api
      * @par Implemented as
      * - @ref R_IIC_MASTER_Write()
      *
-     * @param[in] p_ctrl    Pointer to control block set in i2c_api_master_t::open call.
+     * @param[in] p_ctrl    Pointer to control block set in i2c_master_api_t::open call.
      * @param[in] p_src     Pointer to the location to get write data from.
      * @param[in] bytes     Number of bytes to write.
      * @param[in] restart   Specify if the restart condition should be issued after writing.
@@ -160,7 +160,7 @@ typedef struct st_i2c_master_api
      * @par Implemented as
      * - @ref R_IIC_MASTER_Abort()
      *
-     * @param[in] p_ctrl    Pointer to control block set in i2c_api_master_t::open call.
+     * @param[in] p_ctrl    Pointer to control block set in i2c_master_api_t::open call.
      */
     fsp_err_t (* abort)(i2c_master_ctrl_t * const p_ctrl);
 
@@ -168,7 +168,7 @@ typedef struct st_i2c_master_api
      * @par Implemented as
      * - @ref R_IIC_MASTER_SlaveAddressSet()
      *
-     * @param[in] p_ctrl            Pointer to control block set in i2c_api_master_t::open call.
+     * @param[in] p_ctrl            Pointer to control block set in i2c_master_api_t::open call.
      * @param[in] slave_address     Address of the slave device.
      * @param[in] address_mode      Addressing mode.
      */
@@ -193,7 +193,7 @@ typedef struct st_i2c_master_api
      * @par Implemented as
      * - @ref R_IIC_MASTER_Close()
      *
-     * @param[in] p_ctrl    Pointer to control block set in i2c_api_master_t::open call.
+     * @param[in] p_ctrl    Pointer to control block set in i2c_master_api_t::open call.
      */
     fsp_err_t (* close)(i2c_master_ctrl_t * const p_ctrl);
 

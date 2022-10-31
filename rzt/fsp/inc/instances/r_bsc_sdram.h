@@ -19,38 +19,92 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @addtogroup ELC
+ * @addtogroup BSC_SDRAM
  * @{
  **********************************************************************************************************************/
-
-#ifndef R_ELC_H
-#define R_ELC_H
+#ifndef R_BSC_SDRAM_H
+#define R_BSC_SDRAM_H
 
 /***********************************************************************************************************************
  * Includes
  **********************************************************************************************************************/
 #include "bsp_api.h"
-#include "r_elc_cfg.h"
-#include "r_elc_api.h"
+#include "r_bsc_sdram_cfg.h"
+#include "r_sdram_api.h"
 
 /* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
 
 /***********************************************************************************************************************
- * Macro definitions
- **********************************************************************************************************************/
-#define ELC_CODE_VERSION_MAJOR    (1U)
-#define ELC_CODE_VERSION_MINOR    (1U)
-
-/***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
 
-/** ELC private control block. DO NOT MODIFY. Initialization occurs when R_ELC_Open() is called. */
-typedef struct st_elc_instance_ctrl
+/** Callback function parameter data. */
+typedef struct st_bsc_sdram_callback_args_t
 {
-    uint32_t open;
-} elc_instance_ctrl_t;
+    void const * p_context;            ///< Placeholder for user data.
+} bsc_sdram_callback_args_t;
+
+/** Number of insertion idle cycle between access cycles */
+typedef enum e_bsc_sdram_idle_cycle
+{
+    BSC_SDRAM_IDLE_CYCLE_0 = 0x0,      ///< No idle cycle insertion
+    BSC_SDRAM_IDLE_CYCLE_1,            ///< 1 idle cycle insertion
+    BSC_SDRAM_IDLE_CYCLE_2,            ///< 2 idle cycle insertion
+    BSC_SDRAM_IDLE_CYCLE_4,            ///< 4 idle cycle insertion
+    BSC_SDRAM_IDLE_CYCLE_6,            ///< 6 idle cycle insertion
+    BSC_SDRAM_IDLE_CYCLE_8,            ///< 8 idle cycle insertion
+    BSC_SDRAM_IDLE_CYCLE_10,           ///< 10 idle cycle insertion
+    BSC_SDRAM_IDLE_CYCLE_12,           ///< 12 idle cycle insertion
+} bsc_sdram_idle_cycle_t;
+
+/** Specify SDRAM command */
+typedef enum e_bsc_sdram_command
+{
+    BSC_SDRAM_COMMAND_AUTO_PRECHARGE_MODE = 0x00,
+    BSC_SDRAM_COMMAND_BANK_ACTIVE_MODE,
+} bsc_sdram_command_t;
+
+/** Extended configuration. */
+typedef struct st_bsc_sdram_extended_cfg
+{
+    /** Idle cycle between Read-Read cycles in the same CS space */
+    bsc_sdram_idle_cycle_t r_r_same_space_idle_cycle;
+
+    /** Idle cycle between Read-Read cycles in the different CS space */
+    bsc_sdram_idle_cycle_t r_r_different_space_idle_cycle;
+
+    /** Idle cycle between Read-Write cycles in the same CS space */
+    bsc_sdram_idle_cycle_t r_w_same_space_idle_cycle;
+
+    /** Idle cycle between Read-Write cycles in the different CS space */
+    bsc_sdram_idle_cycle_t r_w_different_space_idle_cycle;
+
+    /** Idle cycle between Write-Read cycles and Write-Write cycles */
+    bsc_sdram_idle_cycle_t w_r_w_w_idle_cycle;
+
+    /** Auto-precharge mode (using READA/WRITA commands) or Bank active mode (using READ/WRIT commands) */
+    bsc_sdram_command_t command_mode;
+
+    uint8_t   cmi_ipl;                 ///< SDRAM refresh compare match interrupt
+    IRQn_Type cmi_irq;                 ///< SDRAM refresh compare match interrupt priority
+
+    /** Callback for SDRAM refresh compare match. */
+    void (* p_callback)(bsc_sdram_callback_args_t * p_args);
+
+    /** Placeholder for user data.  Passed to the user callback in @ref bsc_sdram_callback_args_t. */
+    void const * p_context;
+} bsc_sdram_extended_cfg_t;
+
+/** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref sdram_api_t::open is called */
+typedef struct st_bsc_sdram_instance_ctrl
+{
+    uint32_t            open;                         // Whether or not driver is open
+    sdram_cfg_t const * p_cfg;                        // Pointer to initial configuration
+
+    void (* p_callback)(bsc_sdram_callback_args_t *); // Pointer to callback that is called when a timer_event_t occurs.
+    void const * p_context;                           // Pointer to context to be passed into callback function
+} bsc_sdram_instance_ctrl_t;
 
 /**********************************************************************************************************************
  * Exported global variables
@@ -58,28 +112,22 @@ typedef struct st_elc_instance_ctrl
 
 /** @cond INC_HEADER_DEFS_SEC */
 /** Filled in Interface API structure for this Instance. */
-extern const elc_api_t g_elc_on_elc;
+extern const sdram_api_t g_sdram_on_bsc_sdram;
 
 /** @endcond */
 
-/**********************************************************************************************************************
- * Public APIs
- **********************************************************************************************************************/
-
-fsp_err_t R_ELC_Open(elc_ctrl_t * const p_ctrl, elc_cfg_t const * const p_cfg);
-fsp_err_t R_ELC_Close(elc_ctrl_t * const p_ctrl);
-fsp_err_t R_ELC_SoftwareEventGenerate(elc_ctrl_t * const p_ctrl, elc_software_event_t event_number);
-fsp_err_t R_ELC_LinkSet(elc_ctrl_t * const p_ctrl, elc_peripheral_t peripheral, elc_event_t signal);
-fsp_err_t R_ELC_LinkBreak(elc_ctrl_t * const p_ctrl, elc_peripheral_t peripheral);
-fsp_err_t R_ELC_Enable(elc_ctrl_t * const p_ctrl);
-fsp_err_t R_ELC_Disable(elc_ctrl_t * const p_ctrl);
-fsp_err_t R_ELC_VersionGet(fsp_version_t * const p_version);
+fsp_err_t R_BSC_SDRAM_Open(sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_cfg);
+fsp_err_t R_BSC_SDRAM_SelfRefreshEnter(sdram_ctrl_t * p_ctrl);
+fsp_err_t R_BSC_SDRAM_SelfRefreshExit(sdram_ctrl_t * p_ctrl);
+fsp_err_t R_BSC_SDRAM_PowerDownEnter(sdram_ctrl_t * p_ctrl);
+fsp_err_t R_BSC_SDRAM_PowerDownExit(sdram_ctrl_t * p_ctrl);
+fsp_err_t R_BSC_SDRAM_Close(sdram_ctrl_t * p_ctrl);
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER
 
-#endif                                 // R_ELC_H
+#endif
 
 /*******************************************************************************************************************//**
- * @} (end defgroup ELC)
+ * @} (end defgroup BSC_SDRAM)
  **********************************************************************************************************************/

@@ -167,29 +167,18 @@ usb_er_t usb_hstd_rel_blk(uint8_t id, st_usb_utr_t * p_blk);
 void     usb_hstd_sche_init(void);
 
 /* r_usb_hDriver.c */
-uint16_t usb_hstd_get_epnum(uint16_t pipe_id);
 uint8_t  usb_hstd_convert_epnum(uint8_t pipe_id);
-uint16_t usb_hstd_get_dev_addr(uint16_t pipe_id);
-uint16_t usb_hstd_get_pipe_dir(uint16_t pipe_id);
 uint16_t usb_hstd_get_pipe_type(uint16_t pipe_id);
-
 void     usb_hstd_set_rootport(uint16_t devaddr, uint16_t rootport);
 uint16_t usb_hstd_get_rootport(uint16_t devaddr);
-
-void            usb_hstd_a_or_detach_cb(usb_utr_t * p_utr);
-void            usb_hstd_port_reset_cb(usb_utr_t * p_utr);
-void            usb_hstd_over_current_cb(void * p_utr);
-void            usb_hstd_transfer_end_cb(usb_utr_t * ptr, void * p_utr, uint32_t actual_size, uint16_t status);
-extern uint16_t usb_hstd_get_max_packet_size(uint16_t pipe_id);
+void     usb_hstd_a_or_detach_cb(usb_utr_t * p_utr);
+void     usb_hstd_port_reset_cb(usb_utr_t * p_utr);
+void     usb_hstd_over_current_cb(void * p_utr);
+void     usb_hstd_transfer_end_cb(usb_utr_t * ptr, void * p_utr, uint32_t actual_size, uint16_t status);
 
 /* r_usb_hManager.c */
 
 uint16_t usb_hstd_clear_feature(uint16_t addr, uint16_t epnum, usb_utr_cb_t complete);
 usb_er_t usb_hstd_clear_stall(uint16_t pipe, usb_utr_cb_t complete);
-
-#ifdef USB_HOST_COMPLIANCE_MODE
-void g_usb_hstd_test_packet_parameter_flag(uint16_t product_id, uint16_t port);
-
-#endif                                 /* USB_HOST_COMPLIANCE_MODE */
 
 #endif                                 /* USB_BASIC_LOCAL_H */

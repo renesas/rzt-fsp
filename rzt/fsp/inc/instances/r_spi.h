@@ -39,7 +39,7 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 #define SPI_CODE_VERSION_MAJOR    (1U)
-#define SPI_CODE_VERSION_MINOR    (0U)
+#define SPI_CODE_VERSION_MINOR    (1U)
 
 /*************************************************************************************************
  * Type defines for the SPI interface API
@@ -142,13 +142,13 @@ typedef struct st_spi_extended_cfg
     spi_synchronizer_t           sync_bypass;        ///< Clock synchronizer selection
     uint8_t transmit_fifo_threshold;                 ///< Transmit FIFO threshold (0~3)
     uint8_t receive_fifo_threshold;                  ///< Receive FIFO threshold (0~3)
-    uint8_t receive_data_ready_detect_adjustment;    ///< Receive data ready detect timing(0~255PCLKLSPIn)
+    uint8_t receive_data_ready_detect_adjustment;    ///< Receive data ready detect timing(0~255PCLKSPIn)
 } spi_extended_cfg_t;
 
 /** Channel control block. DO NOT INITIALIZE.  Initialization occurs when @ref spi_api_t::open is called. */
 typedef struct st_spi_instance_ctrl
 {
-    uint32_t          open;            ///< Indicates whether the open() API has been successfully called.
+    uint32_t          open;            ///< Indicates whether the open API has been successfully called.
     spi_cfg_t const * p_cfg;           ///< Pointer to instance configuration
     R_SPI0_Type     * p_regs;          ///< Base register for this channel
     void const      * p_tx_data;       ///< Buffer to transmit

@@ -39,7 +39,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define DMAC_CODE_VERSION_MAJOR            (1U)
-#define DMAC_CODE_VERSION_MINOR            (0U)
+#define DMAC_CODE_VERSION_MINOR            (1U)
 
 /** Max configurable number of transfers in TRANSFER_MODE_NORMAL. */
 #define DMAC_MAX_NORMAL_TRANSFER_LENGTH    (0xFFFFFFFF)
@@ -61,7 +61,7 @@ typedef enum e_dmac_event
 typedef struct st_dmac_callback_args_t
 {
     dmac_event_t event;                ///< Event code
-    void const * p_context;            ///< Placeholder for user data.  Set in r_transfer_t::open function in ::transfer_cfg_t.
+    void const * p_context;            ///< Placeholder for user data.  Set in transfer_api_t::open function in ::transfer_cfg_t.
 } dmac_callback_args_t;
 
 /** Transfer size specifies the size of each individual transfer. */

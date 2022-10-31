@@ -56,7 +56,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define ETHER_SELECTOR_API_VERSION_MAJOR    (1U)
-#define ETHER_SELECTOR_API_VERSION_MINOR    (0U)
+#define ETHER_SELECTOR_API_VERSION_MINOR    (1U)
 
 /**********************************************************************************************************************
  * Typedef definitions

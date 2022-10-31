@@ -56,7 +56,7 @@ FSP_HEADER
 
 /* Leading zeroes removed to avoid coding standard violation. */
 #define TIMER_API_VERSION_MAJOR    (1U)
-#define TIMER_API_VERSION_MINOR    (0U)
+#define TIMER_API_VERSION_MINOR    (1U)
 
 /**********************************************************************************************************************
  * Typedef definitions

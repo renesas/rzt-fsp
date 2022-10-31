@@ -29,6 +29,8 @@
  * Public Variables
  ******************************************************************************/
 
+#define USB_VAL_1024    1024U
+
 /* r_usbif_api.c */
 #if (BSP_CFG_RTOS == 0)
 extern uint16_t g_usb_change_device_state[USB_NUM_USBIP];
@@ -59,6 +61,9 @@ extern uint16_t          g_usb_hstd_ignore_cnt[][USB_MAX_PIPE_NO + 1U]; /* Ignor
 extern usb_hcdreg_t      g_usb_hstd_device_drv[][USB_MAXDEVADDR + 1U];  /* Device driver (registration) */
 extern volatile uint16_t g_usb_hstd_device_info[][USB_MAXDEVADDR + 1U][8U];
 extern usb_ctrl_trans_t  g_usb_ctrl_request[USB_NUM_USBIP][USB_MAXDEVADDR + 1];
+
+extern uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR + 1];
+extern uint8_t  g_temp_data_buf[USB_NUM_USBIP][USB_MAXDEVADDR + 1][USB_VAL_1024];
  #if (BSP_CFG_RTOS == 2)
 extern usb_hdl_t g_usb_hstd_sus_res_task_id[];
  #endif                                                         /*  #if (BSP_CFG_RTOS == 2) */
@@ -385,6 +390,11 @@ usb_er_t  usb_hstd_hcd_snd_mbx(usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, 
 void      usb_hstd_mgr_snd_mbx(usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, uint16_t res);
 void      usb_hstd_hcd_task(void * stacd);
 
+uint16_t usb_hstd_get_max_packet_size(uint16_t pipe_id);
+uint16_t usb_hstd_get_epnum(uint16_t pipe_id);
+uint16_t usb_hstd_get_pipe_dir(uint16_t pipe_id);
+uint16_t usb_hstd_get_dev_addr(uint16_t pipe_id);
+
  #if USB_IP_EHCI_OHCI == 0
 usb_er_t usb_hstd_transfer_start(usb_utr_t * ptr);
 
@@ -476,7 +486,14 @@ void usb_hstd_enum_get_descriptor(usb_utr_t * ptr, uint16_t addr, uint16_t cnt_v
 void usb_hstd_enum_set_address(usb_utr_t * ptr, uint16_t addr, uint16_t setaddr);
 void usb_hstd_enum_set_configuration(usb_utr_t * ptr, uint16_t addr, uint16_t confnum);
 void usb_hstd_enum_dummy_request(usb_utr_t * ptr, uint16_t addr, uint16_t cnt_value);
+
+ #if  USB_IP_EHCI_OHCI == 0
 void usb_hstd_electrical_test_mode(usb_utr_t * ptr, uint16_t product_id);
+
+ #else
+void usb_hstd_electrical_test_mode(uint16_t product_id, uint16_t port);
+
+ #endif
 void usb_hstd_mgr_task(void * stacd);
 
 extern void (* g_usb_hstd_enumaration_process[])(usb_utr_t *, uint16_t, uint16_t);

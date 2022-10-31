@@ -30,7 +30,18 @@
  **********************************************************************************************************************/
 #define XSPI_QSPI_PRV_OPEN                            (0x51535049)
 
+/* External address space xSPI0 : 0x60000000 - 0x67FFFFFF,
+ * External address space xSPI1 : 0x68000000 - 0x6FFFFFFF */
 #define XSPI_QSPI_DEVICE_START_ADDRESS                (0x60000000)
+#define XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA        (0x8000000)
+
+/* External address space xSPI0 CS0 : 0x60000000 - 0x63FFFFFF,
+ * External address space xSPI0 CS1 : 0x64000000 - 0x67FFFFFF */
+#define XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA          (0x4000000)
+
+/* Mirror area of external address space xSPI0 : 0x40000000 - 0x47FFFFFF,
+ * Mirror area of external address space xSPI1 : 0x48000000 - 0x4FFFFFFF */
+#define XSPI_QSPI_DEVICE_START_MIRROR_ADDRESS         (0x40000000)
 
 #define XSPI_QSPI_PRV_LIOCFGCS_PRTMD_OFFSET           (0U)
 #define XSPI_QSPI_PRV_LIOCFGCS_PRTMD_VALUE_MASK       (0x3FFU)
@@ -61,7 +72,9 @@
 #define XSPI_QSPI_PRV_BMCFG_PREEN_VALUE_MASK          (0x01U)
 
 #define XSPI_QSPI_PRV_BMCTL_DEFAULT_VALUE             (0x000000FFUL)
-#define XSPI_QSPI_PRV_BMCTL_CS0ACC_VALUE_MASK         (0x03U)
+
+#define XSPI_QSPI_PRV_BMCTL_CSNACC_R_ENABLE           (0x01U)
+#define XSPI_QSPI_PRV_BMCTL_CSNACC_R_W_ENABLE         (0x03U)
 
 #define XSPI_QSPI_PRV_CDTBUF_CMDSIZE_OFFSET           (0U)
 #define XSPI_QSPI_PRV_CDTBUF_CMDSIZE_VALUE_MASK       (0x03U)
@@ -75,6 +88,11 @@
 #define XSPI_QSPI_PRV_CDTBUF_TRTYPE_VALUE_MASK        (0x01U)
 #define XSPI_QSPI_PRV_CDTBUF_CMD_UPPER_OFFSET         (24U)
 #define XSPI_QSPI_PRV_CDTBUF_CMD_VALUE_MASK           (0xFFU)
+
+#define XSPI_QSPI_PRV_COMSTT_MEMACC_OFFSET            (0U)
+#define XSPI_QSPI_PRV_COMSTT_MEMACC_VALUE_MASK        (0x01U)
+#define XSPI_QSPI_PRV_COMSTT_WRBUFNE_OFFSET           (6U)
+#define XSPI_QSPI_PRV_COMSTT_WRBUFNE_VALUE_MASK       (0x01U)
 
 #define XSPI_QSPI_PRV_INTC_CMDCMPC_OFFSET             (0U)
 
@@ -395,6 +413,8 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
 #endif
     FSP_ERROR_RETURN(false == r_xspi_qspi_status_sub(p_instance_ctrl), FSP_ERR_DEVICE_BUSY);
 
+    r_xspi_qspi_write_enable(p_instance_ctrl);
+
     uint32_t i = 0;
 
     /* Word access */
@@ -404,13 +424,6 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
         uint32_t * p_word_aligned_src  = (uint32_t *) p_src;
         for (i = 0; i < byte_count / XSPI_QSPI_PRV_WORD_ACCESS_SIZE; i++)
         {
-            if (i == byte_count / XSPI_QSPI_PRV_WORD_ACCESS_SIZE - 1)
-            {
-                /* Since the write process is done in the final loop,
-                 * need to issue a write enable to memory. */
-                r_xspi_qspi_write_enable(p_instance_ctrl);
-            }
-
             *p_word_aligned_dest = *p_word_aligned_src;
             p_word_aligned_dest++;
             p_word_aligned_src++;
@@ -423,13 +436,6 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
         uint16_t * p_half_word_aligned_src  = (uint16_t *) p_src;
         for (i = 0; i < byte_count / XSPI_QSPI_PRV_HALF_WORD_ACCESS_SIZE; i++)
         {
-            if (i == byte_count / XSPI_QSPI_PRV_HALF_WORD_ACCESS_SIZE - 1)
-            {
-                /* Since the write process is done in the final loop,
-                 * need to issue a write enable to memory. */
-                r_xspi_qspi_write_enable(p_instance_ctrl);
-            }
-
             *p_half_word_aligned_dest = *p_half_word_aligned_src;
             p_half_word_aligned_dest++;
             p_half_word_aligned_src++;
@@ -440,24 +446,16 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     {
         for (i = 0; i < byte_count; i++)
         {
-            if (i == byte_count - 1)
-            {
-                /* Since the write process is done in the final loop,
-                 * need to issue a write enable to memory. */
-                r_xspi_qspi_write_enable(p_instance_ctrl);
-            }
-
             p_dest[i] = p_src[i];
         }
     }
 
+    /* Ensure that all write data is in the xSPI write buffer. */
+    __asm volatile ("dsb");
+
     /* Request to push the pending data */
     if (XSPI_QSPI_PRV_MAX_COMBINE_SIZE > byte_count)
     {
-        /* Since the write process is done in the final loop,
-         * need to issue a write enable to memory. */
-        r_xspi_qspi_write_enable(p_instance_ctrl);
-
         /* Push the pending data. */
         p_instance_ctrl->p_reg->BMCTL1_b.MWRPUSH = 1;
     }
@@ -548,8 +546,23 @@ fsp_err_t R_XSPI_QSPI_StatusGet (spi_flash_ctrl_t * p_ctrl, spi_flash_status_t *
     FSP_ERROR_RETURN(0U == p_instance_ctrl->p_reg->CMCTL_b.XIPEN, FSP_ERR_INVALID_MODE);
 #endif
 
+    /* If R_XSPI_QSPI_StatusGet is called immediately after R_XSPI_QSPI_Write is called, the result could be WIP = 0.
+     *
+     * This occurs because the Read Status Register instruction command is issued
+     * before the Program command due to the xSPI write buffer operation.
+     * In this case, QSPI has not started the write operation, so WIP = 0.
+     *
+     * This is unintended behavior because R_XSPI_QSPI_StatusGet determines the end of the QSPI write operation.
+     * Therefore, it is necessary to judge as "Write In Progress" when data is in the write buffer. */
+    uint32_t comstt  = p_instance_ctrl->p_reg->COMSTT;
+    bool     memacc  = (bool) ((comstt >> XSPI_QSPI_PRV_COMSTT_MEMACC_OFFSET) & XSPI_QSPI_PRV_COMSTT_MEMACC_VALUE_MASK);
+    bool     wrbufne =
+        (bool) ((comstt >> XSPI_QSPI_PRV_COMSTT_WRBUFNE_OFFSET) & XSPI_QSPI_PRV_COMSTT_WRBUFNE_VALUE_MASK);
+
     /* Read device status. */
-    p_status->write_in_progress = r_xspi_qspi_status_sub(p_instance_ctrl);
+    bool write_in_progress = r_xspi_qspi_status_sub(p_instance_ctrl);
+
+    p_status->write_in_progress = (bool) (wrbufne | memacc | write_in_progress);
 
     return FSP_SUCCESS;
 }
@@ -701,22 +714,49 @@ static fsp_err_t r_xspi_qspi_xip (xspi_qspi_instance_ctrl_t * p_instance_ctrl, u
     FSP_ERROR_RETURN(XSPI_QSPI_PRV_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    volatile uint8_t dummy = 0;
+    xspi_qspi_extended_cfg_t * p_cfg_extend =
+        (xspi_qspi_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
+    uint8_t unit        = p_cfg_extend->unit;
+    uint8_t chip_select = p_cfg_extend->chip_select;
+
+    volatile uint8_t dummy = 0;
     FSP_PARAMETER_NOT_USED(dummy);
 
-    uint8_t cs0acc = p_instance_ctrl->p_reg->BMCTL0_b.CS0ACC;
-
     /* XiP configuration (see RZ microprocessor User's Manual section "Flow of XiP"). */
-    p_instance_ctrl->p_reg->BMCTL0_b.CS0ACC   = 1;
+    if (true == enter_mode)
+    {
+        if (XSPI_QSPI_CHIP_SELECT_0 == chip_select)
+        {
+            p_instance_ctrl->p_reg->BMCTL0_b.CS0ACC = XSPI_QSPI_PRV_BMCTL_CSNACC_R_ENABLE;
+        }
+        else
+        {
+            p_instance_ctrl->p_reg->BMCTL0_b.CS1ACC = XSPI_QSPI_PRV_BMCTL_CSNACC_R_ENABLE;
+        }
+    }
+
     p_instance_ctrl->p_reg->CMCTL_b.XIPENCODE = code;
     p_instance_ctrl->p_reg->CMCTL_b.XIPEXCODE = code;
     p_instance_ctrl->p_reg->CMCTL_b.XIPEN     = enter_mode;
 
-    /* Read from QSPI to send the XIP entry request. */
-    dummy = *(volatile uint8_t *) XSPI_QSPI_DEVICE_START_ADDRESS;
+    /* Read from QSPI to send the XIP entry request.
+     * Read via a cache-invalid mirror area to ensure access to QSPI. */
+    dummy = *(volatile uint8_t *) (XSPI_QSPI_DEVICE_START_MIRROR_ADDRESS +
+                                   (unit * XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA) +
+                                   (chip_select * XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA));
 
-    p_instance_ctrl->p_reg->BMCTL0_b.CS0ACC = cs0acc & XSPI_QSPI_PRV_BMCTL_CS0ACC_VALUE_MASK;
+    if (false == enter_mode)
+    {
+        if (XSPI_QSPI_CHIP_SELECT_0 == chip_select)
+        {
+            p_instance_ctrl->p_reg->BMCTL0_b.CS0ACC = XSPI_QSPI_PRV_BMCTL_CSNACC_R_W_ENABLE;
+        }
+        else
+        {
+            p_instance_ctrl->p_reg->BMCTL0_b.CS1ACC = XSPI_QSPI_PRV_BMCTL_CSNACC_R_W_ENABLE;
+        }
+    }
 
     return FSP_SUCCESS;
 }

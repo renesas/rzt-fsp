@@ -94,7 +94,7 @@
  #endif                                /* defined(USB_CFG_HCDC_USE || USB_CFG_HHID_USE || USB_CFG_HMSC_USE || USB_CFG_HVNDR_USE) */
 #endif                                 /* USB_CFG_MODE == USB_MODE_PERI */
 
-#if !defined(BSP_MCU_GROUP_RA6M3)
+#if !defined(BSP_MCU_GROUP_RA6M3) && !defined(BSP_MCU_GROUP_RZT2M)
  #if USB_CFG_ELECTRICAL == USB_CFG_ENABLE
   #error  Can not set USB_CFG_ENABLE to USB_CFG_ELECTRICAL when using other than Hi-speed module in r_usb_basic_cfg.h.
  #endif                                /* USB_CFG_ELECTRICAL == USB_CFG_ENABLE */
@@ -176,7 +176,7 @@ fsp_err_t usb_module_start (uint8_t ip_type)
  #else
     uint8_t                dummy_read;
     volatile unsigned long dummy;
-    volatile uint8_t       dummy_buf;
+    volatile uint8_t       dummy_buf = 0;
 
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_SYSC_NS->MSTPCRE = 0x0000001F;

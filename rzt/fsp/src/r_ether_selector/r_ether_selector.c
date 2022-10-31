@@ -32,6 +32,7 @@
 
 /*CONVCTRL[m] register defines*/
 #define ETHER_SELECTOR_FULLD                      (1 << 8)
+#define ETHER_SELECTOR_HALFD                      (0 << 8)
 
 #define ETHER_SELECTOR_CONV_MODE_MASK             (0x1f) /* Mask of Converter operation mode */
 #define ETHER_SELECTOR_CONV_MODE_MII_MODE         (0x00) /* MII mode (Through mode) */
@@ -39,7 +40,7 @@
 #define ETHER_SELECTOR_CONV_MODE_RMII_100M_IN     (0x05) /* RMII mode 100Mbps REF_CLK input */
 #define ETHER_SELECTOR_CONV_MODE_RMII_10M_OUT     (0x14) /* RMII mode 10Mbps REF_CLK output */
 #define ETHER_SELECTOR_CONV_MODE_RMII_100M_OUT    (0x15) /* RMII mode 100Mbps REF_CLK output */
-#define ETHER_SELECTOR_CONV_MODE_RGMII_1G         (0x0a) /* RGMII mode 1000Mbps */
+#define ETHER_SELECTOR_CONV_MODE_RGMII_1000M      (0x0a) /* RGMII mode 1000Mbps */
 #define ETHER_SELECTOR_CONV_MODE_RGMII_100M       (0x09) /* RGMII mode 100Mbps */
 #define ETHER_SELECTOR_CONV_MODE_RGMII_10M        (0x08) /* RGMII mode 10Mbps */
 
@@ -122,6 +123,7 @@ const ether_selector_api_t g_ether_selector_on_ether_selector =
  * @retval FSP_SUCCESS                 Ethernet port configuration set successfully.
  * @retval FSP_ERR_ASSERTION           Pointer to ETHER_SELECTOR control block or configuration structure is NULL.
  * @retval FSP_ERR_INVALID_CHANNEL     Invalid channel number is given.
+ * @retval FSP_ERR_INVALID_ARGUMENT    Configuration parameter error.
  * @retval FSP_ERR_ALREADY_OPEN        R_ETHER_SELECTOR_Open has already been called for this p_ctrl.
  **********************************************************************************************************************/
 fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_selector_cfg_t const * const p_cfg)
@@ -142,6 +144,11 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_cfg);
     FSP_ERROR_RETURN((BSP_FEATURE_ETHSS_MAX_PORTS > port), FSP_ERR_INVALID_CHANNEL);
+    if (ETHER_SELECTOR_SPEED_1000MBPS == p_instance_ctrl->p_cfg->speed)
+    {
+        FSP_ERROR_RETURN((ETHER_SELECTOR_INTERFACE_RGMII == p_instance_ctrl->p_cfg->interface),
+                         FSP_ERR_INVALID_ARGUMENT);
+    }
 #endif
 
     FSP_ERROR_RETURN(ETHER_SELECTOR_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
@@ -195,25 +202,15 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     {
         convctrl |= ETHER_SELECTOR_CONV_MODE_MII_MODE;
     }
-    else
+    else if (ETHER_SELECTOR_INTERFACE_RMII == p_instance_ctrl->p_cfg->interface)
     {
-        if (ETHER_SELECTOR_INTERFACE_RMII == p_instance_ctrl->p_cfg->interface)
+        if (ETHER_SELECTOR_SPEED_10MBPS == p_instance_ctrl->p_cfg->speed)
         {
             convctrl |= ETHER_SELECTOR_CONV_MODE_RMII_10M_IN;
         }
         else
         {
-            convctrl |= ETHER_SELECTOR_CONV_MODE_RGMII_10M;
-        }
-
-        if (ETHER_SELECTOR_SPEED_100MBPS == p_instance_ctrl->p_cfg->speed)
-        {
-            convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_100M;
-        }
-
-        if (ETHER_SELECTOR_SPEED_1000MBPS == p_instance_ctrl->p_cfg->speed)
-        {
-            convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_1000M;
+            convctrl |= ETHER_SELECTOR_CONV_MODE_RMII_100M_IN;
         }
 
         if (ETHER_SELECTOR_REF_CLOCK_OUTPUT == p_instance_ctrl->p_cfg->ref_clock)
@@ -221,10 +218,34 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
             convctrl |= ETHER_SELECTOR_CONV_BIT_REF_CLK_OUT;
         }
     }
+    else if (ETHER_SELECTOR_INTERFACE_RGMII == p_instance_ctrl->p_cfg->interface)
+    {
+        if (ETHER_SELECTOR_SPEED_10MBPS == p_instance_ctrl->p_cfg->speed)
+        {
+            convctrl |= ETHER_SELECTOR_CONV_MODE_RGMII_10M;
+        }
+        else if (ETHER_SELECTOR_SPEED_100MBPS == p_instance_ctrl->p_cfg->speed)
+        {
+            convctrl |= ETHER_SELECTOR_CONV_MODE_RGMII_100M;
+        }
+        else
+        {
+            convctrl |= ETHER_SELECTOR_CONV_MODE_RGMII_1000M;
+        }
+    }
+    else
+    {
+        /* Other Interface doesn't change the register value */
+        convctrl = *p_reg_convctrl;
+    }
 
     if (ETHER_SELECTOR_DUPLEX_FULL == p_instance_ctrl->p_cfg->duplex)
     {
         convctrl |= ETHER_SELECTOR_FULLD;
+    }
+    else
+    {
+        convctrl |= ETHER_SELECTOR_HALFD;
     }
 
     *p_reg_convctrl = convctrl;
@@ -260,12 +281,14 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
 }
 
 /*******************************************************************************************************************//**
- * Set the converter speed and duplex after initilaize. Implements @ref ether_selector_api_t::converterSet.
+ * Set the converter speed and duplex after initilaize. Speed 1000Mbps is valid for only RGMII.
+ * Implements @ref ether_selector_api_t::converterSet.
  *
  *
  * @retval FSP_SUCCESS                 Speed adn duplex seetings successfully changed.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance control structure is not opened.
+ * @retval FSP_ERR_INVALID_ARGUMENT    Invalid parameter in the argument.
  **********************************************************************************************************************/
 fsp_err_t R_ETHER_SELECTOR_ConverterSet (ether_selector_ctrl_t * const p_ctrl,
                                          ether_selector_speed_t        speed,
@@ -282,6 +305,11 @@ fsp_err_t R_ETHER_SELECTOR_ConverterSet (ether_selector_ctrl_t * const p_ctrl,
 #if ETHER_SELECTOR_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(ETHER_SELECTOR_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+    if (ETHER_SELECTOR_SPEED_1000MBPS == speed)
+    {
+        FSP_ERROR_RETURN((ETHER_SELECTOR_INTERFACE_RGMII == p_instance_ctrl->p_cfg->interface),
+                         FSP_ERR_INVALID_ARGUMENT);
+    }
 #endif
 
     port        = p_instance_ctrl->p_cfg->port;
@@ -315,19 +343,33 @@ fsp_err_t R_ETHER_SELECTOR_ConverterSet (ether_selector_ctrl_t * const p_ctrl,
     convctrl  = *p_reg_convctrl;
     convctrl &= (uint32_t) (~(ETHER_SELECTOR_FULLD | ETHER_SELECTOR_CONV_BIT_SPEED_MASK));
 
-    if (ETHER_SELECTOR_SPEED_100MBPS == speed)
+    if (ETHER_SELECTOR_INTERFACE_MII != p_instance_ctrl->p_cfg->interface)
     {
-        convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_100M;
-    }
-
-    if (ETHER_SELECTOR_SPEED_1000MBPS == speed)
-    {
-        convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_1000M;
+        if (ETHER_SELECTOR_SPEED_10MBPS == speed)
+        {
+            convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_10M;
+        }
+        else if (ETHER_SELECTOR_SPEED_100MBPS == speed)
+        {
+            convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_100M;
+        }
+        else if (ETHER_SELECTOR_SPEED_1000MBPS == speed)
+        {
+            convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_1000M;
+        }
+        else
+        {
+            /* Do nothing */
+        }
     }
 
     if (ETHER_SELECTOR_DUPLEX_FULL == duplex)
     {
         convctrl |= ETHER_SELECTOR_FULLD;
+    }
+    else
+    {
+        convctrl |= ETHER_SELECTOR_HALFD;
     }
 
     *p_reg_convctrl = convctrl;

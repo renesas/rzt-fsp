@@ -119,6 +119,8 @@ uint32_t SystemCoreClock = 0U;
  #pragma section="USER_DATA_RBLOCK"
  #pragma section="USER_DATA_WBLOCK"
  #pragma section="USER_DATA_ZBLOCK"
+ #pragma section="NONCACHE_BUFFER_ZBLOCK"
+ #pragma section="SHARED_NONCACHE_BUFFER_ZBLOCK"
 
 #endif                                 // __ICCARM__
 
@@ -511,7 +513,6 @@ void bsp_application_bss_init (void)
     asm volatile ("dsb");
 
     /* Clear shared non-cache buffer. */
-  #pragma section="SHARED_NONCACHE_BUFFER_ZBLOCK"
     dst = (uint8_t *) __section_end("SHARED_NONCACHE_BUFFER_ZBLOCK");
 
     for (src = (uint8_t *) __section_begin("SHARED_NONCACHE_BUFFER_ZBLOCK"); src < dst; src++)
@@ -523,7 +524,6 @@ void bsp_application_bss_init (void)
     asm volatile ("dsb");
 
     /* Clear non-cache buffer. */
-  #pragma section="NONCACHE_BUFFER_ZBLOCK"
     dst = (uint8_t *) __section_end("NONCACHE_BUFFER_ZBLOCK");
 
     for (src = (uint8_t *) __section_begin("NONCACHE_BUFFER_ZBLOCK"); src < dst; src++)

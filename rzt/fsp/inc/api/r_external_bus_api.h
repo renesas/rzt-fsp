@@ -24,10 +24,10 @@
  * @brief Interface for external bus communication.
  *
  * @section EXTERNAL_BUS_API_SUMMARY Summary
- * @brief The External bus interface provides APIs and definitions for external bus communication.
+ * The External bus interface provides APIs and definitions for external bus communication.
  *
- * @section EXTERNAL_BUS_API_INSTANCES Known Implementations
- * @ref BSC
+ * Implemented by:
+ * - @ref BSC
  * @{
  **********************************************************************************************************************/
 #ifndef R_EXTERNAL_BUS_API_H
@@ -44,7 +44,7 @@
 FSP_HEADER
 
 #define EXTERNAL_BUS_API_VERSION_MAJOR    (1U)
-#define EXTERNAL_BUS_API_VERSION_MINOR    (0U)
+#define EXTERNAL_BUS_API_VERSION_MINOR    (1U)
 
 /**********************************************************************************************************************
  * Typedef definitions

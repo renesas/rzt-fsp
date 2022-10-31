@@ -40,7 +40,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define ETHERCAT_SSC_PORT_CODE_VERSION_MAJOR    (1U)
-#define ETHERCAT_SSC_PORT_CODE_VERSION_MINOR    (0U)
+#define ETHERCAT_SSC_PORT_CODE_VERSION_MINOR    (1U)
 
 /***********************************************************************************************************************
  * Typedef definitions

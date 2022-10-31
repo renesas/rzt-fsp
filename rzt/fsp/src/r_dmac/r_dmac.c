@@ -41,7 +41,8 @@
 /* Calculate the mask bits for byte alignment from the transfer_size_t. */
 #define DMAC_PRV_MASK_ALIGN_N_BYTES(x)    ((1U << (x)) - 1U)
 
-#define DMAC_PRV_REG(unit)                ((R_DMAC0_Type *) ((R_DMAC1 - R_DMAC0) * unit + R_DMAC0))
+#define DMAC_PRV_REG(unit)                ((R_DMAC0_Type *) (((uint32_t) R_DMAC1 - (uint32_t) R_DMAC0) * unit + \
+                                                             (uint32_t) R_DMAC0))
 
 #define DMAC_PRV_CHANNEL(channel)         (channel % 8)
 #define DMAC_PRV_GROUP(channel)           (channel / 8)

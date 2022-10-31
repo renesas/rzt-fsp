@@ -72,6 +72,11 @@ uint16_t g_usb_hcdc_num_endpoint[USB_NUM_USBIP][USB_MAXDEVADDR]; /* Num Endpoint
  * Renesas USB Host CDC Driver functions
  ******************************************************************************/
 
+usb_setup_t g_setup                       USB_BUFFER_PLACE_IN_SECTION;
+uint32_t g_usb_dummy                      USB_BUFFER_PLACE_IN_SECTION;
+usb_hcdc_linecoding_t g_usb_com_parm      USB_BUFFER_PLACE_IN_SECTION;
+usb_hcdc_linecoding_t g_usb_com_parm_temp USB_BUFFER_PLACE_IN_SECTION;
+
 /******************************************************************************
  * Function Name   : usb_hcdc_enumeration
  * Description     : USB CDC Class Enumeration
@@ -911,6 +916,50 @@ uint16_t usb_hcdc_get_string_info (usb_utr_t * mess, uint16_t addr, uint16_t str
 }                                      /* End of function usb_hcdc_get_string_info() */
 
 #endif /* (BSP_CFG_RTOS == 2) */
+
+void usb_hcdc_set_control_line_state (usb_instance_ctrl_t * p_ctrl, uint8_t device_address, usb_setup_t * setup)
+{
+    g_setup.request_type   = setup->request_type;   /* bRequestCode:SET_CONTROL_LINE_STATE, bmRequestType */
+    g_setup.request_value  = setup->request_value;  /* wValue:Zero */
+    g_setup.request_index  = setup->request_index;  /* wIndex:Interface */
+    g_setup.request_length = setup->request_length; /* wLength:Zero */
+
+    g_usb_on_usb.hostControlTransfer(p_ctrl, &g_setup, (uint8_t *) &g_usb_dummy, device_address);
+}
+
+void usb_hcdc_set_line_coding (usb_instance_ctrl_t   * p_ctrl,
+                               uint8_t                 device_address,
+                               usb_hcdc_linecoding_t * g_com_parm,
+                               usb_setup_t           * setup)
+{
+    g_usb_com_parm.dwdte_rate   = g_com_parm->dwdte_rate;
+    g_usb_com_parm.bchar_format = g_com_parm->bchar_format;
+    g_usb_com_parm.bparity_type = g_com_parm->bparity_type;
+    g_usb_com_parm.bdata_bits   = g_com_parm->bdata_bits;
+
+    g_setup.request_type   = setup->request_type;   /* bRequestCode:SET_CONTROL_LINE_STATE, bmRequestType */
+    g_setup.request_value  = setup->request_value;  /* wValue:Zero */
+    g_setup.request_index  = setup->request_index;  /* wIndex:Interface */
+    g_setup.request_length = setup->request_length; /* wLength:Zero */
+
+    /* Request Control transfer */
+    g_usb_on_usb.hostControlTransfer(p_ctrl, &g_setup, (uint8_t *) &g_usb_com_parm, device_address);
+}
+
+void usb_hcdc_get_line_coding (usb_instance_ctrl_t   * p_ctrl,
+                               uint8_t                 device_address,
+                               usb_hcdc_linecoding_t * g_com_parm,
+                               usb_setup_t           * setup)
+{
+    g_setup.request_type   = setup->request_type;   /* bRequestCode:SET_CONTROL_LINE_STATE, bmRequestType */
+    g_setup.request_value  = setup->request_value;  /* wValue:Zero */
+    g_setup.request_index  = setup->request_index;  /* wIndex:Interface */
+    g_setup.request_length = setup->request_length; /* wLength:Zero */
+
+    g_data_buf_addr[p_ctrl->module_number][USB_PIPE0] = (uint32_t) g_com_parm;
+
+    g_usb_on_usb.hostControlTransfer(p_ctrl, &g_setup, (uint8_t *) &g_usb_com_parm_temp, device_address);
+}
 
 /******************************************************************************
  * End  Of File

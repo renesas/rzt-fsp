@@ -32,10 +32,11 @@
 #define BSC_PRV_OPEN                               (0x425343)
 #define BSC_CHANNEL_DUMMY                          (0x0U)
 
-#define BSC_VALID_CS_CHANNELS                      (0x2D) /* Valid channel : CS0,2,3,5 */
-#define BSC_R_W_SAME_ACCESS_WAIT_CHANNELS          (0x0D) /* Valid channel : CS0,2,3 */
-#define BSC_CS_TIMING_CONFIGURE_ENABLE_CHANNELS    (0x21) /* Valid channel : CS0,5 */
+#define BSC_VALID_CS_CHANNELS                      (0x2D)       /* Valid channel : CS0,2,3,5 */
+#define BSC_R_W_SAME_ACCESS_WAIT_CHANNELS          (0x0D)       /* Valid channel : CS0,2,3 */
+#define BSC_CS_TIMING_CONFIGURE_ENABLE_CHANNELS    (0x21)       /* Valid channel : CS0,5 */
 
+#define BSC_PRV_CSNBCR_RESERVED_BIT_MASK           (0x00000800) /* 11th bit of CSnBCR must be 1. */
 #define BSC_PRV_CSNBCR_BSZ_VALUE_MASK              (0x03U)
 #define BSC_PRV_CSNBCR_TYPE_VALUE_MASK             (0x07U)
 #define BSC_PRV_CSNBCR_IWRRS_VALUE_MASK            (0x07U)
@@ -123,20 +124,16 @@ fsp_err_t R_BSC_Open (external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * c
     uint32_t * p_csnwcr    = (uint32_t *) ((uint32_t) &R_BSC->CS0WCR_0 + (address_gap * p_cfg->chip_select));
 
     /* Set bus access idle cycle. */
-    uint32_t csnbcr = (((p_cfg->data_width & BSC_PRV_CSNBCR_BSZ_VALUE_MASK) <<
-                        R_BSC_CSnBCR_BSZ_Pos) |
-                       ((p_cfg_extend->memory_type & BSC_PRV_CSNBCR_TYPE_VALUE_MASK) <<
-                        R_BSC_CSnBCR_TYPE_Pos) |
-                       ((p_cfg_extend->r_r_same_space_idle_cycle & BSC_PRV_CSNBCR_IWRRS_VALUE_MASK) <<
-                        R_BSC_CSnBCR_IWRRS_Pos) |
-                       ((p_cfg_extend->r_r_different_space_idle_cycle & BSC_PRV_CSNBCR_IWRRD_VALUE_MASK) <<
-                        R_BSC_CSnBCR_IWRRD_Pos) |
-                       ((p_cfg_extend->r_w_same_space_idle_cycle & BSC_PRV_CSNBCR_IWRWS_VALUE_MASK) <<
-                        R_BSC_CSnBCR_IWRWS_Pos) |
-                       ((p_cfg_extend->r_w_different_space_idle_cycle & BSC_PRV_CSNBCR_IWRWD_VALUE_MASK) <<
-                        R_BSC_CSnBCR_IWRWD_Pos) |
-                       ((p_cfg_extend->w_r_w_w_idle_cycle & BSC_PRV_CSNBCR_IWW_VALUE_MASK) <<
-                        R_BSC_CSnBCR_IWW_Pos));
+    uint32_t csnbcr = BSC_PRV_CSNBCR_RESERVED_BIT_MASK;
+    csnbcr |= (((p_cfg->data_width & BSC_PRV_CSNBCR_BSZ_VALUE_MASK) << R_BSC_CSnBCR_BSZ_Pos) |
+               ((p_cfg_extend->memory_type & BSC_PRV_CSNBCR_TYPE_VALUE_MASK) << R_BSC_CSnBCR_TYPE_Pos) |
+               ((p_cfg_extend->r_r_same_space_idle_cycle & BSC_PRV_CSNBCR_IWRRS_VALUE_MASK) << R_BSC_CSnBCR_IWRRS_Pos) |
+               ((p_cfg_extend->r_r_different_space_idle_cycle & BSC_PRV_CSNBCR_IWRRD_VALUE_MASK) <<
+                R_BSC_CSnBCR_IWRRD_Pos) |
+               ((p_cfg_extend->r_w_same_space_idle_cycle & BSC_PRV_CSNBCR_IWRWS_VALUE_MASK) << R_BSC_CSnBCR_IWRWS_Pos) |
+               ((p_cfg_extend->r_w_different_space_idle_cycle & BSC_PRV_CSNBCR_IWRWD_VALUE_MASK) <<
+                R_BSC_CSnBCR_IWRWD_Pos) |
+               ((p_cfg_extend->w_r_w_w_idle_cycle & BSC_PRV_CSNBCR_IWW_VALUE_MASK) << R_BSC_CSnBCR_IWW_Pos));
 
     /* Set access wait cycle.
      * If the channel can be set read/write individually, set read access wait cycle here. */

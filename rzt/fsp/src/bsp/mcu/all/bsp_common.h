@@ -50,46 +50,72 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 /** Used to signify that an ELC event is not able to be used as an interrupt. */
-#define BSP_IRQ_DISABLED                  (0xFFU)
+#define BSP_IRQ_DISABLED                       (0xFFU)
 
 /* Vector Number offset */
-#define BSP_VECTOR_NUM_OFFSET             (32U)
+#define BSP_VECTOR_NUM_OFFSET                  (32U)
 
 /* Version of this module's code and API. */
-#define BSP_CODE_VERSION_MAJOR            (1U)
-#define BSP_CODE_VERSION_MINOR            (0U)
-#define BSP_API_VERSION_MAJOR             (1U)
-#define BSP_API_VERSION_MINOR             (0U)
+#define BSP_CODE_VERSION_MAJOR                 (1U)
+#define BSP_CODE_VERSION_MINOR                 (1U)
+#define BSP_API_VERSION_MAJOR                  (1U)
+#define BSP_API_VERSION_MINOR                  (1U)
 
 #define FSP_CONTEXT_SAVE
 #define FSP_CONTEXT_RESTORE
 
-#define BSP_PRV_CPU_FREQ_800_MHZ          (800000000U) // CPU frequency is 800 MHz
-#define BSP_PRV_CPU_FREQ_600_MHZ          (600000000U) // CPU frequency is 600 MHz
+#define BSP_PRV_CPU_FREQ_800_MHZ               (800000000U)  // CPU frequency is 800 MHz
+#define BSP_PRV_CPU_FREQ_600_MHZ               (600000000U)  // CPU frequency is 600 MHz
 
-#define BSP_PRV_ICLK_FREQ_200_MHZ         (200000000U) // ICLK frequency is 200 MHz
-#define BSP_PRV_ICLK_FREQ_150_MHZ         (150000000U) // ICLK frequency is 150 MHz
+#define BSP_PRV_ICLK_FREQ_200_MHZ              (200000000U)  // ICLK frequency is 200 MHz
+#define BSP_PRV_ICLK_FREQ_150_MHZ              (150000000U)  // ICLK frequency is 150 MHz
 
-#define BSP_PRV_PCLKH_FREQ_200_MHZ        (200000000U) // PCLKH frequency is 200 MHz
-#define BSP_PRV_PCLKH_FREQ_150_MHZ        (150000000U) // PCLKH frequency is 150 MHz
+#define BSP_PRV_PCLKH_FREQ_200_MHZ             (200000000U)  // PCLKH frequency is 200 MHz
+#define BSP_PRV_PCLKH_FREQ_150_MHZ             (150000000U)  // PCLKH frequency is 150 MHz
 
-#define BSP_PRV_PCLKM_FREQ_100_MHZ        (100000000U) // PCLKM frequency is 100 MHz
-#define BSP_PRV_PCLKM_FREQ_75_MHZ         (75000000U)  // PCLKM frequency is 750 MHz
+#define BSP_PRV_PCLKM_FREQ_100_MHZ             (100000000U)  // PCLKM frequency is 100 MHz
+#define BSP_PRV_PCLKM_FREQ_75_MHZ              (75000000U)   // PCLKM frequency is 750 MHz
 
-#define BSP_PRV_PCLKL_FREQ_50_MHZ         (50000000U)  // PCLKL frequency is 50 MHz
-#define BSP_PRV_PCLKL_FREQ_37_5_MHZ       (37500000U)  // PCLKL frequency is 37.5 MHz
+#define BSP_PRV_PCLKL_FREQ_50_MHZ              (50000000U)   // PCLKL frequency is 50 MHz
+#define BSP_PRV_PCLKL_FREQ_37_5_MHZ            (37500000U)   // PCLKL frequency is 37.5 MHz
 
-#define BSP_PRV_PCLKADC_FREQ_25_MHZ       (25000000U)  // PCLKADC frequency is 25 MHz
-#define BSP_PRV_PCLKADC_FREQ_18_75_MHZ    (18750000U)  // PCLKADC frequency is 18.75 MHz
+#define BSP_PRV_PCLKADC_FREQ_25_MHZ            (25000000U)   // PCLKADC frequency is 25 MHz
+#define BSP_PRV_PCLKADC_FREQ_18_75_MHZ         (18750000U)   // PCLKADC frequency is 18.75 MHz
 
-#define BSP_PRV_PCLKGPTL_FREQ_400_MHZ     (400000000U) // PCLKGPTL frequency is 400 MHz
-#define BSP_PRV_PCLKGPTL_FREQ_300_MHZ     (300000000U) // PCLKGPTL frequency is 300 MHz
+#define BSP_PRV_PCLKGPTL_FREQ_400_MHZ          (400000000U)  // PCLKGPTL frequency is 400 MHz
+#define BSP_PRV_PCLKGPTL_FREQ_300_MHZ          (300000000U)  // PCLKGPTL frequency is 300 MHz
 
-#define BSP_PRV_PCLKSCI_FREQ_75_MHZ       (75000000U)  // PCLKSCI frequency is 75 MHz
-#define BSP_PRV_PCLKSCI_FREQ_96_MHZ       (96000000U)  // PCLKSCI frequency is 96 MHz
+#define BSP_PRV_PCLKSCI_FREQ_75_MHZ            (75000000U)   // PCLKSCI frequency is 75 MHz
+#define BSP_PRV_PCLKSCI_FREQ_96_MHZ            (96000000U)   // PCLKSCI frequency is 96 MHz
 
-#define BSP_PRV_PCLKSPI_FREQ_75_MHZ       (75000000U)  // PCLKSPI frequency is 75 MHz
-#define BSP_PRV_PCLKSPI_FREQ_96_MHZ       (96000000U)  // PCLKSPI frequency is 96 MHz
+#define BSP_PRV_PCLKSPI_FREQ_75_MHZ            (75000000U)   // PCLKSPI frequency is 75 MHz
+#define BSP_PRV_PCLKSPI_FREQ_96_MHZ            (96000000U)   // PCLKSPI frequency is 96 MHz
+
+#define BSP_PRV_PCLKCAN_FREQ_80_MHZ            (80000000U)   // PCLKCAN frequency is 80 MHz
+#define BSP_PRV_PCLKCAN_FREQ_40_MHZ            (40000000U)   // PCLKCAN frequency is 40 MHz
+
+#define BSP_PRV_CKIO_FREQ_100_MHZ              (100000000U)  // CKIO frequency is 100 MHz
+#define BSP_PRV_CKIO_FREQ_75_MHZ               (75000000U)   // CKIO frequency is 75 MHz
+#define BSP_PRV_CKIO_FREQ_66_7_MHZ             (66666666U)   // CKIO frequency is 66.7 MHz
+#define BSP_PRV_CKIO_FREQ_50_MHZ               (50000000U)   // CKIO frequency is 50 MHz
+#define BSP_PRV_CKIO_FREQ_40_MHZ               (40000000U)   // CKIO frequency is 40 MHz
+#define BSP_PRV_CKIO_FREQ_37_5_MHZ             (37500000U)   // CKIO frequency is 37.5 MHz
+#define BSP_PRV_CKIO_FREQ_33_3_MHZ             (33333333U)   // CKIO frequency is 33.3MHz
+#define BSP_PRV_CKIO_FREQ_30_MHZ               (30000000U)   // CKIO frequency is 30 MHz
+#define BSP_PRV_CKIO_FREQ_28_6_MHZ             (28571428U)   // CKIO frequency is 28.6 MHz
+#define BSP_PRV_CKIO_FREQ_25_MHZ               (25000000U)   // CKIO frequency is 25 MHz
+#define BSP_PRV_CKIO_FREQ_21_4_MHZ             (21428571U)   // CKIO frequency is 21.4 MHz
+#define BSP_PRV_CKIO_FREQ_18_75_MHZ            (18750000U)   // CKIO frequency is 18.75 MHz
+#define BSP_PRV_CKIO_FREQ_NOT_SUPPORTED        (0xFFFFFFFFU) // CKIO frequency is not supported
+
+#define BSP_PRV_XSPI_CLK_FREQ_133_3_MHZ        (133333333U)  // XSPI_CLK frequency is 133.3 MHz
+#define BSP_PRV_XSPI_CLK_FREQ_100_MHZ          (100000000U)  // XSPI_CLK frequency is 100.0 MHz
+#define BSP_PRV_XSPI_CLK_FREQ_75_MHZ           (75000000U)   // XSPI_CLK frequency is 75.0 MHz
+#define BSP_PRV_XSPI_CLK_FREQ_50_MHZ           (50000000U)   // XSPI_CLK frequency is 50.0 MHz
+#define BSP_PRV_XSPI_CLK_FREQ_37_5_MHZ         (37500000U)   // XSPI_CLK frequency is 37.5 MHz
+#define BSP_PRV_XSPI_CLK_FREQ_25_MHZ           (25000000U)   // XSPI_CLK frequency is 25.0 MHz
+#define BSP_PRV_XSPI_CLK_FREQ_12_5_MHZ         (12500000U)   // XSPI_CLK frequency is 12.5 MHz
+#define BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED    (0xFFFFFFFFU) // XSPI_CLK frequency is not supported
 
 #define BSP_PRV_GICD_ADDRESS(cpu_num)    (cpu_num == 0 ? (GICD0) : (GICD1))
 
@@ -208,30 +234,36 @@ typedef enum e_bsp_warm_start_event
 /* Private enum used in R_FSP_SystemClockHzGet. */
 typedef enum e_fsp_priv_clock
 {
-    FSP_PRIV_CLOCK_CPU0     = 0,
-    FSP_PRIV_CLOCK_CPU1     = 1,
-    FSP_PRIV_CLOCK_ICLK     = 2,
-    FSP_PRIV_CLOCK_PCLKH    = 3,
-    FSP_PRIV_CLOCK_PCLKM    = 4,
-    FSP_PRIV_CLOCK_PCLKL    = 5,
-    FSP_PRIV_CLOCK_PCLKADC  = 6,
-    FSP_PRIV_CLOCK_PCLKGPTL = 7,
-    FSP_PRIV_CLOCK_PCLKSPI0 = 8,
-    FSP_PRIV_CLOCK_PCLKSPI1 = 9,
-    FSP_PRIV_CLOCK_PCLKSPI2 = 10,
-    FSP_PRIV_CLOCK_PCLKSPI3 = 11,
-    FSP_PRIV_CLOCK_PCLKSCI0 = 12,
-    FSP_PRIV_CLOCK_PCLKSCI1 = 13,
-    FSP_PRIV_CLOCK_PCLKSCI2 = 14,
-    FSP_PRIV_CLOCK_PCLKSCI3 = 15,
-    FSP_PRIV_CLOCK_PCLKSCI4 = 16,
-    FSP_PRIV_CLOCK_PCLKSCI5 = 17,
+    FSP_PRIV_CLOCK_CPU0      = 0,
+    FSP_PRIV_CLOCK_CPU1      = 1,
+    FSP_PRIV_CLOCK_ICLK      = 2,
+    FSP_PRIV_CLOCK_PCLKH     = 3,
+    FSP_PRIV_CLOCK_PCLKM     = 4,
+    FSP_PRIV_CLOCK_PCLKL     = 5,
+    FSP_PRIV_CLOCK_PCLKADC   = 6,
+    FSP_PRIV_CLOCK_PCLKGPTL  = 7,
+    FSP_PRIV_CLOCK_PCLKSPI0  = 8,
+    FSP_PRIV_CLOCK_PCLKSPI1  = 9,
+    FSP_PRIV_CLOCK_PCLKSPI2  = 10,
+    FSP_PRIV_CLOCK_PCLKSPI3  = 11,
+    FSP_PRIV_CLOCK_PCLKSCI0  = 12,
+    FSP_PRIV_CLOCK_PCLKSCI1  = 13,
+    FSP_PRIV_CLOCK_PCLKSCI2  = 14,
+    FSP_PRIV_CLOCK_PCLKSCI3  = 15,
+    FSP_PRIV_CLOCK_PCLKSCI4  = 16,
+    FSP_PRIV_CLOCK_PCLKSCI5  = 17,
+    FSP_PRIV_CLOCK_PCLKCAN   = 18,
+    FSP_PRIV_CLOCK_CKIO      = 19,
+    FSP_PRIV_CLOCK_XSPI0_CLK = 20,
+    FSP_PRIV_CLOCK_XSPI1_CLK = 21,
 } fsp_priv_clock_t;
 
 /***********************************************************************************************************************
  * Exported global variables
  **********************************************************************************************************************/
 extern const uint32_t g_bsp_system_clock_select[][2];
+extern const uint32_t g_bsp_system_clock_select_ckio[][2];
+extern const uint32_t g_bsp_system_clock_select_xspi_clk[][2];
 
 /***********************************************************************************************************************
  * Global variables (defined in other files)
@@ -348,6 +380,33 @@ __STATIC_INLINE uint32_t R_FSP_SystemClockHzGet (fsp_priv_clock_t clock)
         case FSP_PRIV_CLOCK_PCLKSCI5:
         {
             clock_hz = g_bsp_system_clock_select[clock][R_SYSC_S->SCKCR2_b.SCI5ASYNCSEL];
+            break;
+        }
+
+        case FSP_PRIV_CLOCK_PCLKCAN:
+        {
+            clock_hz = g_bsp_system_clock_select[clock][R_SYSC_NS->SCKCR_b.FSELCANFD];
+            break;
+        }
+
+        case FSP_PRIV_CLOCK_CKIO:
+        {
+            uint32_t ckio = R_SYSC_NS->SCKCR_b.CKIO;
+            clock_hz = g_bsp_system_clock_select_ckio[ckio][R_SYSC_S->SCKCR2_b.DIVSELSUB];
+            break;
+        }
+
+        case FSP_PRIV_CLOCK_XSPI0_CLK:
+        {
+            uint32_t fselxspi0 = R_SYSC_NS->SCKCR_b.FSELXSPI0;
+            clock_hz = g_bsp_system_clock_select_xspi_clk[fselxspi0][R_SYSC_NS->SCKCR_b.DIVSELXSPI0];
+            break;
+        }
+
+        case FSP_PRIV_CLOCK_XSPI1_CLK:
+        {
+            uint32_t fselxspi1 = R_SYSC_NS->SCKCR_b.FSELXSPI1;
+            clock_hz = g_bsp_system_clock_select_xspi_clk[fselxspi1][R_SYSC_NS->SCKCR_b.DIVSELXSPI1];
             break;
         }
 

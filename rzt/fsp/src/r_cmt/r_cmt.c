@@ -507,7 +507,7 @@ static void cmt_hardware_initialize (cmt_instance_ctrl_t * const p_instance_ctrl
      * TIMER_SOURCE_DIV_32 = 5 -> CMCR.CKS = 1 (32 division)
      * TIMER_SOURCE_DIV_128 = 7 -> CMCR.CKS = 2 (128 division)
      * TIMER_SOURCE_DIV_512 = 9 -> CMCR.CKS = 3 (512 division) */
-    uint32_t cmcr_cks = ((p_cfg->source_div & CMT_CMCR_CKS_VALUE_MASK) - 3) / 2;
+    uint32_t cmcr_cks = (((p_cfg->source_div & 0x0FU) - 3) / 2) & CMT_CMCR_CKS_VALUE_MASK;
 
     /* Enable CMI interrupts. */
     uint32_t cmcr = (cmcr_cks << R_CMT_UNT_CM_CR_CKS_Pos) | (R_CMT_UNT_CM_CR_CMIE_Msk);

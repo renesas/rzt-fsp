@@ -49,7 +49,7 @@ FSP_HEADER
  * Macro definitions
  ***********************************************************************************************************************/
 #define ICU_INTER_CPU_IRQ_API_VERSION_MAJOR    (1U)
-#define ICU_INTER_CPU_IRQ_API_VERSION_MINOR    (0U)
+#define ICU_INTER_CPU_IRQ_API_VERSION_MINOR    (1U)
 
 /***********************************************************************************************************************
  * Typedef definitions

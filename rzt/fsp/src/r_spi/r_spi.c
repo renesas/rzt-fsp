@@ -171,7 +171,7 @@ const spi_api_t g_spi_on_spi =
  *
  * This function performs the following tasks:
  * - Performs parameter checking and processes error conditions.
- * - Configures the pperipheral registers acording to the configuration.
+ * - Configures the peripheral registers according to the configuration.
  * - Initialize the control structure for use in other @ref SPI_API functions.
  *
  * @retval     FSP_SUCCESS                     Channel initialized successfully.

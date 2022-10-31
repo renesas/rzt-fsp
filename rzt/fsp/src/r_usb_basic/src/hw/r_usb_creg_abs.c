@@ -39,6 +39,7 @@
  ******************************************************************************/
 #define USB_READ_PIPECTR_CNT    (0xFFFFU)
 #define USB_VALUE_100           (100)
+#define USB_VALUE_4000          (4000U)
 
 /******************************************************************************
  * Exported global variables (to be accessed by other files)
@@ -377,7 +378,7 @@ uint16_t usb_cstd_is_set_frdy (usb_utr_t * ptr, uint16_t pipe, uint16_t fifosel,
 
     /* WAIT_LOOP */
 
-    for (i = 0; i < USB_VALUE_100; i++)
+    for (i = 0; i < USB_VALUE_4000; i++)
     {
         buffer = hw_usb_read_fifoctr(ptr, fifosel);
 
@@ -396,8 +397,6 @@ uint16_t usb_cstd_is_set_frdy (usb_utr_t * ptr, uint16_t pipe, uint16_t fifosel,
         (void) buffer;
         buffer = hw_usb_read_syssts(ptr);
         (void) buffer;
-
-        usb_cpu_delay_1us((uint16_t) 10);
 
         /*************************************/
     }

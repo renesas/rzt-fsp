@@ -26,8 +26,6 @@
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define BSP_RESET_MRCTL_BIT_SHIFT_MASK    (0x0000001FU)
-#define BSP_RESET_MRCTL_SELECT_MASK       (0x001F0000U)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -42,110 +40,57 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @addtogroup BSP_MCU
- *
+ * @addtogroup BSP_MCU_RZT2M
  * @{
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * Occur the system software reset.
+ * Invalidates instruction and data caches of arm core processor.
+ * Use the MRC or MCR instructions to access coprocessor registers. If you access the coprocessor with a C compiler,
+ * use inline assembly language.
  **********************************************************************************************************************/
-void R_BSP_SystemReset (void)
+void R_BSP_CacheInvalidate (void)
 {
-    /* System software reset. */
-    R_SYSC_S->SWRSYS = BSP_PRV_RESET_KEY;
+    __asm volatile (
+
+        "    push    {r4, r5, r7, r9, r11}      \n" // ARM calling convention saves these
+
+        /* Ensure memory operations are completed this does cache write back */
+        "    dsb                                \n"
+
+        /* Invalidate instruction cache */
+        "    mov     r0, #0                     \n"
+        "    mcr     p15, 0, r0, c7, c5, 0      \n"
+
+        /* Invalidate data cache. RZ microprocessor only has L1 cache. */
+        "    mcr     p15, 2, r0, c0, c0, 0      \n" // Select Data L1 in Cache Size selection register
+        "    isb                                \n" // ISB to sync the change to the CacheSizeID reg
+        "    mrc     p15, 1, r1, c0, c0, 0      \n" // Read current Cache Size ID register to r1
+        "    and     r2, r1, #7                 \n" // Get the line length field in r2
+        "    add     r2, r2, #4                 \n" // Add 4 for the line length bit offset (log2 16 bytes)
+        "    ldr     r4, =0x3FF                 \n"
+        "    and     r4, r4, r1, LSR #3         \n" // r4 is the number of ways-1 (right aligned)
+        "    clz     r5, r4                     \n" // r5 is the bit position of the way size increment (CLZ = Count Leading Zeros)
+        "    ldr     r7, =0x7FFF                \n"
+        "    and     r7, r7, r1, LSR #13        \n" // r7 is the number of sets-1 (right aligned)
+        "invalidate_set:                        \n"
+        "    mov     r9, r4                     \n" // r9 working copy of number of ways-1 (right aligned)
+        "invalidate_way:                        \n"
+        "    lsl     r11, r9, r5                \n" // Left shift way number into r11
+        "    lsl     r12, r7, r2                \n" // Left shift set number into r12
+        "    orr     r11, r11, r12              \n" // Combine set number and way number
+        "    mcr     p15, 0, r11, c7, c6, 2     \n" // DCISW - data cache invalidate by set/way
+
+        "    subs    r9, r9, #1                 \n" // Decrement the way number
+        "    bge     invalidate_way             \n"
+
+        "    subs    r7, r7, #1                 \n" // Decrement the set number
+        "    bge     invalidate_set             \n"
+
+        "    pop     {r4, r5, r7, r9, r11}      \n" // Restore registers needed by C code
+        );
 }
 
 /*******************************************************************************************************************//**
- * Occur the CPU software reset.
- *
- * @param[in] cpu to be reset state.
+ * @} (end addtogroup BSP_MCU_RZT2M)
  **********************************************************************************************************************/
-void R_BSP_CPUReset (bsp_reset_t cpu)
-{
-    if (BSP_RESET_CPU0 == cpu)
-    {
-        /* CPU0 software reset. */
-        R_SYSC_S->SWRCPU0 = BSP_PRV_RESET_KEY;
-    }
-    else if (BSP_RESET_CPU1 == cpu)
-    {
-        /* CPU1 software reset. */
-        R_SYSC_S->SWRCPU1 = BSP_PRV_RESET_KEY;
-    }
-    else
-    {
-        /* Do Nothing. */
-    }
-}
-
-/*******************************************************************************************************************//**
- * Release the CPU reset state.
- *
- * @param[in] cpu to be release reset state.
- **********************************************************************************************************************/
-void R_BSP_CPUResetRelease (bsp_reset_t cpu)
-{
-    if (BSP_RESET_CPU0 == cpu)
-    {
-        /* Release CPU0 reset state. */
-        R_SYSC_S->SWRCPU0 = BSP_PRV_RESET_RELEASE_KEY;
-    }
-    else if (BSP_RESET_CPU1 == cpu)
-    {
-        /* Release CPU1 reset state. */
-        R_SYSC_S->SWRCPU1 = BSP_PRV_RESET_RELEASE_KEY;
-    }
-    else
-    {
-        /* Do Nothing. */
-    }
-}
-
-/*******************************************************************************************************************//**
- *        Enable module reset state.
- *
- * @param[in] module_to_enable Modules to enable module reset state.
- **********************************************************************************************************************/
-void R_BSP_ModuleResetEnable (bsp_module_reset_t module_to_enable)
-{
-    volatile uint32_t mrctl;
-    uint32_t        * p_reg;
-
-    p_reg = (uint32_t *) &R_SYSC_NS->MRCTLA +
-            (((uint32_t) module_to_enable & BSP_RESET_MRCTL_SELECT_MASK) >> 16U);
-    mrctl = (uint32_t) (1U << ((uint32_t) module_to_enable & BSP_RESET_MRCTL_BIT_SHIFT_MASK));
-
-    /** Enable module reset state using MRCTLE register. */
-    *p_reg |= mrctl;
-
-    /** To ensure processing after module reset. */
-    mrctl = *(volatile uint32_t *) (p_reg);
-}
-
-/*******************************************************************************************************************//**
- *        Disable module reset state.
- *
- * @param[in] module_to_disable Modules to disable module reset state.
- **********************************************************************************************************************/
-void R_BSP_ModuleResetDisable (bsp_module_reset_t module_to_disable)
-{
-    volatile uint32_t mrctl;
-    uint32_t        * p_reg;
-
-    p_reg = (uint32_t *) &R_SYSC_NS->MRCTLA +
-            (((uint32_t) module_to_disable & BSP_RESET_MRCTL_SELECT_MASK) >> 16U);
-    mrctl = (uint32_t) (1U << ((uint32_t) module_to_disable & BSP_RESET_MRCTL_BIT_SHIFT_MASK));
-
-    /** Disable module stop state using MRCTLn register. */
-    *p_reg &= ~mrctl;
-
-    /** In order to secure processing after release from module reset,
-     *  dummy read the same register at least three times.
-     *  Refer to "Notes on Module Reset Control Register Operation" of the RZ microprocessor manual. */
-    mrctl = *(volatile uint32_t *) (p_reg);
-    mrctl = *(volatile uint32_t *) (p_reg);
-    mrctl = *(volatile uint32_t *) (p_reg);
-}
-
-/** @} (end addtogroup BSP_MCU) */
