@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -37,13 +37,15 @@
 #define USB_OHCI_SHAREDMEMORYTYPE              (USB_OHCI_SHAREDMEMORYTYPE_PCI) /* Shared Memory Type */
 #define USB_OHCI_SHAREDMEMORY_OFFSET           (0x00000000U)                   /* Shared Memory Offset */
 
-#define USB_OHCI_NUM_REQUEST                   (USB_HCI_TRREQ_NUM)             /* The maximum number of Transfer Request memory */
+#define USB_OHCI_NUM_REQUEST                   (USB_OHCI_NUM_TD)               /* The maximum number of Transfer Request memory to td*/
 
 #define USB_OHCI_MAXDEVICE                     (USB_HCI_DEVICE_NUM)            /* The maximum number of OHCI Device */
 
-#define USB_OHCI_MAXENDPOINT                   (16U)                           /* The maximum number of OHCI Endpoint No. */
+#define USB_OHCI_DEVICE_ENDPOINT_MAX           (4)                             /* Max number of endpoints device have */
 
-#define USB_OHCI_NUM_DEVICEDATA                (1U)                            /* The maximum number of Dvice Data */
+#define USB_OHCI_MAXENDPOINT                   (16)                            /* The maximum number of OHCI Endpoint No. */
+
+#define USB_OHCI_NUM_DEVICEDATA                (1U)                            /* The maximum number of Dvice Data (Num of IP : HCCA address etc... )*/
 
 #define USB_OHCI_MAXROOTPORTS                  (1U)                            /* The maximum number of OHCI Rootport */
 

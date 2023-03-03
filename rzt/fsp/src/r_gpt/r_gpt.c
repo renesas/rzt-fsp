@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -431,8 +431,8 @@ fsp_err_t R_GPT_PeriodSet (timer_ctrl_t * const p_ctrl, uint32_t const period_co
          * "19.3.3 PWM Output Operating Mode" in the RZT2M manual R01UH0916EJ0063. To get a duty cycle
          * as close to 50% as possible, duty cycle (register) = (period (counts) / 2) - 1. */
         uint32_t duty_cycle_50_percent = (period_counts >> 1) - 1U;
-        p_instance_ctrl->p_reg->GTCCRC = duty_cycle_50_percent;
-        p_instance_ctrl->p_reg->GTCCRE = duty_cycle_50_percent;
+        p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRC] = duty_cycle_50_percent;
+        p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRE] = duty_cycle_50_percent;
     }
 #endif
 
@@ -493,25 +493,25 @@ fsp_err_t R_GPT_DutyCycleSet (timer_ctrl_t * const p_ctrl, uint32_t const duty_c
     {
         case GPT_PRV_GTCCRC:
         {
-            p_instance_ctrl->p_reg->GTCCRC = duty_regs.gtccr_buffer;
+            p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRC] = duty_regs.gtccr_buffer;
             break;
         }
 
         case GPT_PRV_GTCCRE:
         {
-            p_instance_ctrl->p_reg->GTCCRE = duty_regs.gtccr_buffer;
+            p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRE] = duty_regs.gtccr_buffer;
             break;
         }
 
         case GPT_PRV_GTCCRD:
         {
-            p_instance_ctrl->p_reg->GTCCRD = duty_regs.gtccr_buffer;
+            p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRD] = duty_regs.gtccr_buffer;
             break;
         }
 
         case GPT_PRV_GTCCRF:
         {
-            p_instance_ctrl->p_reg->GTCCRF = duty_regs.gtccr_buffer;
+            p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRF] = duty_regs.gtccr_buffer;
             break;
         }
 
@@ -820,7 +820,7 @@ fsp_err_t R_GPT_Close (timer_ctrl_t * const p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Sets driver version based on compile time macros. Implements @ref timer_api_t::versionGet.
+ * DEPRECATED Sets driver version based on compile time macros. Implements @ref timer_api_t::versionGet.
  *
  * @retval FSP_SUCCESS                 Version stored in p_version.
  * @retval FSP_ERR_ASSERTION           p_version was NULL.
@@ -1000,8 +1000,8 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
     }
 
     /* Set the compare match and compare match buffer registers based on previously calculated values. */
-    p_instance_ctrl->p_reg->GTCCRC = duty_regs.gtccr_buffer;
-    p_instance_ctrl->p_reg->GTCCRE = duty_regs.gtccr_buffer;
+    p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRC] = duty_regs.gtccr_buffer;
+    p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRE] = duty_regs.gtccr_buffer;
 
     /* If the requested duty cycle is 0% or 100%, set this in the registers. */
     gtuddtyc |= duty_regs.omdty << R_GPT7_GTUDDTYC_OADTY_Pos;
@@ -1095,8 +1095,8 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
          * The buffer is enabled to set the compare match to UINT32_MAX after the one shot pulse is output
          * so that the pin level will not change if the period expires again before the timer is stopped in
          * the interrupt.*/
-        p_instance_ctrl->p_reg->GTCCRA = 0U;
-        p_instance_ctrl->p_reg->GTCCRB = 0U;
+        p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRA] = 0U;
+        p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRB] = 0U;
     }
 #endif
 
@@ -1506,11 +1506,11 @@ static void r_gpt_capture_common_isr (gpt_prv_capture_event_t event)
     /* Get captured value. */
     if (event == GPT_PRV_CAPTURE_EVENT_A)
     {
-        counter = p_instance_ctrl->p_reg->GTCCRA;
+        counter = p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRA];
     }
     else
     {
-        counter = p_instance_ctrl->p_reg->GTCCRB;
+        counter = p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRB];
     }
 
     /* If we captured a one-shot pulse, then disable future captures. */
@@ -1556,9 +1556,9 @@ void gpt_counter_overflow_isr (void)
         p_instance_ctrl->p_reg->GTSTP = p_instance_ctrl->channel_mask;
 
         /* Clear the GPT counter and the overflow flag after the one shot pulse has being generated */
-        p_instance_ctrl->p_reg->GTCNT  = 0;
-        p_instance_ctrl->p_reg->GTCCRA = 0;
-        p_instance_ctrl->p_reg->GTCCRB = 0;
+        p_instance_ctrl->p_reg->GTCNT                 = 0;
+        p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRA] = 0;
+        p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRB] = 0;
 
         r_gpt_write_protect_enable(p_instance_ctrl);
 

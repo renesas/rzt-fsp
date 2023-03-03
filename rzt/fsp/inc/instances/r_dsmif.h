@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,8 +40,8 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 
-#define DSMIF_CODE_VERSION_MAJOR    (1U)
-#define DSMIF_CODE_VERSION_MINOR    (0U)
+#define DSMIF_CODE_VERSION_MAJOR    (1U) // DEPRECATED
+#define DSMIF_CODE_VERSION_MINOR    (2U) // DEPRECATED
 
 #define DSMIF_MAX_NUM_CHANNELS      (3U)
 
@@ -221,6 +221,7 @@ typedef struct
         uint32_t results_32[DSMIF_MAX_NUM_CHANNELS];
     } results;
     void (* p_callback)(adc_callback_args_t *); // Pointer to callback that is called when an dsmif_event_t occurs.
+    adc_callback_args_t * p_callback_memory;    // Pointer to non-secure memory that can be used to pass arguments to a callback in non-secure memory.
 
     /* Pointer to context to be passed into callback function */
     void const * p_context;
@@ -247,6 +248,10 @@ fsp_err_t R_DSMIF_Read(adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint32_t
 fsp_err_t R_DSMIF_StatusGet(adc_ctrl_t * p_ctrl, adc_status_t * p_status);
 fsp_err_t R_DSMIF_Close(adc_ctrl_t * p_ctrl);
 fsp_err_t R_DSMIF_VersionGet(fsp_version_t * const p_version);
+fsp_err_t R_DSMIF_CallbackSet(adc_ctrl_t * const          p_api_ctrl,
+                              void (                    * p_callback)(adc_callback_args_t *),
+                              void const * const          p_context,
+                              adc_callback_args_t * const p_callback_memory);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup DSMIF)

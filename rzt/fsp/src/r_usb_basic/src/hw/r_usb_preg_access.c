@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -43,10 +43,10 @@
  ******************************************************************************/
 void hw_usb_pset_dprpu (uint8_t usb_ip)
 {
- #if defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     FSP_PARAMETER_NOT_USED(usb_ip);
     USB_M0->SYSCFG0 |= USB_DPRPU;
- #else                                 /* defined(BSP_MCU_GROUP_RZT2M) */
+ #else                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
     if (USB_CFG_IP0 == usb_ip)
     {
         USB_M0->SYSCFG |= USB_DPRPU;
@@ -55,7 +55,7 @@ void hw_usb_pset_dprpu (uint8_t usb_ip)
     {
         USB_M1->SYSCFG |= USB_DPRPU;
     }
- #endif                                /* defined(BSP_MCU_GROUP_RZT2M) */
+ #endif                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 }
 
 /******************************************************************************
@@ -72,10 +72,10 @@ void hw_usb_pset_dprpu (uint8_t usb_ip)
  ******************************************************************************/
 void hw_usb_pclear_dprpu (uint8_t usb_ip)
 {
- #if defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     FSP_PARAMETER_NOT_USED(usb_ip);
     USB_M0->SYSCFG0 = (uint16_t) (USB_M0->SYSCFG0 & (~USB_DPRPU));
- #else                                 /* defined(BSP_MCU_GROUP_RZT2M) */
+ #else                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
     if (USB_CFG_IP0 == usb_ip)
     {
         USB_M0->SYSCFG = (uint16_t) (USB_M0->SYSCFG & (~USB_DPRPU));
@@ -84,7 +84,7 @@ void hw_usb_pclear_dprpu (uint8_t usb_ip)
     {
         USB_M1->SYSCFG = (uint16_t) (USB_M1->SYSCFG & (~USB_DPRPU));
     }
- #endif                                /* defined(BSP_MCU_GROUP_RZT2M) */
+ #endif                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 }
 
 /******************************************************************************
@@ -232,7 +232,7 @@ void hw_usb_pset_ccpl (uint8_t usb_ip)
  ******************************************************************************/
 void hw_usb_pmodule_init (uint8_t usb_ip)
 {
- #if defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     FSP_PARAMETER_NOT_USED(usb_ip);
     USB_M0->SYSCFG1   = (USB_CFG_BUSWAIT & USB_VAL_BWAIT3F);
     USB_M0->CFIFOSEL  = USB0_CFIFO_MBW;
@@ -243,7 +243,7 @@ void hw_usb_pmodule_init (uint8_t usb_ip)
     USB_M0->D0FIFOSEL |= USB_BIGEND;
     USB_M0->D1FIFOSEL |= USB_BIGEND;
   #endif                               /* USB_CFG_ENDIAN == USB_CFG_BIG */
- #else  /* defined(BSP_MCU_GROUP_RZT2M) */
+ #else  /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
     if (USB_CFG_IP0 == usb_ip)
     {
         USB_M0->SYSCFG |= USB_SCKE;
@@ -326,7 +326,7 @@ void hw_usb_pmodule_init (uint8_t usb_ip)
         USB_M1->INTENB0 = (USB_BEMPE | USB_BRDYE | USB_VBSE | USB_DVSE | USB_CTRE);
   #endif                               /* defined(BSP_MCU_GROUP_RA6M3) */
     }
- #endif  /* defined(BSP_MCU_GROUP_RZT2M) */
+ #endif  /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 }
 
 /******************************************************************************
@@ -343,7 +343,7 @@ void hw_usb_pmodule_init (uint8_t usb_ip)
  ******************************************************************************/
 void hw_usb_pcontrol_dprpu (uint8_t usb_ip, uint8_t state)
 {
- #if defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     FSP_PARAMETER_NOT_USED(usb_ip);
     if (USB_ON == state)
     {
@@ -353,7 +353,7 @@ void hw_usb_pcontrol_dprpu (uint8_t usb_ip, uint8_t state)
     {
         USB_M0->SYSCFG0 &= (uint16_t) (~USB_DPRPU);
     }
- #else                                 /* defined(BSP_MCU_GROUP_RZT2M) */
+ #else                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
     if (USB_IP0 == usb_ip)
     {
         if (USB_ON == state)
@@ -376,7 +376,7 @@ void hw_usb_pcontrol_dprpu (uint8_t usb_ip, uint8_t state)
             USB_M1->SYSCFG &= (uint16_t) (~USB_DPRPU);
         }
     }
- #endif                                /* defined(BSP_MCU_GROUP_RZT2M) */
+ #endif                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 }
 
 /******************************************************************************

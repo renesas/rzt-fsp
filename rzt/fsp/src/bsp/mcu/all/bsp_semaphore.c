@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -45,16 +45,11 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @addtogroup BSP_MCU
- *
- * @{
- **********************************************************************************************************************/
-
-/*******************************************************************************************************************//**
  * Semaphore initialization.
  **********************************************************************************************************************/
 void bsp_semaphore_init (void)
 {
+#if BSP_FEATURE_SEM_SUPPORTED
     uint32_t sem_num;
 
     /* Disable register protection for semaphore related registers. */
@@ -71,6 +66,5 @@ void bsp_semaphore_init (void)
 
     /* Enable register protection for semaphore related registers. */
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
+#endif
 }
-
-/** @} (end addtogroup BSP_MCU) */

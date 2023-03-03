@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -16,11 +16,6 @@
  * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
  * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
  * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
-
-/*******************************************************************************************************************//**
- * @addtogroup BSP_MCU
- * @{
  **********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -97,6 +92,16 @@
   #define BSP_PRV_M_MPU6_STADD6      (BSP_CFG_MPU6_STADD6 | (BSP_CFG_MPU6_WRITE6 << 1) | BSP_CFG_MPU6_READ6)
   #define BSP_PRV_M_MPU6_STADD7      (BSP_CFG_MPU6_STADD7 | (BSP_CFG_MPU6_WRITE7 << 1) | BSP_CFG_MPU6_READ7)
  #endif
+ #if defined(BSP_M_MPU7_SUPPORT)
+  #define BSP_PRV_M_MPU7_STADD0      (BSP_CFG_MPU7_STADD0 | (BSP_CFG_MPU7_WRITE0 << 1) | BSP_CFG_MPU7_READ0)
+  #define BSP_PRV_M_MPU7_STADD1      (BSP_CFG_MPU7_STADD1 | (BSP_CFG_MPU7_WRITE1 << 1) | BSP_CFG_MPU7_READ1)
+  #define BSP_PRV_M_MPU7_STADD2      (BSP_CFG_MPU7_STADD2 | (BSP_CFG_MPU7_WRITE2 << 1) | BSP_CFG_MPU7_READ2)
+  #define BSP_PRV_M_MPU7_STADD3      (BSP_CFG_MPU7_STADD3 | (BSP_CFG_MPU7_WRITE3 << 1) | BSP_CFG_MPU7_READ3)
+  #define BSP_PRV_M_MPU7_STADD4      (BSP_CFG_MPU7_STADD4 | (BSP_CFG_MPU7_WRITE4 << 1) | BSP_CFG_MPU7_READ4)
+  #define BSP_PRV_M_MPU7_STADD5      (BSP_CFG_MPU7_STADD5 | (BSP_CFG_MPU7_WRITE5 << 1) | BSP_CFG_MPU7_READ5)
+  #define BSP_PRV_M_MPU7_STADD6      (BSP_CFG_MPU7_STADD6 | (BSP_CFG_MPU7_WRITE6 << 1) | BSP_CFG_MPU7_READ6)
+  #define BSP_PRV_M_MPU7_STADD7      (BSP_CFG_MPU7_STADD7 | (BSP_CFG_MPU7_WRITE7 << 1) | BSP_CFG_MPU7_READ7)
+ #endif
 #endif
 
 /***********************************************************************************************************************
@@ -107,8 +112,15 @@
  * Exported global variables (to be accessed by other files)
  **********************************************************************************************************************/
 
+/*******************************************************************************************************************//**
+ * @addtogroup BSP_MCU
+ * @{
+ **********************************************************************************************************************/
+
 /** System Clock Frequency (Core Clock) */
 uint32_t SystemCoreClock = 0U;
+
+/** @} (end addtogroup BSP_MCU) */
 
 #if defined(__ICCARM__)
 
@@ -216,6 +228,14 @@ uint32_t m_mpu6_stadd_cfg[8] =
     BSP_PRV_M_MPU6_STADD6, BSP_PRV_M_MPU6_STADD7
 };
  #endif
+ #if defined(BSP_M_MPU7_SUPPORT)
+uint32_t m_mpu7_stadd_cfg[8] =
+{
+    BSP_PRV_M_MPU7_STADD0, BSP_PRV_M_MPU7_STADD1, BSP_PRV_M_MPU7_STADD2,
+    BSP_PRV_M_MPU7_STADD3, BSP_PRV_M_MPU7_STADD4, BSP_PRV_M_MPU7_STADD5,
+    BSP_PRV_M_MPU7_STADD6, BSP_PRV_M_MPU7_STADD7
+};
+ #endif
  #if defined(BSP_M_MPU0_SUPPORT)
 uint32_t m_mpu0_endadd_cfg[8] =
 {
@@ -262,6 +282,14 @@ uint32_t m_mpu6_endadd_cfg[8] =
     BSP_CFG_MPU6_ENDADD0, BSP_CFG_MPU6_ENDADD1, BSP_CFG_MPU6_ENDADD2,
     BSP_CFG_MPU6_ENDADD3, BSP_CFG_MPU6_ENDADD4, BSP_CFG_MPU6_ENDADD5,
     BSP_CFG_MPU6_ENDADD6, BSP_CFG_MPU6_ENDADD7
+};
+ #endif
+ #if defined(BSP_M_MPU7_SUPPORT)
+uint32_t m_mpu7_endadd_cfg[8] =
+{
+    BSP_CFG_MPU7_ENDADD0, BSP_CFG_MPU7_ENDADD1, BSP_CFG_MPU7_ENDADD2,
+    BSP_CFG_MPU7_ENDADD3, BSP_CFG_MPU7_ENDADD4, BSP_CFG_MPU7_ENDADD5,
+    BSP_CFG_MPU7_ENDADD6, BSP_CFG_MPU7_ENDADD7
 };
  #endif
 #endif
@@ -320,6 +348,10 @@ void bsp_m_mpu_init (void)
         R_MPU6->RGN[region_num].STADD  = m_mpu6_stadd_cfg[region_num];
         R_MPU6->RGN[region_num].ENDADD = m_mpu6_endadd_cfg[region_num];
  #endif
+ #if defined(BSP_M_MPU7_SUPPORT)
+        R_MPU7->RGN[region_num].STADD  = m_mpu7_stadd_cfg[region_num];
+        R_MPU7->RGN[region_num].ENDADD = m_mpu7_endadd_cfg[region_num];
+ #endif
     }
 
     /* Enable register protection for Master-MPU related registers. */
@@ -340,6 +372,11 @@ void bsp_global_system_counter_init (void)
 }
 
 #endif
+
+/*******************************************************************************************************************//**
+ * @addtogroup BSP_MCU
+ * @{
+ **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
  * This function is called at various points during the startup process.
@@ -369,6 +406,8 @@ void R_BSP_WarmStart (bsp_warm_start_event_t event)
         /* Do nothing */
     }
 }
+
+/** @} (end addtogroup BSP_MCU) */
 
 #if !(BSP_CFG_RAM_EXECUTION)
 
@@ -673,5 +712,3 @@ BSP_DONT_REMOVE fsp_vector_t g_sgi_ppi_vector_table[BSP_CORTEX_VECTOR_TABLE_ENTR
     NULL,                              /* INTID30   : NON-SECURE_PHYSICAL_TIMER_INT            */
     NULL,                              /* INTID31   : RESERVED                                 */
 };
-
-/** @} (end addtogroup BSP_MCU) */

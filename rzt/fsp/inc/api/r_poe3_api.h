@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -51,8 +51,8 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define POE3_API_VERSION_MAJOR    (1U)
-#define POE3_API_VERSION_MINOR    (0U)
+#define POE3_API_VERSION_MAJOR    (1U) // DEPRECATED
+#define POE3_API_VERSION_MINOR    (2U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -77,6 +77,11 @@ typedef enum e_poe3_state
 
     POE3_STATE_OSF1_ERROR_REQUEST = 1U << 9,               ///< OCSR1 Flag by POE3
     POE3_STATE_OSF2_ERROR_REQUEST = 1U << 10,              ///< OCSR2 Flag by POE3
+
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    POE3_STATE_DSMIF0_1_ERROR_REQUEST = 1U << 11,          ///< ICSR7 Flag by POE3
+    POE3_STATE_DSMIF1_1_ERROR_REQUEST = 1U << 12,          ///< ICSR7 Flag by POE3
+#endif
 } poe3_state_t;
 
 /** Active level for short circuit detection. */
@@ -127,7 +132,7 @@ typedef enum e_poe3_mtioc0b_pin_select
     POE3_MTIOC0B_PIN_SELECT_P11_5 = 0, ///< Controls the high-impedance state of P11_5 when it is in use as the MTIOC0B pin.
     POE3_MTIOC0B_PIN_SELECT_P14_4 = 1, ///< Controls the high-impedance state of P14_4 when it is in use as the MTIOC0B pin.
     POE3_MTIOC0B_PIN_SELECT_P24_0 = 2, ///< Controls the high-impedance state of P24_0 when it is in use as the MTIOC0B pin.
-    POE3_MTIOC0B_PIN_SELECT_P23_3 = 3  ///< Controls the high-impedance state of P23_3 when it is in use as the MTIOC0B pin.
+    POE3_MTIOC0B_PIN_SELECT_P13_3 = 3  ///< Controls the high-impedance state of P13_3 when it is in use as the MTIOC0B pin.
 } poe3_mtioc0b_pin_select_t;
 
 /* MTIOC0C Pin Select */
@@ -152,7 +157,11 @@ typedef enum e_poe3_mtioc3b_pin_select
 {
     POE3_MTIOC3B_PIN_SELECT_P17_6 = 0, ///< Controls the high-impedance state of P17_6 when it is in use as the MTIOC3B pin.
     POE3_MTIOC3B_PIN_SELECT_P00_6 = 1, ///< Controls the high-impedance state of P00_6 when it is in use as the MTIOC3B pin.
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     POE3_MTIOC3B_PIN_SELECT_P03_6 = 2  ///< Controls the high-impedance state of P03_6 when it is in use as the MTIOC3B pin.
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    POE3_MTIOC3B_PIN_SELECT_P08_6 = 2  ///< Controls the high-impedance state of P08_6 when it is in use as the MTIOC3B pin.
+#endif
 } poe3_mtioc3b_pin_select_t;
 
 /* MTIOC3D Pin Select */
@@ -160,7 +169,11 @@ typedef enum e_poe3_mtioc3d_pin_select
 {
     POE3_MTIOC3D_PIN_SELECT_P18_1 = 0, ///< Controls the high-impedance state of P18_1 when it is in use as the MTIOC3D pin.
     POE3_MTIOC3D_PIN_SELECT_P01_1 = 1, ///< Controls the high-impedance state of P01_1 when it is in use as the MTIOC3D pin.
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     POE3_MTIOC3D_PIN_SELECT_P04_0 = 2  ///< Controls the high-impedance state of P04_0 when it is in use as the MTIOC3D pin.
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    POE3_MTIOC3D_PIN_SELECT_P08_7 = 2  ///< Controls the high-impedance state of P08_7 when it is in use as the MTIOC3D pin.
+#endif
 } poe3_mtioc3d_pin_select_t;
 
 /* MTIOC4B Pin Select */
@@ -168,7 +181,11 @@ typedef enum e_poe3_mtioc4b_pin_select
 {
     POE3_MTIOC4B_PIN_SELECT_P18_2 = 0, ///< Controls the high-impedance state of P18_2 when it is in use as the MTIOC4B pin.
     POE3_MTIOC4B_PIN_SELECT_P01_2 = 1, ///< Controls the high-impedance state of P01_2 when it is in use as the MTIOC4B pin.
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     POE3_MTIOC4B_PIN_SELECT_P05_1 = 2, ///< Controls the high-impedance state of P05_1 when it is in use as the MTIOC4B pin.
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    POE3_MTIOC4B_PIN_SELECT_P09_2 = 2, ///< Controls the high-impedance state of P09_2 when it is in use as the MTIOC4B pin.
+#endif
     POE3_MTIOC4B_PIN_SELECT_P18_3 = 3  ///< Controls the high-impedance state of P18_3 when it is in use as the MTIOC4B pin.
 } poe3_mtioc4b_pin_select_t;
 
@@ -177,7 +194,11 @@ typedef enum e_poe3_mtioc4d_pin_select
 {
     POE3_MTIOC4D_PIN_SELECT_P18_3 = 0, ///< Controls the high-impedance state of P18_3 when it is in use as the MTIOC4D pin.
     POE3_MTIOC4D_PIN_SELECT_P01_3 = 1, ///< Controls the high-impedance state of P01_3 when it is in use as the MTIOC4D pin.
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     POE3_MTIOC4D_PIN_SELECT_P05_3 = 2, ///< Controls the high-impedance state of P05_3 when it is in use as the MTIOC4D pin.
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    POE3_MTIOC4D_PIN_SELECT_P09_3 = 2, ///< Controls the high-impedance state of P09_3 when it is in use as the MTIOC4D pin.
+#endif
     POE3_MTIOC4D_PIN_SELECT_P18_2 = 3  ///< Controls the high-impedance state of P18_2 when it is in use as the MTIOC4D pin.
 } poe3_mtioc4d_pin_select_t;
 
@@ -185,8 +206,13 @@ typedef enum e_poe3_mtioc4d_pin_select
 typedef enum e_poe3_mtioc4a_pin_select
 {
     POE3_MTIOC4A_PIN_SELECT_P17_7 = 0, ///< Controls the high-impedance state of P17_7 when it is in use as the MTIOC4A pin.
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     POE3_MTIOC4A_PIN_SELECT_P00_7 = 1, ///< Controls the high-impedance state of P00_7 when it is in use as the MTIOC4A pin.
     POE3_MTIOC4A_PIN_SELECT_P05_0 = 2, ///< Controls the high-impedance state of P05_0 when it is in use as the MTIOC4A pin.
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    POE3_MTIOC4A_PIN_SELECT_P01_5 = 1, ///< Controls the high-impedance state of P01_5 when it is in use as the MTIOC4A pin.
+    POE3_MTIOC4A_PIN_SELECT_P09_0 = 2, ///< Controls the high-impedance state of P09_0 when it is in use as the MTIOC4A pin.
+#endif
     POE3_MTIOC4A_PIN_SELECT_P18_0 = 3  ///< Controls the high-impedance state of P18_0 when it is in use as the MTIOC4A pin.
 } poe3_mtioc4a_pin_select_t;
 
@@ -195,7 +221,11 @@ typedef enum e_poe3_mtioc4c_pin_select
 {
     POE3_MTIOC4C_PIN_SELECT_P18_0 = 0, ///< Controls the high-impedance state of P18_0 when it is in use as the MTIOC4C pin.
     POE3_MTIOC4C_PIN_SELECT_P01_0 = 1, ///< Controls the high-impedance state of P01_0 when it is in use as the MTIOC4C pin.
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     POE3_MTIOC4C_PIN_SELECT_P05_2 = 2, ///< Controls the high-impedance state of P05_2 when it is in use as the MTIOC4C pin.
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    POE3_MTIOC4C_PIN_SELECT_P09_1 = 2, ///< Controls the high-impedance state of P09_1 when it is in use as the MTIOC4C pin.
+#endif
     POE3_MTIOC4C_PIN_SELECT_P17_7 = 3  ///< Controls the high-impedance state of P17_7 when it is in use as the MTIOC4C pin.
 } poe3_mtioc4c_pin_select_t;
 
@@ -409,16 +439,20 @@ typedef void poe3_ctrl_t;
 /** User configuration structure, used in the open function. */
 typedef struct st_poe3_cfg
 {
-    poe3_poe0_setting_t                 poe0;             ///< Setting for the POE0#.
-    poe3_poe4_setting_t                 poe4;             ///< Setting for the POE4#.
-    poe3_poe8_setting_t                 poe8;             ///< Setting for the POE8#.
-    poe3_poe10_setting_t                poe10;            ///< Setting for the POE10#.
-    poe3_poe10_setting_t                poe11;            ///< Setting for the POE11#.
-    poe3_hiz_output_enable_t            oscillation_stop; ///< High impedance output when the oscillator is stopped.
-    poe3_hiz_output_enable_t            dsmif0_error;     ///< High impedance output when the DSMIF0 is error.
-    poe3_hiz_output_enable_t            dsmif1_error;     ///< High impedance output when the DSMIF1 is error.
-    poe3_output_short_circuit_setting_t short_circuit1;   ///< High impedance output when the output short circuit 1.
-    poe3_output_short_circuit_setting_t short_circuit2;   ///< High impedance output when the output short circuit 2.
+    poe3_poe0_setting_t      poe0;                      ///< Setting for the POE0#.
+    poe3_poe4_setting_t      poe4;                      ///< Setting for the POE4#.
+    poe3_poe8_setting_t      poe8;                      ///< Setting for the POE8#.
+    poe3_poe10_setting_t     poe10;                     ///< Setting for the POE10#.
+    poe3_poe10_setting_t     poe11;                     ///< Setting for the POE11#.
+    poe3_hiz_output_enable_t oscillation_stop;          ///< High impedance output when the oscillator is stopped.
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    poe3_hiz_output_enable_t dsmif0_error_1;            ///< High impedance output when the DSMIF0 Error 1 is error.
+    poe3_hiz_output_enable_t dsmif1_error_1;            ///< High impedance output when the DSMIF1 Error 1 is error.
+#endif
+    poe3_hiz_output_enable_t            dsmif0_error;   ///< High impedance output when the DSMIF0 is error.
+    poe3_hiz_output_enable_t            dsmif1_error;   ///< High impedance output when the DSMIF1 is error.
+    poe3_output_short_circuit_setting_t short_circuit1; ///< High impedance output when the output short circuit 1.
+    poe3_output_short_circuit_setting_t short_circuit2; ///< High impedance output when the output short circuit 2.
 
     /** Callback called when a POE3 interrupt occurs. */
     void (* p_callback)(poe3_callback_args_t * p_args);
@@ -473,7 +507,7 @@ typedef struct st_poe3_api
      */
     fsp_err_t (* close)(poe3_ctrl_t * const p_ctrl);
 
-    /** Get version and stores it in provided pointer p_version.
+    /** DEPRECATED - Get version and stores it in provided pointer p_version.
      * @par Implemented as
      * - @ref R_POE3_VersionGet()
      *

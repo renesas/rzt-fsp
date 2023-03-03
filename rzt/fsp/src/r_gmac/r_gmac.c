@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -235,10 +235,15 @@ static fsp_err_t gmac_write_param_check(gmac_instance_ctrl_t * p_instance_ctrl,
                                         void * const           p_buffer,
                                         uint32_t const         frame_length);
 
-static void      gmac_enable_icu(gmac_instance_ctrl_t * const p_instance_ctrl);
-static void      gmac_disable_icu(gmac_instance_ctrl_t * const p_instance_ctrl);
-static void      gmac_reset_mac(volatile R_GMAC_Type * const p_reg);
+static void gmac_enable_icu(gmac_instance_ctrl_t * const p_instance_ctrl);
+static void gmac_disable_icu(gmac_instance_ctrl_t * const p_instance_ctrl);
+static void gmac_reset_mac(volatile R_GMAC_Type * const p_reg);
+
+#ifdef GMAC_IMPLEMENT_ETHSW
 static fsp_err_t gmac_open_ethsw(gmac_instance_ctrl_t * p_instance_ctrl);
+
+#endif                                 // GMAC_IMPLEMENT_ETHSW
+
 static fsp_err_t gmac_open_phy(gmac_instance_ctrl_t * p_instance_ctrl);
 static void      gmac_init_descriptors(gmac_instance_ctrl_t * const p_instance_ctrl);
 static fsp_err_t gmac_buffer_get(gmac_instance_ctrl_t * const p_instance_ctrl,
@@ -267,7 +272,11 @@ static uint8_t   gmac_check_magic_packet_detection_bit(gmac_instance_ctrl_t cons
 
 void gmac_isr_sbd(void);
 void gmac_isr_pmt(void);
+
+#ifdef GMAC_IMPLEMENT_ETHSW
 void gmac_callback_ethsw(ethsw_callback_args_t * const p_arg);
+
+#endif                                 // GMAC_IMPLEMENT_ETHSW
 
 /***********************************************************************************************************************
  * Private global variables
@@ -414,11 +423,11 @@ fsp_err_t R_GMAC_Open (ether_ctrl_t * const p_ctrl, ether_cfg_t const * const p_
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC_HCLK);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
-    /* Software reset */
-    gmac_reset_mac(p_instance_ctrl->p_reg_gmac);
+#ifdef GMAC_IMPLEMENT_ETHSW
 
     /* Open Ether-Switch Driver */
     err = gmac_open_ethsw(p_instance_ctrl);
+#endif                                 // GMAC_IMPLEMENT_ETHSW
 
     if (FSP_SUCCESS == err)
     {
@@ -433,6 +442,13 @@ fsp_err_t R_GMAC_Open (ether_ctrl_t * const p_ctrl, ether_cfg_t const * const p_
 
     if (FSP_SUCCESS == err)
     {
+        /* Software reset */
+        gmac_reset_mac(p_instance_ctrl->p_reg_gmac);
+
+        p_reg_gmac->Interrupt_Mask_b.LPIIM = 1; /* LPI Interrupt Disable */
+        p_reg_gmac->Interrupt_Mask_b.TSIM  = 1; /* Timestamo Interrupt Disable */
+        p_reg_gmac->Interrupt_Mask_b.PMTIM = 1; /* PMT Interrupt Disable */
+
         gmac_enable_icu(p_instance_ctrl);
         p_instance_ctrl->open = GMAC_OPEN;
     }
@@ -479,7 +495,9 @@ fsp_err_t R_GMAC_Close (ether_ctrl_t * const p_ctrl)
         }
     }
 
+#ifdef GMAC_IMPLEMENT_ETHSW
     p_extend->p_ethsw_instance->p_api->close(p_extend->p_ethsw_instance->p_ctrl);
+#endif                                 // GMAC_IMPLEMENT_ETHSW
 
     p_reg_gmac->Interrupt_Enable = 0;
 
@@ -1091,7 +1109,7 @@ fsp_err_t R_GMAC_TxStatusGet (ether_ctrl_t * const p_ctrl, void * const p_buffer
 }                                      /* End of function R_GMAC_TxStatusGet() */
 
 /********************************************************************************************************************//**
- * Provides API and code version in the user provided pointer. Implements @ref ether_api_t::versionGet.
+ * DEPRECATED Provides API and code version in the user provided pointer. Implements @ref ether_api_t::versionGet.
  *
  * @retval  FSP_SUCCESS                  Version information stored in provided p_version.
  * @retval  FSP_ERR_ASSERTION            p_version is NULL.
@@ -1264,6 +1282,8 @@ static void gmac_reset_mac (volatile R_GMAC_Type * const p_reg)
     p_reg->AXI_Bus_Mode_b.BLEN4 = 1;
 }                                      /* End of function gmac_reset_mac() */
 
+#ifdef GMAC_IMPLEMENT_ETHSW
+
 /*******************************************************************************************************************//**
  * Open ether switch driver.
  *
@@ -1286,6 +1306,8 @@ fsp_err_t gmac_open_ethsw (gmac_instance_ctrl_t * p_instance_ctrl)
 
     return err;
 }                                      /* End of function gmac_open_ethsw() */
+
+#endif // GMAC_IMPLEMENT_ETHSW
 
 /*******************************************************************************************************************//**
  * Open ether phy driver.
@@ -1506,11 +1528,6 @@ static void gmac_config_ethernet (gmac_instance_ctrl_t const * const p_instance_
     /* Initialize MMC Receive/Transmit Interrupt Mask */
     p_reg_gmac->MMC_Receive_Interrupt_Mask  = GMAC_MMC_RECEIVE_INTERRUPT_MASK_ALL_BIT;
     p_reg_gmac->MMC_Transmit_Interrupt_Mask = GMAC_MMC_TRANSMIT_INTERRUPT_MASK_ALL_BIT;
-
-    /* Initialize MAC Configuration */
-    p_reg_gmac->MAC_Configuration_b.PS  = 0; /* Port Selec: 1Gbps */
-    p_reg_gmac->MAC_Configuration_b.FES = 1; /* Speed: 100Mbps */
-    p_reg_gmac->MAC_Configuration_b.DM  = 1; /* Duplex Mode: Full-duple */
 
     /* Magic packet detection mode */
     if (GMAC_USE_MAGIC_PACKET_DETECT == mode)
@@ -1848,9 +1865,10 @@ static fsp_err_t gmac_do_link (gmac_instance_ctrl_t * const p_instance_ctrl, con
 {
     ether_phy_instance_t const *(*pp_phy_instance)[BSP_FEATURE_GMAC_MAX_PORTS];
 
-    fsp_err_t          err               = FSP_SUCCESS;
-    uint32_t           link_speed_duplex = 0;
+    fsp_err_t err = FSP_SUCCESS;
+#ifdef GMAC_IMPLEMENT_ETHSW
     ethsw_link_speed_t speed;
+#endif                                 // GMAC_IMPLEMENT_ETHSW
 
 #if (GMAC_CFG_PARAM_CHECKING_ENABLE)
     FSP_ASSERT(p_instance_ctrl);
@@ -1861,12 +1879,13 @@ static fsp_err_t gmac_do_link (gmac_instance_ctrl_t * const p_instance_ctrl, con
     pp_phy_instance = ((gmac_extend_cfg_t *) p_instance_ctrl->p_gmac_cfg->p_extend)->pp_phy_instance;
 
     err = (*pp_phy_instance)[port]->p_api->linkPartnerAbilityGet((*pp_phy_instance)[port]->p_ctrl,
-                                                                 &link_speed_duplex,
+                                                                 &p_instance_ctrl->link_speed_duplex,
                                                                  &p_instance_ctrl->local_pause_bits,
                                                                  &p_instance_ctrl->partner_pause_bits);
+#ifdef GMAC_IMPLEMENT_ETHSW
     if (FSP_SUCCESS == err)
     {
-        switch (link_speed_duplex)
+        switch (p_instance_ctrl->link_speed_duplex)
         {
             /* Half duplex link */
             case ETHER_PHY_LINK_SPEED_1000H:
@@ -1913,14 +1932,17 @@ static fsp_err_t gmac_do_link (gmac_instance_ctrl_t * const p_instance_ctrl, con
             }
         }
     }
+#endif                                 // GMAC_IMPLEMENT_ETHSW
 
     if (FSP_SUCCESS == err)
     {
+#ifdef GMAC_IMPLEMENT_ETHSW
         ethsw_instance_t const * p_ethsw_instance = ///< Pointer to ETHER_SWITCH instance
                                                     ((gmac_extend_cfg_t *) p_instance_ctrl->p_gmac_cfg->p_extend)->
                                                     p_ethsw_instance;
 
         err = p_ethsw_instance->p_api->speedCfg(p_ethsw_instance->p_ctrl, (uint8_t) port, speed);
+#endif                                 // GMAC_IMPLEMENT_ETHSW
     }
     else
     {
@@ -1947,18 +1969,94 @@ void gmac_configure_operation (gmac_instance_ctrl_t * const p_instance_ctrl)
 
     uint32_t transmit_pause_set = 0;
     uint32_t receive_pause_set  = 0;
-    uint32_t full_duplex        = 0;
+    bool     full_duplex        = false;
     uint32_t flow_control;
 
+    /* Initialize MAC Configuration */
+#ifdef GMAC_IMPLEMENT_ETHSW
+    {
+        p_reg_gmac->MAC_Configuration_b.PS  = 0; /* Port Selec: 1Gbps */
+        p_reg_gmac->MAC_Configuration_b.FES = 1; /* Speed: 100Mbps */
+        p_reg_gmac->MAC_Configuration_b.DM  = 1; /* Duplex Mode: Full-duple */
+    }
+#else                                            // GMAC_IMPLEMENT_ETHSW
+    {
+        switch (p_instance_ctrl->link_speed_duplex)
+        {
+            /* Half duplex link */
+            case ETHER_PHY_LINK_SPEED_1000H:
+            {
+                p_reg_gmac->MAC_Configuration_b.PS  = 0; /* Port Selec: 1Gbps */
+                p_reg_gmac->MAC_Configuration_b.FES = 1;
+                p_reg_gmac->MAC_Configuration_b.DM  = 0; /* Duplex Mode: Half-duple */
+                break;
+            }
+
+            case ETHER_PHY_LINK_SPEED_100H:
+            {
+                p_reg_gmac->MAC_Configuration_b.PS  = 1; /* Port Selec: 10Mbps or 100Mbps */
+                p_reg_gmac->MAC_Configuration_b.FES = 1; /* Speed Select: 100Mbps */
+                p_reg_gmac->MAC_Configuration_b.DM  = 0; /* Duplex Mode: Half-duple */
+                break;
+            }
+
+            case ETHER_PHY_LINK_SPEED_10H:
+            {
+                p_reg_gmac->MAC_Configuration_b.PS  = 1; /* Port Selec: 10Mbps or 100Mbps */
+                p_reg_gmac->MAC_Configuration_b.FES = 0; /* Speed Select: 10Mbps */
+                p_reg_gmac->MAC_Configuration_b.DM  = 0; /* Duplex Mode: Half-duple */
+                break;
+            }
+
+            /* Full duplex link */
+            case ETHER_PHY_LINK_SPEED_1000F:
+            {
+                p_reg_gmac->MAC_Configuration_b.PS  = 0; /* Port Selec: 1Gbps */
+                p_reg_gmac->MAC_Configuration_b.FES = 1;
+                p_reg_gmac->MAC_Configuration_b.DM  = 1; /* Duplex Mode: Full-duple */
+                full_duplex = true;
+                break;
+            }
+
+            case ETHER_PHY_LINK_SPEED_100F:
+            {
+                p_reg_gmac->MAC_Configuration_b.PS  = 1; /* Port Selec: 10Mbps or 100Mbps */
+                p_reg_gmac->MAC_Configuration_b.FES = 1; /* Speed Select: 100Mbps */
+                p_reg_gmac->MAC_Configuration_b.DM  = 1; /* Duplex Mode: Full-duple */
+                full_duplex = true;
+                break;
+            }
+
+            case ETHER_PHY_LINK_SPEED_10F:
+            {
+                p_reg_gmac->MAC_Configuration_b.PS  = 1; /* Port Selec: 10Mbps or 100Mbps */
+                p_reg_gmac->MAC_Configuration_b.FES = 0; /* Speed Select: 10Mbps */
+                p_reg_gmac->MAC_Configuration_b.DM  = 1; /* Duplex Mode: Full-duple */
+                full_duplex = true;
+                break;
+            }
+
+            /* Unknown */
+            default:
+            {
+                p_reg_gmac->MAC_Configuration_b.PS  = 0; /* Port Selec: 1Gbps */
+                p_reg_gmac->MAC_Configuration_b.FES = 1;
+                p_reg_gmac->MAC_Configuration_b.DM  = 1; /* Duplex Mode: Full-duple */
+                break;
+            }
+        }
+    }
+#endif                                 // GMAC_IMPLEMENT_ETHSW
+
     /* When pause frame is used */
-    if ((full_duplex) && (ETHER_FLOW_CONTROL_ENABLE == p_instance_ctrl->p_gmac_cfg->flow_control))
+    if ((ETHER_FLOW_CONTROL_ENABLE == p_instance_ctrl->p_gmac_cfg->flow_control) &&
+        (true == full_duplex))
     {
         /* pause frame can be used when  when passing through the switch */
         /* NOTE: not confirmed this operation !!! */
 
-        flow_control = GMAC_FLOW_CONTROL_PT |     /* Pause Time (b31-b16) */
-                       GMAC_FLOW_CONTROL_PLT |    /* Pause Low Threshold */
-                       GMAC_FLOW_CONTROL_FCA_BPA; /* Flow Control Busy or Backpressure Activate */
+        flow_control = GMAC_FLOW_CONTROL_PT | /* Pause Time (b31-b16) */
+                       GMAC_FLOW_CONTROL_PLT; /* Pause Low Threshold */
 
         /**
          * Enable PAUSE for full duplex link depending on
@@ -1973,6 +2071,10 @@ void gmac_configure_operation (gmac_instance_ctrl_t * const p_instance_ctrl)
         {
             /* Enable automatic PAUSE frame transmission */
             flow_control |= GMAC_FLOW_CONTROL_TFE; /* Transmit Flow Control Enable */
+
+            p_reg_gmac->Operation_Mode_b.RFD = 2;  /* Threshold for Deactivating Flow Control = FULL - 3KB */
+            p_reg_gmac->Operation_Mode_b.RFA = 1;  /* Threshold for Activating Flow Control = FULL - 2KB */
+            p_reg_gmac->Operation_Mode_b.EFC = 1;  /* Enable HW Flow Control */
         }
 
         if (GMAC_PAUSE_RECV_ON == receive_pause_set)
@@ -1986,14 +2088,15 @@ void gmac_configure_operation (gmac_instance_ctrl_t * const p_instance_ctrl)
     /* When pause frame is not used */
     else
     {
-        /* It did the software reset, so no operation */
+        p_reg_gmac->Operation_Mode_b.EFC = 0;
+        p_reg_gmac->Flow_Control         = 0;
     }
 
     /* Initialize Operation Mode */
     p_reg_gmac->Operation_Mode_b.RSF = 1; /* Receive Store and Forward */
+    p_reg_gmac->Operation_Mode_b.TSF = 1; /* Transmit Store and Forward */
     p_reg_gmac->Operation_Mode_b.SR  = 1; /* Start or Stop Receive */
-    p_reg_gmac->Operation_Mode_b.TSF = 1;
-    p_reg_gmac->Operation_Mode_b.ST  = 1;
+    p_reg_gmac->Operation_Mode_b.ST  = 1; /* Start or Stop Transmission Command */
 
     /* Enable receive and transmit. */
     p_reg_gmac->MAC_Configuration_b.RE = 1;
@@ -2088,6 +2191,8 @@ static fsp_err_t gmac_link_status_check (gmac_instance_ctrl_t const * const p_in
     return err;
 }                                      /* End of function gmac_link_status_check() */
 
+#ifdef GMAC_IMPLEMENT_ETHSW
+
 /*******************************************************************************************************************//**
  * Callback function for link status change from switch
  *
@@ -2104,6 +2209,8 @@ void gmac_callback_ethsw (ethsw_callback_args_t * const p_arg)
         p_instance_ctrl->link_status = (gmac_port_mask_t) p_arg->status_link;
     }
 }                                      /* End of function gmac_callback_ethsw() */
+
+#endif // GMAC_IMPLEMENT_ETHSW
 
 /*******************************************************************************************************************//**
  * Interrupt handler for SBD interrupts.

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -47,6 +47,8 @@ static void cmt_hardware_initialize(cmt_instance_ctrl_t * const p_instance_ctrl,
 static void cmt_common_open(cmt_instance_ctrl_t * const p_instance_ctrl, timer_cfg_t const * const p_cfg);
 
 static uint32_t cmt_clock_frequency_get(cmt_instance_ctrl_t * const p_instance_ctrl);
+
+static void r_cmt_call_callback(cmt_instance_ctrl_t * p_ctrl, timer_event_t event);
 
 /***********************************************************************************************************************
  * ISR prototypes
@@ -100,6 +102,9 @@ const timer_api_t g_timer_on_cmt =
 /*******************************************************************************************************************//**
  * Initializes the timer module and applies configurations. Implements @ref timer_api_t::open.
  *
+ * Example:
+ * @snippet r_cmt_example.c R_CMT_Open
+ *
  * @retval FSP_SUCCESS                    Initialization was successful and timer has started.
  * @retval FSP_ERR_ASSERTION              A required input pointer is NULL or the source divider is invalid.
  * @retval FSP_ERR_ALREADY_OPEN           Module is already open.
@@ -144,6 +149,9 @@ fsp_err_t R_CMT_Open (timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_c
 /*******************************************************************************************************************//**
  * Stops timer. Implements @ref timer_api_t::stop.
  *
+ * Example:
+ * @snippet r_cmt_example.c R_CMT_Stop
+ *
  * @retval FSP_SUCCESS                 Timer successfully stopped.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -168,6 +176,9 @@ fsp_err_t R_CMT_Stop (timer_ctrl_t * const p_ctrl)
 
 /*******************************************************************************************************************//**
  * Starts timer. Implements @ref timer_api_t::start.
+ *
+ * Example:
+ * @snippet r_cmt_example.c R_CMT_Start
  *
  * @retval FSP_SUCCESS                 Timer successfully started.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
@@ -242,6 +253,9 @@ fsp_err_t R_CMT_Disable (timer_ctrl_t * const p_ctrl)
  * Updates period. The new period is updated immediately and the counter is reset to 0.
  *
  * Implements @ref timer_api_t::periodSet.
+ *
+ * Example:
+ * @snippet r_cmt_example.c R_CMT_PeriodSet
  *
  * @retval FSP_SUCCESS                 Period value written successfully.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
@@ -320,6 +334,9 @@ fsp_err_t R_CMT_InfoGet (timer_ctrl_t * const p_ctrl, timer_info_t * const p_inf
 /*******************************************************************************************************************//**
  * Get current timer status and store it in provided pointer p_status. Implements @ref timer_api_t::statusGet.
  *
+ * Example:
+ * @snippet r_cmt_example.c R_CMT_StatusGet
+ *
  * @retval FSP_SUCCESS                 Current timer state and counter value set successfully.
  * @retval FSP_ERR_ASSERTION           p_ctrl or p_status was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -376,19 +393,29 @@ fsp_err_t R_CMT_CounterSet (timer_ctrl_t * const p_ctrl, uint32_t counter)
  * Updates the user callback with the option to provide memory for the callback argument structure.
  * Implements @ref timer_api_t::callbackSet.
  *
- * @retval  FSP_ERR_UNSUPPORTED              API not supported.
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
 fsp_err_t R_CMT_CallbackSet (timer_ctrl_t * const          p_api_ctrl,
                              void (                      * p_callback)(timer_callback_args_t *),
                              void const * const            p_context,
                              timer_callback_args_t * const p_callback_memory)
 {
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
-    FSP_PARAMETER_NOT_USED(p_callback);
-    FSP_PARAMETER_NOT_USED(p_context);
-    FSP_PARAMETER_NOT_USED(p_callback_memory);
+    cmt_instance_ctrl_t * p_ctrl = (cmt_instance_ctrl_t *) p_api_ctrl;
 
-    return FSP_ERR_UNSUPPORTED;
+#if CMT_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(CMT_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_ctrl->p_callback        = p_callback;
+    p_ctrl->p_context         = p_context;
+    p_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**
@@ -432,7 +459,7 @@ fsp_err_t R_CMT_Close (timer_ctrl_t * const p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Sets driver version based on compile time macros. Implements @ref timer_api_t::versionGet.
+ * DEPRECATED Sets driver version based on compile time macros. Implements @ref timer_api_t::versionGet.
  *
  * @retval FSP_SUCCESS                 Version stored in p_version.
  * @retval FSP_ERR_ASSERTION           p_version was NULL.
@@ -557,6 +584,41 @@ static uint32_t cmt_clock_frequency_get (cmt_instance_ctrl_t * const p_instance_
 }
 
 /*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_ctrl     Pointer to CMT instance control block
+ * @param[in]     event      Event code
+ **********************************************************************************************************************/
+static void r_cmt_call_callback (cmt_instance_ctrl_t * p_ctrl, timer_event_t event)
+{
+    timer_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available. */
+    timer_callback_args_t * p_args = p_ctrl->p_callback_memory;
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
+
+    p_args->event     = event;
+    p_args->p_context = p_ctrl->p_context;
+
+    p_ctrl->p_callback(p_args);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args;
+    }
+}
+
+/*******************************************************************************************************************//**
  * Calls callback if one was provided in the open function.
  **********************************************************************************************************************/
 void cmt_cm_int_isr (void)
@@ -588,12 +650,7 @@ void cmt_cm_int_isr (void)
 
     if (NULL != p_instance_ctrl->p_callback)
     {
-        /* Setup parameters for the user-supplied callback function. */
-        timer_callback_args_t callback_args;
-        callback_args.event     = TIMER_EVENT_CYCLE_END;
-        callback_args.p_context = p_instance_ctrl->p_context;
-
-        p_instance_ctrl->p_callback(&callback_args);
+        r_cmt_call_callback(p_instance_ctrl, TIMER_EVENT_CYCLE_END);
     }
 
     /* Restore context if RTOS is used */

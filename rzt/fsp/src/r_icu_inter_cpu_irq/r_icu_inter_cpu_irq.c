@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -56,7 +56,12 @@
 /**********************************************************************************************************************
  * Private function prototypes
  *********************************************************************************************************************/
+static void r_icu_inter_cpu_irq_call_callback(icu_inter_cpu_irq_instance_ctrl_t * p_ctrl,
+                                              icu_inter_cpu_irq_callback_args_t * p_args);
 
+/***********************************************************************************************************************
+ * ISR prototypes
+ **********************************************************************************************************************/
 void r_icu_inter_cpu_irq_isr(void);
 
 /**********************************************************************************************************************
@@ -70,9 +75,10 @@ void r_icu_inter_cpu_irq_isr(void);
 /* ICU implementation of ICU_INTER_CPU_IRQ API. */
 const icu_inter_cpu_irq_api_t g_icu_inter_cpu_irq_on_icu =
 {
-    .open     = R_ICU_INTER_CPU_IRQ_Open,
-    .generate = R_ICU_INTER_CPU_IRQ_Generate,
-    .close    = R_ICU_INTER_CPU_IRQ_Close,
+    .open        = R_ICU_INTER_CPU_IRQ_Open,
+    .generate    = R_ICU_INTER_CPU_IRQ_Generate,
+    .callbackSet = R_ICU_INTER_CPU_IRQ_CallbackSet,
+    .close       = R_ICU_INTER_CPU_IRQ_Close,
 };
 
 /*******************************************************************************************************************//**
@@ -111,9 +117,10 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Open (icu_inter_cpu_irq_ctrl_t * const      p_api_
 #endif
 
     /* Initialize control block. */
-    p_ctrl->p_cfg      = p_cfg;
-    p_ctrl->p_callback = p_cfg->p_callback;
-    p_ctrl->p_context  = p_cfg->p_context;
+    p_ctrl->p_cfg             = p_cfg;
+    p_ctrl->p_callback        = p_cfg->p_callback;
+    p_ctrl->p_context         = p_cfg->p_context;
+    p_ctrl->p_callback_memory = NULL;
 
     /* NOTE: User can have the driver opened when the IRQ is not in the vector table. This is for use cases
      * that use INTCPU interrupts and do not notify themselves of the interrupts.
@@ -163,6 +170,36 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Generate (icu_inter_cpu_irq_ctrl_t * const p_api_c
     {
         /* Do nothing. Not supported this channel. */
     }
+
+    return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
+ * Updates the user callback with the option to provide memory for the callback argument structure.
+ * Implements icu_inter_cpu_irq_api_t::callbackSet.
+ *
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
+ **********************************************************************************************************************/
+fsp_err_t R_ICU_INTER_CPU_IRQ_CallbackSet (icu_inter_cpu_irq_ctrl_t * const p_api_ctrl,
+                                           void (                         * p_callback)(
+                                               icu_inter_cpu_irq_callback_args_t *),
+                                           void const * const                        p_context,
+                                           icu_inter_cpu_irq_callback_args_t * const p_callback_memory)
+{
+    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_api_ctrl;
+
+#if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_ctrl->p_callback        = p_callback;
+    p_ctrl->p_context         = p_context;
+    p_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
 }
@@ -217,9 +254,46 @@ void r_icu_inter_cpu_irq_isr (void)
         /* Set data to identify callback to user, then call user callback. */
         icu_inter_cpu_irq_callback_args_t args;
         args.p_context = p_ctrl->p_context;
-        p_ctrl->p_callback(&args);
+        r_icu_inter_cpu_irq_call_callback(p_ctrl, &args);
     }
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE
+}
+
+/*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_ctrl     Pointer to CAN instance control block
+ * @param[in]     p_args     Pointer to arguments on stack
+ **********************************************************************************************************************/
+static void r_icu_inter_cpu_irq_call_callback (icu_inter_cpu_irq_instance_ctrl_t * p_ctrl,
+                                               icu_inter_cpu_irq_callback_args_t * p_args)
+{
+    icu_inter_cpu_irq_callback_args_t args;
+    memset(&args, 0U, sizeof(icu_inter_cpu_irq_callback_args_t));
+
+    /* Store callback arguments in memory provided by user if available. */
+    icu_inter_cpu_irq_callback_args_t * p_args_memory = p_ctrl->p_callback_memory;
+    if (NULL == p_args_memory)
+    {
+        /* Use provided args struct on stack */
+        p_args_memory = p_args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args_memory;
+
+        /* Copy the stacked args to callback memory */
+        *p_args_memory = *p_args;
+    }
+
+    p_ctrl->p_cfg->p_callback(p_args_memory);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args;
+    }
 }

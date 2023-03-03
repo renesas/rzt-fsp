@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -66,7 +66,7 @@
 #define USB_DMACA_INVALID_DES_SIZE_MASK     (0x7 << 16)
 
 /* CHITVL Register.b15-00:ITVL[15:00]  Channel Interval mask */
-#define USB_DMACA_INVALID_INTERVAL_MAX      0xffff
+#define USB_DMACA_INVALID_INTERVAL_MAX      0xffffU
 
 /* IP base address */
 

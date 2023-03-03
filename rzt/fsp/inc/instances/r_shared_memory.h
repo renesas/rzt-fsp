@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -37,8 +37,8 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  ***********************************************************************************************************************/
-#define SHARED_MEMORY_CODE_VERSION_MAJOR    (1U)
-#define SHARED_MEMORY_CODE_VERSION_MINOR    (0U)
+#define SHARED_MEMORY_CODE_VERSION_MAJOR    (1U) // DEPRECATED
+#define SHARED_MEMORY_CODE_VERSION_MINOR    (2U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -55,9 +55,13 @@ typedef struct st_shared_memory_extended_cfg
 /* SHARED_MEMORY control structure. DO NOT INITIALIZE. */
 typedef struct st_shared_memory_instance_ctrl
 {
-    shared_memory_cfg_t const * p_cfg; // Information describing SHARED_MEMORY
-    uint32_t              open;        // Flag to determine if the device is open
-    shared_memory_state_t state;       // Connection status with communication partner
+    shared_memory_cfg_t const * p_cfg;                    // Information describing SHARED_MEMORY
+    uint32_t              open;                           // Flag to determine if the device is open
+    shared_memory_state_t state;                          // Connection status with communication partner
+
+    void (* p_callback)(shared_memory_callback_args_t *); // Pointer to callback
+    shared_memory_callback_args_t * p_callback_memory;    // Pointer to optional callback argument memory
+    void const * p_context;                               // Pointer to context to be passed into callback function
 } shared_memory_instance_ctrl_t;
 
 /**********************************************************************************************************************
@@ -84,6 +88,11 @@ fsp_err_t R_SHARED_MEMORY_Write(shared_memory_ctrl_t * const p_api_ctrl,
                                 uint32_t const               offset,
                                 uint32_t const               bytes);
 fsp_err_t R_SHARED_MEMORY_StatusGet(shared_memory_ctrl_t * const p_api_ctrl, shared_memory_status_t * p_status);
+fsp_err_t R_SHARED_MEMORY_CallbackSet(shared_memory_ctrl_t * const p_api_ctrl,
+                                      void (                     * p_callback)(
+                                          shared_memory_callback_args_t *),
+                                      void const * const                    p_context,
+                                      shared_memory_callback_args_t * const p_callback_memory);
 fsp_err_t R_SHARED_MEMORY_Close(shared_memory_ctrl_t * const p_api_ctrl);
 
 /*******************************************************************************************************************//**

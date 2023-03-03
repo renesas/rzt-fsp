@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -38,8 +38,8 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  ***********************************************************************************************************************/
-#define ICU_INTER_CPU_IRQ_CODE_VERSION_MAJOR    (1U)
-#define ICU_INTER_CPU_IRQ_CODE_VERSION_MINOR    (1U)
+#define ICU_INTER_CPU_IRQ_CODE_VERSION_MAJOR    (1U) // DEPRECATED
+#define ICU_INTER_CPU_IRQ_CODE_VERSION_MINOR    (2U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -48,15 +48,13 @@ FSP_HEADER
 /* ICU_INTER_CPU_IRQ private control structure. DO NOT MODIFY. Initialization occurs when R_ICU_INTER_CPU_IRQ_Open is called. */
 typedef struct st_icu_inter_cpu_irq_instance_ctrl
 {
-    uint32_t open;                     ///< Used to determine if channel control block is in use
+    uint32_t open;                                                   // Whether or not channel is open
 
-    /** Pointer to the configuration block. */
-    icu_inter_cpu_irq_cfg_t const * p_cfg;
+    icu_inter_cpu_irq_cfg_t const * p_cfg;                           // Pointer to the configurations.
 
-    void (* p_callback)(icu_inter_cpu_irq_callback_args_t * p_args); // Pointer to callback that is called when a INTCPU is detected.
-
-    /** Placeholder for user data.  Passed to the user callback in ::icu_inter_cpu_irq_callback_args_t. */
-    void const * p_context;
+    void (* p_callback)(icu_inter_cpu_irq_callback_args_t * p_args); // Pointer to callback
+    icu_inter_cpu_irq_callback_args_t * p_callback_memory;           // Pointer to optional callback argument memory
+    void const * p_context;                                          // Pointer to context to be passed into callback function
 } icu_inter_cpu_irq_instance_ctrl_t;
 
 /**********************************************************************************************************************
@@ -77,6 +75,12 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Open(icu_inter_cpu_irq_ctrl_t * const      p_api_c
                                    icu_inter_cpu_irq_cfg_t const * const p_cfg);
 
 fsp_err_t R_ICU_INTER_CPU_IRQ_Generate(icu_inter_cpu_irq_ctrl_t * const p_api_ctrl);
+
+fsp_err_t R_ICU_INTER_CPU_IRQ_CallbackSet(icu_inter_cpu_irq_ctrl_t * const p_api_ctrl,
+                                          void (                         * p_callback)(
+                                              icu_inter_cpu_irq_callback_args_t *),
+                                          void const * const                        p_context,
+                                          icu_inter_cpu_irq_callback_args_t * const p_callback_memory);
 
 fsp_err_t R_ICU_INTER_CPU_IRQ_Close(icu_inter_cpu_irq_ctrl_t * const p_api_ctrl);
 

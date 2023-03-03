@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -51,8 +51,19 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHSW_API_VERSION_MAJOR    (1U)
-#define ETHSW_API_VERSION_MINOR    (0U)
+#define ETHSW_API_VERSION_MAJOR    (1U) // DEPRECATED
+#define ETHSW_API_VERSION_MINOR    (2U) // DEPRECATED
+
+#define ETHSW_MAC_ADDR_LEN         (6U)
+
+/** Ethernet port macros */
+#define ETHSW_PORT_HOST            ((ethsw_port_cast) (1U << 30))
+#define ETHSW_PORT_MASK            ((ethsw_port_cast) ((uint64_t) 1 << 31))
+
+// ELWSC #define ETHSW_PORT_HOST_CNT    1
+#define ETHSW_PORT(x)        ((ethsw_port_cast) (x) & ~ETHSW_PORT_MASK)
+#define ETHSW_PORT_BIT(x)    ((ethsw_port_cast) (1 << (x)) | ETHSW_PORT_MASK)
+#define ETHSW_PORT_BITS            (~(ETHSW_PORT_HOST | ETHSW_PORT_MASK))
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -128,6 +139,45 @@ typedef struct st_ethsw_cfg
     void const * p_extend;                               ///< Placeholder for user extension.
 } ethsw_cfg_t;
 
+typedef uint32_t ethsw_port_mask_t;
+typedef uint32_t ethsw_port_cast;
+typedef uint8_t  ethsw_mac_addr_t[ETHSW_MAC_ADDR_LEN];
+
+/** MAC table entry */
+typedef struct st_ethsw_mactab_entry
+{
+    ethsw_mac_addr_t * mac_addr;       ///< MAC address pointer
+    uint16_t           vlan_id;        ///< VLAN ID
+    uint32_t           port_mask;      ///< port mask
+    uint32_t           priority;       ///< switching priority
+} ethsw_mactab_entry_t;
+
+/** MAC table config */
+typedef struct st_ethsw_mactab_conf
+{
+    bool learn;                        ///< Enable/disable MAC learning
+    bool aging;                        ///< Enable/disable address aging
+    bool migration;                    ///< Enable/disable the migration of devices from one port to another
+    bool pervlan;                      ///< Enable/disable per VLAN MAC learning
+    bool discunknown;                  ///< Enable/disable discarding of unknown destination frames
+} ethsw_mactab_conf_t;
+
+/** MAC table clear/flush modes */
+typedef enum e_ethsw_mactab_clr_modes
+{
+    ETHSW_MACTAB_CLR_STATIC,           ///< Static MAC table entries
+    ETHSW_MACTAB_CLR_DYNAMIC,          ///< Learned MAC table entries
+    ETHSW_MACTAB_CLR_ALL               ///< Static and learn entries
+} ethsw_mactab_clr_modes_t;
+
+/** flood domain configuration for unknown frames */
+typedef struct st_ethsw_flood_unk_conf
+{
+    ethsw_port_mask_t port_mask_bcast; ///< flood domain port mask for broadcasts with unkown destination
+    ethsw_port_mask_t port_mask_mcast; ///< flood domain port mask for multicasts with unkown destination
+    ethsw_port_mask_t port_mask_ucast; ///< flood domain port mask for unicasts with unkown destination
+} ethsw_flood_unk_conf_t;
+
 /** Functions implemented at the HAL layer will follow this API. */
 typedef struct st_ethsw_api
 {
@@ -154,17 +204,90 @@ typedef struct st_ethsw_api
      *
      * @param[in]  p_api_ctrl       Pointer to control structure.
      * @param[in]  port             Port number.
-     * @param[in]  spee             Speed and Duplex,
+     * @param[in]  speed            Speed and Duplex,
      */
     fsp_err_t (* speedCfg)(ethsw_ctrl_t * const p_api_ctrl, uint8_t const port, ethsw_link_speed_t const speed);
 
-    /** Return the version of the driver.
+    /** DEPRECATED Return the version of the driver.
      * @par Implemented as
      * - @ref R_ETHSW_VersionGet()
      *
      * @param[out] p_data           Memory address to return version information to.
      */
     fsp_err_t (* versionGet)(fsp_version_t * const p_data);
+
+    /** Sets the static MAC address entry for the given MAC address.
+     * @par Implemented as
+     * - @ref R_ETHSW_MacTableSet()
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_mac_tab        Pointer to MAC table entry.
+     */
+    fsp_err_t (* macTableSet)(ethsw_ctrl_t * const p_api_ctrl, ethsw_mactab_entry_t * p_mac_tab);
+
+    /** Retrieves the port mask for the given MAC address from the static MAC table.
+     * @par Implemented as
+     * - @ref R_ETHSW_MacTableGet()
+     *
+     * @param[in]       p_api_ctrl       Pointer to control structure.
+     * @param[in,out]   p_mac_tab        Pointer to MAC table entry.
+     */
+    fsp_err_t (* macTableGet)(ethsw_ctrl_t * const p_api_ctrl, ethsw_mactab_entry_t * p_mac_tab);
+
+    /** Configures the MAC learning and aging parameters of MAC table.
+     * @par Implemented as
+     * - @ref R_ETHSW_MacTableConfSet()
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_mac_tab_cnf    Pointer to MAC table config.
+     */
+    fsp_err_t (* macTableConfSet)(ethsw_ctrl_t * const p_api_ctrl, ethsw_mactab_conf_t * p_mac_tab_cnf);
+
+    /** Clears specific types of entries from the MAC table or clears the whole table.
+     * @par Implemented as
+     * - @ref R_ETHSW_MacTableClear()
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_mac_tab_clr    Pointer to MAC table clear mode.
+     */
+    fsp_err_t (* macTableClear)(ethsw_ctrl_t * const p_api_ctrl, ethsw_mactab_clr_modes_t * p_mac_tab_clr);
+
+    /** Sets learning state for the given port.
+     * @par Implemented as
+     * - @ref R_ETHSW_LearningSet()
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  port             Port number.
+     * @param[in]  p_flag_learn     Pointer to learning flag.
+     */
+    fsp_err_t (* learningSet)(ethsw_ctrl_t * const p_api_ctrl, uint32_t port, bool enable);
+
+    /** Enables the forwarding of incoming frames on a port for RSTP.
+     * @par Implemented as
+     * - @ref R_ETHSW_PortForwardAdd()
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  port             Port number.
+     */
+    fsp_err_t (* portForwardAdd)(ethsw_ctrl_t * const p_api_ctrl, uint32_t port);
+
+    /** Disables the forwarding of incoming frames on a port for RSTP.
+     * @par Implemented as
+     * - @ref R_ETHSW_PortForwardDel()
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  port             Port number.
+     */
+    fsp_err_t (* portForwardDel)(ethsw_ctrl_t * const p_api_ctrl, uint32_t port);
+
+    /** Sets the flood domain port masks for frames with unknown destinations.
+     * @par Implemented as
+     * - @ref  R_ETHSW_FloodUnknownSet()
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_flood_unk_conf Pointer to configuration of flood domain for frames with unknown destination.
+     */
+    fsp_err_t (* floodUnknownSet)(ethsw_ctrl_t * const p_api_ctrl, ethsw_flood_unk_conf_t * p_flood_unk_conf);
 } ethsw_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */

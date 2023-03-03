@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -125,6 +125,9 @@ static fsp_err_t iic_slave_read_write(i2c_slave_ctrl_t * const p_api_ctrl,
                                       uint8_t * const          p_buffer,
                                       uint32_t const           bytes,
                                       iic_slave_transfer_dir_t direction);
+static void r_iic_slave_call_callback(iic_slave_instance_ctrl_t * p_ctrl,
+                                      i2c_slave_event_t           event,
+                                      uint32_t                    transaction_count);
 
 /* Functions that manipulate hardware */
 static void iic_open_hw_slave(iic_slave_instance_ctrl_t * const p_ctrl);
@@ -302,19 +305,29 @@ fsp_err_t R_IIC_SLAVE_Write (i2c_slave_ctrl_t * const p_api_ctrl, uint8_t * cons
  * Updates the user callback and has option of providing memory for callback structure.
  * Implements i2c_slave_api_t::callbackSet
  *
- * @retval  FSP_ERR_UNSUPPORTED              API not supported.
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
 fsp_err_t R_IIC_SLAVE_CallbackSet (i2c_slave_ctrl_t * const          p_api_ctrl,
                                    void (                          * p_callback)(i2c_slave_callback_args_t *),
                                    void const * const                p_context,
                                    i2c_slave_callback_args_t * const p_callback_memory)
 {
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
-    FSP_PARAMETER_NOT_USED(p_callback);
-    FSP_PARAMETER_NOT_USED(p_context);
-    FSP_PARAMETER_NOT_USED(p_callback_memory);
+    iic_slave_instance_ctrl_t * p_ctrl = (iic_slave_instance_ctrl_t *) p_api_ctrl;
 
-    return FSP_ERR_UNSUPPORTED;
+#if (IIC_SLAVE_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(IIC_SLAVE_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_ctrl->p_callback        = p_callback;
+    p_ctrl->p_context         = p_context;
+    p_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
 }
 
 /******************************************************************************************************************//**
@@ -356,7 +369,7 @@ fsp_err_t R_IIC_SLAVE_Close (i2c_slave_ctrl_t * const p_api_ctrl)
 }
 
 /******************************************************************************************************************//**
- * Gets version information and stores it in the provided version structure.
+ * DEPRECATED Gets version information and stores it in the provided version structure.
  *
  * @retval  FSP_SUCCESS                 Successful version get.
  * @retval  FSP_ERR_ASSERTION           p_version is NULL.
@@ -495,15 +508,8 @@ static void iic_slave_notify (iic_slave_instance_ctrl_t * const p_ctrl, i2c_slav
         p_ctrl->p_reg->ICCR1 = (uint8_t) (IIC_SLAVE_ICCR1_ICE_BIT_MASK | IIC_SLAVE_PRV_SCL_SDA_NOT_DRIVEN);
     }
 
-    /* Invoke callback */
-    /* Fill in the argument to the callback */
-
-    i2c_slave_callback_args_t args =
-    {
-        .p_context = p_ctrl->p_cfg->p_context,
-        .bytes     = p_ctrl->transaction_count,
-        .event     = slave_event
-    };
+    /* Save transaction count */
+    uint32_t transaction_count = p_ctrl->transaction_count;
 
     /* Reset the transaction count here */
     p_ctrl->transaction_count = 0U;
@@ -511,7 +517,7 @@ static void iic_slave_notify (iic_slave_instance_ctrl_t * const p_ctrl, i2c_slav
     p_ctrl->direction = IIC_SLAVE_TRANSFER_DIR_NOT_ESTABLISHED;
 
     /* Invoke the callback */
-    p_ctrl->p_cfg->p_callback(&args);
+    r_iic_slave_call_callback(p_ctrl, slave_event, transaction_count);
 }
 
 /*******************************************************************************************************************//**
@@ -522,13 +528,6 @@ static void iic_slave_notify (iic_slave_instance_ctrl_t * const p_ctrl, i2c_slav
  **********************************************************************************************************************/
 static void iic_slave_callback_request (iic_slave_instance_ctrl_t * const p_ctrl, i2c_slave_event_t slave_event)
 {
-    /* Fill in the argument to the callback */
-    i2c_slave_callback_args_t args =
-    {
-        .p_context = p_ctrl->p_cfg->p_context,
-        .event     = slave_event,
-        .bytes     = p_ctrl->transaction_count
-    };
     p_ctrl->direction = IIC_SLAVE_TRANSFER_DIR_NOT_ESTABLISHED;
 
     /* Disable timeout function */
@@ -536,7 +535,7 @@ static void iic_slave_callback_request (iic_slave_instance_ctrl_t * const p_ctrl
 
     /* Invoke the callback to notify the read request.
      * The application must call MasterWriteSlaveRead API in the callback.*/
-    p_ctrl->p_cfg->p_callback(&args);
+    r_iic_slave_call_callback(p_ctrl, slave_event, p_ctrl->transaction_count);
 
     /* Allow timeouts to be generated on the low value of SCL using long count mode */
     p_ctrl->p_reg->ICMR2 = IIC_SLAVE_BUS_MODE_REGISTER_2_MASK;
@@ -703,6 +702,45 @@ static void iic_slave_initiate_transaction (iic_slave_instance_ctrl_t * p_ctrl, 
 
             p_ctrl->start_interrupt_enabled = true;
         }
+    }
+}
+
+/*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_ctrl     Pointer to iic slave instance control block
+ * @param[in]     event      Event code
+ * @param[in]     transaction_count      Transaction count for iic slave
+ **********************************************************************************************************************/
+static void r_iic_slave_call_callback (iic_slave_instance_ctrl_t * p_ctrl,
+                                       i2c_slave_event_t           event,
+                                       uint32_t                    transaction_count)
+{
+    i2c_slave_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available. */
+    i2c_slave_callback_args_t * p_args = p_ctrl->p_callback_memory;
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
+
+    p_args->bytes     = transaction_count;
+    p_args->event     = event;
+    p_args->p_context = p_ctrl->p_context;
+
+    p_ctrl->p_callback(p_args);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args;
     }
 }
 

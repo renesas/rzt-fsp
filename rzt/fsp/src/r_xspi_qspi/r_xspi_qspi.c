@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -178,6 +178,9 @@ const spi_flash_api_t g_spi_flash_on_xspi_qspi =
  *
  * Implements @ref spi_flash_api_t::open.
  *
+ * Example:
+ * @snippet r_xspi_qspi_example.c R_XSPI_QSPI_Open
+ *
  * @retval FSP_SUCCESS                    Configuration was successful.
  * @retval FSP_ERR_ASSERTION              The parameter p_instance_ctrl or p_cfg is NULL.
  * @retval FSP_ERR_ALREADY_OPEN           Driver has already been opened with the same p_instance_ctrl.
@@ -312,6 +315,9 @@ fsp_err_t R_XSPI_QSPI_DirectRead (spi_flash_ctrl_t * p_ctrl, uint8_t * const p_d
  * Read/Write raw data directly with the SerialFlash.
  *
  * Implements @ref spi_flash_api_t::directTransfer.
+ *
+ * Example:
+ * @snippet r_xspi_qspi_example.c R_XSPI_QSPI_DirectTransfer
  *
  * @retval FSP_SUCCESS                 The flash was programmed successfully.
  * @retval FSP_ERR_ASSERTION           A required pointer is NULL.
@@ -460,6 +466,9 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
         p_instance_ctrl->p_reg->BMCTL1_b.MWRPUSH = 1;
     }
 
+    /* Wait until memory access starts in write API. */
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->COMSTT_b.MEMACC, 1);
+
     return FSP_SUCCESS;
 }
 
@@ -546,23 +555,22 @@ fsp_err_t R_XSPI_QSPI_StatusGet (spi_flash_ctrl_t * p_ctrl, spi_flash_status_t *
     FSP_ERROR_RETURN(0U == p_instance_ctrl->p_reg->CMCTL_b.XIPEN, FSP_ERR_INVALID_MODE);
 #endif
 
-    /* If R_XSPI_QSPI_StatusGet is called immediately after R_XSPI_QSPI_Write is called, the result could be WIP = 0.
-     *
-     * This occurs because the Read Status Register instruction command is issued
-     * before the Program command due to the xSPI write buffer operation.
-     * In this case, QSPI has not started the write operation, so WIP = 0.
-     *
-     * This is unintended behavior because R_XSPI_QSPI_StatusGet determines the end of the QSPI write operation.
-     * Therefore, it is necessary to judge as "Write In Progress" when data is in the write buffer. */
     uint32_t comstt  = p_instance_ctrl->p_reg->COMSTT;
     bool     memacc  = (bool) ((comstt >> XSPI_QSPI_PRV_COMSTT_MEMACC_OFFSET) & XSPI_QSPI_PRV_COMSTT_MEMACC_VALUE_MASK);
     bool     wrbufne =
         (bool) ((comstt >> XSPI_QSPI_PRV_COMSTT_WRBUFNE_OFFSET) & XSPI_QSPI_PRV_COMSTT_WRBUFNE_VALUE_MASK);
 
-    /* Read device status. */
-    bool write_in_progress = r_xspi_qspi_status_sub(p_instance_ctrl);
-
-    p_status->write_in_progress = (bool) (wrbufne | memacc | write_in_progress);
+    if ((true == memacc) || (true == wrbufne))
+    {
+        /* If the xSPI is accessing memory or data is in the write buffer,
+         * it is judged a "write in progress" without access to QSPI. */
+        p_status->write_in_progress = (bool) (wrbufne | memacc);
+    }
+    else
+    {
+        /* Read device status. */
+        p_status->write_in_progress = r_xspi_qspi_status_sub(p_instance_ctrl);
+    }
 
     return FSP_SUCCESS;
 }
@@ -653,7 +661,7 @@ fsp_err_t R_XSPI_QSPI_Close (spi_flash_ctrl_t * p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Get the driver version based on compile time macros.
+ * DEPRECATED Get the driver version based on compile time macros.
  *
  * Implements @ref spi_flash_api_t::versionGet.
  *
@@ -775,25 +783,29 @@ static bool r_xspi_qspi_status_sub (xspi_qspi_instance_ctrl_t * p_instance_ctrl)
 
     spi_flash_direct_transfer_t direct_command = {0};
 
-    spi_flash_protocol_t setting_protocol = (spi_flash_protocol_t) 0x00;
+    bool                 restore_spi_protocol = false;
+    spi_flash_protocol_t setting_protocol     = (spi_flash_protocol_t) 0x00;
 
     direct_command.command        = p_cfg->status_command;
     direct_command.command_length = 1U;
     direct_command.data_length    = 1U;
 
     /* For most devices, the Read Status Register instruction is executed with the 1S-1S-1S instruction,
-     * even if it assumes 1S-4S-4S Write instruction. Therefore, the communication protocol is temporarily switched. */
-    if (SPI_FLASH_PROTOCOL_1S_4S_4S == p_instance_ctrl->spi_protocol)
+     * even if it assumes 1S-2S-2S or 1S-4S-4S Write instruction.
+     * Therefore, the communication protocol is temporarily switched. */
+    if ((SPI_FLASH_PROTOCOL_1S_4S_4S == p_instance_ctrl->spi_protocol) ||
+        (SPI_FLASH_PROTOCOL_1S_2S_2S == p_instance_ctrl->spi_protocol))
     {
         setting_protocol = p_instance_ctrl->spi_protocol;
         p_instance_ctrl->p_reg->LIOCFGCS_b[p_cfg_extend->chip_select].PRTMD = SPI_FLASH_PROTOCOL_1S_1S_1S;
         p_instance_ctrl->spi_protocol = SPI_FLASH_PROTOCOL_1S_1S_1S;
+        restore_spi_protocol          = true;
     }
 
     r_xspi_qspi_direct_transfer(p_instance_ctrl, &direct_command, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);
 
-    /* Resore communication protocol. */
-    if (SPI_FLASH_PROTOCOL_1S_4S_4S == setting_protocol)
+    /* Restore communication protocol. */
+    if (true == restore_spi_protocol)
     {
         p_instance_ctrl->p_reg->LIOCFGCS_b[p_cfg_extend->chip_select].PRTMD = setting_protocol;
         p_instance_ctrl->spi_protocol = setting_protocol;

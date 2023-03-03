@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -126,7 +126,13 @@ fsp_err_t R_POE3_Open (poe3_ctrl_t * const p_ctrl, poe3_cfg_t const * const p_cf
     p_instance_ctrl->p_reg->ICSR5 = (uint16_t) ((p_cfg->poe11.interrupt << 8) | p_cfg->poe11.mode);
 
     p_instance_ctrl->p_reg->ICSR6 = (uint16_t) (p_cfg->oscillation_stop << 9);
+
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     p_instance_ctrl->p_reg->ICSR7 = (uint16_t) ((p_cfg->dsmif1_error << 7) | (p_cfg->dsmif0_error << 6));
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    p_instance_ctrl->p_reg->ICSR7 = (uint16_t) ((p_cfg->dsmif1_error << 7) | (p_cfg->dsmif0_error << 6) | \
+                                                (p_cfg->dsmif1_error_1 << 5) | (p_cfg->dsmif0_error_1 << 4));
+#endif
 
     p_instance_ctrl->p_reg->OCSR1 =
         (uint16_t) ((p_cfg->short_circuit1.hiz_output << 9) | (p_cfg->short_circuit1.interrupt << 8));
@@ -275,15 +281,26 @@ fsp_err_t R_POE3_StatusGet (poe3_ctrl_t * const p_ctrl, poe3_status_t * const p_
 #endif
 
     /* Get POE3 state. */
-    p_status->state  = (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR1 & R_POE3_ICSR1_POE0F_Msk) >> 12);                // 0
-    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR2 & R_POE3_ICSR2_POE4F_Msk) >> 11);                // 1
-    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR3 & R_POE3_ICSR3_POE8F_Msk) >> 10);                // 2
+    p_status->state  = (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR1 & R_POE3_ICSR1_POE0F_Msk) >> 12);                  // 0
+    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR2 & R_POE3_ICSR2_POE4F_Msk) >> 11);                  // 1
+    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR3 & R_POE3_ICSR3_POE8F_Msk) >> 10);                  // 2
 
-    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR6 & R_POE3_ICSR6_OSTSTF_Msk) >> 6);                // 6
+    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR6 & R_POE3_ICSR6_OSTSTF_Msk) >> 6);                  // 6
+
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     p_status->state |=
-        (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR7 & (R_POE3_ICSR7_DERR1ST_Msk | R_POE3_ICSR7_DERR0ST_Msk)) >> 6); // 7,8
-    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->OCSR1 & R_POE3_OCSR1_OSF1_Msk) >> 6);                  // 9
-    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->OCSR2 & R_POE3_OCSR2_OSF2_Msk) >> 5);                  // 10
+        (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR7 & (R_POE3_ICSR7_DERR1ST_Msk | R_POE3_ICSR7_DERR0ST_Msk)) >> 6);   // 7,8
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    p_status->state |=
+        (poe3_state_t) ((p_instance_ctrl->p_reg->ICSR7 & (R_POE3_ICSR7_D1ERR0ST_Msk | R_POE3_ICSR7_D0ERR0ST_Msk)) >> 6); // 7,8
+#endif
+
+    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->OCSR1 & R_POE3_OCSR1_OSF1_Msk) >> 6);                    // 9
+    p_status->state |= (poe3_state_t) ((p_instance_ctrl->p_reg->OCSR2 & R_POE3_OCSR2_OSF2_Msk) >> 5);                    // 10
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    p_status->state |=
+        (poe3_state_t) (p_instance_ctrl->p_reg->ICSR7 & (R_POE3_ICSR7_D1ERR1ST_Msk | R_POE3_ICSR7_D0ERR1ST_Msk));        // 11,12
+#endif
 
     if ((p_instance_ctrl->p_reg->SPOER) != 0)
     {
@@ -317,9 +334,18 @@ fsp_err_t R_POE3_Close (poe3_ctrl_t * const p_ctrl)
     p_instance_ctrl->p_reg->ICSR3 &= (uint16_t) ~(R_POE3_ICSR3_POE8E_Msk | R_POE3_ICSR3_PIE3_Msk);
     p_instance_ctrl->p_reg->ICSR4 &= (uint16_t) ~(R_POE3_ICSR4_POE10E_Msk | R_POE3_ICSR4_PIE4_Msk);
     p_instance_ctrl->p_reg->ICSR5 &= (uint16_t) ~(R_POE3_ICSR5_POE11E_Msk | R_POE3_ICSR5_PIE5_Msk);
+
+#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
     p_instance_ctrl->p_reg->ICSR7 &=
         (uint16_t) ~(R_POE3_ICSR7_DERR1ST_Msk | R_POE3_ICSR7_DERR0ST_Msk | R_POE3_ICSR7_DERR1IE_Msk |
                      R_POE3_ICSR7_DERR0IE_Msk);
+#elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
+    p_instance_ctrl->p_reg->ICSR7 &=
+        (uint16_t) ~(R_POE3_ICSR7_D1ERR0ST_Msk | R_POE3_ICSR7_D0ERR0ST_Msk | R_POE3_ICSR7_D1ERR1ST_Msk |
+                     R_POE3_ICSR7_D0ERR1ST_Msk | R_POE3_ICSR7_D1ERR0IE_Msk | R_POE3_ICSR7_D0ERR0IE_Msk |
+                     R_POE3_ICSR7_D1ERR1IE_Msk | R_POE3_ICSR7_D0ERR1IE_Msk);
+#endif
+
     p_instance_ctrl->p_reg->OCSR1 &= (uint16_t) ~(R_POE3_OCSR1_OCE1_Msk | R_POE3_OCSR1_OIE1_Msk);
     p_instance_ctrl->p_reg->OCSR2 &= (uint16_t) ~(R_POE3_OCSR2_OCE2_Msk | R_POE3_OCSR2_OIE2_Msk);
     p_instance_ctrl->p_reg->SPOER &=
@@ -332,7 +358,7 @@ fsp_err_t R_POE3_Close (poe3_ctrl_t * const p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Sets driver version based on compile time macros. Implements @ref poe3_api_t::versionGet.
+ * DEPRECATED Sets driver version based on compile time macros. Implements @ref poe3_api_t::versionGet.
  *
  * @retval FSP_SUCCESS                 Version stored in p_version.
  * @retval FSP_ERR_ASSERTION           p_version was NULL.

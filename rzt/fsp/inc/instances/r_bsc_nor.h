@@ -1,0 +1,154 @@
+/***********************************************************************************************************************
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ *
+ * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
+ * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
+ * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
+ * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
+ * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
+ * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
+ * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
+ * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
+ * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
+ * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
+ * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
+ * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
+ * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
+ * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
+ * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
+ **********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @addtogroup BSC_NOR
+ * @{
+ **********************************************************************************************************************/
+#ifndef R_BSC_NOR_H
+#define R_BSC_NOR_H
+
+/***********************************************************************************************************************
+ * Includes
+ **********************************************************************************************************************/
+#include "bsp_api.h"
+#include "r_bsc_nor_cfg.h"
+#include "r_nor_flash_api.h"
+
+/* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
+FSP_HEADER
+
+/***********************************************************************************************************************
+ * Typedef definitions
+ **********************************************************************************************************************/
+
+/** Store CFI query result of Flash memory sector block information. */
+typedef struct st_bsc_nor_region_info
+{
+    uint32_t sector_size;
+    uint32_t sector_number;
+} bsc_nor_block_info_t;
+
+/** Number of insertion idle cycle between access cycles */
+typedef enum e_bsc_nor_idle_cycle
+{
+    BSC_NOR_IDLE_CYCLE_0 = 0x0,        ///< No idle cycle insertion
+    BSC_NOR_IDLE_CYCLE_1,              ///< 1 idle cycle insertion
+    BSC_NOR_IDLE_CYCLE_2,              ///< 2 idle cycle insertion
+    BSC_NOR_IDLE_CYCLE_4,              ///< 4 idle cycle insertion
+    BSC_NOR_IDLE_CYCLE_6,              ///< 6 idle cycle insertion
+    BSC_NOR_IDLE_CYCLE_8,              ///< 8 idle cycle insertion
+    BSC_NOR_IDLE_CYCLE_10,             ///< 10 idle cycle insertion
+    BSC_NOR_IDLE_CYCLE_12,             ///< 12 idle cycle insertion
+} bsc_nor_idle_cycle_t;
+
+/** Number of insertion access wait cycle */
+typedef enum e_bsc_nor_access_wait_cycle
+{
+    BSC_NOR_ACCESS_WAIT_CYCLE_0 = 0x00,                   ///< No wait insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_1,                          ///< 1 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_2,                          ///< 2 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_3,                          ///< 3 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_4,                          ///< 4 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_5,                          ///< 5 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_6,                          ///< 6 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_8,                          ///< 8 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_10,                         ///< 10 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_12,                         ///< 12 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_14,                         ///< 14 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_18,                         ///< 18 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_24,                         ///< 24 access wait cycle insertion
+    BSC_NOR_ACCESS_WAIT_CYCLE_SAME_AS_READ_ACCESS = 0xFF, ///< Insert the same weight cycle when read access (Used only for Write access wait settings)
+} bsc_nor_access_wait_cycle_t;
+
+/** Number of insertion CS wait cycle */
+typedef enum e_bsc_nor_cs_wait_cycle_t
+{
+    BSC_NOR_CS_WAIT_CYCLE_0_5,         ///< CS wait 0.5 cycle insertion
+    BSC_NOR_CS_WAIT_CYCLE_1_5,         ///< CS wait 1.5 cycle insertion
+    BSC_NOR_CS_WAIT_CYCLE_2_5,         ///< CS wait 2.5 cycle insertion
+    BSC_NOR_CS_WAIT_CYCLE_3_5,         ///< CS wait 3.5 cycle insertion
+} bsc_nor_cs_wait_cycle_t;
+
+/** Extended configuration. */
+typedef struct st_bsc_nor_extended_cfg
+{
+    /** Idle cycle between Read-Read cycles in the same CS space */
+    bsc_nor_idle_cycle_t r_r_same_space_idle_cycle;
+
+    /** Idle cycle between Read-Read cycles in the different CS space */
+    bsc_nor_idle_cycle_t r_r_different_space_idle_cycle;
+
+    /** Idle cycle between Read-Write cycles in the same CS space */
+    bsc_nor_idle_cycle_t r_w_same_space_idle_cycle;
+
+    /** Idle cycle between Read-Write cycles in the different CS space */
+    bsc_nor_idle_cycle_t r_w_different_space_idle_cycle;
+
+    /** Idle cycle between Write-Read cycles and Write-Write cycles */
+    bsc_nor_idle_cycle_t w_r_w_w_idle_cycle;
+
+    bsc_nor_access_wait_cycle_t read_access_wait_cycle;  ///< Number of read access cycle waits
+    bsc_nor_access_wait_cycle_t write_access_wait_cycle; ///< Number of write access cycle waits
+
+    bsc_nor_cs_wait_cycle_t cs_pullup_lag;               ///< Duration to de-assert CS line after RD#,WE# de-assert
+    bsc_nor_cs_wait_cycle_t cs_pulldown_lead;            ///< Duration to assert CS line before RD#,WE# assert
+} bsc_nor_extended_cfg_t;
+
+/** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref nor_flash_api_t::open is called */
+typedef struct st_bsc_nor_instance_ctrl
+{
+    uint32_t                open;        // Whether or not driver is open
+    nor_flash_cfg_t const * p_cfg;       // Pointer to initial configuration
+    void * p_cs_base;                    // Pointer to using CS area
+
+    bsc_nor_block_info_t * p_block_info; // Pointer to store block information obtained by CFI Query
+    uint32_t               block_number; // The number of regions in the device obtained by CFI Query
+} bsc_nor_instance_ctrl_t;
+
+/**********************************************************************************************************************
+ * Exported global variables
+ **********************************************************************************************************************/
+
+/** @cond INC_HEADER_DEFS_SEC */
+/** Filled in Interface API structure for this Instance. */
+extern const nor_flash_api_t g_nor_flash_on_bsc_nor;
+
+/** @endcond */
+
+fsp_err_t R_BSC_NOR_Open(nor_flash_ctrl_t * p_ctrl, nor_flash_cfg_t const * const p_cfg);
+fsp_err_t R_BSC_NOR_Write(nor_flash_ctrl_t    * p_ctrl,
+                          uint8_t const * const p_src,
+                          uint8_t * const       p_dest,
+                          uint32_t              byte_count);
+fsp_err_t R_BSC_NOR_Erase(nor_flash_ctrl_t * p_ctrl, uint8_t * const p_device_address, uint32_t byte_count);
+fsp_err_t R_BSC_NOR_StatusGet(nor_flash_ctrl_t         * p_ctrl,
+                              uint8_t * const            p_device_address,
+                              nor_flash_status_t * const p_status);
+fsp_err_t R_BSC_NOR_Close(nor_flash_ctrl_t * p_ctrl);
+
+/* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
+FSP_FOOTER
+
+#endif
+
+/*******************************************************************************************************************//**
+ * @} (end defgroup BSC_NOR)
+ **********************************************************************************************************************/

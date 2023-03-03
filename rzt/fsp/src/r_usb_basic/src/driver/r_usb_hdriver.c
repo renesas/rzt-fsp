@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -158,7 +158,6 @@ usb_utr_t * g_p_usb_hstd_pipe[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
 /* Hi-speed enable */
 uint16_t         g_usb_hstd_hs_enable[USB_NUM_USBIP];
 usb_ctrl_trans_t g_usb_ctrl_request[USB_NUM_USBIP][USB_MAXDEVADDR + 1] USB_BUFFER_PLACE_IN_SECTION;
-uint8_t          g_temp_data_buf[USB_NUM_USBIP][USB_MAXDEVADDR + 1][USB_VAL_1024] USB_BUFFER_PLACE_IN_SECTION;
 
  #if BSP_CFG_RTOS == 0
 uint16_t g_usb_hstd_pipe_request[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,11 +19,11 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup BOARD_RZT2_RSK
- * @defgroup BOARD_RZT2_RSK_ETHERNET_PHY Board Ethernet Phy
+ * @ingroup BOARD_RZT2M_RSK
+ * @defgroup BOARD_RZT2M_RSK_ETHERNET_PHY Board Ethernet Phy
  * @brief Ethernet Phy information for this board.
  *
- * This is code specific to the RZT2_RSK board.
+ * This is code specific to the RZT2M_RSK board.
  *
  * @{
  **********************************************************************************************************************/
@@ -56,4 +56,4 @@ FSP_FOOTER
 
 #endif
 
-/** @} (end defgroup BOARD_RZT2_RSK_ETHERNET_PHY) */
+/** @} (end defgroup BOARD_RZT2M_RSK_ETHERNET_PHY) */

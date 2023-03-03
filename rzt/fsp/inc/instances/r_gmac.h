@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -36,13 +36,15 @@ FSP_HEADER
  **********************************************************************************************************************/
 #include "r_ether_cfg.h"
 #include "r_ether_api.h"
-#include "r_ethsw_api.h"
+#ifdef GMAC_IMPLEMENT_ETHSW
+ #include "r_ethsw_api.h"
+#endif                                  // GMAC_IMPLEMENT_ETHSW
 
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define GMAC_CODE_VERSION_MAJOR    (1U)
-#define GMAC_CODE_VERSION_MINOR    (1U)
+#define GMAC_CODE_VERSION_MAJOR    (1U) // DEPRECATED
+#define GMAC_CODE_VERSION_MINOR    (2U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -54,15 +56,6 @@ typedef enum e_gmac_port_mask
     GMAC_PORT_MASK_2   = (1U << 2),
     GMAC_PORT_MASK_ALL = (GMAC_PORT_MASK_0 | GMAC_PORT_MASK_1 | GMAC_PORT_MASK_2)
 } gmac_port_mask_t;
-
-/** GMAC descriptor as defined in the hardware manual. */
-typedef struct st_gmac_instance_descriptor
-{
-    volatile uint32_t des0;            ///< TDES0/RDES0
-    volatile uint32_t des1;            ///< TDES1/RDES1
-    volatile uint32_t des2;            ///< TDES2/RDES2
-    volatile uint32_t des3;            ///< TDES3/RDES3
-} gmac_instance_descriptor_t;
 
 typedef enum e_gmac_link_change
 {
@@ -76,6 +69,15 @@ typedef enum e_gmac_magic_packet
     GMAC_MAGIC_PACKET_NOT_DETECTED = 0, ///< Magic packet is not detected
     GMAC_MAGIC_PACKET_DETECTED     = 1, ///< Magic packet is detected
 } gmac_magic_packet_t;
+
+/** GMAC descriptor as defined in the hardware manual. */
+typedef struct st_gmac_instance_descriptor
+{
+    volatile uint32_t des0;            ///< TDES0/RDES0
+    volatile uint32_t des1;            ///< TDES1/RDES1
+    volatile uint32_t des2;            ///< TDES2/RDES2
+    volatile uint32_t des3;            ///< TDES3/RDES3
+} gmac_instance_descriptor_t;
 
 typedef enum e_gmac_phylink
 {
@@ -94,7 +96,9 @@ typedef struct st_gmac_extend_cfg
     uint32_t  pmt_interrupt_priority;                                           ///< PMT_interrupt priority
 
     ether_phy_instance_t const *(*pp_phy_instance)[BSP_FEATURE_GMAC_MAX_PORTS]; ///< Pointer to ETHER_PHY instance
+#ifdef GMAC_IMPLEMENT_ETHSW
     ethsw_instance_t const * p_ethsw_instance;                                  ///< Pointer to ETHER_SWITCH instance
+#endif // GMAC_IMPLEMENT_ETHSW
 } gmac_extend_cfg_t;
 
 /** ETHER control block. DO NOT INITIALIZE.  Initialization occurs when @ref ether_api_t::open is called. */
@@ -117,6 +121,8 @@ typedef struct st_gmac_instance_ctrl
 
     /* Status of ethernet driver. */
     gmac_port_mask_t previous_link_status;        ///< Previous link status (bit0:port0, bit1:port1,..)
+
+    uint32_t link_speed_duplex;                   ///< Link speed & duplex
 
     gmac_magic_packet_t magic_packet;             ///< status of magic packet detection
 

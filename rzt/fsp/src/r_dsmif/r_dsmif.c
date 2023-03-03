@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -88,7 +88,8 @@ const adc_api_t g_adc_on_dsmif =
     .scanStatusGet = R_DSMIF_StatusGet,
     .read32        = R_DSMIF_Read,
     .close         = R_DSMIF_Close,
-    .versionGet    = R_DSMIF_VersionGet
+    .versionGet    = R_DSMIF_VersionGet,
+    .callbackSet   = R_DSMIF_CallbackSet
 };
 
 /*******************************************************************************************************************//**
@@ -489,7 +490,35 @@ fsp_err_t R_DSMIF_Close (adc_ctrl_t * p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Sets driver version based on compile time macros.
+ * Updates the user callback with the option to provide memory for the callback argument structure.
+ *
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
+ **********************************************************************************************************************/
+fsp_err_t R_DSMIF_CallbackSet (adc_ctrl_t * const          p_api_ctrl,
+                               void (                    * p_callback)(adc_callback_args_t *),
+                               void const * const          p_context,
+                               adc_callback_args_t * const p_callback_memory)
+{
+    dsmif_instance_ctrl_t * p_ctrl = (dsmif_instance_ctrl_t *) p_api_ctrl;
+
+#if DSMIF_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(DSMIF_OPEN == p_ctrl->opened, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_ctrl->p_callback        = p_callback;
+    p_ctrl->p_context         = p_context;
+    p_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
+ * DEPRECATED Sets driver version based on compile time macros.
  *
  * @retval FSP_SUCCESS                 Version stored in p_version.
  * @retval FSP_ERR_ASSERTION           p_version was NULL.
@@ -701,24 +730,44 @@ void dsmif_cdrui_isr (void)
 
     IRQn_Type               irq             = R_FSP_CurrentIrqGet();
     dsmif_instance_ctrl_t * p_instance_ctrl = (dsmif_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
+    adc_callback_args_t     args;
+
+    /* Store callback arguments in memory provided by user if available.  This allows callback arguments to be
+     * stored in non-secure memory so they can be accessed by a non-secure callback function. */
+    adc_callback_args_t * p_args = p_instance_ctrl->p_callback_memory;
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
 
     /* If a callback was provided, call it with the argument */
-    if (NULL != p_instance_ctrl->p_cfg->p_callback)
+    if (NULL != p_instance_ctrl->p_callback)
     {
         /* Store the event into the callback argument */
-        adc_callback_args_t args;
         if (VECNUM_DSMIF0_CDRUI == irq)
         {
-            args.unit = 0U;
+            p_args->unit = 0U;
         }
         else
         {
-            args.unit = 1U;
+            p_args->unit = 1U;
         }
 
-        args.event     = ADC_EVENT_SCAN_COMPLETE;
-        args.p_context = p_instance_ctrl->p_cfg->p_context;
-        p_instance_ctrl->p_cfg->p_callback(&args);
+        p_args->event     = ADC_EVENT_SCAN_COMPLETE;
+        p_args->p_context = p_instance_ctrl->p_context;
+        p_instance_ctrl->p_callback(p_args);
+    }
+
+    if (NULL != p_instance_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_instance_ctrl->p_callback_memory = args;
     }
 
     /* Restore context if RTOS is used */

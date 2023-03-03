@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -64,7 +64,9 @@
 #endif                                 /* defined(USB_CFG_PMSC_USE) */
 
 #if (USB_CFG_DMA == USB_CFG_ENABLE)
- #include "r_dmac.h"
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
+  #include "r_dmac.h"
+ #endif                                /* !defined(BSP_MCU_GROUP_RZT2M) */
 #endif
 
 /******************************************************************************
@@ -92,7 +94,7 @@ usb_utr_t g_usb_hdata[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1] USB_BUFFER_PLACE_IN_SE
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-usb_utr_t g_usb_pdata[USB_MAXPIPE_NUM + 1];
+usb_utr_t g_usb_pdata[USB_MAXPIPE_NUM + 1] USB_BUFFER_PLACE_IN_SECTION;
 
 #endif                                 /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
 
@@ -312,10 +314,10 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
     usb_utr_t utr;
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
     usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
-#if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+#if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     usb_utr_t hse_utr;
     memset((void *) &hse_utr, 0, sizeof(usb_utr_t));
-#endif                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
+#endif                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_api_ctrl)
@@ -361,10 +363,10 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
                 FSP_ERROR_RETURN(USB_SPEED_HS != p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
             }
 
- #elif defined(BSP_MCU_GROUP_RZT2M)    /* defined(BSP_MCU_GROUP_RA6M3) */
+ #elif defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) /* defined(BSP_MCU_GROUP_RA6M3) */
  #else /* defined(BSP_MCU_GROUP_RA6M3) */
             FSP_ERROR_RETURN(USB_SPEED_HS != p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) */
+ #endif                                                             /* defined(BSP_MCU_GROUP_RA6M3) */
             break;
         }
 
@@ -382,7 +384,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
   #if defined(BSP_MCU_GROUP_RA6M3)
             FSP_ERROR_RETURN(!((USB_SPEED_HS == p_cfg->usb_speed) && (USB_IP1 != p_ctrl->module_number)),
                              FSP_ERR_USB_PARAMETER)
-  #elif defined(BSP_MCU_GROUP_RZT2M)
+  #elif defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
             FSP_ERROR_RETURN(USB_SPEED_HS == p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
   #else                                /* defined(BSP_MCU_GROUP_RA6M3) */
             FSP_ERROR_RETURN(USB_SPEED_HS != p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
@@ -418,14 +420,14 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
     {
         if (0 != p_ctrl->p_transfer_tx)
         {
- #ifndef BSP_MCU_GROUP_RZT2M
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
             R_DMAC_Open(p_ctrl->p_transfer_tx->p_ctrl, p_ctrl->p_transfer_tx->p_cfg);
  #endif                                /* BSP_MCU_GROUP_RZT2M */
         }
 
         if (0 != p_ctrl->p_transfer_rx)
         {
- #ifndef BSP_MCU_GROUP_RZT2M
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
             R_DMAC_Open(p_ctrl->p_transfer_rx->p_ctrl, p_ctrl->p_transfer_rx->p_cfg);
  #endif                                /* BSP_MCU_GROUP_RZT2M */
         }
@@ -435,14 +437,14 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
     {
         if (0 != p_ctrl->p_transfer_tx)
         {
- #ifndef BSP_MCU_GROUP_RZT2M
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
             R_DMAC_Open(p_ctrl->p_transfer_tx->p_ctrl, p_ctrl->p_transfer_tx->p_cfg);
  #endif                                /* BSP_MCU_GROUP_RZT2M */
         }
 
         if (0 != p_ctrl->p_transfer_rx)
         {
- #ifndef BSP_MCU_GROUP_RZT2M
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
             R_DMAC_Open(p_ctrl->p_transfer_rx->p_ctrl, p_ctrl->p_transfer_rx->p_cfg);
  #endif                                /* BSP_MCU_GROUP_RZT2M */
         }
@@ -497,7 +499,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
         if (FSP_SUCCESS == err)
         {
             /* USB driver initialization */
- #if !defined(BSP_MCU_GROUP_RZT2M)
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
             usb_hdriver_init(&utr, p_cfg);
  #else
             R_USB_HstdMgrOpen(&utr);      /* USB0 MGR Open */
@@ -523,10 +525,12 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
  #endif /* USB_IP_EHCI_OHCI == 0 */
 
  #if defined(USB_CFG_HHID_USE)
+  #if USB_IP_EHCI_OHCI == 0
             if (USB_CLASS_INTERNAL_HHID == (usb_class_internal_t) p_ctrl->type)
             {
                 hw_usb_hset_trnensel(&utr);
             }
+  #endif                               /* USB_IP_EHCI_OHCI == 0 */
  #endif                                /* defined(USB_CFG_HHID_USE) */
 
  #if USB_IP_EHCI_OHCI == 0
@@ -565,7 +569,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
             /* Setting MCU(USB interrupt init) register */
             usb_cpu_usbint_init(p_ctrl->module_number, p_cfg);
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
             if (USB_SPEED_HS == p_cfg->usb_speed)
             {
                 hse_utr.ip = p_ctrl->module_number;
@@ -575,15 +579,15 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
             {
                 (void) hse_utr;
             }
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
             /* Setting USB relation register  */
             hw_usb_pmodule_init(p_ctrl->module_number);
 
             if (USB_ATTACH == usb_pstd_chk_vbsts(p_ctrl->module_number))
             {
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
                 hw_usb_set_cnen(p_ctrl->module_number);
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
                 usb_cpu_delay_xms((uint16_t) 10);
                 hw_usb_pset_dprpu(p_ctrl->module_number);
             }

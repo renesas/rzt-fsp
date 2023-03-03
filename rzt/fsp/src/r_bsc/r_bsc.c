@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -73,6 +73,9 @@ const external_bus_api_t g_external_bus_on_bsc =
  * at address 0x70000000 or 0x50000000.
  *
  * Implements @ref external_bus_api_t::open.
+ *
+ * Example:
+ * @snippet r_bsc_example.c R_BSC_Open
  *
  * @retval FSP_SUCCESS             Configuration was successful.
  * @retval FSP_ERR_ASSERTION       The parameter p_instance_ctrl or p_cfg is NULL.
@@ -161,6 +164,9 @@ fsp_err_t R_BSC_Open (external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * c
         csnwcr |= (((p_cfg_extend->cs_pullup_lag & BSC_PRV_CSNWCR_HW_VALUE_MASK) << R_BSC_CS0WCR_0_HW_Pos) |
                    ((p_cfg_extend->cs_pulldown_lead & BSC_PRV_CSNWCR_SW_VALUE_MASK) << R_BSC_CS0WCR_0_SW_Pos));
     }
+
+    /* Set external wait setting. */
+    csnwcr |= (p_cfg->external_wait_en & BSC_PRV_CSNWCR_WM_VALUE_MASK) << R_BSC_CS0WCR_0_WM_Pos;
 
     R_BSC->CSnBCR[p_cfg->chip_select] = csnbcr;
     *p_csnwcr = csnwcr;

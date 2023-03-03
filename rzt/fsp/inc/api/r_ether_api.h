@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -56,8 +56,8 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHER_API_VERSION_MAJOR    (1U)
-#define ETHER_API_VERSION_MINOR    (1U)
+#define ETHER_API_VERSION_MAJOR    (1U) // DEPRECATED
+#define ETHER_API_VERSION_MINOR    (2U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -143,7 +143,7 @@ typedef struct st_ether_callback_args
 typedef void ether_ctrl_t;
 
 /** Configuration parameters. */
-typedef struct st_gmac_cfg
+typedef struct st_ether_cfg
 {
     uint8_t              channel;                        ///< Channel
     ether_zerocopy_t     zerocopy;                       ///< Zero copy enable or disable in Read/Write function
@@ -168,7 +168,7 @@ typedef struct st_gmac_cfg
     void (* p_callback)(ether_callback_args_t * p_args); ///< Callback provided when an ISR occurs.
     ether_phy_instance_t const * p_ether_phy_instance;   ///< not use: Pointer to ETHER_PHY instance
 
-    /** Placeholder for user data.  Passed to the user callback in gmac_callback_args_t. */
+    /** Placeholder for user data.  Passed to the user callback in ether_callback_args_t. */
     void const * p_context;                              ///< Placeholder for user data.
     void const * p_extend;                               ///< Placeholder for user extension.
 } ether_cfg_t;
@@ -264,7 +264,7 @@ typedef struct st_ether_api
      */
     fsp_err_t (* txStatusGet)(ether_ctrl_t * const p_api_ctrl, void * const p_buffer_address);
 
-    /** Return the version of the driver.
+    /** DEPRECATED Return the version of the driver.
      * @par Implemented as
      * - @ref R_GMAC_VersionGet()
      *
@@ -274,7 +274,7 @@ typedef struct st_ether_api
 } ether_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */
-typedef struct st_gmac_instance
+typedef struct st_ether_instance
 {
     ether_ctrl_t      * p_ctrl;        ///< Pointer to the control structure for this instance
     ether_cfg_t const * p_cfg;         ///< Pointer to the configuration structure for this instance

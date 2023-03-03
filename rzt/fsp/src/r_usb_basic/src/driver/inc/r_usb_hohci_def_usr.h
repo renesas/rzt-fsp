@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -41,21 +41,31 @@
  **********************************************************************************************************************/
 
 /* The maximum number of Endpoint memory */
-#define USB_OHCI_NUM_ENDPOINT           (USB_HCI_TRREQ_NUM + USB_HCI_DEVICE_NUM)
+#define USB_OHCI_NUM_ENDPOINT            ((USB_HCI_DEVICE_NUM) *(USB_OHCI_DEVICE_ENDPOINT_MAX) +4)
 
 /* The maximum number of Endpoint Descriptor memory */
-#define USB_OHCI_NUM_ED                 ((USB_OHCI_ED_INTERRUPT_32ms * USB_OHCI_NUM_DEVICEDATA) + USB_OHCI_NUM_ENDPOINT)
+#define USB_OHCI_NUM_ED                  (USB_OHCI_ED_INTERRUPT_32ms + USB_OHCI_NUM_ENDPOINT)
 
 /* The maximum number of Transfer Descriptor memory */
-#define USB_OHCI_NUM_TD                 (0x100000 / USB_OHCI_MAXTDSIZE)
+#define USB_OHCI_NUM_TD                  (64) // (0x100000 / USB_OHCI_MAXTDSIZE)
+
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
 
 /* The maximum number of OHCI Isochronous Device */
-#define USB_OHCI_ISO_MAXDEVICE          (4U)
+ #define USB_OHCI_ISO_MAXDEVICE          (4U)
 
 /* The maximum number of OHCI Isochronous Packet Size */
-#define USB_OHCI_ISO_MAX_PACKET_SIZE    (1023U)
+ #define USB_OHCI_ISO_MAX_PACKET_SIZE    (1U)
+#else
+
+/* The maximum number of OHCI Isochronous Device */
+ #define USB_OHCI_ISO_MAXDEVICE          (4U)
+
+/* The maximum number of OHCI Isochronous Packet Size */
+ #define USB_OHCI_ISO_MAX_PACKET_SIZE    (1023U)
+#endif
 
 /* Time-out setting (msec) */
-#define USB_OHCI_TIMEOUT                (3000U)
+#define USB_OHCI_TIMEOUT                 (3000U)
 
 #endif                                 /* R_USB_HOHCIDEFUSR_H */

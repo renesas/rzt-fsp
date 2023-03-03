@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -154,6 +154,9 @@ const cgc_api_t g_cgc_on_cgc =
 /*******************************************************************************************************************//**
  * Initialize the CGC API.  Implements @ref cgc_api_t::open.
  *
+ * Example:
+ * @snippet r_cgc_example.c R_CGC_Open
+ *
  * @retval FSP_SUCCESS              CGC successfully initialized.
  * @retval FSP_ERR_ASSERTION        Invalid input argument.
  * @retval FSP_ERR_ALREADY_OPEN     Module is already open.
@@ -191,6 +194,9 @@ fsp_err_t R_CGC_Open (cgc_ctrl_t * const p_ctrl, cgc_cfg_t const * const p_cfg)
  * operation completes.
  *
  * Implements @ref cgc_api_t::clocksCfg.
+ *
+ * Example:
+ * @snippet r_cgc_example.c R_CGC_ClocksCfg
  *
  * @retval FSP_SUCCESS                  Clock configuration applied successfully.
  * @retval FSP_ERR_ASSERTION            Invalid input argument.
@@ -300,6 +306,9 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
 /*******************************************************************************************************************//**
  * Start the specified clock if it is not currently active. Implements @ref cgc_api_t::clockStart.
  *
+ * Example:
+ * @snippet r_cgc_example.c R_CGC_ClockStart
+ *
  * @retval FSP_SUCCESS                  Clock initialized successfully.
  * @retval FSP_ERR_ASSERTION            Invalid input argument.
  * @retval FSP_ERR_NOT_OPEN             Module is not open.
@@ -330,6 +339,9 @@ fsp_err_t R_CGC_ClockStart (cgc_ctrl_t * const p_ctrl, cgc_clock_t clock_source,
 
 /*******************************************************************************************************************//**
  * Stop the specified clock if it is active.  Implements @ref cgc_api_t::clockStop.
+ *
+ * Example:
+ * @snippet r_cgc_example.c R_CGC_ClockStop
  *
  * @retval FSP_SUCCESS                      Clock stopped successfully.
  * @retval FSP_ERR_ASSERTION                Invalid input argument.
@@ -368,6 +380,9 @@ fsp_err_t R_CGC_ClockStop (cgc_ctrl_t * const p_ctrl, cgc_clock_t clock_source)
 /*******************************************************************************************************************//**
  * Set the specified clock as the system clock and configure the internal dividers.
  * Implements @ref cgc_api_t::systemClockSet.
+ *
+ * Example:
+ * @snippet r_cgc_example.c R_CGC_SystemClockSet
  *
  * This function also updates the SystemCoreClock CMSIS global variable.
  *
@@ -472,8 +487,10 @@ fsp_err_t R_CGC_SystemClockGet (cgc_ctrl_t * const        p_ctrl,
         p_sckcr_cfg->sci3_async_sel = (cgc_sci_async_clock_t) (R_SYSC_NS->SCKCR_b.SCI3ASYNCSEL);
         p_sckcr_cfg->sci4_async_sel = (cgc_sci_async_clock_t) (R_SYSC_NS->SCKCR_b.SCI4ASYNCSEL);
 
-        p_sckcr2_cfg->fsel0cr52      = (cgc_cpu_clock_div_t) (R_SYSC_S->SCKCR2_b.FSELCPU0);
-        p_sckcr2_cfg->fsel1cr52      = (cgc_cpu_clock_div_t) (R_SYSC_S->SCKCR2_b.FSELCPU1);
+        p_sckcr2_cfg->fsel0cr52 = (cgc_cpu_clock_div_t) (R_SYSC_S->SCKCR2_b.FSELCPU0);
+#if BSP_FEATURE_BSP_CPU1_SUPPORTED
+        p_sckcr2_cfg->fsel1cr52 = (cgc_cpu_clock_div_t) (R_SYSC_S->SCKCR2_b.FSELCPU1);
+#endif
         p_sckcr2_cfg->div_sub_sel    = (cgc_baseclock_div_t) (R_SYSC_S->SCKCR2_b.DIVSELSUB);
         p_sckcr2_cfg->spi3_async_sel = (cgc_spi_async_clock_t) (R_SYSC_S->SCKCR2_b.SPI3ASYNCSEL);
         p_sckcr2_cfg->sci5_async_sel = (cgc_sci_async_clock_t) (R_SYSC_S->SCKCR2_b.SCI5ASYNCSEL);
@@ -598,7 +615,7 @@ fsp_err_t R_CGC_Close (cgc_ctrl_t * const p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Return the driver version.  Implements @ref cgc_api_t::versionGet.
+ * DEPRECATED Return the driver version.  Implements @ref cgc_api_t::versionGet.
  *
  * @retval FSP_SUCCESS                 Module version provided in p_version.
  * @retval FSP_ERR_ASSERTION           Invalid input argument.
@@ -766,7 +783,9 @@ static uint32_t r_cgc_cfg_to_sckcr2_parameter (cgc_sckcr2_cfg_t * p_sckcr2_cfg)
     cgc_sckcr2_cfg_t sckcr2_cfg = *p_sckcr2_cfg;
 
     uint32_t sckcr2 = (((sckcr2_cfg.fsel0cr52 & CGC_PRV_SCKCR2_FSELCR52_VALUE_MASK) << R_SYSC_S_SCKCR2_FSELCPU0_Pos) |
+#if BSP_FEATURE_BSP_CPU1_SUPPORTED
                        ((sckcr2_cfg.fsel1cr52 & CGC_PRV_SCKCR2_FSELCR52_VALUE_MASK) << R_SYSC_S_SCKCR2_FSELCPU1_Pos) |
+#endif
                        ((sckcr2_cfg.div_sub_sel & CGC_PRV_SCKCR2_DIVSUBSEL_VALUE_MASK) <<
                         R_SYSC_S_SCKCR2_DIVSELSUB_Pos) |
                        ((sckcr2_cfg.spi3_async_sel & CGC_PRV_SCKCR2_SPIASYNCSEL_VALUE_MASK) <<

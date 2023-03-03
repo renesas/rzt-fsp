@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -102,6 +102,8 @@
 /* DMA Control Register Bit Field Definitions */
 #define DMAC_PRV_DCTRL_PR_OFFSET                 (0U)
 #define DMAC_PRV_DCTRL_PR_VALUE_MASK             (0x01U)
+#define DMAC_PRV_DCTRL_LVINT_OFFSET              (1U)
+#define DMAC_PRV_DCTRL_LVINT_VALUE_MASK          (0x01U)
 
 /* DMAC Resource Select Register Bit Field Definitions */
 #define DMAC_PRV_RSSEL_REQ_SEL_OFFSET            (10U)
@@ -421,7 +423,7 @@ fsp_err_t R_DMAC_Close (transfer_ctrl_t * const p_api_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Set driver version based on compile time macros.
+ * DEPRECATED Set driver version based on compile time macros.
  *
  * @retval FSP_SUCCESS              Successful close.
  * @retval FSP_ERR_ASSERTION        An input parameter is invalid.
@@ -543,6 +545,9 @@ static void r_dmac_config_transfer_info (dmac_instance_ctrl_t * p_ctrl, transfer
         /* Enable transfer end interrupt requests. */
         chcfg &= ~((uint32_t) DMAC_PRV_CHCFG_DEM_MASK);
 
+        /* Set Level Output when the DMA interrupt is enabled. */
+        dctrl |= (1U & DMAC_PRV_DCTRL_LVINT_VALUE_MASK) << DMAC_PRV_DCTRL_LVINT_OFFSET;
+
         /* Enable the IRQ in the GIC. */
         R_BSP_IrqDetectTypeSet(p_extend->dmac_int_irq, p_extend->dmac_int_irq_detect_type);
         R_BSP_IrqCfgEnable(p_extend->dmac_int_irq, p_extend->dmac_int_ipl, p_ctrl);
@@ -602,9 +607,9 @@ static void r_dmac_config_transfer_info (dmac_instance_ctrl_t * p_ctrl, transfer
         (true == r_dmac_address_tcm_check((uint32_t) p_info->p_dest)) ?
         ((uint32_t) p_info->p_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_info->p_dest);
 
-    p_ctrl->p_reg->GRP[group].CH[channel].N[0].TB      = p_info->length;
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCFG        = chcfg;
-    p_ctrl->p_reg->GRP[group].CH[channel].CHTVL_b.ITVL = p_extend->transfer_interval;
+    p_ctrl->p_reg->GRP[group].CH[channel].N[0].TB       = p_info->length;
+    p_ctrl->p_reg->GRP[group].CH[channel].CHCFG         = chcfg;
+    p_ctrl->p_reg->GRP[group].CH[channel].CHITVL_b.ITVL = p_extend->transfer_interval;
 
     uint32_t src_address  = (uint32_t) p_info->p_src;
     uint32_t dest_address = (uint32_t) p_info->p_dest;

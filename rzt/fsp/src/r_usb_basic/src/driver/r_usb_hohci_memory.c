@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -53,12 +53,12 @@
 
 BSP_ALIGN_VARIABLE(256) st_usb_ohci_hcca_block_t gs_usb_hstd_ohci_hcca USB_BUFFER_PLACE_IN_SECTION;
 BSP_ALIGN_VARIABLE(16) st_usb_ohci_hcd_transfer_descriptor_t gs_usb_hstd_ohci_td_memory[USB_OHCI_NUM_TD]
-USB_BUFFER_PLACE_IN_SECTION;           /* 32 bit-boundary Area */
+USB_BUFFER_PLACE_IN_SECTION;                                                                      /* 32 bit-boundary Area */
 BSP_ALIGN_VARIABLE(16) st_usb_ohci_hcd_endpoint_descriptor_t gs_usb_hstd_ohci_ed_memory[USB_OHCI_NUM_ED]
-USB_BUFFER_PLACE_IN_SECTION;           /* 16 bit-boundary Area */
+USB_BUFFER_PLACE_IN_SECTION;                                                                      /* 16 bit-boundary Area */
 BSP_ALIGN_VARIABLE(16) uint8_t gs_usb_hstd_ohci_iso_buffer[USB_OHCI_ISO_MAXDEVICE][USB_OHCI_ISO_MAX_FRAME][
     USB_OHCI_ISO_MAX_PACKET_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-BSP_ALIGN_VARIABLE(16) st_usb_ohci_request_t gs_usb_hstd_ohci_request_array[USB_OHCI_NUM_REQUEST]
+BSP_ALIGN_VARIABLE(16) st_usb_ohci_request_t gs_usb_hstd_ohci_request_array[USB_OHCI_NUM_REQUEST] // - request setup to TD
 USB_BUFFER_PLACE_IN_SECTION;
 BSP_ALIGN_VARIABLE(16) st_usb_ohci_hcd_device_data_t gs_usb_hstd_ohci_device_data_memory[USB_OHCI_NUM_DEVICEDATA]
 USB_BUFFER_PLACE_IN_SECTION;

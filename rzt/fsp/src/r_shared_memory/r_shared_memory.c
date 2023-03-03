@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -54,11 +54,12 @@ void r_shared_memory_callback(icu_inter_cpu_irq_callback_args_t * p_args);
 
 shared_memory_api_t const g_shared_memory_on_shared_memory =
 {
-    .open      = R_SHARED_MEMORY_Open,
-    .read      = R_SHARED_MEMORY_Read,
-    .write     = R_SHARED_MEMORY_Write,
-    .statusGet = R_SHARED_MEMORY_StatusGet,
-    .close     = R_SHARED_MEMORY_Close,
+    .open        = R_SHARED_MEMORY_Open,
+    .read        = R_SHARED_MEMORY_Read,
+    .write       = R_SHARED_MEMORY_Write,
+    .statusGet   = R_SHARED_MEMORY_StatusGet,
+    .close       = R_SHARED_MEMORY_Close,
+    .callbackSet = R_SHARED_MEMORY_CallbackSet,
 };
 
 /*******************************************************************************************************************//**
@@ -113,6 +114,11 @@ fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_api_ctrl, shared_
 
     /* Record the configuration for using it later */
     p_ctrl->p_cfg = p_cfg;
+
+    /* Set callback and context pointers, if configured */
+    p_ctrl->p_callback        = p_cfg->p_callback;
+    p_ctrl->p_context         = p_cfg->p_context;
+    p_ctrl->p_callback_memory = NULL;
 
     icu_inter_cpu_irq_instance_t * p_software_int_tx =
         (icu_inter_cpu_irq_instance_t *) ((shared_memory_extended_cfg_t *) p_ctrl->p_cfg->p_extend)->p_software_int_tx;
@@ -285,6 +291,36 @@ fsp_err_t R_SHARED_MEMORY_StatusGet (shared_memory_ctrl_t * const p_api_ctrl, sh
     return FSP_SUCCESS;
 }
 
+/*******************************************************************************************************************//**
+ * Updates the user callback and has option of providing memory for callback structure.
+ * Implements @ref shared_memory_api_t::callbackSet
+ *
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
+ **********************************************************************************************************************/
+fsp_err_t R_SHARED_MEMORY_CallbackSet (shared_memory_ctrl_t * const p_api_ctrl,
+                                       void (                     * p_callback)(
+                                           shared_memory_callback_args_t *),
+                                       void const * const                    p_context,
+                                       shared_memory_callback_args_t * const p_callback_memory)
+{
+    shared_memory_instance_ctrl_t * p_ctrl = (shared_memory_instance_ctrl_t *) p_api_ctrl;
+
+#if (SHARED_MEMORY_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(SHARED_MEMORY_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_ctrl->p_callback        = p_callback;
+    p_ctrl->p_context         = p_context;
+    p_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
+}
+
 /******************************************************************************************************************//**
  * Closes the SHARED_MEMORY. Implements @ref shared_memory_api_t::close().
  *
@@ -337,20 +373,45 @@ fsp_err_t R_SHARED_MEMORY_Close (shared_memory_ctrl_t * const p_api_ctrl)
 void r_shared_memory_callback (icu_inter_cpu_irq_callback_args_t * p_args)
 {
     shared_memory_instance_ctrl_t * p_ctrl = (shared_memory_instance_ctrl_t *) p_args->p_context;
+    shared_memory_callback_args_t   args_stacked;
     shared_memory_callback_args_t   args;
+    memset(&args, 0U, sizeof(shared_memory_callback_args_t));
 
-    args.p_context = p_ctrl->p_cfg->p_context;
+    /* Store callback arguments in memory provided by user if available. */
+    shared_memory_callback_args_t * p_args_memory = p_ctrl->p_callback_memory;
 
-    if (SHARED_MEMORY_STATE_READY_TO_WRITE == p_ctrl->state)
+    if (NULL == p_args_memory)
     {
-        p_ctrl->state = SHARED_MEMORY_STATE_READY_TO_READ_WRITE;
-        args.state    = SHARED_MEMORY_STATE_READY_TO_READ_WRITE;
+        /* Use provided args struct on stack */
+        p_args_memory = &args;
     }
     else
     {
-        p_ctrl->state = SHARED_MEMORY_STATE_READY_TO_WRITE;
-        args.state    = SHARED_MEMORY_STATE_READY_TO_WRITE;
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args_stacked = *p_args_memory;
+
+        /* Copy the stacked args to callback memory */
+        *p_args_memory = args;
     }
 
-    p_ctrl->p_cfg->p_callback(&args);
+    p_args_memory->p_context = p_ctrl->p_context;
+
+    if (SHARED_MEMORY_STATE_READY_TO_WRITE == p_ctrl->state)
+    {
+        p_ctrl->state        = SHARED_MEMORY_STATE_READY_TO_READ_WRITE;
+        p_args_memory->state = SHARED_MEMORY_STATE_READY_TO_READ_WRITE;
+    }
+    else
+    {
+        p_ctrl->state        = SHARED_MEMORY_STATE_READY_TO_WRITE;
+        p_args_memory->state = SHARED_MEMORY_STATE_READY_TO_WRITE;
+    }
+
+    p_ctrl->p_cfg->p_callback(p_args_memory);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args_stacked;
+    }
 }

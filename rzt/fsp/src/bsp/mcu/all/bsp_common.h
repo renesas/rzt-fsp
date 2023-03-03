@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -56,10 +56,10 @@ FSP_HEADER
 #define BSP_VECTOR_NUM_OFFSET                  (32U)
 
 /* Version of this module's code and API. */
-#define BSP_CODE_VERSION_MAJOR                 (1U)
-#define BSP_CODE_VERSION_MINOR                 (1U)
-#define BSP_API_VERSION_MAJOR                  (1U)
-#define BSP_API_VERSION_MINOR                  (1U)
+#define BSP_CODE_VERSION_MAJOR                 (1U) // DEPRECATED
+#define BSP_CODE_VERSION_MINOR                 (2U) // DEPRECATED
+#define BSP_API_VERSION_MAJOR                  (1U) // DEPRECATED
+#define BSP_API_VERSION_MINOR                  (2U) // DEPRECATED
 
 #define FSP_CONTEXT_SAVE
 #define FSP_CONTEXT_RESTORE
@@ -199,7 +199,8 @@ extern const fsp_version_t g_bsp_version;
 /* These macros abstract methods to save and restore the interrupt state. */
 #define FSP_CRITICAL_SECTION_GET_CURRENT_STATE    __get_ICC_PMR
 #define FSP_CRITICAL_SECTION_SET_STATE            __set_ICC_PMR
-#define FSP_CRITICAL_SECTION_IRQ_MASK_SET         ((uint8_t) (BSP_CFG_IRQ_MASK_LEVEL_FOR_CRITICAL_SECTION << 3U))
+#define FSP_CRITICAL_SECTION_IRQ_MASK_SET         ((uint8_t) (BSP_CFG_IRQ_MASK_LEVEL_FOR_CRITICAL_SECTION << \
+                                                              BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT))
 
 /** This macro temporarily saves the current interrupt state and disables interrupts. */
 #ifndef FSP_CRITICAL_SECTION_ENTER
@@ -295,8 +296,9 @@ __STATIC_INLINE uint32_t R_FSP_SystemClockHzGet (fsp_priv_clock_t clock)
 {
     uint32_t clock_hz = 0;
     uint32_t fselcpu0 = R_SYSC_S->SCKCR2_b.FSELCPU0;
+#if BSP_FEATURE_BSP_CPU1_SUPPORTED
     uint32_t fselcpu1 = R_SYSC_S->SCKCR2_b.FSELCPU1;
-
+#endif
     switch (clock)
     {
         case FSP_PRIV_CLOCK_CPU0:
@@ -307,7 +309,9 @@ __STATIC_INLINE uint32_t R_FSP_SystemClockHzGet (fsp_priv_clock_t clock)
 
         case FSP_PRIV_CLOCK_CPU1:
         {
+#if BSP_FEATURE_BSP_CPU1_SUPPORTED
             clock_hz = g_bsp_system_clock_select[clock][R_SYSC_S->SCKCR2_b.DIVSELSUB] >> fselcpu1;
+#endif
             break;
         }
 

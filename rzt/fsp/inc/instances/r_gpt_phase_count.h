@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -38,8 +38,8 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define GPT_PHASE_COUNT_CODE_VERSION_MAJOR    (1U)
-#define GPT_PHASE_COUNT_CODE_VERSION_MINOR    (0U)
+#define GPT_PHASE_COUNT_CODE_VERSION_MAJOR    (1U) // DEPRECATED
+#define GPT_PHASE_COUNT_CODE_VERSION_MINOR    (2U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -18,11 +18,6 @@
  * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
  **********************************************************************************************************************/
 
-/*******************************************************************************************************************//**
- * @addtogroup BSP_MCU
- * @{
- **********************************************************************************************************************/
-
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
  **********************************************************************************************************************/
@@ -31,19 +26,19 @@
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define BSP_SCTLR_BR_BIT        (0x00020000) /* Enable EL1 background region */
-#define BSP_SCTLR_M_BIT         (0x00000001) /* Enable EL1-controlled MPU */
-#define BSP_SCTLR_I_C_BIT_L     (0x1004)     /* Enable EL1-controlled Instruction and data cache, lower */
-#define BSP_SCTLR_I_C_BIT_H     (0x0000)     /* Enable EL1-controlled Instruction and data cache, upper */
+#define BSP_SCTLR_BR_BIT        (0x00020000)                      /* Enable EL1 background region */
+#define BSP_SCTLR_M_BIT         (0x00000001)                      /* Enable EL1-controlled MPU */
+#define BSP_SCTLR_I_C_BIT_L     (0x1004)                          /* Enable EL1-controlled Instruction and data cache, lower */
+#define BSP_SCTLR_I_C_BIT_H     (0x0000)                          /* Enable EL1-controlled Instruction and data cache, upper */
 
-#define BSP_PRIORITY_MASK       (0x000000F8) /* Priority mask value for GIC */
-#define BSP_ENABLE_GROUP_INT    (0x00000001) /* Enable Group1 interrupt value */
-#define BSP_ICC_CTLR            (0x00000001) /* ICC_BPR0 is used for Group1 interrupt */
+#define BSP_PRIORITY_MASK       BSP_FEATURE_BSP_IRQ_PRIORITY_MASK /* Priority mask value for GIC */
+#define BSP_ENABLE_GROUP_INT    (0x00000001)                      /* Enable Group1 interrupt value */
+#define BSP_ICC_CTLR            (0x00000001)                      /* ICC_BPR0 is used for Group1 interrupt */
 
-#define BSP_HACTLR_BIT_L        (0xB783)     /* HACTLR EL1 access enable(0b1011 0111 1000 0011) */
-#define BSP_HCR_HCD_DISABLE     (0x20000000) /* HCR.HCD = 1 : HVC disable */
-#define BSP_MODE_MASK           (0x1F)       /* Bit mask for mode bits in CPSR */
-#define BSP_SVC_MODE            (0x13)       /* Supervisor mode */
+#define BSP_HACTLR_BIT_L        (0xB783)                          /* HACTLR EL1 access enable(0b1011 0111 1000 0011) */
+#define BSP_HCR_HCD_DISABLE     (0x20000000)                      /* HCR.HCD = 1 : HVC disable */
+#define BSP_MODE_MASK           (0x1F)                            /* Bit mask for mode bits in CPSR */
+#define BSP_SVC_MODE            (0x13)                            /* Supervisor mode */
 
 #define NON_SHAREABLE           (0 << 3)
 #define OUTER_SHAREABLE         (2 << 3)
@@ -272,16 +267,10 @@ extern void R_BSP_WarmStart(bsp_warm_start_event_t event);
  **********************************************************************************************************************/
 int32_t main(void);
 
-#if defined(__ICCARM__)
-void system_init(void);
-
-#elif defined(__GNUC__)
-BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init(void) BSP_PLACE_IN_SECTION(".loader_text");
-
-#endif
+BSP_TARGET_ARM void                         system_init(void) BSP_PLACE_IN_SECTION(".loader_text");
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init(void);
-BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void mpu_cache_init(void);
-BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void bsp_mpu_init(void);
+BSP_TARGET_ARM void                         mpu_cache_init(void);
+BSP_TARGET_ARM void                         bsp_mpu_init(void);
 
 #if defined(__ICCARM__)
  #pragma section=".irq_stack"
@@ -299,7 +288,12 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void bsp_mpu_init(void);
  #pragma section="NONCACHE_BUFFER_ZBLOCK"
 #endif
 
-void        vector_table(void) BSP_PLACE_IN_SECTION(".intvec");
+#if BSP_CFG_EARLY_INIT
+static void bsp_init_uninitialized_vars(void);
+
+#endif
+
+void        __Vectors(void) BSP_PLACE_IN_SECTION(".intvec");
 __WEAK void IRQ_Handler(void);
 void        Default_Handler(void);
 
@@ -359,7 +353,7 @@ BSP_DONT_REMOVE static uint8_t g_heap[BSP_CFG_HEAP_BYTES] BSP_ALIGN_VARIABLE(BSP
     BSP_PLACE_IN_SECTION(BSP_SECTION_HEAP);
 #endif
 
-BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void vector_table (void)
+BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void __Vectors (void)
 {
     __asm volatile (
         "    ldr pc,=Reset_Handler            \n"
@@ -374,9 +368,14 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void vector_table (void)
 }
 
 /*******************************************************************************************************************//**
+ * @addtogroup BSP_MCU
+ * @{
+ **********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
  * After boot processing, LSI starts executing here.
  **********************************************************************************************************************/
-BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init (void)
+BSP_TARGET_ARM void system_init (void)
 {
     __asm volatile (
         "set_hactlr:                              \n"
@@ -394,7 +393,7 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init (void)
 
     __asm volatile (
         "set_vbar:                           \n"
-        "    LDR   r0, =vector_table         \n"
+        "    LDR   r0, =__Vectors            \n"
         "    MCR   p15, #0, r0, c12, c0, #0  \n" /* Write r0 to VBAR */
         ::: "memory");
 
@@ -427,6 +426,8 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init (void)
         "    ERET                                \n" /* Branch to stack_init and enter EL1 */
         ::: "memory");
 }
+
+/** @} (end addtogroup BSP_MCU) */
 
 /*******************************************************************************************************************//**
  * After system_init, EL1 settings start here.
@@ -486,6 +487,16 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init (void)
         ::: "memory");
 #endif
 
+    __asm volatile (
+        "    b mpu_cache_init                                \n"
+        );
+}
+
+/*******************************************************************************************************************//**
+ * EL1 core initialization block.
+ **********************************************************************************************************************/
+BSP_TARGET_ARM void mpu_cache_init (void)
+{
 #if __FPU_USED
     __asm volatile (
         "FPU_AdvancedSIMD_init:                         \n"
@@ -503,13 +514,21 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init (void)
         ::: "memory");
 #endif
 
-#if (0 == BSP_CFG_CPU)
-    __asm volatile (
-        "clock_init:                     \n"
-        "    ldr r0, =bsp_clock_init     \n"
-        "    blx r0                      \n" /* Jump to bsp_clock_init */
-        );
+#if BSP_CFG_EARLY_INIT
+
+    /* Initialize uninitialized BSP variables early for use in R_BSP_WarmStart. */
+    bsp_init_uninitialized_vars();
 #endif
+
+    R_BSP_WarmStart(BSP_WARM_START_RESET);
+
+#if (0 == BSP_CFG_CPU)
+
+    /* Configure system clocks. */
+    bsp_clock_init();
+#endif
+
+    R_BSP_WarmStart(BSP_WARM_START_POST_CLOCK);
 
 #if BSP_CFG_C_RUNTIME_INIT
  #if defined(__ICCARM__)
@@ -713,22 +732,8 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init (void)
  #endif
 #endif
 
-    __asm volatile (
-        "system_core_clock_update:                           \n"
-        "    ldr r0, =SystemCoreClockUpdate                  \n"
-        "    blx r0                                          \n" /* Jump to SystemCoreClockUpdate */
-        );
+    SystemCoreClockUpdate();
 
-    __asm volatile (
-        "    b mpu_cache_init                                \n"
-        );
-}
-
-/*******************************************************************************************************************//**
- * EL1 core initialization block.
- **********************************************************************************************************************/
-BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void mpu_cache_init (void)
-{
     __asm volatile (
         "MPU_default_memory_map_enable:                            \n"
 
@@ -984,61 +989,39 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void mpu_cache_init (void)
         ::[bsp_sctlr_i_c_bit_l] "i" (BSP_SCTLR_I_C_BIT_L), [bsp_sctlr_i_c_bit_h] "i" (BSP_SCTLR_I_C_BIT_H) : "memory");
 
 #if !(BSP_CFG_RAM_EXECUTION)
-    __asm volatile (
-        "app_copy:                               \n"
-        "    ldr r0, =bsp_copy_to_atcm           \n"
-        "    blx r0                              \n" /* Jump to bsp_copy_to_atcm */
-        );
 
-    __asm volatile (
-        "app_bss_init:                           \n"
-        "    ldr r0, =bsp_application_bss_init   \n"
-        "    blx r0                              \n" /* Jump to bsp_application_bss_init */
-        );
+    /* Copy the application program from external Flash to ATCM. */
+    bsp_copy_to_atcm();
+
+    /* Clear bss section in ATCM. */
+    bsp_application_bss_init();
 #endif
 
 #if BSP_CFG_C_RUNTIME_INIT
 
     /* Initialize static constructors */
-    __asm volatile (
-        "static_constructor_init:                            \n"
-        "    ldr r0, =bsp_static_constructor_init            \n"
-        "    blx r0                                          \n" /* Jump to bsp_static_constructor_init */
-        );
+    bsp_static_constructor_init();
 #endif
 
 #if !BSP_CFG_PORT_PROTECT
-    __asm volatile (
-        "release_port_protect:                               \n"
-        "    ldr r0, =bsp_release_port_protect               \n"
-        "    blx r0                                          \n" /* Jump to bsp_release_port_protect */
-        );
+
+    /** When writing to the PRCR register the upper 8-bits must be the correct key. Set lower bits to 0 to
+     * disable writes. */
+    bsp_release_port_protect();
 #endif
 
-    __asm volatile (
-        "ioport_init:                                        \n"
-        "    mov r0, %[bsp_warm_start_post_c]                \n"
-        "    ldr r1, =R_BSP_WarmStart                        \n"
-        "    blx r1                                          \n"
-        ::[bsp_warm_start_post_c] "i" (BSP_WARM_START_POST_C) : "memory");
+    /* Call Post C runtime initialization hook. */
+    R_BSP_WarmStart(BSP_WARM_START_POST_C);
 
 #if (0 == BSP_CFG_CPU)
  #if BSP_CFG_SEMAPHORE_ENABLE
 
-    /* Jump to bsp_semaphore_init */
-    __asm volatile (
-        "semaphore_init:                   \n"
-        "ldr r0, =bsp_semaphore_init       \n"
-        "blx r0                            \n"
-        );
+    /* Initialize semaphores required for synchronization and exclusive control between CPUs. */
+    bsp_semaphore_init();
  #endif
 
-    /* Jump to bsp_m_mpu_init */
-    __asm volatile (
-        "m_mpu_init:                       \n"
-        "ldr r0, =bsp_m_mpu_init           \n"
-        "blx r0                            \n"
-        );
+    /* Initialize the Master-MPU settings. */
+    bsp_m_mpu_init();
 
     __asm volatile (
         "SlaveTCM_enable:                              \n"
@@ -1051,12 +1034,8 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void mpu_cache_init (void)
         "     isb                                      \n" /* Ensuring Context-changing */
         ::: "memory");
 
-    /* Jump to bsp_global_system_counter_init */
-    __asm volatile (
-        "global_system_counter_init:                   \n"
-        "ldr r0, =bsp_global_system_counter_init       \n"
-        "blx r0                                        \n"
-        );
+    /* Initialize global system counter. The counter is enabled and is incrementing. */
+    bsp_global_system_counter_init();
 #endif
 
     __asm volatile (
@@ -1077,39 +1056,25 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void mpu_cache_init (void)
         ::[bsp_priority_mask] "i" (BSP_PRIORITY_MASK), [bsp_enable_group_int] "i" (BSP_ENABLE_GROUP_INT),
         [bsp_icc_ctlr] "i" (BSP_ICC_CTLR) : "memory");
 
-    /* Jump to bsp_irq_cfg */
-    __asm volatile (
-        "ldr r0, =bsp_irq_cfg                          \n"
-        "blx r0                                        \n"
-        );
+    /* Initialize IRQ events that will be used to trigger GIC interrupts. */
+    bsp_irq_cfg();
 
 #if (0 == BSP_CFG_CPU)
  #if BSP_FEATURE_TFU_SUPPORTED
-    __asm volatile (
-        "tfu_init:                                     \n"
-        "    ldr r0, =bsp_tfu_init                     \n"
-        "    blx r0                                    \n" /* Jump to bsp_tfu_init*/
-        );
+
+    /* Initialize the TFU settings. */
+    bsp_tfu_init();
  #endif
 #endif
 
-#if defined(__ICCARM__)
-
     /* Jump to main */
     main();
-#elif defined(__GNUC__)
-
-    /* Jump to main */
-    __asm volatile (
-        "blx main                                      \n"
-        );
-#endif
 }
 
 /*******************************************************************************************************************//**
  * Core MPU initialization block.
  **********************************************************************************************************************/
-BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void bsp_mpu_init (void)
+BSP_TARGET_ARM void bsp_mpu_init (void)
 {
     __asm volatile (
         "    mcr  p15, #0, r0, c6, c2, #1              \n" /* Set PRSELR */
@@ -1181,4 +1146,22 @@ __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void IRQ_Handler (void)
         ::: "memory");
 }
 
-/** @} (end addtogroup BSP_MCU) */
+#if BSP_CFG_EARLY_INIT
+
+/*******************************************************************************************************************//**
+ * Initialize BSP variables not handled by C runtime startup.
+ **********************************************************************************************************************/
+static void bsp_init_uninitialized_vars (void)
+{
+    g_protect_port_counter = 0;
+
+    extern volatile uint16_t g_protect_counters[];
+    for (uint32_t i = 0; i < 4; i++)
+    {
+        g_protect_counters[i] = 0;
+    }
+
+    SystemCoreClockUpdate();
+}
+
+#endif

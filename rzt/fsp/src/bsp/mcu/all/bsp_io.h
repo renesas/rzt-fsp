@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -21,7 +21,7 @@
 /*******************************************************************************************************************//**
  * @defgroup BSP_IO BSP I/O access
  * @ingroup RENESAS_COMMON
- * @brief This module provides basic read/write access to port pins.
+ * @brief This module provides basic read/write/toggle access to port pins.
  *
  * @{
  **********************************************************************************************************************/
@@ -37,12 +37,15 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 /* Private definition to set enumeration values. */
-#define BSP_IO_PRV_8BIT_MASK       (0xFF)
-#define BSP_IO_PM_OUTPUT           (3U)
+#define BSP_IO_PRV_8BIT_MASK          (0xFF)
+#define BSP_IO_PM_OUTPUT              (3U)
 
 /* Key code for writing PRCR register. */
-#define BSP_IO_PRV_PRCR_KEY        (0xA500U)
-#define BSP_IO_REG_PROTECT_GPIO    (0x0004U)
+#define BSP_IO_PRV_PRCR_KEY           (0xA500U)
+#define BSP_IO_REG_PROTECT_GPIO       (0x0004U)
+
+/* Difference between safety and non safety I/O port region addresses. */
+#define BSP_IO_REGION_ADDRESS_DIFF    (R_PORT_SR_BASE - R_PORT_NSR_BASE)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -93,7 +96,7 @@ typedef enum e_bsp_io_port
 } bsp_io_port_t;
 
 /** Superset list of all possible IO port pins. */
-typedef enum e_bsp_io_port_pin_t
+typedef enum e_bsp_io_port_pin
 {
     BSP_IO_PORT_00_PIN_0 = 0x0000,     ///< IO port 0 pin 0
     BSP_IO_PORT_00_PIN_1 = 0x0001,     ///< IO port 0 pin 1
@@ -321,6 +324,13 @@ typedef enum e_bsp_io_port_pin_t
     BSP_IO_PORT_24_PIN_7 = 0x1807,     ///< IO port 24 pin 7
 } bsp_io_port_pin_t;
 
+/** Offset for pin safety region access */
+typedef enum e_bsp_io_region
+{
+    BSP_IO_REGION_NOT_SAFE = 0,                          ///< Non safety region
+    BSP_IO_REGION_SAFE     = BSP_IO_REGION_ADDRESS_DIFF, ///< Safety region
+} bsp_io_region_t;
+
 /***********************************************************************************************************************
  * Exported global variables
  **********************************************************************************************************************/
@@ -331,7 +341,7 @@ extern volatile uint32_t g_protect_port_counter;
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * Read the current input level of the pin.
+ * DEPRECATED Read the current input level of the pin.
  *
  * @param[in]  pin             The pin
  *
@@ -339,17 +349,25 @@ extern volatile uint32_t g_protect_port_counter;
  **********************************************************************************************************************/
 __STATIC_INLINE uint32_t R_BSP_PinRead (bsp_io_port_pin_t pin)
 {
+    /* Casting to a uint32_t type is valid because the range of values represented by uint32_t is not over in the
+     * calculation process of the right-hand side. */
     uint32_t aselp = ((uint32_t) ((R_PTADR->RSELP[pin >> 8]) >> (pin & BSP_IO_PRV_8BIT_MASK)) & 0x00000001UL);
     uint32_t pin_level;
 
     if (0U == aselp)
     {
         /* Read pin level. */
+
+        /* Casting to a uint32_t type is valid because the range of values represented by uint32_t is not over in the
+         * calculation process of the right-hand side. */
         pin_level = (uint32_t) ((R_PORT_SR->PIN[pin >> 8]) >> (pin & BSP_IO_PRV_8BIT_MASK)) & 0x00000001UL;
     }
     else
     {
         /* Read pin level. */
+
+        /* Casting to a uint32_t type is valid because the range of values represented by uint32_t is not over in the
+         * calculation process of the right-hand side. */
         pin_level = (uint32_t) ((R_PORT_NSR->PIN[pin >> 8]) >> (pin & BSP_IO_PRV_8BIT_MASK)) & 0x00000001UL;
     }
 
@@ -357,7 +375,7 @@ __STATIC_INLINE uint32_t R_BSP_PinRead (bsp_io_port_pin_t pin)
 }
 
 /*******************************************************************************************************************//**
- * Set a pin to output and set the output level to the level provided
+ * DEPRECATED Set a pin to output and set the output level to the level provided.
  *
  * @param[in]  pin      The pin
  * @param[in]  level    The level
@@ -365,21 +383,122 @@ __STATIC_INLINE uint32_t R_BSP_PinRead (bsp_io_port_pin_t pin)
 __STATIC_INLINE void R_BSP_PinWrite (bsp_io_port_pin_t pin, bsp_io_level_t level)
 {
     /* Set output level and pin direction to output. */
+
+    /* Casting to a uint32_t type is valid because the type of the right-hand side is uint16_t and no information loss
+     * occurs. */
     uint32_t port_num = (uint32_t) (pin >> 8);
-    uint32_t pin_bit  = (uint32_t) (pin & BSP_IO_PRV_8BIT_MASK);
-    uint32_t lvl      = (uint32_t) level;
-    uint32_t aselp    = ((uint32_t) ((R_PTADR->RSELP[pin >> 8]) >> pin_bit) & 0x00000001UL);
+
+    /* Casting to a uint32_t type is valid because the type of the right-hand side is uint16_t and no information loss
+     * occurs. */
+    uint32_t pin_bit = (uint32_t) (pin & BSP_IO_PRV_8BIT_MASK);
+
+    /* Casting to a uint32_t type is valid because the type of the right-hand side is bsp_io_level_t(1 bit wide) and no
+     * information loss occurs. */
+    uint32_t lvl = (uint32_t) level;
+
+    /* Casting to a uint32_t type is valid because the range of values represented by uint32_t is not over in the
+     * calculation process of the right-hand side. */
+    uint32_t aselp = ((uint32_t) ((R_PTADR->RSELP[pin >> 8]) >> pin_bit) & 0x00000001UL);
 
     if (0U == aselp)
     {
+        /* Casting to a uint16_t type is valid because the range of values stored in pin_bit(uint32_t) is 0 to 7, so
+         * casting from uint32_t to uint16_t does not cause information loss. */
         R_PORT_SR->PM[port_num] = (uint16_t) ((R_PORT_SR->PM[port_num]) | (BSP_IO_PM_OUTPUT << (2UL * pin_bit)));
-        R_PORT_SR->P[port_num]  = (uint8_t) (((R_PORT_SR->P[port_num]) & (~(1UL << pin_bit))) | (lvl << pin_bit));
+
+        /* Casting to a uint8_t type is valid because the range of values stored in pin_bit(uint32_t) is 0 to 7, so
+         * casting from uint32_t to uint8_t does not cause information loss. */
+        R_PORT_SR->P[port_num] = (uint8_t) (((R_PORT_SR->P[port_num]) & (~(1UL << pin_bit))) | (lvl << pin_bit));
     }
     else
     {
+        /* Casting to a uint16_t type is valid because the range of values stored in pin_bit(uint32_t) is 0 to 7, so
+         * casting from uint32_t to uint16_t does not cause information loss. */
         R_PORT_NSR->PM[port_num] = (uint16_t) ((R_PORT_NSR->PM[port_num]) | (BSP_IO_PM_OUTPUT << (2UL * pin_bit)));
-        R_PORT_NSR->P[port_num]  = (uint8_t) (((R_PORT_NSR->P[port_num]) & (~(1UL << pin_bit))) | (lvl << pin_bit));
+
+        /* Casting to a uint8_t type is valid because the range of values stored in pin_bit(uint32_t) is 0 to 7, so
+         * casting from uint32_t to uint8_t does not cause information loss. */
+        R_PORT_NSR->P[port_num] = (uint8_t) (((R_PORT_NSR->P[port_num]) & (~(1UL << pin_bit))) | (lvl << pin_bit));
     }
+}
+
+/*******************************************************************************************************************//**
+ * Set the output level of the pin in the specified region.
+ *
+ * @param[in]  region          The target IO region
+ * @param[in]  pin             The pin
+ **********************************************************************************************************************/
+__STATIC_INLINE void R_BSP_PinSet (bsp_io_region_t region, bsp_io_port_pin_t pin)
+{
+    /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+     * the right side. */
+    ((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->P[pin >> 8] |= (uint8_t) (1UL << (pin & BSP_IO_PRV_8BIT_MASK));
+}
+
+/*******************************************************************************************************************//**
+ * Clear the output level of the pin in the specified region.
+ *
+ * @param[in]  region          The target IO region
+ * @param[in]  pin             The pin
+ **********************************************************************************************************************/
+__STATIC_INLINE void R_BSP_PinClear (bsp_io_region_t region, bsp_io_port_pin_t pin)
+{
+    /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+     * the right side. */
+    ((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->P[pin >> 8] &=
+        (uint8_t) (~(1UL << (pin & BSP_IO_PRV_8BIT_MASK)));
+}
+
+/*******************************************************************************************************************//**
+ * Toggle the output level of the pin in the specified region.
+ *
+ * @param[in]  region          The target IO region
+ * @param[in]  pin             The pin
+ **********************************************************************************************************************/
+__STATIC_INLINE void R_BSP_PinToggle (bsp_io_region_t region, bsp_io_port_pin_t pin)
+{
+    /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+     * the right side. */
+    ((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->P[pin >> 8] ^= (uint8_t) (1UL << (pin & BSP_IO_PRV_8BIT_MASK));
+}
+
+/*******************************************************************************************************************//**
+ * Read the input value of the pin in the specified region.
+ *
+ * @param[in]  region          The target IO region
+ * @param[in]  pin             The pin
+ *
+ * @retval     Current input level
+ **********************************************************************************************************************/
+__STATIC_INLINE uint32_t R_BSP_FastPinRead (bsp_io_region_t region, bsp_io_port_pin_t pin)
+{
+    return (uint32_t) ((((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->PIN[pin >> 8]) >>
+                       (pin & BSP_IO_PRV_8BIT_MASK)) & 0x00000001UL;
+}
+
+/*******************************************************************************************************************//**
+ * Set the output level of the port in the specified region.
+ *
+ * @param[in]  region           The target IO region
+ * @param[in]  port             The port
+ * @param[in]  set_value        The setting value
+ **********************************************************************************************************************/
+__STATIC_INLINE void R_BSP_PortWrite (bsp_io_region_t region, bsp_io_port_t port, uint8_t set_value)
+{
+    ((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->P[port >> 8] = set_value;
+}
+
+/*******************************************************************************************************************//**
+ * Read the input value of the port in the specified region.
+ *
+ * @param[in]  region           The target IO region
+ * @param[in]  port             The port
+ *
+ * @retval     Current input level
+ **********************************************************************************************************************/
+__STATIC_INLINE uint32_t R_BSP_PortRead (bsp_io_region_t region, bsp_io_port_t port)
+{
+    return (uint32_t) (((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->PIN[port >> 8]);
 }
 
 /*******************************************************************************************************************//**

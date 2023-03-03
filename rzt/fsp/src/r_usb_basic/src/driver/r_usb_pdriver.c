@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -48,6 +48,8 @@ static void usb_pstd_interrupt(usb_utr_t * p_mess);
 static void usb_pstd_interrupt(uint16_t type, uint16_t status, usb_cfg_t * p_cfg);
 
  #endif /*(BSP_CFG_RTOS == 2)*/
+
+// void usb_pstd_buf_to_fifo(uint16_t pipe, uint16_t useport, usb_utr_t * p_utr);
 
 /******************************************************************************
  * Exported global variables (to be accessed by other files)
@@ -147,9 +149,9 @@ static void usb_pstd_interrupt (uint16_t type, uint16_t status, usb_cfg_t * p_cf
         /* VBUS */
         case USB_INT_VBINT:
         {
-  #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+  #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
             hw_usb_set_cnen(p_cfg->module_number);
-  #endif                                       /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
+  #endif                                       /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
             if (USB_ATTACH == usb_pstd_chk_vbsts(utr.ip))
             {
                 USB_PRINTF0("VBUS int attach\n");
@@ -419,9 +421,9 @@ static void usb_pstd_interrupt (usb_utr_t * p_mess)
         /* VBUS */
         case USB_INT_VBINT:
         {
-  #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+  #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
             hw_usb_set_cnen(p_mess->ip);
-  #endif                                         /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) */
+  #endif                                         /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
             if (USB_ATTACH == usb_pstd_chk_vbsts(p_mess->ip))
             {
                 USB_PRINTF0("VBUS int attach\n");
@@ -656,9 +658,7 @@ void usb_pstd_pcd_task (void)
     }
 
   #if ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE))
-   #ifndef BSP_MCU_GROUP_RZT2M
     usb_cstd_dma_driver();             /* USB DMA driver */
-   #endif /* BSP_MCU_GROUP_RZT2M */
   #endif /* ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE)) */
  #endif /*(BSP_CFG_RTOS == 0)*/
 
@@ -1822,6 +1822,11 @@ void usb_peri_detach (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
     FSP_PARAMETER_NOT_USED(*ptr);
     FSP_PARAMETER_NOT_USED(data1);
     FSP_PARAMETER_NOT_USED(data2);
+
+ #if USB_CFG_DMA == USB_CFG_ENABLE
+    usb_cstd_dma_status_clr(ptr, 1);
+    usb_cstd_dma_status_clr(ptr, 2);
+ #endif                                /*USB_CFG_DMA == USB_CFG_ENABLE*/
 
     if (USB_TRUE == g_usb_peri_connected)
     {

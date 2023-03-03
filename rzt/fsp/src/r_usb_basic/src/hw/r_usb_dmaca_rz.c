@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -45,12 +45,13 @@
 #include "r_usb_dmaca_rz_if.h"
 #include "r_usb_dmaca_rz_private.h"
 #include "r_usb_bitdefine.h"
-
-#if USB_CFG_DMA == USB_CFG_ENABLE
+#if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
+ #if USB_CFG_DMA == USB_CFG_ENABLE
 
 /*******************************************************************************
  * Macro definitions
  *******************************************************************************/
+  #define USB_VAL_0x60    (0x00000060U)
 
 /*******************************************************************************
  * Typedef definitions
@@ -86,7 +87,7 @@ static bool r_usb_dmaca_set_transfer_data(uint8_t channel, usb_dmaca_transfer_da
  *******************************************************************************/
 usb_dmaca_return_t r_usb_dmaca_create (uint8_t channel, usb_dmaca_transfer_data_cfg_t * p_data_cfg)
 {
- #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
+  #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
 
     /* Check argument. */
     if (false == r_usb_dmaca_channel_valid_check(channel))
@@ -98,7 +99,7 @@ usb_dmaca_return_t r_usb_dmaca_create (uint8_t channel, usb_dmaca_transfer_data_
     {
         return USB_DMACA_ERR_NULL_PTR;
     }
- #endif                                /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
+  #endif                               /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
 
     if (false == r_usb_dmaca_set_transfer_data(channel, p_data_cfg))
     {
@@ -138,14 +139,14 @@ usb_dmaca_return_t r_usb_dmaca_control (uint8_t channel, usb_dmaca_command_t com
 {
     uint32_t dmaca_channel_status = 0x0000;
 
- #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
+  #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
 
     /* Check argument. */
     if (false == r_usb_dmaca_channel_valid_check(channel))
     {
         return USB_DMACA_ERR_INVALID_CH;
     }
- #endif                                /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
+  #endif                               /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
 
     switch (command)
     {
@@ -198,12 +199,12 @@ usb_dmaca_return_t r_usb_dmaca_control (uint8_t channel, usb_dmaca_command_t com
 
         case USB_DMACA_CMD_STATUS_GET:
         {
- #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
+  #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
             if ((uint32_t) NULL == (uint32_t) p_stat)
             {
                 return USB_DMACA_ERR_NULL_PTR;
             }
- #endif                                                                 /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
+  #endif                                                                /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
 
             dmaca_channel_status = USB_DMACA_CHSTAT(channel);
 
@@ -261,19 +262,19 @@ usb_dmaca_return_t r_usb_dmaca_control (uint8_t channel, usb_dmaca_command_t com
 
         case USB_DMACA_CMD_REG_SET_FIX:
         {
-            USB_DMACA_CHCTRL(channel) &= ~USB_DMACA_CHCTRL_CLEAR;
+            USB_DMACA_CHCTRL(channel) &= (uint32_t) (~USB_DMACA_CHCTRL_CLEAR);
             if (0x00 == (USB_DMACA_CHCTRL(channel) & USB_DMACA_CHCTRL_CLEAR))
             {
                 /* do nothing */
             }
 
             USB_DMACA_CHCFG(channel) &=
-                ~(USB_DMACA_CONFIG_WONLY_MASK | USB_DMACA_CONFIG_SBE_MASK | USB_DMACA_CONFIG_RSEL_MASK |
-                  USB_DMACA_CONFIG_RSW_MASK | USB_DMACA_CONFIG_REN_MASK | USB_DMACA_CONFIG_DMS_MASK);
-            if (0x00 ==
+                (uint32_t) (~(USB_DMACA_CONFIG_WONLY_MASK | USB_DMACA_CONFIG_SBE_MASK | USB_DMACA_CONFIG_RSEL_MASK |
+                              USB_DMACA_CONFIG_RSW_MASK | USB_DMACA_CONFIG_REN_MASK | USB_DMACA_CONFIG_DMS_MASK));
+            if (0x00UL ==
                 (USB_DMACA_CHCFG(channel) &
-                 (USB_DMACA_CONFIG_WONLY_MASK | USB_DMACA_CONFIG_SBE_MASK | USB_DMACA_CONFIG_RSEL_MASK |
-                  USB_DMACA_CONFIG_RSW_MASK | USB_DMACA_CONFIG_REN_MASK | USB_DMACA_CONFIG_DMS_MASK)))
+                 (uint32_t) ((USB_DMACA_CONFIG_WONLY_MASK | USB_DMACA_CONFIG_SBE_MASK | USB_DMACA_CONFIG_RSEL_MASK |
+                              USB_DMACA_CONFIG_RSW_MASK | USB_DMACA_CONFIG_REN_MASK | USB_DMACA_CONFIG_DMS_MASK))))
             {
                 /* do nothing */
             }
@@ -329,7 +330,7 @@ void r_usb_dmaca_init (void)
  *******************************************************************************/
 usb_dmaca_return_t r_usb_dmaca_int_callback (uint8_t channel, void * p_callback)
 {
- #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
+  #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
 
     /* Check argument. */
     if (false == r_usb_dmaca_channel_valid_check(channel))
@@ -340,11 +341,11 @@ usb_dmaca_return_t r_usb_dmaca_int_callback (uint8_t channel, void * p_callback)
     /* Check for valid address. */
     if ((uint32_t) NULL == (uint32_t) p_callback)
     {
-        p_USB_DMACI_Handlers[channel] = (void *) NULL;
+        p_USB_DMACI_Handlers[channel] = NULL;
 
         return USB_DMACA_ERR_INVALID_HANDLER_ADDR;
     }
- #endif                                /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
+  #endif                               /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
 
     p_USB_DMACI_Handlers[channel] = p_callback;
 
@@ -365,14 +366,14 @@ usb_dmaca_return_t r_usb_dmaca_int_callback (uint8_t channel, void * p_callback)
  *******************************************************************************/
 usb_dmaca_return_t r_usb_dmaca_int_enable (uint8_t channel, uint8_t priority)
 {
- #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
+  #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
 
     /* Check argument. */
     if (false == r_usb_dmaca_channel_valid_check(channel))
     {
         return USB_DMACA_ERR_INVALID_CH;
     }
- #endif                                /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
+  #endif                               /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
 
     /* Set the DMACmI priority level. */
     /* Set the DMACmI interrupt Enable bit. */
@@ -396,14 +397,14 @@ usb_dmaca_return_t r_usb_dmaca_int_enable (uint8_t channel, uint8_t priority)
  *******************************************************************************/
 usb_dmaca_return_t r_usb_dmaca_int_disable (uint8_t channel)
 {
- #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
+  #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
 
     /* Check argument. */
     if (false == r_usb_dmaca_channel_valid_check(channel))
     {
         return USB_DMACA_ERR_INVALID_CH;
     }
- #endif                                /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
+  #endif                               /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
 
     /* Clear the DMACmI interrupt Enable bit. */
     /* Clear the DMACmI priority level. */
@@ -451,7 +452,7 @@ static bool r_usb_dmaca_set_transfer_data (uint8_t channel, usb_dmaca_transfer_d
     void * p_src_pa_adr;
     void * p_des_pa_adr;
 
- #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
+  #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
     if (USB_DMACA_CONFIG_SRC_SIZE_LWORD < (p_cfg->src_size & USB_DMACA_INVALID_SRC_SIZE_MASK))
     {
         return false;
@@ -461,12 +462,7 @@ static bool r_usb_dmaca_set_transfer_data (uint8_t channel, usb_dmaca_transfer_d
     {
         return false;
     }
-
-    if (USB_DMACA_INVALID_INTERVAL_MAX < p_cfg->ch_interval)
-    {
-        return false;
-    }
- #endif                                /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
+  #endif                               /* USB_DMACA_CFG_PARAM_CHECKING_ENABLE */
 
     /* Clear CHCTRL_n register. CLRRQ bit  */
     USB_DMACA_CHCTRL(channel) = USB_DMACA_STAT_RQST_CLEAR;
@@ -478,19 +474,21 @@ static bool r_usb_dmaca_set_transfer_data (uint8_t channel, usb_dmaca_transfer_d
 
 /* USB_DMACA_CHCTRL(channel) = USB_DMACA_DMA_ENABLE; */
 
-    USB_DMACA_CHCFG(channel) |= 0x00000060;                 /* debug *//* b'6-5 : 1 fix */
+    USB_DMACA_CHCFG(channel) |= USB_VAL_0x60;               /* debug *//* b'6-5 : 1 fix */
 
     /* CHCFG Register. SEL bit. Select D0FIFO0 or D1FIFO */
-    USB_DMACA_CHCFG(channel) &= ~USB_DMACA_CHCFG_SEL_MASK;
+    USB_DMACA_CHCFG(channel) &= (uint32_t) (~USB_DMACA_CHCFG_SEL_MASK);
     USB_DMACA_CHCFG(channel) |= (uint32_t) p_cfg->use_fifo; /* SEL_D1FIFO */
 
     /* CHCFG Register. SAD/DAD bit. */
-    USB_DMACA_CHCFG(channel) &= ~(USB_DMACA_CHCFG_SAD_MASK | USB_DMACA_CHCFG_DAD_MASK | USB_DMACA_CHCFG_REQD_MASK);
-    USB_DMACA_CHCFG(channel) |= (uint32_t) (p_cfg->src_adr_dir | p_cfg->des_adr_dir | p_cfg->req_dir);
+    USB_DMACA_CHCFG(channel) &=
+        (uint32_t) (~(USB_DMACA_CHCFG_SAD_MASK | USB_DMACA_CHCFG_DAD_MASK | USB_DMACA_CHCFG_REQD_MASK));
+    USB_DMACA_CHCFG(channel) |=
+        ((uint32_t) p_cfg->src_adr_dir | (uint32_t) p_cfg->des_adr_dir | (uint32_t) p_cfg->req_dir);
 
     /* CHCFG Register. SDS/DDS bit. */
-    USB_DMACA_CHCFG(channel) &= ~(USB_DMACA_CHCFG_SDS_MASK | USB_DMACA_CHCFG_DDS_MASK);
-    USB_DMACA_CHCFG(channel) |= (uint32_t) (p_cfg->src_size | p_cfg->des_size);
+    USB_DMACA_CHCFG(channel) &= (uint32_t) (~(USB_DMACA_CHCFG_SDS_MASK | USB_DMACA_CHCFG_DDS_MASK));
+    USB_DMACA_CHCFG(channel) |= ((uint32_t) p_cfg->src_size | (uint32_t) p_cfg->des_size);
 
     /* Set N0SA_0 register. */
     if (0 == p_cfg->p_src_addr)
@@ -523,13 +521,13 @@ static bool r_usb_dmaca_set_transfer_data (uint8_t channel, usb_dmaca_transfer_d
     /* R_USBF->CHa[channel].N[0].SA_b.SAWD = (uint32_t)p_src_pa_adr; */
 
     /* Set N0TB_0 register. */
-    USB_DMACA_N0TB(channel) = (uint32_t) p_cfg->transfer_count;
+    USB_DMACA_N0TB(channel) = p_cfg->transfer_count;
 
 /* R_USBF->CHa[channel].N[0].TB_b.TB = (uint32_t)p_cfg->transfer_count; */
-    USB_DMACA_CHCFG(channel) &= ~(USB_DMACA_CHCFG_DEM_MASK | USB_DMACA_CHCFG_TCM_MASK);
-    USB_DMACA_CHCFG(channel) |= (uint32_t) (p_cfg->dmaint_msk | p_cfg->dmatc_msk);
+    USB_DMACA_CHCFG(channel) &= (uint32_t) (~(USB_DMACA_CHCFG_DEM_MASK | USB_DMACA_CHCFG_TCM_MASK));
+    USB_DMACA_CHCFG(channel) |= ((uint32_t) p_cfg->dmaint_msk | (uint32_t) p_cfg->dmatc_msk);
 
-    if ((uint32_t) (p_cfg->dmaint_msk | p_cfg->dmatc_msk) ==
+    if (((uint32_t) p_cfg->dmaint_msk | (uint32_t) p_cfg->dmatc_msk) ==
         (USB_DMACA_CHCFG(channel) & (USB_DMACA_CHCFG_DEM_MASK | USB_DMACA_CHCFG_TCM_MASK)))
     {
         /* do nothing */
@@ -538,18 +536,6 @@ static bool r_usb_dmaca_set_transfer_data (uint8_t channel, usb_dmaca_transfer_d
     return true;
 }
 
-/*******************************************************************************
- * Function Name: r_usb_dmaca_byteset_trans_enable
- * Description  : received data byte set to transmit data byte and transmit enable.
- * Arguments    : buffer : received data byte
- * Return Value : -
- *******************************************************************************/
-void r_usb_dmaca_byteset_trans_enable (uint16_t buffer, uint8_t dma_ch)
-{
-    USB_DMACA_N0TB(dma_ch)    = (uint32_t) (buffer & USB_DTLN);
-    USB_DMACA_CHCTRL(dma_ch) |= USB_DMACA_DMA_ENABLE;
-}
-
-#endif
-
+ #endif
+#endif                                 /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 /* End of File */

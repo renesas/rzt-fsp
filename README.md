@@ -10,21 +10,24 @@ FSP uses an open software ecosystem and provides flexibility in using your prefe
 
 ### Current Release
 
-[FSP v1.1.0](https://github.com/renesas/rzt-fsp/releases/tag/v1.1.0)
+[FSP v1.2.0](https://github.com/renesas/rzt-fsp/releases/tag/v1.2.0)
 
 ### Supported RZ/T series Kits
 
 - RSK+RZT2M
+- RSK+RZT2L
 
 ### Known Issues
 
 Known issues checks Getting Started document in RZ/T2M product page. [here](https://www.renesas.com/rzt2m).
 
+Known issues checks Getting Started document in RZ/T2L product page. [here](https://www.renesas.com/rzt2l).
+
 ### Setup Instructions
 
 #### For existing users that are using FSP with e² studio
 
-- FSP versions of 1.1.0 and later require a minimum e² studio version of 2022-10.
+- FSP versions of 1.2.0 and later require a minimum e² studio version of 2023-01.
 
 If you have already installed a previous FSP release that included e² studio then you can download the packs separately. These are available for download under the Assets section for each release. There is a zipped version, FSP_Packs_\<version\>.zip, and an installer version, FSP_Packs_\<version\>.exe.
 
@@ -49,6 +52,8 @@ FSP Releases :  https://github.com/renesas/rzt-fsp/releases
 FSP Documentation : https://renesas.github.io/rzt-fsp
 
 RZ/T2M Product Information: www.renesas.com/rzt2m
+
+RZ/T2L Product Information: www.renesas.com/rzt2l
 
 e² studio : www.renesas.com/e2studio
 

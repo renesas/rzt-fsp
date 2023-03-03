@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -48,6 +48,7 @@ uint16_t  g_usb_cstd_int_msg_cnt[USB_NUM_USBIP];            /* Interrupt message
 /******************************************************************************
  * Renesas Abstracted common Interrupt handler functions
  ******************************************************************************/
+ #if USB_IP_EHCI_OHCI == 0
 
 /******************************************************************************
  * Function Name   : usb_hstd_usb_handler
@@ -139,6 +140,7 @@ void usb_hstd_init_usb_message (usb_utr_t * ptr)
 /******************************************************************************
  * End of function usb_hstd_init_usb_message
  ******************************************************************************/
+ #endif                                /* USB_IP_EHCI_OHCI == 0 */
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
 /******************************************************************************

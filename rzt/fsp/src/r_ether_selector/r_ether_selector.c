@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -28,47 +28,51 @@
  **********************************************************************************************************************/
 
 /** "ETHS" in ASCII, used to determine if channel is open. */
-#define ETHER_SELECTOR_OPEN                       (('E' << 24U) | ('T' << 16U) | ('H' << 8U) | ('S' << 0U))
+#define ETHER_SELECTOR_OPEN                        (('E' << 24U) | ('T' << 16U) | ('H' << 8U) | ('S' << 0U))
 
 /*CONVCTRL[m] register defines*/
-#define ETHER_SELECTOR_FULLD                      (1 << 8)
-#define ETHER_SELECTOR_HALFD                      (0 << 8)
+#define ETHER_SELECTOR_FULLD                       (1 << 8)
+#define ETHER_SELECTOR_HALFD                       (0 << 8)
 
-#define ETHER_SELECTOR_CONV_MODE_MASK             (0x1f) /* Mask of Converter operation mode */
-#define ETHER_SELECTOR_CONV_MODE_MII_MODE         (0x00) /* MII mode (Through mode) */
-#define ETHER_SELECTOR_CONV_MODE_RMII_10M_IN      (0x04) /* RMII mode 10Mbps REF_CLK input */
-#define ETHER_SELECTOR_CONV_MODE_RMII_100M_IN     (0x05) /* RMII mode 100Mbps REF_CLK input */
-#define ETHER_SELECTOR_CONV_MODE_RMII_10M_OUT     (0x14) /* RMII mode 10Mbps REF_CLK output */
-#define ETHER_SELECTOR_CONV_MODE_RMII_100M_OUT    (0x15) /* RMII mode 100Mbps REF_CLK output */
-#define ETHER_SELECTOR_CONV_MODE_RGMII_1000M      (0x0a) /* RGMII mode 1000Mbps */
-#define ETHER_SELECTOR_CONV_MODE_RGMII_100M       (0x09) /* RGMII mode 100Mbps */
-#define ETHER_SELECTOR_CONV_MODE_RGMII_10M        (0x08) /* RGMII mode 10Mbps */
+#define ETHER_SELECTOR_CONV_MODE_MASK              (0x1f) /* Mask of Converter operation mode */
+#define ETHER_SELECTOR_CONV_MODE_MII_MODE          (0x00) /* MII mode (Through mode) */
+#define ETHER_SELECTOR_CONV_MODE_RMII_10M_IN       (0x04) /* RMII mode 10Mbps REF_CLK input */
+#define ETHER_SELECTOR_CONV_MODE_RMII_100M_IN      (0x05) /* RMII mode 100Mbps REF_CLK input */
+#define ETHER_SELECTOR_CONV_MODE_RMII_10M_OUT      (0x14) /* RMII mode 10Mbps REF_CLK output */
+#define ETHER_SELECTOR_CONV_MODE_RMII_100M_OUT     (0x15) /* RMII mode 100Mbps REF_CLK output */
+#define ETHER_SELECTOR_CONV_MODE_RGMII_1000M       (0x0a) /* RGMII mode 1000Mbps */
+#define ETHER_SELECTOR_CONV_MODE_RGMII_100M        (0x09) /* RGMII mode 100Mbps */
+#define ETHER_SELECTOR_CONV_MODE_RGMII_10M         (0x08) /* RGMII mode 10Mbps */
 
-#define ETHER_SELECTOR_CONV_BIT_SPEED_10M         (0x00) /* 10Mbps */
-#define ETHER_SELECTOR_CONV_BIT_SPEED_100M        (0x01) /* 100Mbps */
-#define ETHER_SELECTOR_CONV_BIT_SPEED_1000M       (0x02) /* 1000Mbps */
-#define ETHER_SELECTOR_CONV_BIT_SPEED_MASK        (0x03) /* Mask of Converter speed */
+#define ETHER_SELECTOR_CONV_BIT_SPEED_10M          (0x00) /* 10Mbps */
+#define ETHER_SELECTOR_CONV_BIT_SPEED_100M         (0x01) /* 100Mbps */
+#define ETHER_SELECTOR_CONV_BIT_SPEED_1000M        (0x02) /* 1000Mbps */
+#define ETHER_SELECTOR_CONV_BIT_SPEED_MASK         (0x03) /* Mask of Converter speed */
 
-#define ETHER_SELECTOR_CONV_BIT_MODE_MII          (0x00) /* MII mode */
-#define ETHER_SELECTOR_CONV_BIT_MODE_RMII         (0x04) /* RMII mode */
-#define ETHER_SELECTOR_CONV_BIT_MODE_RGMII        (0x08) /* RGMII mode */
-#define ETHER_SELECTOR_CONV_BIT_MODE_MASK         (0x0c) /* Mask of Converter mode */
+#define ETHER_SELECTOR_CONV_BIT_MODE_MII           (0x00) /* MII mode */
+#define ETHER_SELECTOR_CONV_BIT_MODE_RMII          (0x04) /* RMII mode */
+#define ETHER_SELECTOR_CONV_BIT_MODE_RGMII         (0x08) /* RGMII mode */
+#define ETHER_SELECTOR_CONV_BIT_MODE_MASK          (0x0c) /* Mask of Converter mode */
 
-#define ETHER_SELECTOR_CONV_BIT_REF_CLK_IN        (0x00) /* REF_CLK input */
-#define ETHER_SELECTOR_CONV_BIT_REF_CLK_OUT       (0x10) /* RE_CLK  output */
-#define ETHER_SELECTOR_CONV_BIT_REF_CLK_MASK      (0x10) /* Mask of Converter REF_CLK */
+#define ETHER_SELECTOR_CONV_BIT_REF_CLK_IN         (0x00) /* REF_CLK input */
+#define ETHER_SELECTOR_CONV_BIT_REF_CLK_OUT        (0x10) /* RE_CLK  output */
+#define ETHER_SELECTOR_CONV_BIT_REF_CLK_MASK       (0x10) /* Mask of Converter REF_CLK */
 
-#define ETHER_SELECTOR_MODCTRL_BIT_SWMODE_MASK    (0x03) /* Mask of SW_MODE[1:0] */
-#define ETHER_SELECTOR_PHYLNK_BIT_SWLINK_MASK     (0x07) /* Mask of SWLINK[2:0] */
-#define ETHER_SELECTOR_PHYLNK_BIT_CATLNK_MASK     (0x07) /* Mask of CATLNK[2:0] */
-#define ETHER_SELECTOR_CONVRST_BIT_PHYIR_MASK     (0x07) /* Mask of PHYIR[2:0] */
+#if defined(BSP_MCU_GROUP_RZT2L)
+ #define ETHER_SELECTOR_MODCTRL_BIT_SWMODE_MASK    (0x01) /* Mask of SW_MODE[0] */
+#else
+ #define ETHER_SELECTOR_MODCTRL_BIT_SWMODE_MASK    (0x03) /* Mask of SW_MODE[1:0] */
+#endif
+#define ETHER_SELECTOR_PHYLNK_BIT_SWLINK_MASK      (0x07) /* Mask of SWLINK[2:0] */
+#define ETHER_SELECTOR_PHYLNK_BIT_CATLNK_MASK      (0x07) /* Mask of CATLNK[2:0] */
+#define ETHER_SELECTOR_CONVRST_BIT_PHYIR_MASK      (0x07) /* Mask of PHYIR[2:0] */
 
 /* Key code for PRCMD register */
-#define ETHER_SELECTOR_PRCMD_UNLOCK1              (0x000000A5U)
-#define ETHER_SELECTOR_PRCMD_UNLOCK2              (0x00000001U)
-#define ETHER_SELECTOR_PRCMD_UNLOCK3              (0x0000FFFEU)
-#define ETHER_SELECTOR_PRCMD_UNLOCK4              (0x00000001U)
-#define ETHER_SELECTOR_PRCMD_LOCK                 (0x00000000U)
+#define ETHER_SELECTOR_PRCMD_UNLOCK1               (0x000000A5U)
+#define ETHER_SELECTOR_PRCMD_UNLOCK2               (0x00000001U)
+#define ETHER_SELECTOR_PRCMD_UNLOCK3               (0x0000FFFEU)
+#define ETHER_SELECTOR_PRCMD_UNLOCK4               (0x00000001U)
+#define ETHER_SELECTOR_PRCMD_LOCK                  (0x00000000U)
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -166,11 +170,14 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     sw_mode = ETHER_SELECTOR_CFG_MODE;
     p_reg_ethss->MODCTRL_b.SW_MODE = sw_mode & ETHER_SELECTOR_MODCTRL_BIT_SWMODE_MASK;
 
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
+
     /* Set the MAC of all port for half-duplex.  */
     p_reg_ethss->SWDUPC_b.PHY_DUPLEX = 0;
 
     /* Set all Ethernet switch port to select not use 10Mbps.  */
     p_reg_ethss->SWCTRL_b.SET10 = 0;
+#endif                                 /* (BSP_FEATURE_ETHSW_SUPPORTED == 1) */
 
     /* Set RGMII/RMII Converter configuration */
     switch (port)
@@ -250,12 +257,15 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
 
     *p_reg_convctrl = convctrl;
 
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
+
     /* Set active level of PHYLINK signal using the Ethernet switch interface. */
     /* The SWLINK goes Active-High with a value of 0. */
     phylink  = p_reg_ethss->PHYLNK_b.SWLINK;
     phylink &= ~(uint32_t) (1 << port);
     phylink |= ((uint32_t) (~(p_instance_ctrl->p_cfg->phylink) << port));
     p_reg_ethss->PHYLNK_b.SWLINK = phylink & ETHER_SELECTOR_PHYLNK_BIT_SWLINK_MASK;
+#endif                                 /* (BSP_FEATURE_ETHSW_SUPPORTED == 1) */
 
     /* Set active level of PHYLINK signal using the EtherCAT interface. */
     /* The CATLNK goes Active-High with a value of 1. */

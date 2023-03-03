@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -78,6 +78,7 @@
 static void     r_cmtw_period_register_set(cmtw_instance_ctrl_t * p_instance_ctrl, uint32_t period_counts);
 static void     r_cmtw_hardware_cfg(cmtw_instance_ctrl_t * const p_instance_ctrl, timer_cfg_t const * const p_cfg);
 static uint32_t r_cmtw_clock_frequency_get(R_CMTW0_Type * p_cmtw_regs);
+static void     r_cmtw_call_callback(cmtw_instance_ctrl_t * p_ctrl, timer_event_t event, uint32_t capture);
 
 #if CMTW_CFG_PARAM_CHECKING_ENABLE
 static fsp_err_t r_cmtw_open_param_checking(cmtw_instance_ctrl_t * p_instance_ctrl, timer_cfg_t const * const p_cfg);
@@ -143,6 +144,9 @@ const timer_api_t g_timer_on_cmtw =
  *
  * The CMTW implementation of the general timer can accept an optional cmtw_extended_cfg_t extension parameter.
  *
+ * Example:
+ * @snippet r_cmtw_example.c R_CMTW_Open
+ *
  * @retval FSP_SUCCESS                 Initialization was successful and timer has started.
  * @retval FSP_ERR_ASSERTION           A required input pointer is NULL or the period is not in the valid range of
  *                                     1 to 0xFFFF in 16bit counter or 1 to 0xFFFFFFFF in 32bit counter.
@@ -184,6 +188,9 @@ fsp_err_t R_CMTW_Open (timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_
 
 /*******************************************************************************************************************//**
  * Starts timer. Implements @ref timer_api_t::start.
+ *
+ * Example:
+ * @snippet r_cmtw_example.c R_CMTW_Start
  *
  * @retval FSP_SUCCESS                 Timer started.
  * @retval FSP_ERR_ASSERTION           p_ctrl is null.
@@ -243,6 +250,9 @@ fsp_err_t R_CMTW_Start (timer_ctrl_t * const p_ctrl)
 /*******************************************************************************************************************//**
  * Stops the timer.  Implements @ref timer_api_t::stop.
  *
+ * Example:
+ * @snippet r_cmtw_example.c R_CMTW_Stop
+ *
  * @retval FSP_SUCCESS                 Timer stopped.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance control structure is not opened.
@@ -287,6 +297,9 @@ fsp_err_t R_CMTW_Reset (timer_ctrl_t * const p_ctrl)
 /*******************************************************************************************************************//**
  * Enables external event triggers that start, stop, clear, or capture the counter. Implements @ref timer_api_t::enable.
  *
+ * Example:
+ * @snippet r_cmtw_example.c R_CMTW_Enable
+ *
  * @retval FSP_SUCCESS                 External events successfully enabled.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -317,6 +330,9 @@ fsp_err_t R_CMTW_Enable (timer_ctrl_t * const p_ctrl)
 /*******************************************************************************************************************//**
  * Disables external event triggers that start, stop, clear, or capture the counter. Implements @ref timer_api_t::disable.
  *
+ * Example:
+ * @snippet r_cmtw_example.c R_CMTW_Disable
+ *
  * @retval FSP_SUCCESS                 External events successfully disabled.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -345,6 +361,9 @@ fsp_err_t R_CMTW_Disable (timer_ctrl_t * const p_ctrl)
  * @ref timer_api_t::periodSet.
  *
  * @warning Stop the timer before calling this function if one-shot output is used.
+ *
+ * Example:
+ * @snippet r_cmtw_example.c R_CMTW_PeriodSet
  *
  * @retval FSP_SUCCESS                 Period value updated.
  * @retval FSP_ERR_ASSERTION           A required pointer was NULL, or the period was not in the valid range of
@@ -392,6 +411,9 @@ fsp_err_t R_CMTW_DutyCycleSet (timer_ctrl_t * const p_ctrl, uint32_t const duty_
 /*******************************************************************************************************************//**
  * Gets timer information and store it in provided pointer p_info. Implements @ref timer_api_t::infoGet.
  *
+ * Example:
+ * @snippet r_cmtw_example.c R_CMTW_InfoGet
+ *
  * @retval FSP_SUCCESS                 Period, count direction, and frequency stored in p_info.
  * @retval FSP_ERR_ASSERTION           A required pointer is NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance control structure is not opened.
@@ -420,6 +442,9 @@ fsp_err_t R_CMTW_InfoGet (timer_ctrl_t * const p_ctrl, timer_info_t * const p_in
 
 /*******************************************************************************************************************//**
  * Retrieves the current state and counter value stores them in p_status. Implements @ref timer_api_t::statusGet.
+ *
+ * Example:
+ * @snippet r_cmtw_example.c R_CMTW_StatusGet
  *
  * @retval FSP_SUCCESS                 Current status and counter value provided in p_status.
  * @retval FSP_ERR_ASSERTION           A required pointer is NULL.
@@ -516,19 +541,29 @@ fsp_err_t R_CMTW_OutputDisable (timer_ctrl_t * const p_ctrl, cmtw_io_pin_t pin)
  * Updates the user callback with the option to provide memory for the callback argument structure.
  * Implements @ref timer_api_t::callbackSet.
  *
- * @retval  FSP_ERR_UNSUPPORTED              API not supported.
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
 fsp_err_t R_CMTW_CallbackSet (timer_ctrl_t * const          p_api_ctrl,
                               void (                      * p_callback)(timer_callback_args_t *),
                               void const * const            p_context,
                               timer_callback_args_t * const p_callback_memory)
 {
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
-    FSP_PARAMETER_NOT_USED(p_callback);
-    FSP_PARAMETER_NOT_USED(p_context);
-    FSP_PARAMETER_NOT_USED(p_callback_memory);
+    cmtw_instance_ctrl_t * p_ctrl = (cmtw_instance_ctrl_t *) p_api_ctrl;
 
-    return FSP_ERR_UNSUPPORTED;
+#if CMTW_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(CMTW_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_ctrl->p_callback        = p_callback;
+    p_ctrl->p_context         = p_context;
+    p_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**
@@ -588,7 +623,7 @@ fsp_err_t R_CMTW_Close (timer_ctrl_t * const p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Sets driver version based on compile time macros.  Implements @ref timer_api_t::versionGet.
+ * DEPRECATED Sets driver version based on compile time macros.  Implements @ref timer_api_t::versionGet.
  *
  * @retval     FSP_SUCCESS          Version in p_version.
  * @retval     FSP_ERR_ASSERTION    The parameter p_version is NULL.
@@ -832,6 +867,43 @@ static uint32_t r_cmtw_clock_frequency_get (R_CMTW0_Type * p_cmtw_regs)
     return clock_freq_hz;
 }
 
+/*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_ctrl     Pointer to CMTW instance control block
+ * @param[in]     event      Event code
+ * @param[in]     capture    Event capture counts (if applicable)
+ **********************************************************************************************************************/
+static void r_cmtw_call_callback (cmtw_instance_ctrl_t * p_ctrl, timer_event_t event, uint32_t capture)
+{
+    timer_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available. */
+    timer_callback_args_t * p_args = p_ctrl->p_callback_memory;
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
+
+    p_args->event     = event;
+    p_args->capture   = capture;
+    p_args->p_context = p_ctrl->p_context;
+
+    p_ctrl->p_callback(p_args);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args;
+    }
+}
+
 void cmtw_cm_int_isr (void)
 {
     /* Save context if RTOS is used */
@@ -854,13 +926,7 @@ void cmtw_cm_int_isr (void)
     /* Invoke the callback function if it is set. */
     if (NULL != p_instance_ctrl->p_callback)
     {
-        /* Setup parameters for the user-supplied callback function. */
-        timer_callback_args_t callback_args;
-
-        callback_args.event     = TIMER_EVENT_CYCLE_END;
-        callback_args.p_context = p_instance_ctrl->p_context;
-
-        p_instance_ctrl->p_callback(&callback_args);
+        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_CYCLE_END, 0);
     }
 
     /* Restore context if RTOS is used */
@@ -889,14 +955,8 @@ void cmtw_ic0_int_isr (void)
     /* Invoke the callback function if it is set. */
     if (NULL != p_instance_ctrl->p_callback)
     {
-        /* Setup parameters for the user-supplied callback function. */
-        timer_callback_args_t callback_args;
-
-        callback_args.event     = TIMER_EVENT_CAPTURE_A;
-        callback_args.capture   = p_instance_ctrl->p_reg->CMWICR0;
-        callback_args.p_context = p_instance_ctrl->p_context;
-
-        p_instance_ctrl->p_callback(&callback_args);
+        uint32_t counter = p_instance_ctrl->p_reg->CMWICR0;
+        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_CAPTURE_A, counter);
     }
 
     /* Restore context if RTOS is used */
@@ -925,14 +985,8 @@ void cmtw_ic1_int_isr (void)
     /* Invoke the callback function if it is set. */
     if (NULL != p_instance_ctrl->p_callback)
     {
-        /* Setup parameters for the user-supplied callback function. */
-        timer_callback_args_t callback_args;
-
-        callback_args.event     = TIMER_EVENT_CAPTURE_B;
-        callback_args.capture   = p_instance_ctrl->p_reg->CMWICR1;
-        callback_args.p_context = p_instance_ctrl->p_context;
-
-        p_instance_ctrl->p_callback(&callback_args);
+        uint32_t counter = p_instance_ctrl->p_reg->CMWICR1;
+        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_CAPTURE_B, counter);
     }
 
     /* Restore context if RTOS is used */
@@ -965,13 +1019,7 @@ void cmtw_oc0_int_isr (void)
     /* Invoke the callback function if it is set. */
     if (NULL != p_instance_ctrl->p_callback)
     {
-        /* Setup parameters for the user-supplied callback function. */
-        timer_callback_args_t callback_args;
-
-        callback_args.event     = TIMER_EVENT_OUTPUT_COMPARE_0;
-        callback_args.p_context = p_instance_ctrl->p_context;
-
-        p_instance_ctrl->p_callback(&callback_args);
+        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_OUTPUT_COMPARE_0, 0);
     }
 
     /* Restore context if RTOS is used */
@@ -1005,13 +1053,7 @@ void cmtw_oc1_int_isr (void)
     /* Invoke the callback function if it is set. */
     if (NULL != p_instance_ctrl->p_callback)
     {
-        /* Setup parameters for the user-supplied callback function. */
-        timer_callback_args_t callback_args;
-
-        callback_args.event     = TIMER_EVENT_OUTPUT_COMPARE_1;
-        callback_args.p_context = p_instance_ctrl->p_context;
-
-        p_instance_ctrl->p_callback(&callback_args);
+        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_OUTPUT_COMPARE_1, 0);
     }
 
     /* Restore context if RTOS is used */

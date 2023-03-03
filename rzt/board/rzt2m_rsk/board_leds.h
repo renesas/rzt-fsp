@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -59,10 +59,13 @@ typedef struct st_bsp_leds
  * found in the bsp_leds_t structure. */
 typedef enum e_bsp_led
 {
+#if (0 == BSP_CFG_CPU)
     BSP_LED_RLED0 = 0,                 ///< Green
     BSP_LED_RLED1 = 1,                 ///< Yellow
-    BSP_LED_RLED2 = 2,                 ///< Red
-    BSP_LED_RLED3 = 3,                 ///< Red
+#elif (1 == BSP_CFG_CPU)
+    BSP_LED_RLED2 = 0,                 ///< Red
+    BSP_LED_RLED3 = 1,                 ///< Red
+#endif
 } bsp_led_t;
 
 /***********************************************************************************************************************

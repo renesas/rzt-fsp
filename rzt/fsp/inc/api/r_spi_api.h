@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -31,6 +31,7 @@
  *
  * Implemented by:
  * - @ref SPI
+ * - @ref SCI_SPI
  *
  * @{
  ********************************************************************************************************************/
@@ -50,8 +51,8 @@ FSP_HEADER
  * Macro definitions
  ********************************************************************************************************************/
 
-#define SPI_API_VERSION_MAJOR    (1U)
-#define SPI_API_VERSION_MINOR    (1U)
+#define SPI_API_VERSION_MAJOR    (1U)  // DEPRECATED
+#define SPI_API_VERSION_MINOR    (2U)  // DEPRECATED
 
 /*********************************************************************************************************************
  * Typedef definitions
@@ -160,6 +161,7 @@ typedef struct st_spi_cfg
 /** SPI control block.  Allocate an instance specific control block to pass into the SPI API calls.
  * @par Implemented as
  * - spi_instance_ctrl_t
+ * - sci_spi_instance_ctrl_t
  */
 typedef void spi_ctrl_t;
 
@@ -169,6 +171,7 @@ typedef struct st_spi_api
     /** Initialize a channel for SPI communication mode.
      * @par Implemented as
      * - @ref R_SPI_Open()
+     * - @ref R_SCI_SPI_Open()
      *
      * @param[in, out] p_ctrl Pointer to user-provided storage for the control block.
      * @param[in]      p_cfg  Pointer to SPI configuration structure.
@@ -178,6 +181,7 @@ typedef struct st_spi_api
     /** Receive data from a SPI device.
      * @par Implemented as
      * - @ref R_SPI_Read()
+     * - @ref R_SCI_SPI_Read()
      *
      * @param[in]  p_ctrl    Pointer to the control block for the channel.
      * @param[in]  length    Number of units of data to be transferred (unit size specified by the
@@ -193,6 +197,7 @@ typedef struct st_spi_api
     /** Transmit data to a SPI device.
      * @par Implemented as
      * - @ref R_SPI_Write()
+     * - @ref R_SCI_SPI_Write()
      *
      * @param[in]  p_ctrl    Pointer to the control block for the channel.
      * @param[in]  p_src     Pointer to a source data buffer from which data will be transmitted to a SPI device.
@@ -207,6 +212,7 @@ typedef struct st_spi_api
     /** Simultaneously transmit data to a SPI device while receiving data from a SPI device (full duplex).
      * @par Implemented as
      * - @ref R_SPI_WriteRead()
+     * - @ref R_SCI_SPI_WriteRead()
      *
      * @param[in]  p_ctrl    Pointer to the control block for the channel.
      * @param[in]  p_src     Pointer to a source data buffer from which data will be transmitted to a SPI device.
@@ -224,6 +230,7 @@ typedef struct st_spi_api
      * Specify callback function and optional context pointer and working memory pointer.
      * @par Implemented as
      * - @ref R_SPI_CallbackSet()
+     * - @ref R_SCI_SPI_CallbackSet()
      *
      * @param[in]   p_ctrl                   Pointer to the SPI control block.
      * @param[in]   p_callback               Callback function
@@ -237,14 +244,16 @@ typedef struct st_spi_api
     /** Remove power to the SPI channel designated by the handle and disable the associated interrupts.
      * @par Implemented as
      * - @ref R_SPI_Close()
+     * - @ref R_SCI_SPI_Close()
      *
      * @param[in]  p_ctrl  Pointer to the control block for the channel.
      */
     fsp_err_t (* close)(spi_ctrl_t * const p_ctrl);
 
-    /** Get the version information of the underlying driver.
+    /** DEPRECATED Get the version information of the underlying driver.
      * @par Implemented as
      * - @ref R_SPI_VersionGet()
+     * - @ref R_SCI_SPI_VersionGet()
      *
      * @param[out]  p_version pointer to memory location to return version number
      */

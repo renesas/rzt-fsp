@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -46,8 +46,8 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ADC_CODE_VERSION_MAJOR                 (1U)
-#define ADC_CODE_VERSION_MINOR                 (0U)
+#define ADC_CODE_VERSION_MAJOR                 (1U) // DEPRECATED
+#define ADC_CODE_VERSION_MINOR                 (2U) // DEPRECATED
 
 /* Typical values that can be used to modify the sample states.
  * The minimum sample state count value is either 6 or 7 depending on the clock ratios.
@@ -234,7 +234,12 @@ typedef struct st_adc_channel_cfg
 /** ADC instance control block. DO NOT INITIALIZE.  Initialized in @ref adc_api_t::open(). */
 typedef struct
 {
-    R_ADC121_Type   * p_reg;                    // Base register for this unit
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+    R_ADC121_Type * p_reg;                      // Base register for this unit
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+    R_ADC120_Type * p_reg;                      // Base register for this unit
+#endif
+
     adc_cfg_t const * p_cfg;
     uint32_t          opened;                   // Boolean to verify that the Unit has been initialized
     uint32_t          scan_mask;                // Scan mask used for Normal scan.

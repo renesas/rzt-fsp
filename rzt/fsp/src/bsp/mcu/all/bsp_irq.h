@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -35,7 +35,8 @@ FSP_HEADER
 #define BSP_PRV_GICR_TARGET0_INTREG_ADDRESS(cpu_num)    (cpu_num == 0 ? (GICR0_TARGET0_INTREG) : (GICR1_TARGET0_INTREG))
 #define BSP_PRV_GICR_TARGET0_IFREG_ADDRESS(cpu_num)     (cpu_num == 0 ? (GICR0_TARGET0_IFREG) : (GICR1_TARGET0_IFREG))
 
-#define BSP_PRV_IRQ_CFG_MSK    (0x000000FFU)
+#define BSP_PRV_IRQ_CONFIG_MASK               (0x000000FFU)
+#define BSP_PRV_GICD_ICFGR_INT_CONFIG_MASK    (1UL << 1UL)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -163,8 +164,10 @@ __STATIC_INLINE void R_BSP_IrqCfg (IRQn_Type const irq, uint32_t priority, void 
                             BSP_VECTOR_NUM_OFFSET)] |= (uint32_t) (0x00000001UL << (_irq % BSP_VECTOR_NUM_OFFSET));
 
         /* Set the interrupt priority */
-        GICD->GICD_IPRIORITYR[((uint32_t) irq) / 4UL] &= (uint32_t) (~(BSP_PRV_IRQ_CFG_MSK << (8UL * (_irq % 4UL))));
-        GICD->GICD_IPRIORITYR[((uint32_t) irq) / 4UL] |= (priority << (3UL + (8UL * (_irq % 4UL))));
+        GICD->GICD_IPRIORITYR[((uint32_t) irq) /
+                              4UL] &= (uint32_t) (~(BSP_PRV_IRQ_CONFIG_MASK << (8UL * (_irq % 4UL))));
+        GICD->GICD_IPRIORITYR[((uint32_t) irq) /
+                              4UL] |= (priority << (BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT + (8UL * (_irq % 4UL))));
 
         /* Store the context. The context is recovered in the ISR. */
         R_FSP_IsrContextSet(irq, p_context);
@@ -178,9 +181,10 @@ __STATIC_INLINE void R_BSP_IrqCfg (IRQn_Type const irq, uint32_t priority, void 
 
         /* Set the interrupt priority */
         GICR_TARGET0_INTREG->GICR_IPRIORITYR[(((uint32_t) irq + BSP_VECTOR_NUM_OFFSET)) /
-                                             4UL] &= (uint32_t) (~(BSP_PRV_IRQ_CFG_MSK << (8UL * (_irq % 4UL))));
+                                             4UL] &= (uint32_t) (~(BSP_PRV_IRQ_CONFIG_MASK << (8UL * (_irq % 4UL))));
         GICR_TARGET0_INTREG->GICR_IPRIORITYR[(((uint32_t) irq + BSP_VECTOR_NUM_OFFSET)) /
-                                             4UL] |= (priority << (3UL + (8UL * (_irq % 4UL))));
+                                             4UL] |=
+            (priority << (BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT + (8UL * (_irq % 4UL))));
 
         /* Store the context. The context is recovered in the ISR. */
         R_FSP_IsrContextSet(irq, p_context);
@@ -309,7 +313,15 @@ __STATIC_INLINE void R_BSP_IrqDetectTypeSet (IRQn_Type const irq, uint32_t detec
     GICD_Type * GICD;
 
     GICD = BSP_PRV_GICD_ADDRESS(BSP_CFG_CPU);
-    GICD->GICD_ICFGR[(((uint32_t) irq) / 16UL)] |= (detect_type << 1UL) << (2UL * (_irq % 16UL));
+
+    if (0 != detect_type)
+    {
+        GICD->GICD_ICFGR[(((uint32_t) irq) / 16UL)] |= BSP_PRV_GICD_ICFGR_INT_CONFIG_MASK << (2UL * (_irq % 16UL));
+    }
+    else
+    {
+        GICD->GICD_ICFGR[(((uint32_t) irq) / 16UL)] &= ~(BSP_PRV_GICD_ICFGR_INT_CONFIG_MASK << (2UL * (_irq % 16UL)));
+    }
 }
 
 /*******************************************************************************************************************//**
@@ -330,16 +342,29 @@ __STATIC_INLINE void R_BSP_IrqGroupSet (IRQn_Type const irq, uint32_t interrupt_
                         BSP_VECTOR_NUM_OFFSET)] |= (interrupt_group << (_irq % BSP_VECTOR_NUM_OFFSET));
 }
 
+/*******************************************************************************************************************//**
+ * Sets the interrupt mask level.
+ *
+ * @param[in] mask_level          The interrupt mask level
+ *
+ * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
+ **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqMaskLevelSet (uint32_t mask_level)
 {
-    /* this function is not yet supported */
-    FSP_PARAMETER_NOT_USED(mask_level);
+    FSP_CRITICAL_SECTION_SET_STATE(mask_level << BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT);
 }
 
+/*******************************************************************************************************************//**
+ * Gets the interrupt mask level.
+ *
+ * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
+ *
+ * @return  Value indicating the interrupt mask level.
+ **********************************************************************************************************************/
 __STATIC_INLINE uint32_t R_BSP_IrqMaskLevelGet (void)
 {
-    /* this function is not yet supported */
-    return 0;
+    return (uint32_t) ((FSP_CRITICAL_SECTION_GET_CURRENT_STATE() >> BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT) &
+                       0x0000001FUL);
 }
 
 /*******************************************************************************************************************//**

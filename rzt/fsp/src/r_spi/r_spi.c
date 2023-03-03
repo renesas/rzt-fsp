@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -106,6 +106,7 @@ static fsp_err_t r_spi_write_read_common(spi_ctrl_t * const    p_api_ctrl,
 
 static void r_spi_receive(spi_instance_ctrl_t * p_ctrl);
 static void r_spi_transmit(spi_instance_ctrl_t * p_ctrl);
+static void r_spi_call_callback(spi_instance_ctrl_t * p_ctrl, spi_event_t event);
 
 static void spi_rxi_common(spi_instance_ctrl_t * p_ctrl);
 
@@ -355,19 +356,29 @@ fsp_err_t R_SPI_WriteRead (spi_ctrl_t * const    p_api_ctrl,
  * Updates the user callback and has option of providing memory for callback structure.
  * Implements spi_api_t::callbackSet
  *
- * @retval  FSP_ERR_UNSUPPORTED              API not supported.
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
 fsp_err_t R_SPI_CallbackSet (spi_ctrl_t * const          p_api_ctrl,
                              void (                    * p_callback)(spi_callback_args_t *),
                              void const * const          p_context,
                              spi_callback_args_t * const p_callback_memory)
 {
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
-    FSP_PARAMETER_NOT_USED(p_callback);
-    FSP_PARAMETER_NOT_USED(p_context);
-    FSP_PARAMETER_NOT_USED(p_callback_memory);
+    spi_instance_ctrl_t * p_ctrl = (spi_instance_ctrl_t *) p_api_ctrl;
 
-    return FSP_ERR_UNSUPPORTED;
+#if (SPI_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(SPI_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_ctrl->p_callback        = p_callback;
+    p_ctrl->p_context         = p_context;
+    p_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**
@@ -428,7 +439,7 @@ fsp_err_t R_SPI_Close (spi_ctrl_t * const p_api_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * This function gets the version information of the underlying driver. Implements @ref spi_api_t::versionGet.
+ * DEPRECATED This function gets the version information of the underlying driver. Implements @ref spi_api_t::versionGet.
  *
  * @retval      FSP_SUCCESS            Successful version get.
  * @retval      FSP_ERR_ASSERTION      The parameter p_version is NULL.
@@ -1091,6 +1102,42 @@ static void r_spi_transmit (spi_instance_ctrl_t * p_ctrl)
 }
 
 /*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_ctrl     Pointer to SPI instance control block
+ * @param[in]     event      Event code
+ **********************************************************************************************************************/
+static void r_spi_call_callback (spi_instance_ctrl_t * p_ctrl, spi_event_t event)
+{
+    spi_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available. */
+    spi_callback_args_t * p_args = p_ctrl->p_callback_memory;
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
+
+    p_args->channel   = p_ctrl->p_cfg->channel;
+    p_args->event     = event;
+    p_args->p_context = p_ctrl->p_context;
+
+    p_ctrl->p_callback(p_args);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args;
+    }
+}
+
+/*******************************************************************************************************************//**
  * Common processing for RXI interrupt and DMA transfer completion interrupt in SPI read operation.
  **********************************************************************************************************************/
 static void spi_rxi_common (spi_instance_ctrl_t * p_ctrl)
@@ -1280,14 +1327,8 @@ void spi_tei_isr (void)
 
         SPI_HARDWARE_REGISTER_WAIT(p_ctrl->p_regs->SPPSR_b.SPEPS, 0, timeout_count);
 
-        /* Setup callback args. */
-        spi_callback_args_t spi_cb_data;
-        spi_cb_data.channel   = p_ctrl->p_cfg->channel;
-        spi_cb_data.event     = SPI_EVENT_TRANSFER_COMPLETE;
-        spi_cb_data.p_context = p_ctrl->p_cfg->p_context;
-
         /* Signal that a transfer has completed. */
-        p_ctrl->p_cfg->p_callback(&spi_cb_data);
+        r_spi_call_callback(p_ctrl, SPI_EVENT_TRANSFER_COMPLETE);
     }
 
     /* Restore context if RTOS is used */
@@ -1308,11 +1349,6 @@ void spi_eri_isr (void)
     /* Disable the SPI Transfer. */
     p_ctrl->p_regs->SPCR_b.SPE = 0;
 
-    /* Setup callback args. */
-    spi_callback_args_t spi_cb_data;
-    spi_cb_data.channel   = p_ctrl->p_cfg->channel;
-    spi_cb_data.p_context = p_ctrl->p_cfg->p_context;
-
     /* Read the status register. */
     uint16_t status = p_ctrl->p_regs->SPSR;
 
@@ -1332,15 +1368,13 @@ void spi_eri_isr (void)
     /* Check if the error is a Parity Error. */
     if (R_SPI0_SPSR_PERF_Msk & status)
     {
-        spi_cb_data.event = SPI_EVENT_ERR_PARITY;
-        p_ctrl->p_cfg->p_callback(&spi_cb_data);
+        r_spi_call_callback(p_ctrl, SPI_EVENT_ERR_PARITY);
     }
 
     /* Check if the error is a Receive Buffer Overflow Error. */
     if (R_SPI0_SPSR_OVRF_Msk & status)
     {
-        spi_cb_data.event = SPI_EVENT_ERR_READ_OVERFLOW;
-        p_ctrl->p_cfg->p_callback(&spi_cb_data);
+        r_spi_call_callback(p_ctrl, SPI_EVENT_ERR_READ_OVERFLOW);
     }
 
     /* Check if the error is a Mode Fault Error. */
@@ -1349,8 +1383,7 @@ void spi_eri_isr (void)
         /* Check if the error is a Transmit Buffer Underflow Error. */
         if (R_SPI0_SPSR_UDRF_Msk & status)
         {
-            spi_cb_data.event = SPI_EVENT_ERR_MODE_UNDERRUN;
-            p_ctrl->p_cfg->p_callback(&spi_cb_data);
+            r_spi_call_callback(p_ctrl, SPI_EVENT_ERR_MODE_UNDERRUN);
         }
     }
 

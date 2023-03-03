@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -51,8 +51,8 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define POEG_API_VERSION_MAJOR    (1U)
-#define POEG_API_VERSION_MINOR    (0U)
+#define POEG_API_VERSION_MAJOR    (1U) // DEPRECATED
+#define POEG_API_VERSION_MINOR    (2U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -70,9 +70,12 @@ typedef enum e_poeg_state
     /** GPT output disable request active from the GTETRG pin. If a filter is used, this flag represents the state of
      * the filtered input. */
     POEG_STATE_PIN_DISABLE_REQUEST_ACTIVE = 1U << 16,
-
-    POEG_STATE_DSMIF0_DISABLE_REQUEST = 1U << 24, ///< GPT output disabled due to DSMIF0 error
-    POEG_STATE_DSMIF1_DISABLE_REQUEST = 1U << 25, ///< GPT output disabled due to DSMIF1 error
+#if BSP_FEATURE_POEG_ERROR_SIGNAL_TYPE == 2
+    POEG_STATE_DSMIF0_1_DISABLE_REQUEST = 1U << 20, ///< GPT output disabled due to DSMIF0 error 1
+    POEG_STATE_DSMIF1_1_DISABLE_REQUEST = 1U << 21, ///< GPT output disabled due to DSMIF1 error 1
+#endif
+    POEG_STATE_DSMIF0_DISABLE_REQUEST = 1U << 24,   ///< GPT output disabled due to DSMIF0 error 0
+    POEG_STATE_DSMIF1_DISABLE_REQUEST = 1U << 25,   ///< GPT output disabled due to DSMIF1 error 0
 } poeg_state_t;
 
 /** Triggers that will disable GPT output pins. */
@@ -91,6 +94,10 @@ typedef enum e_poeg_trigger
     POEG_TRIGGER_ACMPHS5          = 1U << 9, ///< Disable GPT output based on ACMPHS5 comparator result
 
     /** The GPT output pins can be disabled when DSMIF error occurs (LLPP only). */
+#if BSP_FEATURE_POEG_ERROR_SIGNAL_TYPE == 2
+    POEG_TRIGGER_DERR0E_1 = 1U << 19,        ///< Permit output disabled by DSMIF0 error 1 detection
+    POEG_TRIGGER_DERR1E_1 = 1U << 20,        ///< Permit output disabled by DSMIF1 error 1 detection
+#endif
     POEG_TRIGGER_DERR0E = 1U << 22,          ///< Permit output disabled by DSMIF0 error detection(DERR0E)
     POEG_TRIGGER_DERR1E = 1U << 23,          ///< Permit output disabled by DSMIF1 error detection(DERR1E)
 } poeg_trigger_t;
@@ -209,7 +216,7 @@ typedef struct st_poeg_api
      */
     fsp_err_t (* close)(poeg_ctrl_t * const p_ctrl);
 
-    /** Get version and stores it in provided pointer p_version.
+    /** DEPRECATRED - Get version and stores it in provided pointer p_version.
      * @par Implemented as
      * - @ref R_POEG_VersionGet()
      *

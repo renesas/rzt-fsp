@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -43,7 +43,7 @@
 #include "r_usb_dmaca_rz_if.h"
 #include "r_usb_dmaca_rz_private.h"
 
-#if USB_CFG_DMA == USB_CFG_ENABLE
+#if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
 
 /*******************************************************************************
  * Macro definitions
@@ -55,10 +55,60 @@ typedef void (* DMACI_Callback)(void);
  *******************************************************************************/
 
 /* DMACA DMAC0I */
-static void r_usb_dmaca_intDMAC0I_isr(void);
+void r_usb_dmaca_intDMAC0I_isr(void);
 
 /* DMACA DMAC1I */
-static void r_usb_dmaca_intDMAC1I_isr(void);
+void r_usb_dmaca_intDMAC1I_isr(void);
+
+/************************************************************************************
+ * Outline      : Interrupt DMAC0I handler
+ * Function Name: r_usb_dmaca_intDMAC0I_isr
+ * Description  : Types of interrupt requests from DMACA channel 0.
+ *                If the pointer to function is 'FIT_NO_FUNC' or 'NULL',
+ *                write a program under "do something" in this
+ *                r_usb_dmaca_intDMAC0I_isr() function.
+ * Arguments    : None
+ * Return Value : None
+ ************************************************************************************/
+void r_usb_dmaca_intDMAC0I_isr (void)
+{
+ #if USB_CFG_DMA == USB_CFG_ENABLE
+    if (((uint32_t) NULL != (uint32_t) p_USB_DMACI_Handlers[USB_DMACA_CH0]))
+    {
+        ((DMACI_Callback) p_USB_DMACI_Handlers[USB_DMACA_CH0])();
+    }
+    else
+    {
+        /* do something */
+    }
+ #endif                                /* USB_CFG_DMA == USB_CFG_ENABLE */
+}
+
+/************************************************************************************
+ * Outline      : Interrupt DMAC1I handler
+ * Function Name: r_usb_dmaca_intDMAC1I_isr
+ * Description  : Types of interrupt requests from DMACA channel1.
+ *                If the pointer to function is 'FIT_NO_FUNC' or 'NULL',
+ *                write a program under "do something" in this
+ *                r_usb_dmaca_intDMAC1I_isr() function.
+ * Arguments    : None
+ * Return Value : None
+ ************************************************************************************/
+void r_usb_dmaca_intDMAC1I_isr (void)
+{
+ #if USB_CFG_DMA == USB_CFG_ENABLE
+    if (((uint32_t) NULL != (uint32_t) p_USB_DMACI_Handlers[USB_DMACA_CH1]))
+    {
+        ((DMACI_Callback) p_USB_DMACI_Handlers[USB_DMACA_CH1])();
+    }
+    else
+    {
+        /* do something */
+    }
+ #endif                                /* USB_CFG_DMA == USB_CFG_ENABLE */
+}
+
+ #if USB_CFG_DMA == USB_CFG_ENABLE
 
 /*******************************************************************************
  * Exported global variables (to be accessed by other files)
@@ -99,50 +149,6 @@ bool r_usb_dmaca_channel_valid_check (uint8_t channel)
     return ret;
 }
 
-/************************************************************************************
- * Outline      : Interrupt DMAC0I handler
- * Function Name: r_usb_dmaca_intDMAC0I_isr
- * Description  : Types of interrupt requests from DMACA channel 0.
- *                If the pointer to function is 'FIT_NO_FUNC' or 'NULL',
- *                write a program under "do something" in this
- *                r_usb_dmaca_intDMAC0I_isr() function.
- * Arguments    : None
- * Return Value : None
- ************************************************************************************/
-static void r_usb_dmaca_intDMAC0I_isr (void)
-{
-    if (((uint32_t) NULL != (uint32_t) p_DMACI_Handlers[USB_DMACA_CH0]))
-    {
-        ((DMACI_Callback) p_DMACI_Handlers[USB_DMACA_CH0])();
-    }
-    else
-    {
-        /* do something */
-    }
-}
-
-/************************************************************************************
- * Outline      : Interrupt DMAC1I handler
- * Function Name: r_usb_dmaca_intDMAC1I_isr
- * Description  : Types of interrupt requests from DMACA channel1.
- *                If the pointer to function is 'FIT_NO_FUNC' or 'NULL',
- *                write a program under "do something" in this
- *                r_usb_dmaca_intDMAC1I_isr() function.
- * Arguments    : None
- * Return Value : None
- ************************************************************************************/
-static void r_usb_dmaca_intDMAC1I_isr (void)
-{
-    if (((uint32_t) NULL != (uint32_t) p_DMACI_Handlers[USB_DMACA_CH1]))
-    {
-        ((DMACI_Callback) p_DMACI_Handlers[USB_DMACA_CH1])();
-    }
-    else
-    {
-        /* do something */
-    }
-}
-
 /*******************************************************************************
  * Function Name: r_usb_dmaca_int_disable_set
  * Description  : Disables DMACmI interrupt. (m = 0 to 3, or 74)
@@ -158,36 +164,33 @@ usb_dmaca_return_t r_usb_dmaca_int_disable_set (uint8_t channel)
     /* Clear the DMACmI interrupt Enable bit. */
     /* Clear the DMACmI priority level. */
 
-    /* e_r_drv_intc_priority_t *pri; */
-    uint8_t * pri;
-
     switch (channel)
     {
         case USB_DMACA_CH0:
         {
- #if USB_CFG_USE_USBIP == USB_CFG_IP0
+  #if USB_CFG_USE_USBIP == USB_CFG_IP0
             R_BSP_IrqDisable(VECTOR_NUMBER_USB_FDMA0);
 
 /* R_INTC_SetPriority(INTC_ID_USB_USBFDMA00, 0); */
- #else
+  #else
             R_BSP_IrqDisable(VECTOR_NUMBER_USB_FDMA1);
 
 /* R_INTC_SetPriority(INTC_ID_USB_USBFDMA10, 0); */
- #endif
+  #endif
             break;
         }
 
         case USB_DMACA_CH1:
         {
- #if USB_CFG_USE_USBIP == USB_CFG_IP0
+  #if USB_CFG_USE_USBIP == USB_CFG_IP0
             R_BSP_IrqDisable(VECTOR_NUMBER_USB_FDMA0);
 
 /* R_INTC_SetPriority(INTC_ID_USB_USBFDMA01, 0); */
- #else
+  #else
             R_BSP_IrqDisable(VECTOR_NUMBER_USB_FDMA1);
 
             /* R_INTC_SetPriority(INTC_ID_USB_USBFDMA11, 0); */
- #endif
+  #endif
             break;
         }
 
@@ -218,25 +221,26 @@ usb_dmaca_return_t r_usb_dmaca_int_enable_set (uint8_t channel, uint8_t priority
 {
     /* Set the DMACmI priority level. */
     /* Set the DMACmI interrupt Enable bit. */
+
+    FSP_PARAMETER_NOT_USED(priority);
+
     switch (channel)
     {
         case USB_DMACA_CH0:
         {
- #if USB_CFG_USE_USBIP == USB_CFG_IP0
-            R_BSP_IrqCfgEnable(VECTOR_NUMBER_USB_FDMA0, 1, NULL);
- #else
-            R_BSP_IrqCfgEnable(VECTOR_NUMBER_USB_FDMA1, 1, NULL);
- #endif
+  #if USB_CFG_USE_USBIP == USB_CFG_IP0
+  #else
+            R_BSP_IrqCfgEnable(VECTOR_NUMBER_USB_FDMA0, 12, NULL);
+  #endif
             break;
         }
 
         case USB_DMACA_CH1:
         {
- #if USB_CFG_USE_USBIP == USB_CFG_IP0
-            R_BSP_IrqCfgEnable(VECTOR_NUMBER_USB_FDMA0, 1, NULL);
- #else
-            R_BSP_IrqCfgEnable(VECTOR_NUMBER_USB_FDMA1, 1, NULL);
- #endif
+  #if USB_CFG_USE_USBIP == USB_CFG_IP0
+  #else
+            R_BSP_IrqCfgEnable(VECTOR_NUMBER_USB_FDMA1, 12, NULL);
+  #endif
             break;
         }
 
@@ -251,40 +255,6 @@ usb_dmaca_return_t r_usb_dmaca_int_enable_set (uint8_t channel, uint8_t priority
     return USB_DMACA_SUCCESS;
 }
 
-/*******************************************************************************
- * Function Name: r_intc_dummy_read_enable
- * Description  : Dummy Read the enable clear of the ID specified by the int_id
- * Arguments    : uint16_t int_id   : Interrupt ID
- * Return Value : GICD_ISENABLERn dummy read value
- *******************************************************************************/
-int32_t r_intc_dummy_read_enable (uint16_t int_id)
-{
- #if 0
-    uint32_t            icdisen;
-    uint32_t            mask;
-    volatile uint32_t * addr;
-
-    /* ==== Argument check ==== */
-    if (int_id >= INTC_GIC_ID_TOTAL)
-    {
-        return INTC_ERR_INVALID;       /* Argument error */
-    }
-
-    /* GICD_ISENABLERn has 32 sources in the 32 bits        */
-    /* The n can be calculated by int_id / 32               */
-    /* The bit field width is 1 bit                         */
-    /* The target bit can be calclated by (int_id % 32) * 1 */
-    /* GICD_ICENABLERn does not effect on writing "0"       */
-    /* The bits except for the target write "0"             */
-    addr     = (volatile uint32_t *) &INTC.GICD_ISENABLER0;
-    icdisen  = *(addr + (int_id / 32)); /* Read GICD_ISENABLERn   */
-    icdisen  = icdisen >> (int_id % 32);
-    icdisen &= 0x1;
-
-    return (int32_t) icdisen;
  #endif
-}
-
-#endif
-
+#endif                                 /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 /* End of File */

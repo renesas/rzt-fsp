@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -64,8 +64,8 @@ uint8_t * g_p_usb_hcdc_config_table[USB_NUM_USBIP];
 uint8_t * g_p_usb_hcdc_interface_table[USB_NUM_USBIP];
 uint16_t  g_usb_hcdc_speed[USB_NUM_USBIP];
 uint16_t  g_usb_hcdc_devaddr[USB_NUM_USBIP];
-#if BSP_MCU_GROUP_RZT2M == 1
-uint16_t g_usb_hcdc_num_endpoint[USB_NUM_USBIP][USB_MAXDEVADDR]; /* Num Endpoints */
+#if BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1
+uint16_t g_usb_hcdc_num_endpoint[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1]; /* Num Endpoints */
 #endif /*BSP_MCU_GROUP_RZT2M == 1*/
 
 /******************************************************************************
@@ -680,7 +680,7 @@ void usb_hcdc_class_check (usb_utr_t * ptr, uint16_t ** table)
     g_usb_hcdc_devaddr[ptr->ip]           = *table[7];                /* Set device address */
 
     *table[3] = USB_OK;                                               /* Set class check done  */
-#if  BSP_MCU_GROUP_RZT2M == 1
+#if  BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1
     g_usb_hcdc_num_endpoint[ptr->ip][g_usb_hcdc_devaddr[ptr->ip]] =
         g_p_usb_hcdc_interface_table[ptr->ip][USB_IF_B_NUMENDPOINTS]; /* Num Endpoints */
 

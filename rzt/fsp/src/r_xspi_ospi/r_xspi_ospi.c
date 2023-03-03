@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -190,6 +190,9 @@ const spi_flash_api_t g_spi_flash_on_xspi_ospi =
  *
  * Implements @ref spi_flash_api_t::open.
  *
+ * Example:
+ * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_Open
+ *
  * @retval FSP_SUCCESS              Configuration was successful.
  * @retval FSP_ERR_ASSERTION        The parameter p_ctrl or p_cfg is NULL.
  * @retval FSP_ERR_ALREADY_OPEN     Driver has already been opened with the same p_ctrl.
@@ -326,6 +329,9 @@ fsp_err_t R_XSPI_OSPI_DirectRead (spi_flash_ctrl_t * p_ctrl, uint8_t * const p_d
  *
  * Implements @ref spi_flash_api_t::directTransfer.
  *
+ * Example:
+ * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_DirectTransfer
+ *
  * @retval FSP_SUCCESS                 The flash was programmed successfully.
  * @retval FSP_ERR_ASSERTION           A required pointer is NULL.
  * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
@@ -379,12 +385,16 @@ fsp_err_t R_XSPI_OSPI_XipExit (spi_flash_ctrl_t * p_ctrl)
  *
  * Implements @ref spi_flash_api_t::write.
  *
+ * Example:
+ * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_Write
+ *
  * @retval FSP_SUCCESS                 The flash was programmed successfully.
  * @retval FSP_ERR_ASSERTION           p_instance_ctrl, p_dest or p_src is NULL, or byte_count crosses a page boundary.
  * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
  * @retval FSP_ERR_DEVICE_BUSY         Another Write/Erase transaction is in progress.
  *
  * @note In this API, data can be written up to 64 bytes at a time.
+ * @note In 8D-8D-8D(OPI) mode, written data must be even bytes in size.
  **********************************************************************************************************************/
 fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
                              uint8_t const * const p_src,
@@ -399,7 +409,12 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     FSP_ERROR_RETURN(XSPI_OSPI_PRV_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     FSP_ASSERT(XSPI_OSPI_PRV_MAX_COMBINE_SIZE >= byte_count);
     FSP_ASSERT(0 != byte_count);
+    FSP_ASSERT((0 == byte_count % XSPI_OSPI_PRV_HALF_WORD_ACCESS_SIZE) ||
+               (XSPI_OSPI_BYTE_ORDER_1032 != ((xspi_ospi_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend)->byte_order) ||
+               (SPI_FLASH_PROTOCOL_8D_8D_8D != p_instance_ctrl->spi_protocol));
 #endif
+    xspi_ospi_extended_cfg_t * p_cfg_extend = (xspi_ospi_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+
     FSP_ERROR_RETURN(false == r_xspi_ospi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit),
                      FSP_ERR_DEVICE_BUSY);
 
@@ -412,11 +427,25 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     {
         uint32_t * p_word_aligned_dest = (uint32_t *) p_dest;
         uint32_t * p_word_aligned_src  = (uint32_t *) p_src;
-        for (i = 0; i < byte_count / XSPI_OSPI_PRV_WORD_ACCESS_SIZE; i++)
+        if ((XSPI_OSPI_BYTE_ORDER_1032 == p_cfg_extend->byte_order) &&
+            (SPI_FLASH_PROTOCOL_8D_8D_8D == p_instance_ctrl->spi_protocol))
         {
-            *p_word_aligned_dest = *p_word_aligned_src;
-            p_word_aligned_dest++;
-            p_word_aligned_src++;
+            for (i = 0; i < byte_count / XSPI_OSPI_PRV_WORD_ACCESS_SIZE; i++)
+            {
+                /* Apply __REV16 to convert the data to match the OctaFlash byte order. */
+                *p_word_aligned_dest = __REV16(*p_word_aligned_src);
+                p_word_aligned_dest++;
+                p_word_aligned_src++;
+            }
+        }
+        else
+        {
+            for (i = 0; i < byte_count / XSPI_OSPI_PRV_WORD_ACCESS_SIZE; i++)
+            {
+                *p_word_aligned_dest = *p_word_aligned_src;
+                p_word_aligned_dest++;
+                p_word_aligned_src++;
+            }
         }
     }
     /* Half Word access */
@@ -424,11 +453,25 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     {
         uint16_t * p_half_word_aligned_dest = (uint16_t *) p_dest;
         uint16_t * p_half_word_aligned_src  = (uint16_t *) p_src;
-        for (i = 0; i < byte_count / XSPI_OSPI_PRV_HALF_WORD_ACCESS_SIZE; i++)
+        if ((XSPI_OSPI_BYTE_ORDER_1032 == p_cfg_extend->byte_order) &&
+            (SPI_FLASH_PROTOCOL_8D_8D_8D == p_instance_ctrl->spi_protocol))
         {
-            *p_half_word_aligned_dest = *p_half_word_aligned_src;
-            p_half_word_aligned_dest++;
-            p_half_word_aligned_src++;
+            for (i = 0; i < byte_count / XSPI_OSPI_PRV_HALF_WORD_ACCESS_SIZE; i++)
+            {
+                /* Apply __REV16 to convert the data to match the OctaFlash byte order. */
+                *p_half_word_aligned_dest = (uint16_t) __REV16((uint32_t) (*p_half_word_aligned_src & UINT16_MAX));
+                p_half_word_aligned_dest++;
+                p_half_word_aligned_src++;
+            }
+        }
+        else
+        {
+            for (i = 0; i < byte_count / XSPI_OSPI_PRV_HALF_WORD_ACCESS_SIZE; i++)
+            {
+                *p_half_word_aligned_dest = *p_half_word_aligned_src;
+                p_half_word_aligned_dest++;
+                p_half_word_aligned_src++;
+            }
         }
     }
     /* Byte access */
@@ -449,6 +492,9 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
         /* Push the pending data. */
         p_instance_ctrl->p_reg->BMCTL1_b.MWRPUSH = 1;
     }
+
+    /* Wait until memory access starts in write API. */
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->COMSTT_b.MEMACC, 1);
 
     return FSP_SUCCESS;
 }
@@ -523,6 +569,9 @@ fsp_err_t R_XSPI_OSPI_Erase (spi_flash_ctrl_t * p_ctrl, uint8_t * const p_device
  *
  * Implements @ref spi_flash_api_t::statusGet.
  *
+ * Example:
+ * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_StatusGet
+ *
  * @retval FSP_SUCCESS                 The write status is in p_status.
  * @retval FSP_ERR_ASSERTION           p_instance_ctrl or p_status is NULL.
  * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
@@ -537,23 +586,22 @@ fsp_err_t R_XSPI_OSPI_StatusGet (spi_flash_ctrl_t * p_ctrl, spi_flash_status_t *
     FSP_ERROR_RETURN(XSPI_OSPI_PRV_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    /* If R_XSPI_OSPI_StatusGet is called immediately after R_XSPI_OSPI_Write is called, the result could be WIP = 0.
-     *
-     * This occurs because the Read Status Register instruction command is issued
-     * before the Program command due to the xSPI write buffer operation.
-     * In this case, OSPI has not started the write operation, so WIP = 0.
-     *
-     * This is unintended behavior because R_XSPI_OSPI_StatusGet determines the end of the OSPI write operation.
-     * Therefore, it is necessary to judge as "Write In Progress" when data is in the write buffer. */
     uint32_t comstt  = p_instance_ctrl->p_reg->COMSTT;
     bool     memacc  = (bool) ((comstt >> XSPI_OSPI_PRV_COMSTT_MEMACC_OFFSET) & XSPI_OSPI_PRV_COMSTT_MEMACC_VALUE_MASK);
     bool     wrbufne =
         (bool) ((comstt >> XSPI_OSPI_PRV_COMSTT_WRBUFNE_OFFSET) & XSPI_OSPI_PRV_COMSTT_WRBUFNE_VALUE_MASK);
 
-    /* Read device status. */
-    bool write_in_progress = r_xspi_ospi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit);
-
-    p_status->write_in_progress = (bool) (wrbufne | memacc | write_in_progress);
+    if ((true == memacc) || (true == wrbufne))
+    {
+        /* If the xSPI is accessing memory or data is in the write buffer,
+         * it is judged a "write in progress" without access to device. */
+        p_status->write_in_progress = (bool) (wrbufne | memacc);
+    }
+    else
+    {
+        /* Read device status. */
+        p_status->write_in_progress = r_xspi_ospi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit);
+    }
 
     return FSP_SUCCESS;
 }
@@ -577,6 +625,9 @@ fsp_err_t R_XSPI_OSPI_BankSet (spi_flash_ctrl_t * p_ctrl, uint32_t bank)
  * Sets the SPI protocol.
  *
  * Implements @ref spi_flash_api_t::spiProtocolSet.
+ *
+ * Example:
+ * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_SpiProtocolSet
  *
  * @retval FSP_SUCCESS                SPI protocol updated on MPU peripheral.
  * @retval FSP_ERR_ASSERTION          A required pointer is NULL.
@@ -629,7 +680,7 @@ fsp_err_t R_XSPI_OSPI_Close (spi_flash_ctrl_t * p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Get the driver version based on compile time macros.
+ * DEPRECATED Get the driver version based on compile time macros.
  *
  * Implements @ref spi_flash_api_t::versionGet.
  *
@@ -821,10 +872,22 @@ static fsp_err_t r_xspi_ospi_automatic_calibration_seq (xspi_ospi_instance_ctrl_
                 XSPI_OSPI_PRV_CCCTL2_CARDCMD_OFFSET);
         p_instance_ctrl->p_reg->CSb[chip_select].CCCTL3 =
             (uint32_t) p_cfg_extend->p_autocalibration_preamble_pattern_addr;
-        p_instance_ctrl->p_reg->CSb[chip_select].CCCTL4 = XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_0;
-        p_instance_ctrl->p_reg->CSb[chip_select].CCCTL5 = XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_1;
-        p_instance_ctrl->p_reg->CSb[chip_select].CCCTL6 = XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_2;
-        p_instance_ctrl->p_reg->CSb[chip_select].CCCTL7 = XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_3;
+
+        if (XSPI_OSPI_BYTE_ORDER_1032 == p_cfg_extend->byte_order)
+        {
+            /* Apply __REV16 to match the preamble pattern with the data to be read in the auto calibration sequence. */
+            p_instance_ctrl->p_reg->CSb[chip_select].CCCTL4 = __REV16(XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_0);
+            p_instance_ctrl->p_reg->CSb[chip_select].CCCTL5 = __REV16(XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_1);
+            p_instance_ctrl->p_reg->CSb[chip_select].CCCTL6 = __REV16(XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_2);
+            p_instance_ctrl->p_reg->CSb[chip_select].CCCTL7 = __REV16(XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_3);
+        }
+        else
+        {
+            p_instance_ctrl->p_reg->CSb[chip_select].CCCTL4 = XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_0;
+            p_instance_ctrl->p_reg->CSb[chip_select].CCCTL5 = XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_1;
+            p_instance_ctrl->p_reg->CSb[chip_select].CCCTL6 = XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_2;
+            p_instance_ctrl->p_reg->CSb[chip_select].CCCTL7 = XSPI_OSPI_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_3;
+        }
 
         p_instance_ctrl->p_reg->CSb[chip_select].CCCTL0 = (1 << XSPI_OSPI_PRV_CCCTL0_CANOWR_OFFSET) |
                                                           (0x1F << XSPI_OSPI_PRV_CCCTL0_CAITV_OFFSET) |
@@ -876,6 +939,7 @@ static void r_xspi_ospi_direct_transfer (xspi_ospi_instance_ctrl_t         * p_i
                                          spi_flash_direct_transfer_t * const p_transfer,
                                          spi_flash_direct_transfer_dir_t     direction)
 {
+    xspi_ospi_extended_cfg_t * p_cfg_extend = (xspi_ospi_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
     p_instance_ctrl->p_reg->CDCTL0_b.TRNUM = 0;
 
     /* Direct Read/Write settings
@@ -905,7 +969,17 @@ static void r_xspi_ospi_direct_transfer (xspi_ospi_instance_ctrl_t         * p_i
 
     if (SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE == direction)
     {
-        p_instance_ctrl->p_reg->BUF[0].CDD0 = p_transfer->data;
+        if ((1U < p_transfer->data_length) &&
+            (XSPI_OSPI_BYTE_ORDER_1032 == p_cfg_extend->byte_order) &&
+            (SPI_FLASH_PROTOCOL_8D_8D_8D == p_instance_ctrl->spi_protocol))
+        {
+            /* Apply __REV16 to convert the data to match the OctaFlash byte order. */
+            p_instance_ctrl->p_reg->BUF[0].CDD0 = __REV16(p_transfer->data);
+        }
+        else
+        {
+            p_instance_ctrl->p_reg->BUF[0].CDD0 = p_transfer->data;
+        }
     }
 
     p_instance_ctrl->p_reg->CDCTL0_b.TRREQ = 1;
@@ -913,7 +987,17 @@ static void r_xspi_ospi_direct_transfer (xspi_ospi_instance_ctrl_t         * p_i
 
     if (SPI_FLASH_DIRECT_TRANSFER_DIR_READ == direction)
     {
-        p_transfer->data = p_instance_ctrl->p_reg->BUF[0].CDD0;
+        if ((1U < p_transfer->data_length) &&
+            (XSPI_OSPI_BYTE_ORDER_1032 == p_cfg_extend->byte_order) &&
+            (SPI_FLASH_PROTOCOL_8D_8D_8D == p_instance_ctrl->spi_protocol))
+        {
+            /* Apply __REV16 to convert the data to match the OctaFlash byte order. */
+            p_transfer->data = __REV16(p_instance_ctrl->p_reg->BUF[0].CDD0);
+        }
+        else
+        {
+            p_transfer->data = p_instance_ctrl->p_reg->BUF[0].CDD0;
+        }
     }
 
     p_instance_ctrl->p_reg->INTC = 1 << XSPI_OSPI_PRV_INTC_CMDCMPC_OFFSET;

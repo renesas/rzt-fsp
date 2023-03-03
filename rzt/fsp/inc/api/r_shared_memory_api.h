@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -44,8 +44,8 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  ***********************************************************************************************************************/
-#define SHARED_MEMORY_API_VERSION_MAJOR    (1U)
-#define SHARED_MEMORY_API_VERSION_MINOR    (0U)
+#define SHARED_MEMORY_API_VERSION_MAJOR    (1U) // DEPRECATED
+#define SHARED_MEMORY_API_VERSION_MINOR    (2U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -138,6 +138,21 @@ typedef struct st_shared_memory_api
      * @param[out] p_status  Pointer to store current status.
      */
     fsp_err_t (* statusGet)(shared_memory_ctrl_t * const p_ctrl, shared_memory_status_t * p_status);
+
+    /**
+     * Specify callback function and optional context pointer and working memory pointer.
+     * @par Implemented as
+     * - @ref R_SHARED_MEMORY_CallbackSet()
+     *
+     * @param[in]   p_ctrl                   Pointer to the SPI control block.
+     * @param[in]   p_callback               Callback function
+     * @param[in]   p_context                Pointer to send to callback function
+     * @param[in]   p_working_memory         Pointer to volatile memory where callback structure can be allocated.
+     *                                       Callback arguments allocated here are only valid during the callback.
+     */
+    fsp_err_t (* callbackSet)(shared_memory_ctrl_t * const p_api_ctrl,
+                              void (* p_callback)(shared_memory_callback_args_t *), void const * const p_context,
+                              shared_memory_callback_args_t * const p_callback_memory);
 
     /** Closes the driver and releases the device.
      * @par Implemented as

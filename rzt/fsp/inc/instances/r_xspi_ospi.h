@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,8 +40,8 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define XSPI_OSPI_CODE_VERSION_MAJOR    (1U)
-#define XSPI_OSPI_CODE_VERSION_MINOR    (1U)
+#define XSPI_OSPI_CODE_VERSION_MAJOR    (1U) // DEPRECATED
+#define XSPI_OSPI_CODE_VERSION_MINOR    (2U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -116,6 +116,13 @@ typedef enum e_xspi_ospi_prefetch_function
     XSPI_OSPI_PREFETCH_FUNCTION_ENABLE  = 0x01, ///< Prefetch function enable
 } xspi_ospi_prefetch_function_t;
 
+/* 8D-8D-8D(OPI) byte order options */
+typedef enum e_xspi_ospi_byte_order
+{
+    XSPI_OSPI_BYTE_ORDER_0123,         ///< 8D-8D-8D(OPI) byte order byte 0, byte 1, byte 2, byte 3
+    XSPI_OSPI_BYTE_ORDER_1032          ///< 8D-8D-8D(OPI) byte order byte 1, byte 0, byte 3, byte 2
+} xspi_ospi_byte_order_t;
+
 /* This command set is used only with OPI mode set under ospi_extended_cfg_t. spi_flash_cfg_t holds commands for SPI mode. */
 typedef struct st_xspi_ospi_opi_command_set
 {
@@ -138,6 +145,7 @@ typedef struct st_xspi_ospi_extended_cfg
     uint8_t                           * p_autocalibration_preamble_pattern_addr; ///< OctaFlash memory address holding the preamble pattern
     uint8_t                             data_latch_delay_clocks;                 ///< Specify delay between OM_DQS and OM_DQS Strobe. Set to 0 to auto-callibrate. Typical value is 0x80.
     xspi_ospi_prefetch_function_t       prefetch_en;                             ///< Prefetch function settings
+    xspi_ospi_byte_order_t              byte_order;                              ///< Byte order on external bus. Only applicable in 8D-8D-8D(OPI) mode.
 } xspi_ospi_extended_cfg_t;
 
 /** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref spi_flash_api_t::open is called */

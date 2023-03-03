@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -48,8 +48,8 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  ***********************************************************************************************************************/
-#define ICU_INTER_CPU_IRQ_API_VERSION_MAJOR    (1U)
-#define ICU_INTER_CPU_IRQ_API_VERSION_MINOR    (1U)
+#define ICU_INTER_CPU_IRQ_API_VERSION_MAJOR    (1U) // DEPRECATED
+#define ICU_INTER_CPU_IRQ_API_VERSION_MINOR    (2U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -102,6 +102,21 @@ typedef struct st_icu_inter_cpu_irq_api
      * @param[in] p_ctrl     Control block set for this INTCPU interrupt.
      */
     fsp_err_t (* generate)(icu_inter_cpu_irq_ctrl_t * const p_ctrl);
+
+    /**
+     * Specify callback function and optional context pointer and working memory pointer.
+     * @par Implemented as
+     * - R_ICU_INTER_CPU_IRQ_CallbackSet()
+     *
+     * @param[in]   p_ctrl                   Pointer to the ICU_INTER_CPU_IRQ control block.
+     * @param[in]   p_callback               Callback function
+     * @param[in]   p_context                Pointer to send to callback function
+     * @param[in]   p_working_memory         Pointer to volatile memory where callback structure can be allocated.
+     *                                       Callback arguments allocated here are only valid during the callback.
+     */
+    fsp_err_t (* callbackSet)(icu_inter_cpu_irq_ctrl_t * const p_api_ctrl,
+                              void (* p_callback)(icu_inter_cpu_irq_callback_args_t *), void const * const p_context,
+                              icu_inter_cpu_irq_callback_args_t * const p_callback_memory);
 
     /** Closes the driver and releases the device.
      * @par Implemented as

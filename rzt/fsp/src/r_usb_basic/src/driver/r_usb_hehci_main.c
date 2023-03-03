@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -327,8 +327,11 @@ uint32_t usb_hstd_ehci_port_reset (uint32_t portnum)
         }
 
 // r_usb_hstd_hci_wait_time(10);
-
+ #ifdef USB_CFG_HMSC_USE
+        R_BSP_SoftwareDelay(100, BSP_DELAY_UNITS_MILLISECONDS);
+ #else
         R_BSP_SoftwareDelay(10, BSP_DELAY_UNITS_MILLISECONDS);
+ #endif
 
         return TRUE;
     }

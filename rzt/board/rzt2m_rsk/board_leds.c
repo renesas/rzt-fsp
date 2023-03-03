@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -50,10 +50,13 @@
 /** Array of LED IOPORT pins. */
 static const uint16_t g_bsp_prv_leds[] =
 {
+ #if (0 == BSP_CFG_CPU)
     (uint16_t) BSP_IO_PORT_19_PIN_6,   ///< RLED0
     (uint16_t) BSP_IO_PORT_19_PIN_4,   ///< RLED1
+ #elif (1 == BSP_CFG_CPU)
     (uint16_t) BSP_IO_PORT_20_PIN_0,   ///< RLED2
     (uint16_t) BSP_IO_PORT_23_PIN_4,   ///< RLED3
+ #endif
 };
 
 /***********************************************************************************************************************

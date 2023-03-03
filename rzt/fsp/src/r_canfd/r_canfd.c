@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -64,6 +64,7 @@ static bool r_canfd_bit_timing_parameter_check(can_bit_timing_cfg_t * p_bit_timi
 #endif
 
 static void    r_canfd_mb_read(uint32_t buffer, can_frame_t * const frame);
+static void    r_canfd_call_callback(canfd_instance_ctrl_t * p_ctrl, can_callback_args_t * p_args);
 static void    r_canfd_mode_transition(canfd_instance_ctrl_t * p_ctrl, can_operation_mode_t operation_mode);
 static void    r_canfd_mode_ctr_set(volatile uint32_t * p_ctr_reg, can_operation_mode_t operation_mode);
 static uint8_t r_canfd_bytes_to_dlc(uint8_t bytes);
@@ -109,6 +110,9 @@ const can_api_t g_canfd_on_canfd =
 
 /***************************************************************************************************************//**
  * Open and configure the CANFD channel for operation.
+ *
+ * Example:
+ * @snippet r_canfd_example.c R_CANFD_Open
  *
  * @retval FSP_SUCCESS                            Channel opened successfully.
  * @retval FSP_ERR_ALREADY_OPEN                   Driver already open.
@@ -398,6 +402,9 @@ fsp_err_t R_CANFD_Close (can_ctrl_t * const p_api_ctrl)
 /***************************************************************************************************************//**
  * Write data to the CANFD channel.
  *
+ * Example:
+ * @snippet r_canfd_example.c R_CANFD_Write
+ *
  * @retval FSP_SUCCESS                      Operation succeeded.
  * @retval FSP_ERR_NOT_OPEN                 Control block not open.
  * @retval FSP_ERR_CAN_TRANSMIT_NOT_READY   Transmit in progress, cannot write data at this time.
@@ -507,6 +514,9 @@ fsp_err_t R_CANFD_Read (can_ctrl_t * const p_api_ctrl, uint32_t buffer, can_fram
 
 /***************************************************************************************************************//**
  * Switch to a different channel, global or test mode.
+ *
+ * Example:
+ * @snippet r_canfd_example.c R_CANFD_ModeTransition
  *
  * @retval FSP_SUCCESS                      Operation succeeded.
  * @retval FSP_ERR_NOT_OPEN                 Control block not open.
@@ -640,19 +650,29 @@ fsp_err_t R_CANFD_InfoGet (can_ctrl_t * const p_api_ctrl, can_info_t * const p_i
  * Updates the user callback with the option to provide memory for the callback argument structure.
  * Implements @ref can_api_t::callbackSet.
  *
- * @retval  FSP_ERR_UNSUPPORTED          API not supported.
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
 fsp_err_t R_CANFD_CallbackSet (can_ctrl_t * const          p_api_ctrl,
                                void (                    * p_callback)(can_callback_args_t *),
                                void const * const          p_context,
                                can_callback_args_t * const p_callback_memory)
 {
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
-    FSP_PARAMETER_NOT_USED(p_callback);
-    FSP_PARAMETER_NOT_USED(p_context);
-    FSP_PARAMETER_NOT_USED(p_callback_memory);
+    canfd_instance_ctrl_t * p_ctrl = (canfd_instance_ctrl_t *) p_api_ctrl;
 
-    return FSP_ERR_UNSUPPORTED;
+#if CANFD_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(CANFD_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_ctrl->p_callback        = p_callback;
+    p_ctrl->p_context         = p_context;
+    p_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**
@@ -742,6 +762,41 @@ static void r_canfd_mb_read (uint32_t buffer, can_frame_t * const frame)
 }
 
 /*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_ctrl     Pointer to CAN instance control block
+ * @param[in]     p_args     Pointer to arguments on stack
+ **********************************************************************************************************************/
+static void r_canfd_call_callback (canfd_instance_ctrl_t * p_ctrl, can_callback_args_t * p_args)
+{
+    can_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available. */
+    can_callback_args_t * p_args_memory = p_ctrl->p_callback_memory;
+    if (NULL == p_args_memory)
+    {
+        /* Use provided args struct on stack */
+        p_args_memory = p_args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args_memory;
+
+        /* Copy the stacked args to callback memory */
+        *p_args_memory = *p_args;
+    }
+
+    p_ctrl->p_callback(p_args_memory);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args;
+    }
+}
+
+/*******************************************************************************************************************//**
  * Error ISR.
  *
  * Saves context if RTOS is used, clears interrupts, calls common error function, and restores context if RTOS is used.
@@ -815,9 +870,7 @@ void canfd_error_isr (void)
 
     /* Set remaining arguments and call callback */
     args.p_frame = NULL;
-
-    /* Call the callback. */
-    p_callback_ctrl->p_callback(&args);
+    r_canfd_call_callback(p_callback_ctrl, &args);
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE
@@ -858,9 +911,7 @@ void canfd_rx_fifo_isr (void)
 
             /* Set the remaining callback arguments */
             args.p_context = gp_ctrl[args.channel]->p_context;
-
-            /* Call the callback. */
-            gp_ctrl[args.channel]->p_callback(&args);
+            r_canfd_call_callback(gp_ctrl[args.channel], &args);
         }
 
         /* Clear RX FIFO Interrupt Flag */
@@ -932,9 +983,7 @@ void canfd_channel_tx_isr (void)
 
         /* Set the callback arguments */
         args.buffer = txmb;
-
-        /* Call the callback. */
-        p_ctrl->p_callback(&args);
+        r_canfd_call_callback(p_ctrl, &args);
 
         /* Check for more interrupts on this channel */
         cfdgtintsts = *((uint8_t *) (&R_CANFD->CFDGTINTSTS0) + channel);

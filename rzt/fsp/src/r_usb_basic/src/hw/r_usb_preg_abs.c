@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -413,10 +413,10 @@ void usb_pstd_test_mode (usb_utr_t * p_utr)
         /* Continue */
         case USB_TEST_PACKET:
         {
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
             hw_usb_set_utst(p_utr, 0);
             hw_usb_set_utst(p_utr, (uint16_t) (g_usb_pstd_test_mode_select >> 8));
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
             break;
         }
 
@@ -496,16 +496,16 @@ void usb_pstd_set_stall_pipe0 (usb_utr_t * p_utr)
 uint8_t * usb_pstd_write_fifo (uint16_t count, uint16_t pipemode, uint8_t * write_p, usb_utr_t * p_utr)
 {
     uint16_t even;
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     uint16_t odd;
     uint16_t hs_flag = 1;
- #else                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
+ #else                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
     uint16_t hs_flag = 0;
  #endif /* defined(BSP_MCU_GROUP_RA6M3) */
 
     if ((USB_CFG_IP0 == p_utr->ip) || (0 == hs_flag))
     {
- #if defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
         if (0 == hs_flag)
         {
             /* WAIT_LOOP */
@@ -674,13 +674,13 @@ uint8_t * usb_pstd_read_fifo (uint16_t count, uint16_t pipemode, uint8_t * read_
  #if USB_CFG_ENDIAN == USB_CFG_BIG
     uint16_t i;
  #endif
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     uint16_t odd;
     uint16_t hs_flag = 1;
- #else                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
+ #else                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
     uint16_t hs_flag = 0;
- #endif /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
- #if defined(BSP_MCU_GROUP_RZT2M)
+ #endif /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     if (0 == hs_flag)
     {
         /* WAIT_LOOP */

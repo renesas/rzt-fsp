@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -54,7 +54,11 @@
 /* Stabilization time when BGR is enabled */
 #define ADC_BGR_STABILIZATION_DELAY_US          (150U)
 
-#define ADC_PRV_ADCSR_ADST_TRGE_MASK            (R_ADC121_ADCSR_ADST_Msk | R_ADC121_ADCSR_TRGE_Msk)
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+ #define ADC_PRV_ADCSR_ADST_TRGE_MASK           (R_ADC121_ADCSR_ADST_Msk | R_ADC121_ADCSR_TRGE_Msk)
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+ #define ADC_PRV_ADCSR_ADST_TRGE_MASK           (R_ADC120_ADCSR_ADST_Msk | R_ADC120_ADCSR_TRGE_Msk)
+#endif
 #define ADC_PRV_ADCSR_CLEAR_ADST_TRGE           (~ADC_PRV_ADCSR_ADST_TRGE_MASK)
 
 /***********************************************************************************************************************
@@ -204,7 +208,11 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
         base_address = (uint32_t) R_ADC121;
     }
 
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
     p_instance_ctrl->p_reg = (R_ADC121_Type *) base_address;
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+    p_instance_ctrl->p_reg = (R_ADC120_Type *) base_address;
+#endif
 
     /* Initialize the hardware based on the configuration. */
     r_adc_open_sub(p_instance_ctrl, p_cfg);
@@ -613,7 +621,7 @@ fsp_err_t R_ADC_Close (adc_ctrl_t * p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Retrieve the API version number.
+ * DEPRECATED Retrieve the API version number.
  *
  * @retval FSP_SUCCESS                 Version stored in the provided p_version.
  * @retval FSP_ERR_ASSERTION           An input argument is invalid.
@@ -798,7 +806,13 @@ static fsp_err_t r_adc_scan_cfg_check_sample_hold (adc_instance_ctrl_t * const  
     {
         /* Sample and Hold channels can only be 0, 1, 2(unit 0 only) and must have at least minimum state count specified (reference
          * section 40.2.10 "A/D Sample and Hold Circuit Control Register (ADSHCR)" in the RZT2M manual R01UH0916EJ0063. */
+  #if BSP_FEATURE_ADC_HAS_SAMPLE_HOLD_UNIT_NUM == 1
         FSP_ASSERT(0U == p_instance_ctrl->p_cfg->unit);
+  #elif BSP_FEATURE_ADC_HAS_SAMPLE_HOLD_UNIT_NUM == 2
+
+        /* Unit1 can also be set. */
+        FSP_PARAMETER_NOT_USED(p_instance_ctrl);
+  #endif
         FSP_ASSERT(p_channel_cfg->sample_hold_mask <= ADC_SAMPLE_HOLD_CHANNELS);
         FSP_ASSERT(p_channel_cfg->sample_hold_states >= ADC_SAMPLE_STATE_HOLD_COUNT_MIN);
     }
@@ -830,18 +844,32 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
      *   * The value to set in ADCSR to start a scan is stored in the control structure. ADCSR.ADST is set in
      *     R_ADC_ScanStart if software trigger mode is used.
      */
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
     uint32_t adcsr = (uint32_t) (p_cfg->mode << R_ADC121_ADCSR_ADCS_Pos);
     adcsr |= (uint32_t) (R_ADC121_ADCSR_GBADIE_Msk);
     adcsr |= (uint32_t) (R_ADC121_ADCSR_ADIE_Msk);
     adcsr |= ((uint32_t) p_cfg->trigger << R_ADC121_ADCSR_EXTRG_Pos);
-
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+    uint32_t adcsr = (uint32_t) (p_cfg->mode << R_ADC120_ADCSR_ADCS_Pos);
+    adcsr |= (uint32_t) (R_ADC120_ADCSR_GBADIE_Msk);
+    adcsr |= (uint32_t) (R_ADC120_ADCSR_ADIE_Msk);
+    adcsr |= ((uint32_t) p_cfg->trigger << R_ADC120_ADCSR_EXTRG_Pos);
+#endif
     if (ADC_DOUBLE_TRIGGER_DISABLED != p_cfg_extend->double_trigger_mode)
     {
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
         adcsr |= R_ADC121_ADCSR_TRGE_Msk | R_ADC121_ADCSR_DBLE_Msk;
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+        adcsr |= R_ADC120_ADCSR_TRGE_Msk | R_ADC120_ADCSR_DBLE_Msk;
+#endif
     }
     else if (ADC_TRIGGER_SOFTWARE == p_cfg->trigger)
     {
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
         adcsr |= R_ADC121_ADCSR_ADST_Msk;
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+        adcsr |= R_ADC120_ADCSR_ADST_Msk;
+#endif
     }
     else
     {
@@ -858,13 +886,24 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
      *   * Always disable self-diagnosis (unsupported in this module).
      */
     uint32_t adcer = 0U;
-#if BSP_FEATURE_ADC_HAS_ADCER_ADPRC
+
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+ #if BSP_FEATURE_ADC_HAS_ADCER_ADPRC
     adcer |= (uint32_t) p_cfg->resolution << R_ADC121_ADCER_ADPRC_Pos;
-#endif
-#if BSP_FEATURE_ADC_HAS_ADCER_ADRFMT
+ #endif
+ #if BSP_FEATURE_ADC_HAS_ADCER_ADRFMT
     adcer |= (uint32_t) p_cfg->alignment << R_ADC121_ADCER_ADRFMT_Pos;
-#endif
+ #endif
     adcer |= (uint32_t) p_cfg_extend->clearing << R_ADC121_ADCER_ACE_Pos;
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+ #if BSP_FEATURE_ADC_HAS_ADCER_ADPRC
+    adcer |= (uint32_t) p_cfg->resolution << R_ADC120_ADCER_ADPRC_Pos;
+ #endif
+ #if BSP_FEATURE_ADC_HAS_ADCER_ADRFMT
+    adcer |= (uint32_t) p_cfg->alignment << R_ADC120_ADCER_ADRFMT_Pos;
+ #endif
+    adcer |= (uint32_t) p_cfg_extend->clearing << R_ADC120_ADCER_ACE_Pos;
+#endif
 
     /* Determine the value for ADADC:
      *   * The addition/averaging modes are set as configured in ADADC.ADC and ADADC.AVEE.
@@ -882,19 +921,31 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
 
     /* Set the predetermined values for ADCSR, ADSTRGR, ADGCTRGR, ADCER, and ADADC without setting ADCSR.ADST or ADCSR.TRGE.
      * ADCSR.ADST or ADCSR.TRGE are set as configured in R_ADC_ScanStart. */
-    p_instance_ctrl->p_reg->ADCSR   = (uint16_t) (adcsr & ADC_PRV_ADCSR_CLEAR_ADST_TRGE);
+    p_instance_ctrl->p_reg->ADCSR = (uint16_t) (adcsr & ADC_PRV_ADCSR_CLEAR_ADST_TRGE);
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
     p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) ((p_cfg_extend->adc_start_trigger_a << R_ADC121_ADSTRGR_TRSA_Pos) |
                                                   (p_cfg_extend->adc_start_trigger_b << R_ADC121_ADSTRGR_TRSB_Pos));
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+    p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) ((p_cfg_extend->adc_start_trigger_a << R_ADC120_ADSTRGR_TRSA_Pos) |
+                                                  (p_cfg_extend->adc_start_trigger_b << R_ADC120_ADSTRGR_TRSB_Pos));
+#endif
     p_instance_ctrl->p_reg->ADCER   = (uint16_t) adcer;
     p_instance_ctrl->p_reg->ADADC   = (uint8_t) adadc;
     p_instance_ctrl->p_reg->ADELCCR = (uint8_t) p_cfg_extend->adc_elc_ctrl;
 
     if (true == p_cfg_extend->adc_start_trigger_c_enabled)
     {
+#if (BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1)
         p_instance_ctrl->p_reg->ADGCTRGR =
             (uint8_t) ((p_cfg_extend->adc_start_trigger_c << R_ADC121_ADGCTRGR_TRSC_Pos) |
                        (uint8_t) (R_ADC121_ADGCTRGR_GCADIE_Msk |
                                   R_ADC121_ADGCTRGR_GRCE_Msk));
+#elif (BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2)
+        p_instance_ctrl->p_reg->ADGCTRGR =
+            (uint8_t) ((p_cfg_extend->adc_start_trigger_c << R_ADC120_ADGCTRGR_TRSC_Pos) |
+                       (uint8_t) (R_ADC120_ADGCTRGR_GCADIE_Msk |
+                                  R_ADC120_ADGCTRGR_GRCE_Msk));
+#endif
     }
 }
 
@@ -1005,8 +1056,11 @@ static void r_adc_scan_cfg (adc_instance_ctrl_t * const p_instance_ctrl, adc_cha
     if (ADC_DOUBLE_TRIGGER_DISABLED != p_cfg_extend->double_trigger_mode)
     {
         uint32_t adcsr = p_instance_ctrl->p_reg->ADCSR;
+#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
         adcsr = (adcsr & ~R_ADC121_ADCSR_DBLANS_Msk) + (31U - __CLZ(p_channel_cfg->scan_mask));
-
+#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+        adcsr = (adcsr & ~R_ADC120_ADCSR_DBLANS_Msk) + (31U - __CLZ(p_channel_cfg->scan_mask));
+#endif
         p_instance_ctrl->p_reg->ADCSR      = (uint16_t) adcsr;
         p_instance_ctrl->scan_start_adcsr |= (uint16_t) adcsr;
     }

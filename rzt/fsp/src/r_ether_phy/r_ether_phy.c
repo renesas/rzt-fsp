@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -36,128 +36,131 @@
  #define ETHER_PHY_ERROR_RETURN(a, err)    FSP_ERROR_RETURN((a), (err))
 #endif
 
-#define ETHERC_REG_SIZE                               (0x400UL)
+#define ETHERC_REG_SIZE                                (0x400UL)
 
 /** "RPHY" in ASCII.  Used to determine if the control block is open. */
-#define ETHER_PHY_OPEN                                (0x52504859U)
+#define ETHER_PHY_OPEN                                 (0x52504859U)
 
 /* Media Independent Interface */
-#define ETHER_PHY_MII_ST                              (1)
-#define ETHER_PHY_MII_READ                            (2)
-#define ETHER_PHY_MII_WRITE                           (1)
+#define ETHER_PHY_MII_ST                               (1)
+#define ETHER_PHY_MII_READ                             (2)
+#define ETHER_PHY_MII_WRITE                            (1)
 
 /* Standard PHY Registers */
-#define ETHER_PHY_REG_CONTROL                         (0)
-#define ETHER_PHY_REG_STATUS                          (1)
-#define ETHER_PHY_REG_IDENTIFIER1                     (2)
-#define ETHER_PHY_REG_IDENTIFIER2                     (3)
-#define ETHER_PHY_REG_AN_ADVERTISEMENT                (4)
-#define ETHER_PHY_REG_AN_LINK_PARTNER                 (5)
-#define ETHER_PHY_REG_AN_EXPANSION                    (6)
-#define ETHER_PHY_REG_1000BT_CONTROL                  (9)
-#define ETHER_PHY_REG_1000BT_STATUS                   (10)
+#define ETHER_PHY_REG_CONTROL                          (0)
+#define ETHER_PHY_REG_STATUS                           (1)
+#define ETHER_PHY_REG_IDENTIFIER1                      (2)
+#define ETHER_PHY_REG_IDENTIFIER2                      (3)
+#define ETHER_PHY_REG_AN_ADVERTISEMENT                 (4)
+#define ETHER_PHY_REG_AN_LINK_PARTNER                  (5)
+#define ETHER_PHY_REG_AN_EXPANSION                     (6)
+#define ETHER_PHY_REG_1000BT_CONTROL                   (9)
+#define ETHER_PHY_REG_1000BT_STATUS                    (10)
 
 /* Basic Mode Control Register Bit Definitions */
-#define ETHER_PHY_CONTROL_RESET                       (1 << 15)
-#define ETHER_PHY_CONTROL_LOOPBACK                    (1 << 14)
-#define ETHER_PHY_CONTROL_100_MBPS                    (1 << 13)
-#define ETHER_PHY_CONTROL_AN_ENABLE                   (1 << 12)
-#define ETHER_PHY_CONTROL_POWER_DOWN                  (1 << 11)
-#define ETHER_PHY_CONTROL_ISOLATE                     (1 << 10)
-#define ETHER_PHY_CONTROL_AN_RESTART                  (1 << 9)
-#define ETHER_PHY_CONTROL_FULL_DUPLEX                 (1 << 8)
-#define ETHER_PHY_CONTROL_COLLISION                   (1 << 7)
-#define ETHER_PHY_CONTROL_SPEED_SELCT                 (1 << 6)
+#define ETHER_PHY_CONTROL_RESET                        (1 << 15)
+#define ETHER_PHY_CONTROL_LOOPBACK                     (1 << 14)
+#define ETHER_PHY_CONTROL_100_MBPS                     (1 << 13)
+#define ETHER_PHY_CONTROL_AN_ENABLE                    (1 << 12)
+#define ETHER_PHY_CONTROL_POWER_DOWN                   (1 << 11)
+#define ETHER_PHY_CONTROL_ISOLATE                      (1 << 10)
+#define ETHER_PHY_CONTROL_AN_RESTART                   (1 << 9)
+#define ETHER_PHY_CONTROL_FULL_DUPLEX                  (1 << 8)
+#define ETHER_PHY_CONTROL_COLLISION                    (1 << 7)
+#define ETHER_PHY_CONTROL_SPEED_SELCT                  (1 << 6)
 
 /* Basic Mode Status Register Bit Definitions */
-#define ETHER_PHY_STATUS_100_T4                       (1 << 15)
-#define ETHER_PHY_STATUS_100F                         (1 << 14)
-#define ETHER_PHY_STATUS_100H                         (1 << 13)
-#define ETHER_PHY_STATUS_10F                          (1 << 12)
-#define ETHER_PHY_STATUS_10H                          (1 << 11)
-#define ETHER_PHY_STATUS_EX_STATUS                    (1 << 8)
-#define ETHER_PHY_STATUS_AN_COMPLETE                  (1 << 5)
-#define ETHER_PHY_STATUS_RM_FAULT                     (1 << 4)
-#define ETHER_PHY_STATUS_AN_ABILITY                   (1 << 3)
-#define ETHER_PHY_STATUS_LINK_UP                      (1 << 2)
-#define ETHER_PHY_STATUS_JABBER                       (1 << 1)
-#define ETHER_PHY_STATUS_EX_CAPABILITY                (1 << 0)
+#define ETHER_PHY_STATUS_100_T4                        (1 << 15)
+#define ETHER_PHY_STATUS_100F                          (1 << 14)
+#define ETHER_PHY_STATUS_100H                          (1 << 13)
+#define ETHER_PHY_STATUS_10F                           (1 << 12)
+#define ETHER_PHY_STATUS_10H                           (1 << 11)
+#define ETHER_PHY_STATUS_EX_STATUS                     (1 << 8)
+#define ETHER_PHY_STATUS_AN_COMPLETE                   (1 << 5)
+#define ETHER_PHY_STATUS_RM_FAULT                      (1 << 4)
+#define ETHER_PHY_STATUS_AN_ABILITY                    (1 << 3)
+#define ETHER_PHY_STATUS_LINK_UP                       (1 << 2)
+#define ETHER_PHY_STATUS_JABBER                        (1 << 1)
+#define ETHER_PHY_STATUS_EX_CAPABILITY                 (1 << 0)
 
 /* Auto Negotiation Advertisement Bit Definitions */
-#define ETHER_PHY_AN_ADVERTISEMENT_NEXT_PAGE          (1 << 15)
-#define ETHER_PHY_AN_ADVERTISEMENT_RM_FAULT           (1 << 13)
-#define ETHER_PHY_AN_ADVERTISEMENT_ASM_DIR            (1 << 11)
-#define ETHER_PHY_AN_ADVERTISEMENT_PAUSE              (1 << 10)
-#define ETHER_PHY_AN_ADVERTISEMENT_100_T4             (1 << 9)
-#define ETHER_PHY_AN_ADVERTISEMENT_100F               (1 << 8)
-#define ETHER_PHY_AN_ADVERTISEMENT_100H               (1 << 7)
-#define ETHER_PHY_AN_ADVERTISEMENT_10F                (1 << 6)
-#define ETHER_PHY_AN_ADVERTISEMENT_10H                (1 << 5)
-#define ETHER_PHY_AN_ADVERTISEMENT_SELECTOR           (1 << 0)
-#define ETHER_PHY_AN_ADVERTISEMENT_SELECTOR_MASK      (1 << 0)
+#define ETHER_PHY_AN_ADVERTISEMENT_NEXT_PAGE           (1 << 15)
+#define ETHER_PHY_AN_ADVERTISEMENT_RM_FAULT            (1 << 13)
+#define ETHER_PHY_AN_ADVERTISEMENT_ASM_DIR             (1 << 11)
+#define ETHER_PHY_AN_ADVERTISEMENT_PAUSE               (1 << 10)
+#define ETHER_PHY_AN_ADVERTISEMENT_100_T4              (1 << 9)
+#define ETHER_PHY_AN_ADVERTISEMENT_100F                (1 << 8)
+#define ETHER_PHY_AN_ADVERTISEMENT_100H                (1 << 7)
+#define ETHER_PHY_AN_ADVERTISEMENT_10F                 (1 << 6)
+#define ETHER_PHY_AN_ADVERTISEMENT_10H                 (1 << 5)
+#define ETHER_PHY_AN_ADVERTISEMENT_SELECTOR            (1 << 0)
+#define ETHER_PHY_AN_ADVERTISEMENT_SELECTOR_MASK       (1 << 0)
 
 /* Auto Negotiate Link Partner Ability Bit Definitions */
-#define ETHER_PHY_AN_LINK_PARTNER_NEXT_PAGE           (1 << 15)
-#define ETHER_PHY_AN_LINK_PARTNER_ACK                 (1 << 14)
-#define ETHER_PHY_AN_LINK_PARTNER_RM_FAULT            (1 << 13)
-#define ETHER_PHY_AN_LINK_PARTNER_ASM_DIR             (1 << 11)
-#define ETHER_PHY_AN_LINK_PARTNER_PAUSE               (1 << 10)
-#define ETHER_PHY_AN_LINK_PARTNER_100_T4              (1 << 9)
-#define ETHER_PHY_AN_LINK_PARTNER_100F                (1 << 8)
-#define ETHER_PHY_AN_LINK_PARTNER_100H                (1 << 7)
-#define ETHER_PHY_AN_LINK_PARTNER_10F                 (1 << 6)
-#define ETHER_PHY_AN_LINK_PARTNER_10H                 (1 << 5)
-#define ETHER_PHY_AN_LINK_PARTNER_SELECTOR            (1 << 0)
+#define ETHER_PHY_AN_LINK_PARTNER_NEXT_PAGE            (1 << 15)
+#define ETHER_PHY_AN_LINK_PARTNER_ACK                  (1 << 14)
+#define ETHER_PHY_AN_LINK_PARTNER_RM_FAULT             (1 << 13)
+#define ETHER_PHY_AN_LINK_PARTNER_ASM_DIR              (1 << 11)
+#define ETHER_PHY_AN_LINK_PARTNER_PAUSE                (1 << 10)
+#define ETHER_PHY_AN_LINK_PARTNER_100_T4               (1 << 9)
+#define ETHER_PHY_AN_LINK_PARTNER_100F                 (1 << 8)
+#define ETHER_PHY_AN_LINK_PARTNER_100H                 (1 << 7)
+#define ETHER_PHY_AN_LINK_PARTNER_10F                  (1 << 6)
+#define ETHER_PHY_AN_LINK_PARTNER_10H                  (1 << 5)
+#define ETHER_PHY_AN_LINK_PARTNER_SELECTOR             (1 << 0)
 
 /* 1000BASE-T Control */
-#define ETHER_PHY_1000BT_CONTROL_1000F                (1 << 9)
-#define ETHER_PHY_1000BT_CONTROL_1000H                (1 << 8)
+#define ETHER_PHY_1000BT_CONTROL_1000F                 (1 << 9)
+#define ETHER_PHY_1000BT_CONTROL_1000H                 (1 << 8)
 
 /* 1000BASE-T Status */
-#define ETHER_PHY_1000BT_STATUS_PARTNER_1000F         (1 << 11)
-#define ETHER_PHY_1000BT_STATUS_PARTNER_1000H         (1 << 10)
+#define ETHER_PHY_1000BT_STATUS_PARTNER_1000F          (1 << 11)
+#define ETHER_PHY_1000BT_STATUS_PARTNER_1000H          (1 << 10)
 
-#define ETHER_PHY_PIR_MDI_MASK                        (1 << 3)
-#define ETHER_PHY_PIR_MDO_HIGH                        (0x04)
-#define ETHER_PHY_PIR_MDO_LOW                         (0x00)
-#define ETHER_PHY_PIR_MMD_WRITE                       (0x02)
-#define ETHER_PHY_PIR_MMD_READ                        (0x00)
-#define ETHER_PHY_PIR_MDC_HIGH                        (0x01)
-#define ETHER_PHY_PIR_MDC_LOW                         (0x00)
+#define ETHER_PHY_PIR_MDI_MASK                         (1 << 3)
+#define ETHER_PHY_PIR_MDO_HIGH                         (0x04)
+#define ETHER_PHY_PIR_MDO_LOW                          (0x00)
+#define ETHER_PHY_PIR_MMD_WRITE                        (0x02)
+#define ETHER_PHY_PIR_MMD_READ                         (0x00)
+#define ETHER_PHY_PIR_MDC_HIGH                         (0x01)
+#define ETHER_PHY_PIR_MDC_LOW                          (0x00)
 
-#define ETHER_PHY_PREAMBLE_LENGTH                     (32U)
-#define ETHER_PHY_WRITE_DATA_BIT_MASK                 (0x8000)
+#define ETHER_PHY_PREAMBLE_LENGTH                      (32U)
+#define ETHER_PHY_WRITE_DATA_BIT_MASK                  (0x8000)
+
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
 
 /* Define for MDIO_CFG_STATUS of MDIO_ETHSW */
-#define ETHER_PHY_ETHSW_MDIO_CFG_STATUS_BUSY          (1 << 0)  /**< busy bit mask */
-#define ETHER_PHY_ETHSW_MDIO_CFG_STATUS_READERR       (1 << 1)  /**< read error mask */
+ #define ETHER_PHY_ETHSW_MDIO_CFG_STATUS_BUSY          (1 << 0)  /**< busy bit mask */
+ #define ETHER_PHY_ETHSW_MDIO_CFG_STATUS_READERR       (1 << 1)  /**< read error mask */
 
 /* Define for MDIO_COMMAND of MDIO_ETHSW */
-#define ETHER_PHY_ETHSW_MDIO_COMMAND_REGADDR_MASK     (0x1f)    /**< REG address mask */
-#define ETHER_PHY_ETHSW_MDIO_COMMAND_PHYADDR_SHIFT    (5)       /**< PHY address shift */
-                                                                /**< PHY address mask */
-#define ETHER_PHY_ETHSW_MDIO_COMMAND_PHYADDR_MASK     (0x1f << ETHER_PHY_ETHSW_MDIO_COMMAND_PHYADDR_SHIFT)
-#define ETHER_PHY_ETHSW_MDIO_COMMAND_TRANINIT_READ    (1 << 15) /**< transaction init read */
+ #define ETHER_PHY_ETHSW_MDIO_COMMAND_REGADDR_MASK     (0x1f)    /**< REG address mask */
+ #define ETHER_PHY_ETHSW_MDIO_COMMAND_PHYADDR_SHIFT    (5)       /**< PHY address shift */
+                                                                 /**< PHY address mask */
+ #define ETHER_PHY_ETHSW_MDIO_COMMAND_PHYADDR_MASK     (0x1f << ETHER_PHY_ETHSW_MDIO_COMMAND_PHYADDR_SHIFT)
+ #define ETHER_PHY_ETHSW_MDIO_COMMAND_TRANINIT_READ    (1 << 15) /**< transaction init read */
+#endif
 
-#define ETHER_PHY_16BIT_DATA_MASK                     (0xffff)
+#define ETHER_PHY_16BIT_DATA_MASK                      (0xffff)
 
 /* Define for delay time */
-#define ETHER_PHY_DELAY_2US                           (2) /* 2us */
+#define ETHER_PHY_DELAY_2US                            (2) /* 2us */
 
 /* Initial value of down counter for timeout detection */
-#define ETHER_PHY_TIMEOUT_COUNT                       (1000000000)
+#define ETHER_PHY_TIMEOUT_COUNT                        (1000000000)
 
 /* Illegal PHY register read value  */
-#define ETHER_PHY_REGISTER_READ_ERROR                 (0xffff)
+#define ETHER_PHY_REGISTER_READ_ERROR                  (0xffff)
 
 /* Bit definen of GMII_Address Register */
-#define ETHER_PHY_GMII_ADDRESS_PA_SHIFT               (11)     /**< Physical Layer Address */
-#define ETHER_PHY_GMII_ADDRESS_PA_MASK                (0x1f << ETHER_PHY_GMII_ADDRESS_PA_SHIFT)
-#define ETHER_PHY_GMII_ADDRESS_GR_SHIFT               (6)      /**< GMII Register */
-#define ETHER_PHY_GMII_ADDRESS_GR_MASK                (0x1f << ETHER_PHY_GMII_ADDRESS_GR_SHIFT)
-#define ETHER_PHY_GMII_ADDRESS_CR                     (4 << 2) /**< CSR Clock Range */
-#define ETHER_PHY_GMII_ADDRESS_GW                     (1 << 1) /**< GMII Write */
-#define ETHER_PHY_GMII_ADDRESS_GB                     (1 << 0) /**< GMII Busy */
+#define ETHER_PHY_GMII_ADDRESS_PA_SHIFT                (11)     /**< Physical Layer Address */
+#define ETHER_PHY_GMII_ADDRESS_PA_MASK                 (0x1f << ETHER_PHY_GMII_ADDRESS_PA_SHIFT)
+#define ETHER_PHY_GMII_ADDRESS_GR_SHIFT                (6)      /**< GMII Register */
+#define ETHER_PHY_GMII_ADDRESS_GR_MASK                 (0x1f << ETHER_PHY_GMII_ADDRESS_GR_SHIFT)
+#define ETHER_PHY_GMII_ADDRESS_CR                      (4 << 2) /**< CSR Clock Range */
+#define ETHER_PHY_GMII_ADDRESS_GW                      (1 << 1) /**< GMII Write */
+#define ETHER_PHY_GMII_ADDRESS_GB                      (1 << 0) /**< GMII Busy */
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -200,12 +203,22 @@ void ether_phy_convert_speed_duplex(uint32_t                  line_speed_duple,
 
 uint32_t        ether_phy_read(ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr);
 static uint32_t ether_phy_read_gmac(ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr);
+
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
 static uint32_t ether_phy_read_ethsw(ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_add);
+
+#endif
+
 static uint32_t ether_phy_read_esc(ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_add);
 
 void        ether_phy_write(ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr, uint32_t data);
 static void ether_phy_write_gmac(ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr, uint32_t data);
+
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
 static void ether_phy_write_ethsw(ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr, uint32_t data);
+
+#endif
+
 static void ether_phy_write_esc(ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr, uint32_t data);
 
 static void ether_phy_targets_initialize(ether_phy_instance_ctrl_t * p_instance_ctrl);
@@ -304,12 +317,13 @@ fsp_err_t R_ETHER_PHY_Open (ether_phy_ctrl_t * const p_ctrl, ether_phy_cfg_t con
             break;
         }
 
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
         case ETHER_PHY_MDIO_ETHSW:
         {
             p_instance_ctrl->p_reg_etherc = (uint32_t *) R_ETHSW_BASE;
             break;
         }
-
+#endif
         case ETHER_PHY_MDIO_ESC:
         {
             p_instance_ctrl->p_reg_etherc = (uint32_t *) R_ESC_BASE;
@@ -527,7 +541,7 @@ fsp_err_t R_ETHER_PHY_LinkStatusGet (ether_phy_ctrl_t * const p_ctrl)
 }                                      /* End of function R_ETHER_PHY_LinkStatusGet() */
 
 /********************************************************************************************************************//**
- * Provides API and code version in the user provided pointer. Implements @ref ether_phy_api_t::versionGet.
+ * DEPRECATED Provides API and code version in the user provided pointer. Implements @ref ether_phy_api_t::versionGet.
  *
  * @param[in] p_version   Version number set here
  *
@@ -582,7 +596,9 @@ static fsp_err_t ether_phy_open_param_check (ether_phy_instance_ctrl_t   * p_ins
     ETHER_PHY_ERROR_RETURN((BSP_FEATURE_ETHER_PHY_MAX_CHANNELS > p_cfg->channel), FSP_ERR_INVALID_CHANNEL);
 
     ETHER_PHY_ERROR_RETURN(((ETHER_PHY_MDIO_GMAC == p_extend->mdio_type) ||
+ #if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
                             (ETHER_PHY_MDIO_ETHSW == p_extend->mdio_type) ||
+ #endif
                             (ETHER_PHY_MDIO_ESC == p_extend->mdio_type)),
                            FSP_ERR_INVALID_ARGUMENT);
 
@@ -1196,10 +1212,12 @@ uint32_t ether_phy_read (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t r
             return ether_phy_read_gmac(p_instance_ctrl, reg_addr);
         }
 
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
         case ETHER_PHY_MDIO_ETHSW:
         {
             return ether_phy_read_ethsw(p_instance_ctrl, reg_addr);
         }
+#endif
 
         case ETHER_PHY_MDIO_ESC:
         {
@@ -1260,6 +1278,8 @@ uint32_t ether_phy_read_gmac (ether_phy_instance_ctrl_t * p_instance_ctrl, uint3
     return (uint32_t) -1;
 }                                      /* End of function ether_phy_read_gmac() */
 
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
+
 /*******************************************************************************************************************//**
  * Reads a PHY register by ETHSW control
  *
@@ -1313,6 +1333,8 @@ uint32_t ether_phy_read_ethsw (ether_phy_instance_ctrl_t * p_instance_ctrl, uint
 
     return (uint32_t) -1;
 }                                      /* End of function ether_phy_read_ethsw() */
+
+#endif
 
 /*******************************************************************************************************************//**
  * Reads a PHY register by ESC control
@@ -1418,11 +1440,13 @@ void ether_phy_write (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_
             break;
         }
 
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
         case ETHER_PHY_MDIO_ETHSW:
         {
             ether_phy_write_ethsw(p_instance_ctrl, reg_addr, data);
             break;
         }
+#endif
 
         case ETHER_PHY_MDIO_ESC:
         {
@@ -1485,6 +1509,8 @@ void ether_phy_write_gmac (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t
     }
 }                                      /* End of function ether_phy_write_gmac() */
 
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
+
 /*******************************************************************************************************************//**
  * Writes to a PHY register by ETHSW control
  *
@@ -1530,6 +1556,8 @@ void ether_phy_write_ethsw (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_
         timeout--;
     }
 }                                      /* End of function ether_phy_write_ethsw() */
+
+#endif
 
 /*******************************************************************************************************************//**
  * Writes to a PHY register by ESC control
@@ -1690,7 +1718,8 @@ void ether_phy_targets_initialize_vsc8541 (ether_phy_instance_ctrl_t * p_instanc
  #define ETHER_PHY_LEDMODE_100M_LINK_ACTIVITY          (0x2)
  #define ETHER_PHY_LEDMODE_10M_LINK_ACTIVITY           (0x3)
  #define ETHER_PHY_LEDMODE_100M_1000M_LINK_ACTIVITY    (0x4)
- #define ETHER_PHY_LEDMODE_10M_100M_LINK_ACTIVITY      (0x5)
+ #define ETHER_PHY_LEDMODE_10M_1000M_LINK_ACTIVITY     (0x5)
+ #define ETHER_PHY_LEDMODE_10M_100M_LINK_ACTIVITY      (0x6)
  #define ETHER_PHY_LEDMODE_BIT_MASK                    (0xF)
 
     /* Vendor Specific PHY Registers: Extended Page 2 */

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -44,14 +44,19 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ELC_API_VERSION_MAJOR    (1U)
-#define ELC_API_VERSION_MINOR    (1U)
+#define ELC_API_VERSION_MAJOR    (1U)  // DEPRECATED
+#define ELC_API_VERSION_MINOR    (2U)  // DEPRECATED
 
-#define ELC_PERIPHERAL_NUM       (55U)
+#if (1 == BSP_FEATURE_ELC_PERIPHERAL_TYPE)
+ #define ELC_PERIPHERAL_NUM      (55U)
+#elif (2 == BSP_FEATURE_ELC_PERIPHERAL_TYPE)
+ #define ELC_PERIPHERAL_NUM      (56U)
+#endif
 
 /**********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
+#if (1 == BSP_FEATURE_ELC_PERIPHERAL_TYPE)
 
 /** Possible peripherals to be linked to event signals (not all available on all MCUs) */
 typedef enum e_elc_peripheral
@@ -112,6 +117,67 @@ typedef enum e_elc_peripheral
     ELC_PERIPHERAL_SINGLEPORT2   = (53),
     ELC_PERIPHERAL_SINGLEPORT3   = (54),
 } elc_peripheral_t;
+#elif (2 == BSP_FEATURE_ELC_PERIPHERAL_TYPE)
+typedef enum e_elc_peripheral
+{
+    ELC_PERIPHERAL_MTU0           = (0),
+    ELC_PERIPHERAL_MTU3           = (1),
+    ELC_PERIPHERAL_MTU4           = (2),
+    ELC_PERIPHERAL_LLPPGPT_A      = (3),
+    ELC_PERIPHERAL_LLPPGPT_B      = (4),
+    ELC_PERIPHERAL_LLPPGPT_C      = (5),
+    ELC_PERIPHERAL_LLPPGPT_D      = (6),
+    ELC_PERIPHERAL_LLPPGPT_E      = (7),
+    ELC_PERIPHERAL_LLPPGPT_F      = (8),
+    ELC_PERIPHERAL_LLPPGPT_G      = (9),
+    ELC_PERIPHERAL_LLPPGPT_H      = (10),
+    ELC_PERIPHERAL_NONSAFTYGPT_A  = (11),
+    ELC_PERIPHERAL_NONSAFTYGPT_B  = (12),
+    ELC_PERIPHERAL_NONSAFTYGPT_C  = (13),
+    ELC_PERIPHERAL_NONSAFTYGPT_D  = (14),
+    ELC_PERIPHERAL_NONSAFTYGPT_E  = (15),
+    ELC_PERIPHERAL_NONSAFTYGPT_F  = (16),
+    ELC_PERIPHERAL_NONSAFTYGPT_G  = (17),
+    ELC_PERIPHERAL_NONSAFTYGPT_H  = (18),
+    ELC_PERIPHERAL_ADC0_A         = (19),
+    ELC_PERIPHERAL_ADC0_B         = (20),
+    ELC_PERIPHERAL_ADC1_A         = (21),
+    ELC_PERIPHERAL_ADC1_B         = (22),
+    ELC_PERIPHERAL_DSMIF0_CAP0    = (23),
+    ELC_PERIPHERAL_DSMIF0_CAP1    = (24),
+    ELC_PERIPHERAL_DSMIF0_CAP2    = (25),
+    ELC_PERIPHERAL_DSMIF0_CAP3    = (26),
+    ELC_PERIPHERAL_DSMIF0_CAP4    = (27),
+    ELC_PERIPHERAL_DSMIF0_CAP5    = (28),
+    ELC_PERIPHERAL_DSMIF0_CDCNT0  = (29),
+    ELC_PERIPHERAL_DSMIF0_CDCNT1  = (30),
+    ELC_PERIPHERAL_DSMIF0_CDCNT2  = (31),
+    ELC_PERIPHERAL_DSMIF1_CAP0    = (32),
+    ELC_PERIPHERAL_DSMIF1_CAP1    = (33),
+    ELC_PERIPHERAL_DSMIF1_CAP2    = (34),
+    ELC_PERIPHERAL_DSMIF1_CAP3    = (35),
+    ELC_PERIPHERAL_DSMIF1_CAP4    = (36),
+    ELC_PERIPHERAL_DSMIF1_CAP5    = (37),
+    ELC_PERIPHERAL_DSMIF1_CDCNT0  = (38),
+    ELC_PERIPHERAL_DSMIF1_CDCNT1  = (39),
+    ELC_PERIPHERAL_DSMIF1_CDCNT2  = (40),
+    ELC_PERIPHERAL_ENCIF_TRG0     = (41),
+    ELC_PERIPHERAL_ENCIF_TRG1     = (42),
+    ELC_PERIPHERAL_ESC0           = (43),
+    ELC_PERIPHERAL_ESC1           = (44),
+    ELC_PERIPHERAL_GMA0           = (45),
+    ELC_PERIPHERAL_GMA1           = (46),
+    ELC_PERIPHERAL_OUTPORTGR1     = (47),
+    ELC_PERIPHERAL_OUTPORTGR2     = (48),
+    ELC_PERIPHERAL_INPORTGR1      = (49),
+    ELC_PERIPHERAL_INPORTGR2      = (50),
+    ELC_PERIPHERAL_SINGLEPORT0    = (51),
+    ELC_PERIPHERAL_SINGLEPORT1    = (52),
+    ELC_PERIPHERAL_SINGLEPORT2    = (53),
+    ELC_PERIPHERAL_SINGLEPORT3    = (54),
+    ELC_PERIPHERAL_ENCOUT_TRIGGER = (55),
+} elc_peripheral_t;
+#endif
 
 /** ELC control block.  Allocate an instance specific control block to pass into the ELC API calls.
  * @par Implemented as
@@ -196,7 +262,7 @@ typedef struct st_elc_api
      **/
     fsp_err_t (* disable)(elc_ctrl_t * const p_ctrl);
 
-    /** Get the driver version based on compile time macros.
+    /** DEPRECATED Get the driver version based on compile time macros.
      * @par Implemented as
      * - @ref R_ELC_VersionGet()
      *

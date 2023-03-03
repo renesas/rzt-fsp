@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,24 +40,26 @@ FSP_HEADER
 /** The semaphore resource state shared by CPU0 and CPU1 */
 typedef enum e_bsp_resource_state
 {
-    BSP_RESOURCE_STATE_BEING_USED     = 0, /// Semaphore resource being used.
-    BSP_RESOURCE_STATE_NOT_BEING_USED = 1, /// Semaphore resource not being used.
+    BSP_RESOURCE_STATE_BEING_USED     = 0, ///< Semaphore resource being used.
+    BSP_RESOURCE_STATE_NOT_BEING_USED = 1, ///< Semaphore resource not being used.
 } bsp_resource_state_t;
 
 /** The semaphore resource number shared by CPU0 and CPU1 */
 typedef enum e_bsp_resource_num
 {
-    BSP_RESOURCE_NUM_0 = 0,            /// Semaphore resource number 0
-    BSP_RESOURCE_NUM_1 = 1,            /// Semaphore resource number 1
-    BSP_RESOURCE_NUM_2 = 2,            /// Semaphore resource number 2
-    BSP_RESOURCE_NUM_3 = 3,            /// Semaphore resource number 3
-    BSP_RESOURCE_NUM_4 = 4,            /// Semaphore resource number 4
-    BSP_RESOURCE_NUM_5 = 5,            /// Semaphore resource number 5
-    BSP_RESOURCE_NUM_6 = 6,            /// Semaphore resource number 6
-    BSP_RESOURCE_NUM_7 = 7,            /// Semaphore resource number 7
+    BSP_RESOURCE_NUM_0 = 0,            ///< Semaphore resource number 0
+    BSP_RESOURCE_NUM_1 = 1,            ///< Semaphore resource number 1
+    BSP_RESOURCE_NUM_2 = 2,            ///< Semaphore resource number 2
+    BSP_RESOURCE_NUM_3 = 3,            ///< Semaphore resource number 3
+    BSP_RESOURCE_NUM_4 = 4,            ///< Semaphore resource number 4
+    BSP_RESOURCE_NUM_5 = 5,            ///< Semaphore resource number 5
+    BSP_RESOURCE_NUM_6 = 6,            ///< Semaphore resource number 6
+    BSP_RESOURCE_NUM_7 = 7,            ///< Semaphore resource number 7
 } bsp_resource_num_t;
 
 /** @} (end addtogroup BSP_MCU) */
+
+#if BSP_FEATURE_SEM_SUPPORTED
 
 /***********************************************************************************************************************
  * Exported global variables
@@ -78,6 +80,8 @@ __STATIC_INLINE uint32_t R_BSP_SemaphoreStateRead (bsp_resource_num_t sem_num)
 {
     return R_SEM->SYTSEMF[sem_num];
 }
+
+#endif
 
 /* Public functions defined in bsp.h */
 void bsp_semaphore_init(void);         // Used internally by BSP

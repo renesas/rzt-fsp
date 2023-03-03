@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -55,8 +55,8 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 /* Version Number of API.  */
-#define ADC_API_VERSION_MAJOR    (1U)
-#define ADC_API_VERSION_MINOR    (0U)
+#define ADC_API_VERSION_MAJOR    (1U)  // DEPRECATED
+#define ADC_API_VERSION_MINOR    (2U)  // DEPRECATED
 
 /*****************************************************************************
  * Typedef definitions
@@ -219,6 +219,7 @@ typedef struct st_adc_api
      * @par Implemented as
      * - @ref R_ADC_Open()
      * - @ref R_DSMIF_Open()
+     * - @ref R_TSU_Open()
      *
      * @pre Configure peripheral clocks, ADC pins and IRQs prior to calling this function.
      * @param[in]  p_ctrl  Pointer to control handle structure
@@ -241,6 +242,7 @@ typedef struct st_adc_api
      * @par Implemented as
      * - @ref R_ADC_ScanStart()
      * - @ref R_DSMIF_ScanStart()
+     * - @ref R_TSU_ScanStart()
      *
      * @param[in]  p_ctrl   Pointer to control handle structure
      */
@@ -250,6 +252,7 @@ typedef struct st_adc_api
      * @par Implemented as
      * - @ref R_ADC_ScanStop()
      * - @ref R_DSMIF_ScanStop()
+     * - @ref R_TSU_ScanStop()
      *
      * @param[in]  p_ctrl   Pointer to control handle structure
      */
@@ -258,6 +261,7 @@ typedef struct st_adc_api
     /** Check scan status.
      * @par Implemented as
      * - @ref R_ADC_StatusGet()
+     * - @ref R_TSU_StatusGet()
      *
      * @param[in]  p_ctrl   Pointer to control handle structure
      * @param[out] p_status Pointer to store current status in
@@ -267,6 +271,7 @@ typedef struct st_adc_api
     /** Read ADC conversion result.
      * @par Implemented as
      * - @ref R_ADC_Read()
+     * - @ref R_TSU_Read()
      *
      * @param[in]  p_ctrl   Pointer to control handle structure
      * @param[in]  reg_id   ADC channel to read (see enumeration adc_channel_t)
@@ -325,6 +330,7 @@ typedef struct st_adc_api
      * @par Implemented as
      * - @ref R_ADC_Close()
      * - @ref R_DSMIF_Close()
+     * - @ref R_TSU_Close()
      *
      * @param[in]  p_ctrl   Pointer to control handle structure
      */
@@ -341,10 +347,11 @@ typedef struct st_adc_api
      */
     fsp_err_t (* infoGet)(adc_ctrl_t * const p_ctrl, adc_info_t * const p_adc_info);
 
-    /** Retrieve the API version.
+    /** DEPRECATED - Retrieve the API version.
      * @par Implemented as
      * - @ref R_ADC_VersionGet()
      * - @ref R_DSMIF_VersionGet()
+     * - @ref R_TSU_VersionGet()
      *
      * @pre This function retrieves the API version.
      * @param[in]  p_version   Pointer to version structure

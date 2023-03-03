@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -53,7 +53,11 @@
 
 /* Calculate the value to write to SCKCR2. */
 #define BSP_PRV_STARTUP_SCKCR2_FSELCPU0_BITS                (BSP_CFG_FSELCPU0 & 3U)
-#define BSP_PRV_STARTUP_SCKCR2_FSELCPU1_BITS                ((BSP_CFG_FSELCPU1 & 3U) << 2U)
+#if BSP_FEATURE_BSP_CPU1_SUPPORTED
+ #define BSP_PRV_STARTUP_SCKCR2_FSELCPU1_BITS               ((BSP_CFG_FSELCPU1 & 3U) << 2U)
+#else
+ #define BSP_PRV_STARTUP_SCKCR2_FSELCPU1_BITS               (0U)
+#endif
 #define BSP_PRV_STARTUP_SCKCR2_RESERVED_BIT4_BITS           (1U << 4U) // The write value should be 1.
 #define BSP_PRV_STARTUP_SCKCR2_DIVSELSUB_BITS               ((BSP_CFG_DIVSELSUB & 1U) << 5U)
 #define BSP_PRV_STARTUP_SCKCR2_SPI3ASYNCSEL_BITS            ((BSP_CFG_SPI3ASYNCCLK & 1U) << 24U)
@@ -83,8 +87,10 @@
 
 #define BSP_PRV_STARTUP_SCKCR2_FSELCPU0_ICLK_MUL2           (BSP_CLOCKS_FSELCPU0_ICLK_MUL2 << \
                                                              R_SYSC_S_SCKCR2_FSELCPU0_Pos)
-#define BSP_PRV_STARTUP_SCKCR2_FSELCPU1_ICLK_MUL2           (BSP_CLOCKS_FSELCPU1_ICLK_MUL2 << \
+#if BSP_FEATURE_BSP_CPU1_SUPPORTED
+ #define BSP_PRV_STARTUP_SCKCR2_FSELCPU1_ICLK_MUL2          (BSP_CLOCKS_FSELCPU1_ICLK_MUL2 << \
                                                              R_SYSC_S_SCKCR2_FSELCPU1_Pos)
+#endif
 
 /* Calculate the value to write to HIZCTRLEN. */
 #define BSP_PRV_STARTUP_HIZCTRLEN                           ((BSP_CFG_CLMA1MASK << 2) | (BSP_CFG_CLMA0MASK << 1) | \
@@ -417,6 +423,8 @@ void bsp_prv_clock_temporaliy_set_system_clock (uint32_t sckcr2)
             ((sckcr2_cpu_clock & ~R_SYSC_S_SCKCR2_FSELCPU0_Msk) | BSP_PRV_STARTUP_SCKCR2_FSELCPU0_ICLK_MUL2);
     }
 
+#if BSP_FEATURE_BSP_CPU1_SUPPORTED
+
     /* Check if FSELCPU1 bit of sckcr2 variable is 00b and CPU1 clock is 800MHz. (Or 600MHz) */
     if (!(BSP_PRV_SCKCR2_FSELCPU1_MASK & sckcr2))
     {
@@ -424,6 +432,7 @@ void bsp_prv_clock_temporaliy_set_system_clock (uint32_t sckcr2)
         sckcr2_cpu_clock =
             ((sckcr2_cpu_clock & ~R_SYSC_S_SCKCR2_FSELCPU1_Msk) | BSP_PRV_STARTUP_SCKCR2_FSELCPU1_ICLK_MUL2);
     }
+#endif
 
     /* Temporarily set system clock. */
     if (R_SYSC_S->SCKCR2 != sckcr2_cpu_clock)

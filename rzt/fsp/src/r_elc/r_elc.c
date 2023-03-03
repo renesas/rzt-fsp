@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -117,6 +117,9 @@ const elc_api_t g_elc_on_elc =
  * The configuration structure passed in to this function includes links for every event source included in the ELC
  * and sets them all at once. To set or clear an individual link use R_ELC_LinkSet and R_ELC_LinkBreak respectively.
  *
+ * Example:
+ * @snippet r_elc_example.c R_ELC_Open
+ *
  * @retval FSP_SUCCESS             Initialization was successful
  * @retval FSP_ERR_ASSERTION       p_ctrl or p_cfg was NULL
  * @retval FSP_ERR_ALREADY_OPEN    The module is currently open
@@ -230,6 +233,9 @@ fsp_err_t R_ELC_SoftwareEventGenerate (elc_ctrl_t * const p_ctrl, elc_software_e
 /*******************************************************************************************************************//**
  * Create a single event link. Implements @ref elc_api_t::linkSet
  *
+ * Example:
+ * @snippet r_elc_example.c R_ELC_LinkSet
+ *
  * @retval FSP_SUCCESS             Initialization was successful
  * @retval FSP_ERR_ASSERTION       p_ctrl was NULL
  * @retval FSP_ERR_NOT_OPEN        The module has not been opened
@@ -311,7 +317,7 @@ fsp_err_t R_ELC_Disable (elc_ctrl_t * const p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * Get the driver version based on compile time macros. Implements @ref elc_api_t::versionGet
+ * DEPRECATED Get the driver version based on compile time macros. Implements @ref elc_api_t::versionGet
  *
  * @retval     FSP_SUCCESS          Successful close.
  * @retval     FSP_ERR_ASSERTION    p_version is NULL.

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -61,9 +61,10 @@ extern uint16_t          g_usb_hstd_ignore_cnt[][USB_MAX_PIPE_NO + 1U]; /* Ignor
 extern usb_hcdreg_t      g_usb_hstd_device_drv[][USB_MAXDEVADDR + 1U];  /* Device driver (registration) */
 extern volatile uint16_t g_usb_hstd_device_info[][USB_MAXDEVADDR + 1U][8U];
 extern usb_ctrl_trans_t  g_usb_ctrl_request[USB_NUM_USBIP][USB_MAXDEVADDR + 1];
-
-extern uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR + 1];
-extern uint8_t  g_temp_data_buf[USB_NUM_USBIP][USB_MAXDEVADDR + 1][USB_VAL_1024];
+ #if USB_IP_EHCI_OHCI == 1
+extern uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+ #endif                                                         /* USB_IP_EHCI_OHCI == 1 */
+extern uint8_t g_data_read_flag;
  #if (BSP_CFG_RTOS == 2)
 extern usb_hdl_t g_usb_hstd_sus_res_task_id[];
  #endif                                                         /*  #if (BSP_CFG_RTOS == 2) */
@@ -148,17 +149,31 @@ extern usb_instance_ctrl_t g_usb_cstd_event[];
 extern usb_hdl_t           g_usb_cur_task_hdl[];
 #else                                  /* #if (BSP_CFG_RTOS == 2) */
 extern usb_event_t g_usb_cstd_event;
- #if defined(BSP_MCU_GROUP_RZT2M)
-  #if USB_CFG_DMA == USB_CFG_ENABLE
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
+  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
+   #if USB_CFG_DMA == USB_CFG_ENABLE
+uint8_t usb_cstd_dma_ref_ch_no(uint8_t ip_no, uint16_t use_port);
+void    usb_dma_set_ch_no(uint16_t ip_no, uint16_t use_port, uint8_t dma_ch_no);
+
 extern usb_dma_int_t gs_usb_cstd_dma_int;
 
-extern uint8_t g_usb_cstd_dma_ch[USB_NUM_USBIP][USB_FIFO_ACCESS_NUM_MAX];        /* DMA ch no. table */
+extern uint8_t g_usb_cstd_dma_ch[USB_NUM_USBIP][USB_FIFO_ACCESS_NUM_MAX];       /* DMA ch no. table */
 
-extern uint8_t  g_usb_cstd_dma_fraction_size[USB_NUM_USBIP][USB_DMA_USE_CH_MAX]; /* fraction size(1-3) */
-extern uint32_t g_usb_cstd_dma_fraction_adr[USB_NUM_USBIP][USB_DMA_USE_CH_MAX];  /* fraction data address */
-  #endif /* USB_CFG_DMA == USB_CFG_ENABLE */
- #endif  /* defined(BSP_MCU_GROUP_RZT2M) */
-#endif /*#if (BSP_CFG_RTOS == 2)*/
+extern uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+
+extern uint8_t  g_usb_cstd_dma_fraction_size[][USB_DMA_USE_CH_MAX];             /* fraction size(1-3) */
+extern uint32_t g_usb_cstd_dma_fraction_adr[USB_NUM_USBIP][USB_DMA_USE_CH_MAX]; /* fraction data address */
+
+/* DMACA DMAC0I */
+void r_usb_dmaca_intDMAC0I_isr(void);
+
+/* DMACA DMAC1I */
+void r_usb_dmaca_intDMAC1I_isr(void);
+
+   #endif                              /* USB_CFG_DMA == USB_CFG_ENABLE */
+  #endif /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
+ #endif                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
+#endif                                 /*#if (BSP_CFG_RTOS == 2)*/
 
 extern usb_pipe_table_t g_usb_pipe_table[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1];
 extern uint16_t         g_usb_cstd_bemp_skip[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
@@ -236,10 +251,10 @@ void     usb_pstd_change_device_state(uint16_t state, uint16_t keyword, usb_cb_t
 void     usb_pstd_driver_registration(usb_pcdreg_t * registinfo);
 void     usb_pstd_driver_release(void);
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
 uint16_t usb_pstd_get_pipe_buf_value(uint16_t pipe_no);
 
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 
 #endif                                 /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
 
@@ -267,7 +282,7 @@ uint8_t usb_hstd_make_pipe_reg_info(uint16_t               ip_no,
                                     uint8_t              * descriptor,
                                     usb_pipe_table_reg_t * pipe_table_work);
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
 uint16_t usb_hstd_get_pipe_buf_value(uint16_t pipe_no);
 
  #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */

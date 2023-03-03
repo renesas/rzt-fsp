@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,8 +40,8 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHSW_CODE_VERSION_MAJOR    (1U)
-#define ETHSW_CODE_VERSION_MINOR    (0U)
+#define ETHSW_CODE_VERSION_MAJOR    (1U) // DEPRECATED
+#define ETHSW_CODE_VERSION_MINOR    (2U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -50,13 +50,15 @@ FSP_HEADER
 /** ETHER SWITCH control block. DO NOT INITIALIZE.  Initialization occurs when @ref ethsw_api_t::open is called. */
 typedef struct st_ethsw_instance_ctrl
 {
-    uint32_t open;                     ///< Used to determine if the channel is configured
+    uint32_t open;                      ///< Used to determine if the channel is configured
 
     /* Configuration of Ethernet SWITCH-LSI module. */
-    ethsw_cfg_t const * p_switch_cfg;  ///< Pointer to initial configurations.
+    ethsw_cfg_t const * p_switch_cfg;   ///< Pointer to initial configurations.
 
-    /* Base register of Ethernet SWITCH-LSI chip. */
-    volatile uint32_t * p_reg_switch;  ///< Pointer to ETHERC peripheral registers.
+    /* Interface for Ethernet Swith */
+    R_ETHSW_Type     * p_reg_switch;    ///< Pointer to Ethernet Switch peripheral registers.
+    R_ETHSS_Type     * p_reg_ethss;     ///< Pointer to Ethernet Subsystem peripheral registers.
+    R_ETHSW_PTP_Type * p_reg_ethsw_ptp; ///< Pointer to PTP Timer Pulse Control Registers.
 } ethsw_instance_ctrl_t;
 
 /**********************************************************************************************************************
@@ -83,6 +85,21 @@ fsp_err_t R_ETHSW_Close(ethsw_ctrl_t * const p_ctrl);
 fsp_err_t R_ETHSW_SpeedCfg(ethsw_ctrl_t * const p_ctrl, uint8_t const port, ethsw_link_speed_t const speed);
 
 fsp_err_t R_ETHSW_VersionGet(fsp_version_t * const p_version);
+
+fsp_err_t R_ETHSW_MacTableSet(ethsw_ctrl_t * const p_ctrl, ethsw_mactab_entry_t * p_mac_tab);
+fsp_err_t R_ETHSW_MacTableGet(ethsw_ctrl_t * const p_ctrl, ethsw_mactab_entry_t * p_mac_tab);
+
+fsp_err_t R_ETHSW_MacTableConfSet(ethsw_ctrl_t * const p_ctrl, ethsw_mactab_conf_t * p_mac_tab_cnf);
+
+fsp_err_t R_ETHSW_MacTableClear(ethsw_ctrl_t * const p_ctrl, ethsw_mactab_clr_modes_t * p_mac_tab_clr);
+
+fsp_err_t R_ETHSW_LearningSet(ethsw_ctrl_t * const p_ctrl, uint32_t port, bool enable);
+
+fsp_err_t R_ETHSW_PortForwardAdd(ethsw_ctrl_t * const p_ctrl, uint32_t port);
+
+fsp_err_t R_ETHSW_PortForwardDel(ethsw_ctrl_t * const p_ctrl, uint32_t port);
+
+fsp_err_t R_ETHSW_FloodUnknownSet(ethsw_ctrl_t * const p_ctrl, ethsw_flood_unk_conf_t * p_flood_unk_conf);
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHSW)

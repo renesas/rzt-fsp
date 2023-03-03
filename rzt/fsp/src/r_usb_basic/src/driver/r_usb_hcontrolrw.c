@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,7 +40,7 @@
 uint16_t g_usb_hstd_response_counter[USB_NUM_USBIP];
  #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
 
- #if !defined(BSP_MCU_GROUP_RZT2M)
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
 
 /******************************************************************************
  * Function Name   : usb_hstd_ctrl_write_start
@@ -517,7 +517,7 @@ void usb_hstd_setup_start (usb_utr_t * ptr)
 /******************************************************************************
  * End of function usb_hstd_setup_start
  ******************************************************************************/
- #endif                                /* !defined(BSP_MCU_GROUP_RZT2M) */
+ #endif                                /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) */
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
 /******************************************************************************

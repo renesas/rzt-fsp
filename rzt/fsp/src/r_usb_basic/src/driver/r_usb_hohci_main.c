@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -753,8 +753,12 @@ void usb_hstd_ohci_port_reset (uint32_t portnum)
     *p_port_status_reg = USB_VAL_X001U; /* Clear PRSC bit */
 
     /* r_usb_hstd_hci_wait_time(10); */     /* Wait 10ms */
+ #ifdef USB_CFG_HMSC_USE
+    R_BSP_SoftwareDelay(100, BSP_DELAY_UNITS_MILLISECONDS);
+ #else
     R_BSP_SoftwareDelay(10, BSP_DELAY_UNITS_MILLISECONDS);
-} /* End of function usb_hstd_ohci_port_reset() */
+ #endif
+}                                      /* End of function usb_hstd_ohci_port_reset() */
 
 /***********************************************************************************************************************
  * Function     : Getting of OHCI PID Status

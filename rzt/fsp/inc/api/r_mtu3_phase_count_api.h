@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -52,8 +52,8 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 /* Leading zeroes removed to avoid coding standard violation. */
-#define MTU3_PHASE_COUNT_API_VERSION_MAJOR    (1U)
-#define MTU3_PHASE_COUNT_API_VERSION_MINOR    (0U)
+#define MTU3_PHASE_COUNT_API_VERSION_MAJOR    (1U) // DEPRECATED
+#define MTU3_PHASE_COUNT_API_VERSION_MINOR    (2U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -226,7 +226,7 @@ typedef struct st_mtu3_phase_count_api
      */
     fsp_err_t (* close)(mtu3_phase_count_ctrl_t * const p_ctrl);
 
-    /** Get version and store it in provided pointer p_version.
+    /** DEPRECATED Get version and store it in provided pointer p_version.
      * @par Implemented as
      * - @ref R_MTU3_PHASE_COUNT_VersionGet()
      *

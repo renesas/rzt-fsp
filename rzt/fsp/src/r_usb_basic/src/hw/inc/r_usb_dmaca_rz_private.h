@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2022] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -70,14 +70,13 @@
 /*******************************************************************************
  * Exported global variables and functions (to be accessed by other files)
  *******************************************************************************/
-extern void * p_DMACI_Handlers[];
+extern void * p_USB_DMACI_Handlers[];
 
 bool               r_usb_dmaca_channel_valid_check(uint8_t channel);
 void               r_usb_dmaca_module_enable(void);
 void               r_usb_dmaca_module_disable(void);
 usb_dmaca_return_t r_usb_dmaca_int_enable_set(uint8_t channel, uint8_t priority);
 usb_dmaca_return_t r_usb_dmaca_int_disable_set(uint8_t channel);
-int32_t            r_intc_dummy_read_enable(uint16_t int_id);
 
 #endif
 #endif                                 /* USB_DMACA_RX_PRIVATE_H */
