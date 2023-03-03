@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2M Flexible Software Package Documentation: Ethernet (r_gmac)</title>
+<title>RZ/T2 Flexible Software Package Documentation: Ethernet (r_gmac)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,8 +32,8 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.1.0</span>
+   <div id="projectname">RZ/T2 Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v1.2.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -165,7 +165,7 @@ This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Networ
 <tr>
 <td>General &gt; Name</td><td>Name must be a valid C symbol</td><td>g_ether0 </td><td>Module name. </td></tr>
 <tr>
-<td>General &gt; Channel</td><td>0</td><td>0 </td><td>Select the ether channel number. </td></tr>
+<td>General &gt; Channel</td><td>0</td><td>0 </td><td>Select the ether channel number. RZ/TMMMM </td></tr>
 <tr>
 <td>General &gt; MAC address</td><td>Must be a valid MAC address</td><td>00:11:22:33:44:55 </td><td>MAC address of this channel. </td></tr>
 <tr>
@@ -211,7 +211,7 @@ Disable</li>
 <li>
 Enable</li>
 </ul>
-</td><td>module.driver.ether.phylink.DISABLE </td><td>Enable or disable callback by PHYLINK change. </td></tr>
+</td><td>Disable </td><td>Enable or disable callback by PHYLINK change. </td></tr>
 </table>
 </p>
 <h2><a class="anchor" id="r-ether-interrupt-configuration"></a>
@@ -373,6 +373,12 @@ link status by callback from ethsw (bit0:port0, bit1:port1,..) </td></tr>
 previous_link_status</td>
 <td class="fielddoc">
 Previous link status (bit0:port0, bit1:port1,..) </td></tr>
+<tr><td class="fieldtype">
+<a id="ab1636cae0466fa6553034cbd5788e0b5"></a>uint32_t</td>
+<td class="fieldname">
+link_speed_duplex</td>
+<td class="fielddoc">
+Link speed &amp; duplex. </td></tr>
 <tr><td class="fieldtype">
 <a id="ac347e6f179a18f132207eb0ec76d8cb1"></a><a class="el" href="group___e_t_h_e_r.html#ga3a743e2bcb738ad6759a41747bdad1cf">gmac_magic_packet_t</a></td>
 <td class="fieldname">
@@ -857,7 +863,7 @@ Partner pause bits got from PHY. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Provides API and code version in the user provided pointer. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a2d7eb9db55c87bff39494408612fe766">ether_api_t::versionGet</a>.</p>
+<p>DEPRECATED Provides API and code version in the user provided pointer. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a2d7eb9db55c87bff39494408612fe766">ether_api_t::versionGet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Version information stored in provided p_version. </td></tr>
@@ -874,7 +880,7 @@ Partner pause bits got from PHY. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

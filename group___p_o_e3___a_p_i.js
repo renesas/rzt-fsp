@@ -125,7 +125,7 @@ var group___p_o_e3___a_p_i =
       [ "POE3_MTIOC0B_PIN_SELECT_P11_5", "group___p_o_e3___a_p_i.html#gga063ffecae034b9e2608183fc5200385ca932187fe927b15512b3b3e45878d597e", null ],
       [ "POE3_MTIOC0B_PIN_SELECT_P14_4", "group___p_o_e3___a_p_i.html#gga063ffecae034b9e2608183fc5200385ca313855f299d49836688febf356415992", null ],
       [ "POE3_MTIOC0B_PIN_SELECT_P24_0", "group___p_o_e3___a_p_i.html#gga063ffecae034b9e2608183fc5200385ca061027f4ec6fefecfa175e777bb61153", null ],
-      [ "POE3_MTIOC0B_PIN_SELECT_P23_3", "group___p_o_e3___a_p_i.html#gga063ffecae034b9e2608183fc5200385ca86324cc8c92916283aa33e919b22b59b", null ]
+      [ "POE3_MTIOC0B_PIN_SELECT_P13_3", "group___p_o_e3___a_p_i.html#gga063ffecae034b9e2608183fc5200385cab74d1bd10005be88941f3c8de645708b", null ]
     ] ],
     [ "poe3_mtioc0c_pin_select_t", "group___p_o_e3___a_p_i.html#ga83c56623f83f1b03e44eb8ecb9c07f7b", [
       [ "POE3_MTIOC0C_PIN_SELECT_P13_3", "group___p_o_e3___a_p_i.html#gga83c56623f83f1b03e44eb8ecb9c07f7ba2326193cee253d15a02190fc50cda580", null ],
@@ -139,36 +139,29 @@ var group___p_o_e3___a_p_i =
     ] ],
     [ "poe3_mtioc3b_pin_select_t", "group___p_o_e3___a_p_i.html#ga712bf2d6f863cb9526d3dad24f51c417", [
       [ "POE3_MTIOC3B_PIN_SELECT_P17_6", "group___p_o_e3___a_p_i.html#gga712bf2d6f863cb9526d3dad24f51c417a4f898aebacf366884689ecd734bf3447", null ],
-      [ "POE3_MTIOC3B_PIN_SELECT_P00_6", "group___p_o_e3___a_p_i.html#gga712bf2d6f863cb9526d3dad24f51c417ac981ad34e23ac9db6114070e9780a3b9", null ],
-      [ "POE3_MTIOC3B_PIN_SELECT_P03_6", "group___p_o_e3___a_p_i.html#gga712bf2d6f863cb9526d3dad24f51c417af457eba202e0672d11366d924c1edc4d", null ]
+      [ "POE3_MTIOC3B_PIN_SELECT_P00_6", "group___p_o_e3___a_p_i.html#gga712bf2d6f863cb9526d3dad24f51c417ac981ad34e23ac9db6114070e9780a3b9", null ]
     ] ],
     [ "poe3_mtioc3d_pin_select_t", "group___p_o_e3___a_p_i.html#ga77fe003c3dda4c8039300d3399b8e842", [
       [ "POE3_MTIOC3D_PIN_SELECT_P18_1", "group___p_o_e3___a_p_i.html#gga77fe003c3dda4c8039300d3399b8e842a31f3c7f5facd501a87c027290ff67341", null ],
-      [ "POE3_MTIOC3D_PIN_SELECT_P01_1", "group___p_o_e3___a_p_i.html#gga77fe003c3dda4c8039300d3399b8e842af78d94b9b832cb45d0b7c0584e9f6021", null ],
-      [ "POE3_MTIOC3D_PIN_SELECT_P04_0", "group___p_o_e3___a_p_i.html#gga77fe003c3dda4c8039300d3399b8e842abb0057a93aef730a67b733d3f278d0d5", null ]
+      [ "POE3_MTIOC3D_PIN_SELECT_P01_1", "group___p_o_e3___a_p_i.html#gga77fe003c3dda4c8039300d3399b8e842af78d94b9b832cb45d0b7c0584e9f6021", null ]
     ] ],
     [ "poe3_mtioc4b_pin_select_t", "group___p_o_e3___a_p_i.html#gaa493d39069339d82410d20c6ba1b2fec", [
       [ "POE3_MTIOC4B_PIN_SELECT_P18_2", "group___p_o_e3___a_p_i.html#ggaa493d39069339d82410d20c6ba1b2feca99717a001fb6d141028d72799d3ec623", null ],
       [ "POE3_MTIOC4B_PIN_SELECT_P01_2", "group___p_o_e3___a_p_i.html#ggaa493d39069339d82410d20c6ba1b2fecae41e8e78b455dfa42c762c45c0fd3606", null ],
-      [ "POE3_MTIOC4B_PIN_SELECT_P05_1", "group___p_o_e3___a_p_i.html#ggaa493d39069339d82410d20c6ba1b2fecaefd2f83b8320c9d1784aedfec646564f", null ],
       [ "POE3_MTIOC4B_PIN_SELECT_P18_3", "group___p_o_e3___a_p_i.html#ggaa493d39069339d82410d20c6ba1b2feca2390c82a583ac58f5182bdd12e266438", null ]
     ] ],
     [ "poe3_mtioc4d_pin_select_t", "group___p_o_e3___a_p_i.html#ga5fb665cba513bd53b7ea41cedbd5cc52", [
       [ "POE3_MTIOC4D_PIN_SELECT_P18_3", "group___p_o_e3___a_p_i.html#gga5fb665cba513bd53b7ea41cedbd5cc52ac46acbe2a2d71fb943e633aad426cc94", null ],
       [ "POE3_MTIOC4D_PIN_SELECT_P01_3", "group___p_o_e3___a_p_i.html#gga5fb665cba513bd53b7ea41cedbd5cc52af7f931e8b18b0d070b3e6aefc1c128fa", null ],
-      [ "POE3_MTIOC4D_PIN_SELECT_P05_3", "group___p_o_e3___a_p_i.html#gga5fb665cba513bd53b7ea41cedbd5cc52a5f68fbafd49f5e0963abd46bacecc2f6", null ],
       [ "POE3_MTIOC4D_PIN_SELECT_P18_2", "group___p_o_e3___a_p_i.html#gga5fb665cba513bd53b7ea41cedbd5cc52a9c4a16323d8d97a8dd9e1b897708a485", null ]
     ] ],
     [ "poe3_mtioc4a_pin_select_t", "group___p_o_e3___a_p_i.html#gad85cc1b1a9ec190066b84e52b3f92af9", [
       [ "POE3_MTIOC4A_PIN_SELECT_P17_7", "group___p_o_e3___a_p_i.html#ggad85cc1b1a9ec190066b84e52b3f92af9a29f70b63b0393d80e8ba1de788fb8da9", null ],
-      [ "POE3_MTIOC4A_PIN_SELECT_P00_7", "group___p_o_e3___a_p_i.html#ggad85cc1b1a9ec190066b84e52b3f92af9afe3425bb7f763a4e970054e8d0f3923b", null ],
-      [ "POE3_MTIOC4A_PIN_SELECT_P05_0", "group___p_o_e3___a_p_i.html#ggad85cc1b1a9ec190066b84e52b3f92af9a4f2f0bee9922e4acd70324d16bf106e9", null ],
       [ "POE3_MTIOC4A_PIN_SELECT_P18_0", "group___p_o_e3___a_p_i.html#ggad85cc1b1a9ec190066b84e52b3f92af9ad159d86963a0fd11d5d23ad3ffe0ddad", null ]
     ] ],
     [ "poe3_mtioc4c_pin_select_t", "group___p_o_e3___a_p_i.html#ga7c73a46488743c29365fdb99024677e0", [
       [ "POE3_MTIOC4C_PIN_SELECT_P18_0", "group___p_o_e3___a_p_i.html#gga7c73a46488743c29365fdb99024677e0ab809ebb1a814e0418faaca6e962bf15e", null ],
       [ "POE3_MTIOC4C_PIN_SELECT_P01_0", "group___p_o_e3___a_p_i.html#gga7c73a46488743c29365fdb99024677e0afac8207ea3ee8c1e9e4f926754fad881", null ],
-      [ "POE3_MTIOC4C_PIN_SELECT_P05_2", "group___p_o_e3___a_p_i.html#gga7c73a46488743c29365fdb99024677e0a2669158c2cd2080bd580967accac6fb5", null ],
       [ "POE3_MTIOC4C_PIN_SELECT_P17_7", "group___p_o_e3___a_p_i.html#gga7c73a46488743c29365fdb99024677e0a6e869a127f850d2b1b879e458d1a43fa", null ]
     ] ],
     [ "poe3_mtioc6b_pin_select_t", "group___p_o_e3___a_p_i.html#ga70a42cad8266584e2b9ba978faa99cf4", [

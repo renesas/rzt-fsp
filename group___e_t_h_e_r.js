@@ -14,6 +14,7 @@ var group___e_t_h_e_r =
       [ "p_reg_gmac", "group___e_t_h_e_r.html#a6fda4c71cf6fe24d13510d9d4c445fc9", null ],
       [ "link_status", "group___e_t_h_e_r.html#a3809e497e471f22a80822394a503aa2c", null ],
       [ "previous_link_status", "group___e_t_h_e_r.html#adea817c9d56d8b36ac7373d052bd8ba4", null ],
+      [ "link_speed_duplex", "group___e_t_h_e_r.html#ab1636cae0466fa6553034cbd5788e0b5", null ],
       [ "magic_packet", "group___e_t_h_e_r.html#ac347e6f179a18f132207eb0ec76d8cb1", null ],
       [ "link_establish_status", "group___e_t_h_e_r.html#a93518eb99475ec23ba52ba79f9e3b7ac", null ],
       [ "local_pause_bits", "group___e_t_h_e_r.html#a83056c9722f872833569fadef561ac40", null ],

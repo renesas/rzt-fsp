@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['mpu_5fcache_5finit',['mpu_cache_init',['../group___b_s_p___m_c_u.html#ga53ebad62b40495c72101ba32a108f439',1,'startup.c']]]
+  ['system_5finit',['system_init',['../group___b_s_p___m_c_u.html#gacfd73e334d50e76e674281656cc51b7e',1,'startup.c']]]
 ];

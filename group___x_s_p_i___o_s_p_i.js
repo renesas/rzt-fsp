@@ -44,6 +44,10 @@ var group___x_s_p_i___o_s_p_i =
       [ "XSPI_OSPI_PREFETCH_FUNCTION_DISABLE", "group___x_s_p_i___o_s_p_i.html#gga0f7510f116df0bbbd86af6663d9c6c69a2532a6ae87098b793b7fb4567aaa6d29", null ],
       [ "XSPI_OSPI_PREFETCH_FUNCTION_ENABLE", "group___x_s_p_i___o_s_p_i.html#gga0f7510f116df0bbbd86af6663d9c6c69a6dede61f6be759301b9f29d4ed224a50", null ]
     ] ],
+    [ "xspi_ospi_byte_order_t", "group___x_s_p_i___o_s_p_i.html#gae4ac87a62886f5558cb5d21cd5f2357f", [
+      [ "XSPI_OSPI_BYTE_ORDER_0123", "group___x_s_p_i___o_s_p_i.html#ggae4ac87a62886f5558cb5d21cd5f2357fa7d7f5251e544d4e038e7714eb521bcc7", null ],
+      [ "XSPI_OSPI_BYTE_ORDER_1032", "group___x_s_p_i___o_s_p_i.html#ggae4ac87a62886f5558cb5d21cd5f2357fae1c39de0296598d4c18f1fdcc8025ad6", null ]
+    ] ],
     [ "R_XSPI_OSPI_Open", "group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2", null ],
     [ "R_XSPI_OSPI_DirectWrite", "group___x_s_p_i___o_s_p_i.html#ga6a078843078f56dc586961e73361d455", null ],
     [ "R_XSPI_OSPI_DirectRead", "group___x_s_p_i___o_s_p_i.html#ga1c4014dc52de5e1ea57c0ba881b85a27", null ],

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2M Flexible Software Package Documentation: Expanded Serial Peripheral Interface (xSPI) OSPI (r_xspi_ospi)</title>
+<title>RZ/T2 Flexible Software Package Documentation: Expanded Serial Peripheral Interface (xSPI) OSPI (r_xspi_ospi)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,8 +32,8 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.1.0</span>
+   <div id="projectname">RZ/T2 Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v1.2.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -136,15 +136,21 @@ Overview</h1>
 <h2><a class="anchor" id="r-xspi-ospi-features"></a>
 Features</h2>
 <p>The OSPI driver has the following key features:</p><ul>
-<li>Perform data I/O Operation in both SPI(1S-1S-1S) and OPI(8D-8D-8D) modes<a class="anchor" id="um_ospi_spi"></a><a class="anchor" id="um_ospi_opi"></a></li>
+<li>Perform data I/O Operation in multiple modes<ul>
+<li>1S-1S-1S(SPI)<a class="anchor" id="um_ospi_spi"></a></li>
+<li>8D-8D-8D(OPI) (Supports only Dual Data Rate when using 8 pins)<a class="anchor" id="um_ospi_opi"></a></li>
+</ul>
+</li>
 <li>Can be configured with OctaFlash device on either of the 2 units</li>
 <li>Memory mapped read access to the OctaFlash</li>
 <li>Programming the OctaFlash device using single continuous write<a class="anchor" id="um_ospi_page_program"></a></li>
 <li>Erasing the OctaFlash device<a class="anchor" id="um_ospi_erase"></a></li>
 <li>Sending device specific commands and reading back responses<a class="anchor" id="um_ospi_direct_transfer"></a></li>
-<li>3 byte addressing for SPI<a class="anchor" id="um_ospi_3byte_address"></a></li>
-<li>4 byte addressing for SPI and OPI<a class="anchor" id="um_ospi_4byte_address"></a></li>
-<li>Auto-calibration for OPI mode<a class="anchor" id="um_ospi_autocalibration"></a> </li>
+<li>3 byte addressing for 1S-1S-1S(SPI)<a class="anchor" id="um_ospi_3byte_address"></a></li>
+<li>4 byte addressing for 1S-1S-1S(SPI) and 8D-8D-8D(OPI)<a class="anchor" id="um_ospi_4byte_address"></a></li>
+<li>Auto-calibration for 8D-8D-8D(OPI) mode<a class="anchor" id="um_ospi_autocalibration"></a></li>
+<li>Configurable byte order in 8D-8D-8D(OPI) mode except for memory mapping read<a class="anchor" id="um_ospi_byte_order"></a> <dl class="section note"><dt>Note</dt><dd>The available chip select lines may differ between devices. A full list of selectable chip select lines is available in the User's Manual for your device.</dd></dl>
+</li>
 </ul>
 <h1><a class="anchor" id="r-xspi-ospi-configuration"></a>
 Configuration</h1>
@@ -224,29 +230,38 @@ Enable</li>
 </ul>
 </td><td>Disable </td><td>Prefetch function settings. </td></tr>
 <tr>
-<td>OPI Mode &gt; Auto-Calibration &gt; Data latching delay</td><td>Must be a valid non-negative integer</td><td>0x08 </td><td>Set this to 0 to enable auto-calibration. 0x08 is the default value </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Auto-Calibration &gt; Data latching delay</td><td>Must be a valid non-negative integer</td><td>0x08 </td><td>Set this to 0 to enable auto-calibration. 0x08 is the default value </td></tr>
 <tr>
-<td>OPI Mode &gt; Auto-Calibration &gt; Auto-Calibration Address</td><td>Must be a valid non-negative integer</td><td>0x00 </td><td>Set the address of the read/write destination to be performed for auto-calibration. </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Auto-Calibration &gt; Auto-Calibration Address</td><td>Must be a valid non-negative integer</td><td>0x00 </td><td>Set the address of the read/write destination to be performed for auto-calibration. </td></tr>
 <tr>
-<td>OPI Mode &gt; Command Definitions &gt; Page Program Command</td><td>Manual Entry</td><td>0x12ED </td><td>The command to program a page in OPI mode. </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Command Definitions &gt; Page Program Command</td><td>Manual Entry</td><td>0x12ED </td><td>The command to program a page in 8D-8D-8D(OPI) Mode. </td></tr>
 <tr>
-<td>OPI Mode &gt; Command Definitions &gt; Dual Read Command</td><td>Manual Entry</td><td>0xEE11 </td><td>The command to read in DOPI mode (8DTRD). </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Command Definitions &gt; Dual Read Command</td><td>Manual Entry</td><td>0xEE11 </td><td>The command to read in 8D-8D-8D(OPI) Mode (8DTRD). </td></tr>
 <tr>
-<td>OPI Mode &gt; Command Definitions &gt; Write Enable Command</td><td>Manual Entry</td><td>0x06F9 </td><td>The command to enable write in OPI mode. </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Command Definitions &gt; Write Enable Command</td><td>Manual Entry</td><td>0x06F9 </td><td>The command to enable write in 8D-8D-8D(OPI) Mode. </td></tr>
 <tr>
-<td>OPI Mode &gt; Command Definitions &gt; Status Command</td><td>Manual Entry</td><td>0x05FA </td><td>The command to query the status of a write or erase command in OPI mode. </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Command Definitions &gt; Status Command</td><td>Manual Entry</td><td>0x05FA </td><td>The command to query the status of a write or erase command in 8D-8D-8D(OPI) Mode. </td></tr>
 <tr>
-<td>OPI Mode &gt; Command Length Bytes</td><td>Must be an integer between 1 and 2</td><td>2 </td><td>Command length in bytes </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Command Length Bytes</td><td>Must be an integer between 1 and 2</td><td>2 </td><td>Command length in bytes </td></tr>
 <tr>
-<td>OPI Mode &gt; Memory Read Dummy Cycles</td><td>Must be an integer between 0 and 31</td><td>10 </td><td>Memory read dummy cycles </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Memory Read Dummy Cycles</td><td>Must be an integer between 0 and 31</td><td>10 </td><td>Memory read dummy cycles </td></tr>
 <tr>
-<td>SPI Mode &gt; Command Definitions &gt; Page Program Command</td><td>Manual Entry</td><td>0x12 </td><td>The command to program a page in SPI mode. </td></tr>
+<td>8D-8D-8D(OPI) Mode &gt; Byte Order</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Byte0, Byte1, Byte2, Byte3</li>
+<li>
+Byte1, Byte0, Byte3, Byte2</li>
+</ul>
+</td><td>Byte0, Byte1, Byte2, Byte3 </td><td>Byte order on the external bus. <br />
+Note: When accesses without API (with memory mapping), the byte order is limited to Byte0, Byte1, Byte2, Byte3. </td></tr>
 <tr>
-<td>SPI Mode &gt; Command Definitions &gt; Read Command</td><td>Manual Entry</td><td>0x13 </td><td>The command to read in SPI mode. </td></tr>
+<td>1S-1S-1S (SPI) Mode &gt; Command Definitions &gt; Page Program Command</td><td>Manual Entry</td><td>0x12 </td><td>The command to program a page in 1S-1S-1S (SPI) Mode. </td></tr>
 <tr>
-<td>SPI Mode &gt; Command Definitions &gt; Write Enable Command</td><td>Manual Entry</td><td>0x06 </td><td>The command to enable write in SPI mode. </td></tr>
+<td>1S-1S-1S (SPI) Mode &gt; Command Definitions &gt; Read Command</td><td>Manual Entry</td><td>0x13 </td><td>The command to read in 1S-1S-1S (SPI) Mode. </td></tr>
 <tr>
-<td>SPI Mode &gt; Command Definitions &gt; Status Command</td><td>Manual Entry</td><td>0x05 </td><td>The command to query the status of a write or erase command in SPI mode. </td></tr>
+<td>1S-1S-1S (SPI) Mode &gt; Command Definitions &gt; Write Enable Command</td><td>Manual Entry</td><td>0x06 </td><td>The command to enable write in 1S-1S-1S (SPI) Mode. </td></tr>
+<tr>
+<td>1S-1S-1S (SPI) Mode &gt; Command Definitions &gt; Status Command</td><td>Manual Entry</td><td>0x05 </td><td>The command to query the status of a write or erase command in 1S-1S-1S (SPI) Mode. </td></tr>
 <tr>
 <td>Common Command Definitions &gt; Sector Erase Command</td><td>Manual Entry</td><td>0x21DE </td><td>The command to erase a sector. Set Sector Erase Size to 0 if unused. </td></tr>
 <tr>
@@ -332,22 +347,32 @@ OSPI Memory Mapped Access</h2>
 </table>
 <h2><a class="anchor" id="r-xspi-ospi-auto-calibration"></a>
 Auto-calibration</h2>
-<p>Auto-calibration procedure is triggered automatically when the 'Data latching delay' field in the configurator properties is set to 0. The user application is responsible for setting the appropriate preamble pattern before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a> with DOPI mode or changing the SPI protocol to DOPI using <a class="el" href="group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369">R_XSPI_OSPI_SpiProtocolSet()</a> API. The appropriate preamble pattern can be written to the desired address using the <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5">R_XSPI_OSPI_Write()</a> API while in the SPI mode. Ensure that the same address is passed through the configurator. If the OctaFlash chip is already in DOPI mode, the preamble pattern must be programmed using the debugger before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a>.</p>
+<p>Auto-calibration procedure is triggered automatically when the 'Data latching delay' field in the configurator properties is set to 0. The user application is responsible for setting the appropriate preamble pattern before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a> with 8D-8D-8D(OPI) mode or changing the SPI protocol to 8D-8D-8D(OPI) using <a class="el" href="group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369">R_XSPI_OSPI_SpiProtocolSet()</a> API. The appropriate preamble pattern can be written to the desired address using the <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5">R_XSPI_OSPI_Write()</a> API while in the 1S-1S-1S(SPI) mode. Ensure that the same address is passed through the configurator. If the OctaFlash chip is already in 8D-8D-8D(OPI) mode, the preamble pattern must be programmed using the debugger before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a>.</p>
 <h2><a class="anchor" id="r-xspi-ospi-chip-select-latencies"></a>
 Chip Select Latencies</h2>
-<p>Chip select latencies can be set through the configurator. The default settings support SPI at minimum latency. In case the driver is opened in SPI mode and will be switched to DOPI mode later using <a class="el" href="group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369">R_XSPI_OSPI_SpiProtocolSet()</a>, please select latencies required for DOPI before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a>.</p>
+<p>Chip select latencies can be set through the configurator. The default settings support 1S-1S-1S(SPI) at minimum latency. In case the driver is opened in 1S-1S-1S(SPI) mode and will be switched to 8D-8D-8D(OPI) mode later using <a class="el" href="group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369">R_XSPI_OSPI_SpiProtocolSet()</a>, please select latencies required for 8D-8D-8D(OPI) before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a>.</p>
 <h2><a class="anchor" id="r-xspi-ospi-octaflash-commands"></a>
 OctaFlash Commands</h2>
 <ul>
-<li>Set the erase commands based on intended mode of operation (SPI or OPI). These commands cannot be changed during run-time.</li>
-<li>Read, Write and Status commands for both SPI and OPI are configured allowing switching between the modes at run-time.</li>
+<li>Set the erase commands based on intended mode of operation (1S-1S-1S(SPI) or 8D-8D-8D(OPI)). These commands cannot be changed during run-time.</li>
+<li>Read, Write and Status commands for both 1S-1S-1S(SPI) and 8D-8D-8D(OPI) are configured allowing switching between the modes at run-time.</li>
 </ul>
 <h2>OSPI Data and IAR</h2>
 <p>When using the IAR compiler, OSPI data must be <code>const</code> qualified to be downloaded by the debugger.</p>
 <h2><a class="anchor" id="r-xspi-ospi-limitations"></a>
 Limitations</h2>
 <p>When using the xSPI_OSPI driver, it is necessary to set the MPU with External address space xSPIn (0x60000000 - 0x6FFFFFFF) as the cacheable area and Mirror area of external address space xSPIn (0x40000000 - 0x4FFFFFFF) as the non-cacheable area.</p>
-<table class="memberdecls">
+<h1><a class="anchor" id="r-ospi-examples"></a>
+Examples</h1>
+<h2>Basic Example</h2>
+<p>This is a basic example of minimal use of the OSPI in an application. When using the section definition in the example below, the user must define it separately in the linker configuration file.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#define OSPI_EXAMPLE_DATA_LENGTH    (1024)</span></div><div class="line"></div><div class="line">uint8_t g_dest[OSPI_EXAMPLE_DATA_LENGTH];</div><div class="line"></div><div class="line"><span class="comment">/* Place data in the .ospi_flash section to flash it during programming. */</span></div><div class="line"><span class="keyword">const</span> uint8_t g_src[OSPI_EXAMPLE_DATA_LENGTH] BSP_PLACE_IN_SECTION(<span class="stringliteral">&quot;.ospi_flash&quot;</span>) = <span class="stringliteral">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;</span>;</div><div class="line"></div><div class="line"><span class="comment">/* Place code in the .code_in_ospi section to flash it during programming. */</span></div><div class="line"><span class="keywordtype">void</span> r_ospi_example_function(<span class="keywordtype">void</span>) BSP_PLACE_IN_SECTION(<span class="stringliteral">&quot;.code_in_ospi&quot;</span>) __attribute__((noinline));</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_ospi_example_function (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Add code here. */</span></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_ospi_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line"></div><div class="line">    <span class="comment">/* Open the OSPI instances */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open</a>(&amp;g_ospi0_ctrl, &amp;g_ospi0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Change SPI to DOPI mode */</span></div><div class="line">    r_ospi_example_spi_to_dopi();</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_OSPI_Open() and any required device specific initialization, data can be read directly from the OSPI flash. */</span></div><div class="line">    memcpy(&amp;g_dest[0], &amp;g_src[0], OSPI_EXAMPLE_DATA_LENGTH);</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_OSPI_Open() and any required device specific initialization, functions in the OSPI flash can be called. */</span></div><div class="line">    r_ospi_example_function();</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Reading Status Register Example (R_XSPI_OSPI_DirectTransfer)</h2>
+<p>This is an example of using R_XSPI_OSPI_DirectTransfer with write direction followed by R_XSPI_OSPI_DirectTransfer with read direction to send the write enable command and read back the status register from the device.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#define OSPI_COMMAND_WRITE_ENABLE            (0x06U)</span></div><div class="line"><span class="preprocessor">#define OSPI_COMMAND_READ_STATUS_REGISTER    (0x05U)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_ospi_direct_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    spi_flash_direct_transfer_t ospi_test_direct_transfer =</div><div class="line">    {</div><div class="line">        .command        = OSPI_COMMAND_WRITE_ENABLE,</div><div class="line">        .address        = 0U,</div><div class="line">        .data           = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 0U,</div><div class="line">        .data_length    = 0U,</div><div class="line">        .dummy_cycles   = 0U</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Open the OSPI instance. */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open</a>(&amp;g_ospi0_ctrl, &amp;g_ospi0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Write Enable */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga33cbe6104492f4c691f5803fe345ecca">R_XSPI_OSPI_DirectTransfer</a>(&amp;g_ospi0_ctrl, &amp;ospi_test_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Read Status Register */</span></div><div class="line">    ospi_test_direct_transfer.command     = OSPI_COMMAND_READ_STATUS_REGISTER;</div><div class="line">    ospi_test_direct_transfer.data_length = 1U;</div><div class="line">    err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga33cbe6104492f4c691f5803fe345ecca">R_XSPI_OSPI_DirectTransfer</a>(&amp;g_ospi0_ctrl, &amp;ospi_test_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Check if Write Enable is set */</span></div><div class="line">    <span class="keywordflow">if</span> (OSPI_WEN_BIT_MASK != (ospi_test_direct_transfer.data &amp; OSPI_WEN_BIT_MASK))</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Auto-calibration Example (R_XSPI_OSPI_Open, R_XSPI_OSPI_Write, R_XSPI_OSPI_SpiProtocolSet)</h2>
+<p>This is an example of using R_XSPI_OSPI_SpiProtocolSet to change the operating mode from SPI to DOPI and allow the driver to initiate auto-calibration.</p>
+<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define OSPI_DOPI_PREAMBLE_PATTERN_LENGTH_BYTES    (16U)</span></div><div class="line"><span class="preprocessor">#define OSPI_EXAMPLE_PREAMBLE_ADDRESS              (0x60000000U) </span><span class="comment">/* Device connected to xSPI0_CS0 */</span><span class="preprocessor"></span></div><div class="line"><span class="keyword">const</span> uint8_t g_preamble_bytes[OSPI_DOPI_PREAMBLE_PATTERN_LENGTH_BYTES] =</div><div class="line">{</div><div class="line">    0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x08, 0x00, 0x00, 0xF7, 0xFF, 0x00, 0x08, 0xF7, 0x00, 0xF7</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> ospi_example_wait_until_wip (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>          err = FSP_SUCCESS;</div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__status__t">spi_flash_status_t</a> status;</div><div class="line">    status.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ae20d4bed523ca4e802f5da6fdec4ca43">write_in_progress</a> = <span class="keyword">true</span>;</div><div class="line">    uint32_t timeout = UINT32_MAX;</div><div class="line">    <span class="keywordflow">while</span> ((status.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ae20d4bed523ca4e802f5da6fdec4ca43">write_in_progress</a>) &amp;&amp; (--timeout))</div><div class="line">    {</div><div class="line"></div><div class="line">        err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga05ba32343ad208b17d950b55b33dc73b">R_XSPI_OSPI_StatusGet</a>(&amp;g_ospi0_ctrl, &amp;status);</div><div class="line">        handle_error(err);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (0 == timeout)</div><div class="line">    {</div><div class="line">        handle_error(err);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_ospi_auto_calibrate_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Open the OSPI instance. */</span></div><div class="line">    <span class="comment">/* Set data_latch_delay_clocks to 0x0 to enable auto-calibration */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open</a>(&amp;g_ospi0_ctrl, &amp;g_ospi0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    uint8_t * preamble_pattern_addr = (uint8_t *) OSPI_EXAMPLE_PREAMBLE_ADDRESS;</div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5">R_XSPI_OSPI_Write</a>(&amp;g_ospi0_ctrl,</div><div class="line">                            g_preamble_bytes,</div><div class="line">                            preamble_pattern_addr,</div><div class="line">                            OSPI_DOPI_PREAMBLE_PATTERN_LENGTH_BYTES);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Wait until write has been completed */</span></div><div class="line">    ospi_example_wait_until_wip();</div><div class="line"></div><div class="line">    <span class="comment">/* Change from SPI to DOPI mode */</span></div><div class="line">    r_ospi_example_spi_to_dopi();</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Octaclk Update Example (R_XSPI_OSPI_SpiProtocolSet)</h2>
+<p>This is an example of using R_CGC_SystemClockSet to change the Octal-SPI clock frequency during run time. The OCTACLK frequency must be updated before calling the R_XSPI_OSPI_SpiProtocolSet with appropriate clock source and divider settings required to be set for the new SPI protocol mode. Ensure that the clock source selected is started.</p>
+<div class="fragment"><div class="line"><a class="code" href="group___c_g_c.html#structcgc__instance__ctrl__t">cgc_instance_ctrl_t</a> g_cgc0_ctrl;</div><div class="line"><span class="keyword">const</span> <a class="code" href="group___c_g_c___a_p_i.html#structcgc__cfg__t">cgc_cfg_t</a>     g_cgc0_cfg = {NULL};</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> ospi_example_change_omclk (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    (void) <a class="code" href="group___c_g_c.html#ga84e412218c7f8074623d521bfc331a3c">R_CGC_Open</a>(&amp;g_cgc0_ctrl, &amp;g_cgc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Get system clock configuration */</span></div><div class="line">    cgc_clock_extend_cfg_t p_divider_cfg_extend;</div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#unioncgc__divider__cfg__t">cgc_divider_cfg_t</a>      p_divider_cfg;</div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a>            p_clock;</div><div class="line">    p_divider_cfg.p_extend = &amp;p_divider_cfg_extend;</div><div class="line"></div><div class="line">    <a class="code" href="group___c_g_c.html#ga52e037474dd1e9ebd92c3e3746517557">R_CGC_SystemClockGet</a>(&amp;g_cgc0_ctrl, &amp;p_clock, &amp;p_divider_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Update XSPI_CLK0 clock to 100.0MHz */</span></div><div class="line">    cgc_clock_extend_cfg_t * p_extend = (cgc_clock_extend_cfg_t *) (p_divider_cfg.p_extend);</div><div class="line">    p_extend-&gt;sckcr.fselxspi0_div = <a class="code" href="group___c_g_c.html#gga0b75c9c87f838ed5f90062bef3a8dbd9a7319cc3cc60d59cbd772ae25b85e16f7">CGC_XSPI_CLOCK_DIV_24</a>;</div><div class="line">    <a class="code" href="group___c_g_c.html#ga7f14fdc1ec5733550f503bd6868f98cd">R_CGC_SystemClockSet</a>(&amp;g_cgc0_ctrl, <a class="code" href="group___c_g_c___a_p_i.html#gga4dcbe960cf591207eef834969b83f8a6a14141e6db3711cbc45bb67a3704b3ac3">CGC_CLOCK_PLL</a>, &amp;p_divider_cfg);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structxspi__ospi__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___o_s_p_i.html#structxspi__ospi__instance__ctrl__t">xspi_ospi_instance_ctrl_t</a></td></tr>
@@ -367,6 +392,8 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga440f55141163d70b896fa3a3444f3404"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0f7510f116df0bbbd86af6663d9c6c69"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___o_s_p_i.html#ga0f7510f116df0bbbd86af6663d9c6c69">xspi_ospi_prefetch_function_t</a> </td></tr>
 <tr class="separator:ga0f7510f116df0bbbd86af6663d9c6c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae4ac87a62886f5558cb5d21cd5f2357f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___o_s_p_i.html#gae4ac87a62886f5558cb5d21cd5f2357f">xspi_ospi_byte_order_t</a> </td></tr>
+<tr class="separator:gae4ac87a62886f5558cb5d21cd5f2357f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structxspi__ospi__instance__ctrl__t" id="structxspi__ospi__instance__ctrl__t"></a>
@@ -543,6 +570,26 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="gae4ac87a62886f5558cb5d21cd5f2357f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae4ac87a62886f5558cb5d21cd5f2357f">&#9670;&nbsp;</a></span>xspi_ospi_byte_order_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___x_s_p_i___o_s_p_i.html#gae4ac87a62886f5558cb5d21cd5f2357f">xspi_ospi_byte_order_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggae4ac87a62886f5558cb5d21cd5f2357fa7d7f5251e544d4e038e7714eb521bcc7"></a>XSPI_OSPI_BYTE_ORDER_0123&#160;</td><td class="fielddoc"><p>8D-8D-8D(OPI) byte order byte 0, byte 1, byte 2, byte 3 </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggae4ac87a62886f5558cb5d21cd5f2357fae1c39de0296598d4c18f1fdcc8025ad6"></a>XSPI_OSPI_BYTE_ORDER_1032&#160;</td><td class="fielddoc"><p>8D-8D-8D(OPI) byte order byte 1, byte 0, byte 3, byte 2 </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga67d8a86dcc3370f47dd8f113f604e1b2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga67d8a86dcc3370f47dd8f113f604e1b2">&#9670;&nbsp;</a></span>R_XSPI_OSPI_Open()</h2>
@@ -571,7 +618,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <p>Open the OSPI driver module. After the driver is open, the OSPI can be accessed like internal flash memory.</p>
 <p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a6b8a1ae0eed7bca555c94959c1314ae3">spi_flash_api_t::open</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Open the OSPI instances */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open</a>(&amp;g_ospi0_ctrl, &amp;g_ospi0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_ctrl or p_cfg is NULL. </td></tr>
@@ -706,7 +753,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <p>Read/Write raw data directly with the OctaFlash.</p>
 <p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a21da248768dd75281ea7b29f2d243afd">spi_flash_api_t::directTransfer</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Write Enable */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga33cbe6104492f4c691f5803fe345ecca">R_XSPI_OSPI_DirectTransfer</a>(&amp;g_ospi0_ctrl, &amp;ospi_test_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>The flash was programmed successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
@@ -808,7 +855,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <p>Program a page of data to the flash.</p>
 <p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a61e667a9ae9af76c5f8fd9f1973c6838">spi_flash_api_t::write</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5">R_XSPI_OSPI_Write</a>(&amp;g_ospi0_ctrl,</div><div class="line">                            g_preamble_bytes,</div><div class="line">                            preamble_pattern_addr,</div><div class="line">                            OSPI_DOPI_PREAMBLE_PATTERN_LENGTH_BYTES);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>The flash was programmed successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_instance_ctrl, p_dest or p_src is NULL, or byte_count crosses a page boundary. </td></tr>
@@ -817,7 +864,9 @@ Enumerations</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>In this API, data can be written up to 64 bytes at a time. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>In this API, data can be written up to 64 bytes at a time. </dd>
+<dd>
+In 8D-8D-8D(OPI) mode, written data must be even bytes in size. </dd></dl>
 
 </div>
 </div>
@@ -893,7 +942,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <p>Gets the write or erase status of the flash.</p>
 <p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a1eea2761178ddd8ca7ef3aacd5c80507">spi_flash_api_t::statusGet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">        err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga05ba32343ad208b17d950b55b33dc73b">R_XSPI_OSPI_StatusGet</a>(&amp;g_ospi0_ctrl, &amp;status);</div><div class="line">        handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>The write status is in p_status. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_instance_ctrl or p_status is NULL. </td></tr>
@@ -967,7 +1016,7 @@ Enumerations</h2></td></tr>
 </div><div class="memdoc">
 <p>Sets the SPI protocol.</p>
 <p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a3328711e7e70c8379f4373d2861d785a">spi_flash_api_t::spiProtocolSet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
+<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Transition the OSPI peripheral to DOPI mode. This will initiate auto calibration as MDTR is 0 */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369">R_XSPI_OSPI_SpiProtocolSet</a>(&amp;g_ospi0_ctrl, <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535acf8fc61585bd2209fc3953d8d2eb4606">SPI_FLASH_PROTOCOL_8D_8D_8D</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>SPI protocol updated on MPU peripheral. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
@@ -1022,7 +1071,7 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the driver version based on compile time macros.</p>
+<p>DEPRECATED Get the driver version based on compile time macros.</p>
 <p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#acf0f82982d8022e22796c252131063af">spi_flash_api_t::versionGet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
@@ -1040,7 +1089,7 @@ Enumerations</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

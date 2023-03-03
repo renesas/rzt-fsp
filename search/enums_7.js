@@ -13,6 +13,5 @@ var searchData=
   ['ioport_5fevent_5fdirection_5ft',['ioport_event_direction_t',['../group___i_o_p_o_r_t.html#ga06a4ad7ce5b0c573328feccb1e2c54fb',1,'r_ioport.h']]],
   ['ioport_5fevent_5finitial_5fbuffer_5fvalue_5ft',['ioport_event_initial_buffer_value_t',['../group___i_o_p_o_r_t.html#gad182b542c7455ca61b70f0eeae3a380d',1,'r_ioport.h']]],
   ['ioport_5fevent_5foutput_5foperation_5ft',['ioport_event_output_operation_t',['../group___i_o_p_o_r_t.html#ga6baec76057e6dbc11b3de637ba3ca76e',1,'r_ioport.h']]],
-  ['ioport_5fevent_5fpin_5fselection_5ft',['ioport_event_pin_selection_t',['../group___i_o_p_o_r_t.html#gac5793f51f8a5eb8095c52f9d633f94c3',1,'r_ioport.h']]],
-  ['ioport_5fpin_5fpfc_5ft',['ioport_pin_pfc_t',['../group___i_o_p_o_r_t___a_p_i.html#ga837e8cdde90ce5e49477259a01273a6e',1,'r_ioport_api.h']]]
+  ['ioport_5fevent_5fpin_5fselection_5ft',['ioport_event_pin_selection_t',['../group___i_o_p_o_r_t.html#gac5793f51f8a5eb8095c52f9d633f94c3',1,'r_ioport.h']]]
 ];

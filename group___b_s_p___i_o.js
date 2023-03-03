@@ -237,8 +237,18 @@ var group___b_s_p___i_o =
       [ "BSP_IO_PORT_24_PIN_6", "group___b_s_p___i_o.html#gga0adbfd4b7db319886d667acb4804d80aa6a216a609c1deb499b0efb9b4d1361e3", null ],
       [ "BSP_IO_PORT_24_PIN_7", "group___b_s_p___i_o.html#gga0adbfd4b7db319886d667acb4804d80aa1838fc798072e98be87a44cff43b159b", null ]
     ] ],
+    [ "bsp_io_region_t", "group___b_s_p___i_o.html#ga221c5bcf95b3081615a699272157d00d", [
+      [ "BSP_IO_REGION_NOT_SAFE", "group___b_s_p___i_o.html#gga221c5bcf95b3081615a699272157d00da96932f6e9ab2fa87b2f84c7fc90daed1", null ],
+      [ "BSP_IO_REGION_SAFE", "group___b_s_p___i_o.html#gga221c5bcf95b3081615a699272157d00dab1f4eec7183c062158a3631a2f7e3ef7", null ]
+    ] ],
     [ "R_BSP_PinRead", "group___b_s_p___i_o.html#ga6764c3fac52569cadd44b83a6d3f432d", null ],
     [ "R_BSP_PinWrite", "group___b_s_p___i_o.html#ga33cef14f93543bcb3531b4f2e377c5c4", null ],
+    [ "R_BSP_PinSet", "group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043", null ],
+    [ "R_BSP_PinClear", "group___b_s_p___i_o.html#ga6f6397f7883fdc9f649d359883584a7d", null ],
+    [ "R_BSP_PinToggle", "group___b_s_p___i_o.html#gac04dbcd968fe8e4a99401a9459af9a3a", null ],
+    [ "R_BSP_FastPinRead", "group___b_s_p___i_o.html#gab124d0d8574571c1850ea044c22dc3e6", null ],
+    [ "R_BSP_PortWrite", "group___b_s_p___i_o.html#gabe938c2bba070c52b7bb30be3c32f1a9", null ],
+    [ "R_BSP_PortRead", "group___b_s_p___i_o.html#ga65d530a32f14198c5556f49efc2377cf", null ],
     [ "R_BSP_PinAccessEnable", "group___b_s_p___i_o.html#ga0ad2123f7a5152cf108883163581f11b", null ],
     [ "R_BSP_PinAccessDisable", "group___b_s_p___i_o.html#gab5aab592b5fbbfa18d542c0812850b98", null ]
 ];

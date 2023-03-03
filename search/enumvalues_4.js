@@ -82,6 +82,9 @@ var searchData=
   ['ethsw_5flink_5fspeed_5f10f',['ETHSW_LINK_SPEED_10F',['../group___e_t_h_s_w___a_p_i.html#ggab114e32819a7182617060fff577cf198a074db269bb55159bb037a3d7402ddfe6',1,'r_ethsw_api.h']]],
   ['ethsw_5flink_5fspeed_5f10h',['ETHSW_LINK_SPEED_10H',['../group___e_t_h_s_w___a_p_i.html#ggab114e32819a7182617060fff577cf198a7f6404d64a13853ee345a5b454ab019f',1,'r_ethsw_api.h']]],
   ['ethsw_5flink_5fspeed_5fno_5flink',['ETHSW_LINK_SPEED_NO_LINK',['../group___e_t_h_s_w___a_p_i.html#ggab114e32819a7182617060fff577cf198abc1a366a36e1900b9ea26273eba9ec63',1,'r_ethsw_api.h']]],
+  ['ethsw_5fmactab_5fclr_5fall',['ETHSW_MACTAB_CLR_ALL',['../group___e_t_h_s_w___a_p_i.html#gga40bb2ee719730c92e3b7b9d56c8454bdaf0639ea564e384c87348596e8e33ee9b',1,'r_ethsw_api.h']]],
+  ['ethsw_5fmactab_5fclr_5fdynamic',['ETHSW_MACTAB_CLR_DYNAMIC',['../group___e_t_h_s_w___a_p_i.html#gga40bb2ee719730c92e3b7b9d56c8454bdaa67511e0fcc5f21f612a8f58fa9946f7',1,'r_ethsw_api.h']]],
+  ['ethsw_5fmactab_5fclr_5fstatic',['ETHSW_MACTAB_CLR_STATIC',['../group___e_t_h_s_w___a_p_i.html#gga40bb2ee719730c92e3b7b9d56c8454bdafca28754e373b34181e1725e4bd2c090',1,'r_ethsw_api.h']]],
   ['ethsw_5fphylink_5fdisable',['ETHSW_PHYLINK_DISABLE',['../group___e_t_h_s_w___a_p_i.html#gga13d7e008bef98a98415aaee8e18dced5ab53e38c59cfc3471f2b66a13e9daa54d',1,'r_ethsw_api.h']]],
   ['ethsw_5fphylink_5fenable',['ETHSW_PHYLINK_ENABLE',['../group___e_t_h_s_w___a_p_i.html#gga13d7e008bef98a98415aaee8e18dced5a2fbac496dfe9b6c4e569d4a19386bd6c',1,'r_ethsw_api.h']]],
   ['ethsw_5fspecific_5ftag_5fdisable',['ETHSW_SPECIFIC_TAG_DISABLE',['../group___e_t_h_s_w___a_p_i.html#ggae55e35e1d4b372ba00644dfdeff886e7ada840a4b79700be4000e1be2a38514d2',1,'r_ethsw_api.h']]],
@@ -98,5 +101,13 @@ var searchData=
   ['external_5fbus_5fdata_5fbus_5fwidth_5f32bit',['EXTERNAL_BUS_DATA_BUS_WIDTH_32BIT',['../group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#gga76319ec201b8b9ba3139b469f1e27110af727215cc126ba633697eb085174ddc9',1,'r_external_bus_api.h']]],
   ['external_5fbus_5fdata_5fbus_5fwidth_5f8bit',['EXTERNAL_BUS_DATA_BUS_WIDTH_8BIT',['../group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#gga76319ec201b8b9ba3139b469f1e27110abb9d893f3e1d50c6021792b743199961',1,'r_external_bus_api.h']]],
   ['external_5fbus_5fexternal_5fwait_5fdisable',['EXTERNAL_BUS_EXTERNAL_WAIT_DISABLE',['../group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#ggaa7ce665fe7054d45a5d4a7fad4656bb3a7d6c641e3499c59ef7d22b4055efeb93',1,'r_external_bus_api.h']]],
-  ['external_5fbus_5fexternal_5fwait_5fenable',['EXTERNAL_BUS_EXTERNAL_WAIT_ENABLE',['../group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#ggaa7ce665fe7054d45a5d4a7fad4656bb3a1892e1320de1802f09fbd9c144e9472f',1,'r_external_bus_api.h']]]
+  ['external_5fbus_5fexternal_5fwait_5fenable',['EXTERNAL_BUS_EXTERNAL_WAIT_ENABLE',['../group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#ggaa7ce665fe7054d45a5d4a7fad4656bb3a1892e1320de1802f09fbd9c144e9472f',1,'r_external_bus_api.h']]],
+  ['external_5firq_5fpclk_5fdiv_5fby_5f1',['EXTERNAL_IRQ_PCLK_DIV_BY_1',['../group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html#gga692e093fc800ee08e3f84fae648372d8a8efd589848d944d15906446d30500c1a',1,'r_external_irq_api.h']]],
+  ['external_5firq_5fpclk_5fdiv_5fby_5f32',['EXTERNAL_IRQ_PCLK_DIV_BY_32',['../group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html#gga692e093fc800ee08e3f84fae648372d8a0ec86c6eb31ac0c5e2a789e3bcefe334',1,'r_external_irq_api.h']]],
+  ['external_5firq_5fpclk_5fdiv_5fby_5f64',['EXTERNAL_IRQ_PCLK_DIV_BY_64',['../group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html#gga692e093fc800ee08e3f84fae648372d8a50e18b67ca2b1d8c0efb69dac660c581',1,'r_external_irq_api.h']]],
+  ['external_5firq_5fpclk_5fdiv_5fby_5f8',['EXTERNAL_IRQ_PCLK_DIV_BY_8',['../group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html#gga692e093fc800ee08e3f84fae648372d8aea6e72eaa11987f54579a14bb4b3a7e9',1,'r_external_irq_api.h']]],
+  ['external_5firq_5ftrig_5fboth_5fedge',['EXTERNAL_IRQ_TRIG_BOTH_EDGE',['../group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html#gga2d1960d763da14da209e16fbb972d57ca0a2ebac83c3e8ca3da64e703dda65b71',1,'r_external_irq_api.h']]],
+  ['external_5firq_5ftrig_5ffalling',['EXTERNAL_IRQ_TRIG_FALLING',['../group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html#gga2d1960d763da14da209e16fbb972d57caace14d51313fed5f17da4b9828fd5412',1,'r_external_irq_api.h']]],
+  ['external_5firq_5ftrig_5flevel_5flow',['EXTERNAL_IRQ_TRIG_LEVEL_LOW',['../group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html#gga2d1960d763da14da209e16fbb972d57cae0ae8739569bb4721c7ed289397b9c4f',1,'r_external_irq_api.h']]],
+  ['external_5firq_5ftrig_5frising',['EXTERNAL_IRQ_TRIG_RISING',['../group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html#gga2d1960d763da14da209e16fbb972d57ca2d7a4f8fd21fad6f5a671336152d46b0',1,'r_external_irq_api.h']]]
 ];

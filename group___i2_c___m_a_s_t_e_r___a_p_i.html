@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2M Flexible Software Package Documentation: I2C Master Interface</title>
+<title>RZ/T2 Flexible Software Package Documentation: I2C Master Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,8 +32,8 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.1.0</span>
+   <div id="projectname">RZ/T2 Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v1.2.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -107,7 +107,8 @@ Summary</h1>
 <li>Callback function support which can return an event code</li>
 </ul>
 <p>Implemented by:</p><ul>
-<li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html">I2C Master on IIC (r_iic_master)</a> </li>
+<li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html">I2C Master on IIC (r_iic_master)</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html">Serial Communications Interface (SCI) I2C (r_sci_i2c)</a> </li>
 </ul>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -350,6 +351,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Opens the I2C Master driver and initializes the hardware. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gaf27ed4f61dc662c28564646bd8bf01c3">R_IIC_MASTER_Open()</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html#gaddcd4299259f33f1586458c6f580ef4c">R_SCI_I2C_Open()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -375,6 +377,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Performs a read operation on an I2C Master device. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga6147f27a169deef934b6f46a0de3652f">R_IIC_MASTER_Read()</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html#gad044a875458d5878769a8f4b4b5e038f">R_SCI_I2C_Read()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -402,6 +405,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Performs a write operation on an I2C Master device. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gad6f6d1f0e12c28bf77c27941fbf18359">R_IIC_MASTER_Write()</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html#ga7bb2633c299214aa6c1779aa39d8df0c">R_SCI_I2C_Write()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -429,6 +433,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Performs a reset of the peripheral. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga85ef762ddd49f1a137ce9e24c6573059">R_IIC_MASTER_Abort()</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html#ga417258e6c32f4000c95198a60f2a699d">R_SCI_I2C_Abort()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -453,6 +458,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Sets address of the slave device without reconfiguring the bus. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gac71642b0b148f43ffb3e6b8cf2a3c949">R_IIC_MASTER_SlaveAddressSet()</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html#gaafb153ace0acecf6d61037ed2113c6da">R_SCI_I2C_SlaveAddressSet()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -479,6 +485,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga535b73426b62ef08adecfde663160133">R_IIC_MASTER_CallbackSet()</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html#gaff974630e37963ed18027b7b529d9f0d">R_SCI_I2C_CallbackSet()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -506,6 +513,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Closes the driver and releases the I2C Master device. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga88558649a9cf9ccd54b745457227ab7c">R_IIC_MASTER_Close()</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html#ga6ce2bd61f5a153cd7957c4a1b1350df8">R_SCI_I2C_Close()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -528,8 +536,9 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Gets version information and stores it in the provided version struct. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
+<p>DEPRECATED Gets version information and stores it in the provided version struct. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga5ff4810180163d8d57963043bc8c1bfa">R_IIC_MASTER_VersionGet()</a></li>
+<li><a class="el" href="group___s_c_i___i2_c.html#ga075bd36361ec44fc1dc964248db8c7ff">R_SCI_I2C_VersionGet()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -673,7 +682,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

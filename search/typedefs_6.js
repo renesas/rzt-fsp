@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['poe3_5fctrl_5ft',['poe3_ctrl_t',['../group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402',1,'r_poe3_api.h']]],
-  ['poeg_5fctrl_5ft',['poeg_ctrl_t',['../group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7',1,'r_poeg_api.h']]]
+  ['mtu3_5fphase_5fcount_5fctrl_5ft',['mtu3_phase_count_ctrl_t',['../group___m_t_u3___p_h_a_s_e___c_o_u_n_t___a_p_i.html#ga5e2b455f546433882b22e24b59d28859',1,'r_mtu3_phase_count_api.h']]]
 ];

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2M Flexible Software Package Documentation: Inter-CPU IRQ on ICU (r_icu_inter_cpu_irq)</title>
+<title>RZ/T2 Flexible Software Package Documentation: Inter-CPU IRQ on ICU (r_icu_inter_cpu_irq)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,8 +32,8 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.1.0</span>
+   <div id="projectname">RZ/T2 Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v1.2.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -103,6 +103,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga66367184ba4bd716b174d1c960d77cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0c2911e08d0529aac4134e4d302d08d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c2911e08d0529aac4134e4d302d08d5">R_ICU_INTER_CPU_IRQ_Generate</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_api_ctrl)</td></tr>
 <tr class="separator:ga0c2911e08d0529aac4134e4d302d08d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0c27ff523c2ecdd4f9f55b7ffebbd384"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c27ff523c2ecdd4f9f55b7ffebbd384">R_ICU_INTER_CPU_IRQ_CallbackSet</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga0c27ff523c2ecdd4f9f55b7ffebbd384"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab979e79ab28366f8d35a5eedf4215d4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#gab979e79ab28366f8d35a5eedf4215d4d">R_ICU_INTER_CPU_IRQ_Close</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_api_ctrl)</td></tr>
 <tr class="separator:gab979e79ab28366f8d35a5eedf4215d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -116,12 +118,11 @@ Overview</h1>
 <h2><a class="anchor" id="r-icu-inter-cpu-irq-features"></a>
 Features</h2>
 <p><a class="anchor" id="um_icu_inter_cpu_irq_open_self_int_cpu"></a></p><ul>
-<li>Inter-CPUs interrupt is not supported in FSP version 1.1.0.</li>
-<li>Supports only configuring interrupts for software interrupt to its own CPU.<ul>
+<li>Supports configuring interrupts for inter-CPUs or software interrupt to its own CPU.<ul>
 <li>Generating interrupt.</li>
 </ul>
 </li>
-<li>Supports configuring a user callback function, which will be invoked by the HAL module when an interrupt is generated.</li>
+<li>Supports configuring a user callback function, which will be invoked by the HAL module when an inter-CPUs interrupt is generated.</li>
 </ul>
 <h1><a class="anchor" id="r-icu-inter-cpu-irq-configuration"></a>
 Configuration</h1>
@@ -156,6 +157,7 @@ This module can be added to the Stacks tab via New Stack &gt; Driver &gt; System
 <td>Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function can be provided here. If this callback function is provided, it is called from the interrupt service routine (ISR) each time the IRQn triggers </td></tr>
 </table>
 </p>
+<p>This module can be selected only when using Dual core devices.</p>
 <h2><a class="anchor" id="r-icu-inter-cpu-irq-clock-configuration"></a>
 Clock Configuration</h2>
 <p>The ICU peripheral module doesn't require any specific clock settings.</p>
@@ -164,26 +166,67 @@ Pin Configuration</h2>
 <p>This module does not use I/O pins.</p>
 <h1><a class="anchor" id="r-icu-inter-cpu-irq-usage_notes"></a>
 Usage Notes</h1>
-<h2>Use case 1) Software interrupt (Single core usage)</h2>
-<p>When using INTCPU0 to generate a software interrupt for CPU0 itself, it needs to set "Software interrupt priority".</p>
-<p>Property setting example</p>
+<h2>Use case 1) Software interrupt Single core usage</h2>
+<p>Software interrupts can be generated to CPU0 itself using INTCPU.</p><ul>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> can be used to configure the software interrupt notification.<ul>
+<li>When using INTCPU0 to generate a software interrupt for CPU0 itself, it needs to set "Software Interrupt Priority".</li>
+</ul>
+</li>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c2911e08d0529aac4134e4d302d08d5">R_ICU_INTER_CPU_IRQ_Generate()</a> can be used to generate notification of configured software interrupts.</li>
+</ul>
+<h3>Example of stack configuration</h3>
 <table class="doxtable">
 <tr>
 <th>stack </th><th>config </th><th>CPU0  </th></tr>
 <tr>
-<td>0 </td><td>Name </td><td>g_icu_inter_cpu_irq0 </td></tr>
+<td rowspan="4">0 </td><td>Name </td><td>g_icu_inter_cpu_irq0  </td></tr>
 <tr>
-<td>0 </td><td>Channel </td><td>0 </td></tr>
+<td>Channel </td><td>0  </td></tr>
 <tr>
-<td>0 </td><td>Software interrupt priority </td><td>12 </td></tr>
+<td>Software Interrupt Priority </td><td>12  </td></tr>
 <tr>
-<td>0 </td><td>Callback </td><td>cpu0_ic0_callback </td></tr>
+<td>Callback </td><td>cpu0_ic0_callback  </td></tr>
 </table>
 <p>Image of single core software interrupt operation</p>
 <div class="image">
 <object type="image/svg+xml" data="r_icu_inter_cpu_irq_Single_core_usage.svg">r_icu_inter_cpu_irq_Single_core_usage.svg</object>
 <div class="caption">
 ICU INTER CPU IRQ Single core usage</div></div>
+ <h2>Use case 2) Software interrupt Dual core usage (2 channels)</h2>
+<p>Software interrupts can be generated between CPU0 and CPU1 using INTCPU.</p>
+<ul>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> can be used to configure the software interrupt notification.<ul>
+<li>When using INTCPU1 to generate a software interrupt from CPU0 to CPU1, the "Software Interrupt Priority" setting on the CPU0 side should be set to "Disabled". On the CPU1 side, "Software Interrupt Priority" must be set to receive software interrupt notifications.</li>
+<li>When using INTCPU2 to generate a software interrupt from CPU1 to CPU0, the "Software Interrupt Priority" setting on the CPU1 side should be set to "Disabled". On the CPU0 side, "Software Interrupt Priority" must be set to receive software interrupt notifications.</li>
+</ul>
+</li>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c2911e08d0529aac4134e4d302d08d5">R_ICU_INTER_CPU_IRQ_Generate()</a> can be used to generate notification of configured software interrupts.<ul>
+<li>When using inter-CPUs interrupts, CPU0 and CPU1 must be after executing <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> each other.</li>
+</ul>
+</li>
+</ul>
+<p>If the parameter check is Enable and "Callback" is "NULL", the <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> function returns FSP_ERR_ASSERTION, so set any callback function.</p>
+<h3>Example of stack configuration</h3>
+<table class="doxtable">
+<tr>
+<th>stack </th><th>config </th><th>CPU0 </th><th>CPU1  </th></tr>
+<tr>
+<td rowspan="4">0 </td><td>Name </td><td>g_icu_inter_cpu_irq0 </td><td>g_icu_inter_cpu_irq0  </td></tr>
+<tr>
+<td>Channel </td><td>1 </td><td>1  </td></tr>
+<tr>
+<td>Software Interrupt Priority </td><td>Disabled </td><td>12  </td></tr>
+<tr>
+<td>Callback </td><td>NULL </td><td>cpu1_ic1_callback  </td></tr>
+<tr>
+<td rowspan="4">1 </td><td>Name </td><td>g_icu_inter_cpu_irq1 </td><td>g_icu_inter_cpu_irq1  </td></tr>
+<tr>
+<td>Channel </td><td>2 </td><td>2  </td></tr>
+<tr>
+<td>Software Interrupt Priority </td><td>12 </td><td>Disabled  </td></tr>
+<tr>
+<td>Callback </td><td>cpu0_ic2_callback </td><td>NULL  </td></tr>
+</table>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga66367184ba4bd716b174d1c960d77cae"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga66367184ba4bd716b174d1c960d77cae">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Open()</h2>
@@ -254,6 +297,55 @@ ICU INTER CPU IRQ Single core usage</div></div>
 
 </div>
 </div>
+<a id="ga0c27ff523c2ecdd4f9f55b7ffebbd384"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0c27ff523c2ecdd4f9f55b7ffebbd384">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_CallbackSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_INTER_CPU_IRQ_CallbackSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_api_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#a63c1d322efc3212fc48397ec80a66f5b">icu_inter_cpu_irq_api_t::callbackSet</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="gab979e79ab28366f8d35a5eedf4215d4d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gab979e79ab28366f8d35a5eedf4215d4d">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Close()</h2>
 
@@ -287,7 +379,7 @@ ICU INTER CPU IRQ Single core usage</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2M Flexible Software Package Documentation: Port Output Enable 3 (r_poe3)</title>
+<title>RZ/T2 Flexible Software Package Documentation: Port Output Enable 3 (r_poe3)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,8 +32,8 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.1.0</span>
+   <div id="projectname">RZ/T2 Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v1.2.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -151,6 +151,26 @@ This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Timers
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
 <tr>
+<td>General &gt; Output &gt; DSMIF Error Interrupt &gt; Error 0 &gt; DSMIF0 Error Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Setting high impedance on DSMIF0 error0. </td></tr>
+<tr>
+<td>General &gt; Output &gt; DSMIF Error Interrupt &gt; Error 0 &gt; DSMIF1 Error Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Setting high impedance on DSMIF1 error0. </td></tr>
+<tr>
+<td>General &gt; Output &gt; DSMIF Error Interrupt &gt; Error 1 &gt; DSMIF0 Error Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF0 error1.Unsupported devices show disabled. </td></tr>
+<tr>
+<td>General &gt; Output &gt; DSMIF Error Interrupt &gt; Error 1 &gt; DSMIF1 Error Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF1 error1.Unsupported devices show disabled. </td></tr>
+<tr>
 <td>General &gt; Output &gt; Output Short Circuit1(MTU3 and MTU4) &gt; Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Disabled</li>
@@ -191,41 +211,9 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Setting high impedance when the oscillator is stopped. </td></tr>
 <tr>
-<td>General &gt; Output &gt; DSMIF0 Error Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Setting high impedance on DSMIF0 error. </td></tr>
+<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC3B. </td></tr>
 <tr>
-<td>General &gt; Output &gt; DSMIF1 Error Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Setting high impedance on DSMIF1 error. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3B Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P17_6</li>
-<li>
-P00_6</li>
-<li>
-P03_6</li>
-</ul>
-</td><td>P17_6 </td><td>Select the pin you want to use as MTIOC3B. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3D Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P18_1</li>
-<li>
-P01_1</li>
-<li>
-P04_0</li>
-</ul>
-</td><td>P18_1 </td><td>Select the pin you want to use as MTIOC3D. </td></tr>
+<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC3D. </td></tr>
 <tr>
 <td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3B Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -251,29 +239,9 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Set the high impedance if the MTIOC3B or MTIOC3D matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4B Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P18_2</li>
-<li>
-P01_2</li>
-<li>
-P05_1</li>
-<li>
-P18_3</li>
-</ul>
-</td><td>P18_2 </td><td>Select the pin you want to use as MTIOC4B. </td></tr>
+<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4B. </td></tr>
 <tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4D Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P18_3</li>
-<li>
-P01_3</li>
-<li>
-P05_3</li>
-<li>
-P18_2</li>
-</ul>
-</td><td>P18_3 </td><td>Select the pin you want to use as MTIOC4D. </td></tr>
+<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4D. </td></tr>
 <tr>
 <td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4B Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -299,29 +267,9 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Set the high impedance if the MTIOC4B or MTIOC4D matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4A Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P17_7</li>
-<li>
-P00_7</li>
-<li>
-P05_0</li>
-<li>
-P18_0</li>
-</ul>
-</td><td>P17_7 </td><td>Select the pin you want to use as MTIOC4A. </td></tr>
+<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4A Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4A. </td></tr>
 <tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4C Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P18_0</li>
-<li>
-P01_0</li>
-<li>
-P05_2</li>
-<li>
-P17_7</li>
-</ul>
-</td><td>P18_0 </td><td>Select the pin you want to use as MTIOC4C. </td></tr>
+<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4C Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4C. </td></tr>
 <tr>
 <td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4A Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -367,25 +315,9 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Generates an interrupt when the POE0# matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6B Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P19_3</li>
-<li>
-P21_2</li>
-<li>
-P08_5</li>
-</ul>
-</td><td>P19_3 </td><td>Select the pin you want to use as MTIOC6B. </td></tr>
+<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC6B. </td></tr>
 <tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6D Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P19_6</li>
-<li>
-P21_4</li>
-<li>
-P08_7</li>
-</ul>
-</td><td>P19_6 </td><td>Select the pin you want to use as MTIOC6D. </td></tr>
+<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC6D. </td></tr>
 <tr>
 <td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -395,25 +327,9 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Set the high impedance if the MTIOC6B or MTIOC6D matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; MTIOC7B Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P19_7</li>
-<li>
-P21_6</li>
-<li>
-P09_1</li>
-</ul>
-</td><td>P19_7 </td><td>Select the pin you want to use as MTIOC7B. </td></tr>
+<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; MTIOC7B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7B. </td></tr>
 <tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; MTIOC7D Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P20_0</li>
-<li>
-P22_0</li>
-<li>
-P09_3</li>
-</ul>
-</td><td>P20_0 </td><td>Select the pin you want to use as MTIOC7D. </td></tr>
+<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; MTIOC7D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7D. </td></tr>
 <tr>
 <td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -423,25 +339,9 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Set the high impedance if the MTIOC7B or MTIOC7D matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; MTIOC7A Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P19_4</li>
-<li>
-P21_5</li>
-<li>
-P09_0</li>
-</ul>
-</td><td>P19_4 </td><td>Select the pin you want to use as MTIOC7A. </td></tr>
+<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; MTIOC7A Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7A. </td></tr>
 <tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; MTIOC7C Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P19_5</li>
-<li>
-P21_7</li>
-<li>
-P09_2</li>
-</ul>
-</td><td>P19_5 </td><td>Select the pin you want to use as MTIOC7C. </td></tr>
+<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; MTIOC7C Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7C. </td></tr>
 <tr>
 <td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -471,15 +371,7 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Generates an interrupt when the POE4# matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-A (MTIOC0A) &gt; Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P13_2</li>
-<li>
-P14_3</li>
-<li>
-P23_7</li>
-</ul>
-</td><td>P13_2 </td><td>Select the pin you want to use as MTIOC0A. </td></tr>
+<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-A (MTIOC0A) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0A. </td></tr>
 <tr>
 <td>General &gt; POE8# &gt; MTU0 &gt; MTU0-A (MTIOC0A) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -489,17 +381,7 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Set the high impedance if the MTIOC0A matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-B (MTIOC0B) &gt; Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P11_5</li>
-<li>
-P14_4</li>
-<li>
-P24_0</li>
-<li>
-P23_3</li>
-</ul>
-</td><td>P11_5 </td><td>Select the pin you want to use as MTIOC0B. </td></tr>
+<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-B (MTIOC0B) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0B. </td></tr>
 <tr>
 <td>General &gt; POE8# &gt; MTU0 &gt; MTU0-B (MTIOC0B) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -509,15 +391,7 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Set the high impedance if the MTIOC0B matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-C (MTIOC0C) &gt; Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P13_3</li>
-<li>
-P15_1</li>
-<li>
-P24_1</li>
-</ul>
-</td><td>P13_3 </td><td>Select the pin you want to use as MTIOC0C. </td></tr>
+<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-C (MTIOC0C) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0C. </td></tr>
 <tr>
 <td>General &gt; POE8# &gt; MTU0 &gt; MTU0-C (MTIOC0C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -527,15 +401,7 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Set the high impedance if the MTIOC0C matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-D (MTIOC0D) &gt; Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-P13_4</li>
-<li>
-P15_2</li>
-<li>
-P24_2</li>
-</ul>
-</td><td>P13_4 </td><td>Select the pin you want to use as MTIOC0D. </td></tr>
+<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-D (MTIOC0D) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0D. </td></tr>
 <tr>
 <td>General &gt; POE8# &gt; MTU0 &gt; MTU0-D (MTIOC0D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -786,7 +652,7 @@ Data Structures</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Sets driver version based on compile time macros. Implements <a class="el" href="group___p_o_e3___a_p_i.html#afc5768feada9b463f0ab92dde682b9e9">poe3_api_t::versionGet</a>.</p>
+<p>DEPRECATED Sets driver version based on compile time macros. Implements <a class="el" href="group___p_o_e3___a_p_i.html#afc5768feada9b463f0ab92dde682b9e9">poe3_api_t::versionGet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Version stored in p_version. </td></tr>
@@ -803,7 +669,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

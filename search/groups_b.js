@@ -1,6 +1,7 @@
 var searchData=
 [
-  ['three_2dphase_20interface',['Three-Phase Interface',['../group___t_h_r_e_e___p_h_a_s_e___a_p_i.html',1,'']]],
-  ['timer_20interface',['Timer Interface',['../group___t_i_m_e_r___a_p_i.html',1,'']]],
-  ['transfer_20interface',['Transfer Interface',['../group___t_r_a_n_s_f_e_r___a_p_i.html',1,'']]]
+  ['rzt2l',['RZT2L',['../group___b_s_p___m_c_u___r_z_t2_l.html',1,'']]],
+  ['rzt2m',['RZT2M',['../group___b_s_p___m_c_u___r_z_t2_m.html',1,'']]],
+  ['real_20time_20clock_20_28r_5frtc_29',['Real Time Clock (r_rtc)',['../group___r_t_c.html',1,'']]],
+  ['rtc_20interface',['RTC Interface',['../group___r_t_c___a_p_i.html',1,'']]]
 ];

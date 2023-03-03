@@ -19,7 +19,6 @@ var group___e_l_c___a_p_i =
       [ "p_api", "group___e_l_c___a_p_i.html#a9919c68bc6249d294d121715277a53dd", null ]
     ] ],
     [ "elc_ctrl_t", "group___e_l_c___a_p_i.html#ga71d9612a7e093ba6bbef8ff708266596", null ],
-    [ "elc_peripheral_t", "group___e_l_c___a_p_i.html#gaa5bf5e18ceb8cf51ac6dce985f9230a7", null ],
     [ "elc_software_event_t", "group___e_l_c___a_p_i.html#ga5fed76c06664ddad69c5a7ccb0330f0e", [
       [ "ELC_SOFTWARE_EVENT_0", "group___e_l_c___a_p_i.html#gga5fed76c06664ddad69c5a7ccb0330f0ea862eb8abb2f512a4b4caaa1ee6900d27", null ],
       [ "ELC_SOFTWARE_EVENT_1", "group___e_l_c___a_p_i.html#gga5fed76c06664ddad69c5a7ccb0330f0ea4ba5ce998b49ee8ba5fd264f53146d6d", null ]

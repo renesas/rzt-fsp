@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2M Flexible Software Package Documentation: ADC Interface</title>
+<title>RZ/T2 Flexible Software Package Documentation: ADC Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,8 +32,8 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.1.0</span>
+   <div id="projectname">RZ/T2 Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v1.2.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -248,13 +248,13 @@ transfer_size</td>
 <td class="fielddoc">
 The size of each transfer. </td></tr>
 <tr><td class="fieldtype">
-<a id="a391a11955d9d3b8d84ca87bbfe72df86"></a><a class="el" href="group___e_l_c___a_p_i.html#gaa5bf5e18ceb8cf51ac6dce985f9230a7">elc_peripheral_t</a></td>
+<a id="a391a11955d9d3b8d84ca87bbfe72df86"></a>elc_peripheral_t</td>
 <td class="fieldname">
 elc_peripheral</td>
 <td class="fielddoc">
 Name of the peripheral in the ELC list. </td></tr>
 <tr><td class="fieldtype">
-<a id="a06d242e573821f38b3a7543dd9eb5548"></a>elc_event_t</td>
+<a id="a06d242e573821f38b3a7543dd9eb5548"></a><a class="el" href="group___b_s_p___m_c_u___r_z_t2_m.html#gaebe723200f2a7f181f08324128b9d7b5">elc_event_t</a></td>
 <td class="fieldname">
 elc_event</td>
 <td class="fielddoc">
@@ -411,6 +411,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <p>Initialize ADC Unit; apply power, set the operational mode, trigger sources, interrupt priority, and configurations common to all channels and sensors. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac">R_ADC_Open()</a></li>
 <li><a class="el" href="group___d_s_m_i_f.html#ga74d4453017c0f52214f7624872dbb9b4">R_DSMIF_Open()</a></li>
+<li><a class="el" href="group___t_s_u.html#ga1c56a027bc265464b1739560efa90813">R_TSU_Open()</a></li>
 </ul>
 </dd></dl>
 <dl class="section pre"><dt>Precondition</dt><dd>Configure peripheral clocks, ADC pins and IRQs prior to calling this function. </dd></dl>
@@ -463,6 +464,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <p>Start the scan (in case of a software trigger), or enable the hardware trigger. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2">R_ADC_ScanStart()</a></li>
 <li><a class="el" href="group___d_s_m_i_f.html#ga1103d4ad1679f689179bafdda2aada04">R_DSMIF_ScanStart()</a></li>
+<li><a class="el" href="group___t_s_u.html#ga1f6f0d81dfcae1a3c09d577fa0cc00cc">R_TSU_ScanStart()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -488,6 +490,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <p>Stop the ADC scan (in case of a software trigger), or disable the hardware trigger. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___a_d_c.html#ga9b5242c153c6320a564ed9ffd324f144">R_ADC_ScanStop()</a></li>
 <li><a class="el" href="group___d_s_m_i_f.html#gaf03d6083c4c81193398f21a2f3978662">R_DSMIF_ScanStop()</a></li>
+<li><a class="el" href="group___t_s_u.html#ga7b2ce53adf08ac0c3f41e0968ed30b2d">R_TSU_ScanStop()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -512,6 +515,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Check scan status. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___a_d_c.html#ga676b1c7f1ccceda288cbb2ad79a14ff2">R_ADC_StatusGet()</a></li>
+<li><a class="el" href="group___t_s_u.html#ga47b32a982d087f9d6d0e807f1b77a256">R_TSU_StatusGet()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -537,6 +541,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Read ADC conversion result. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read()</a></li>
+<li><a class="el" href="group___t_s_u.html#ga3544708da19605b1aa1e9061d78f5294">R_TSU_Read()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -669,6 +674,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <p>Close the specified ADC unit by ending any scan in progress, disabling interrupts, and removing power to the specified A/D unit. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___a_d_c.html#ga499187b3067534e42a57239ead111797">R_ADC_Close()</a></li>
 <li><a class="el" href="group___d_s_m_i_f.html#ga0291812ebf08c4fba5cb2a96b9bb4736">R_DSMIF_Close()</a></li>
+<li><a class="el" href="group___t_s_u.html#ga4fc6b794901e3a2eb00ccba1cbff3c1f">R_TSU_Close()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -716,9 +722,10 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Retrieve the API version. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
+<p>DEPRECATED - Retrieve the API version. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___a_d_c.html#ga5ef435c2d9a890729e770e6d25c790e1">R_ADC_VersionGet()</a></li>
 <li><a class="el" href="group___d_s_m_i_f.html#ga3b6d34539762e02aacb1032d61890240">R_DSMIF_VersionGet()</a></li>
+<li><a class="el" href="group___t_s_u.html#ga044c58503b60de3d53cf0317be88a5c0">R_TSU_VersionGet()</a></li>
 </ul>
 </dd></dl>
 <dl class="section pre"><dt>Precondition</dt><dd>This function retrieves the API version. </dd></dl>
@@ -1042,7 +1049,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

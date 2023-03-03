@@ -108,5 +108,6 @@ var group___d_s_m_i_f =
     [ "R_DSMIF_StatusGet", "group___d_s_m_i_f.html#ga6129f999b52c99e8d6a57835b6332fbc", null ],
     [ "R_DSMIF_Read", "group___d_s_m_i_f.html#ga4ed64820dfdcecfd65e2571b2888f210", null ],
     [ "R_DSMIF_Close", "group___d_s_m_i_f.html#ga0291812ebf08c4fba5cb2a96b9bb4736", null ],
+    [ "R_DSMIF_CallbackSet", "group___d_s_m_i_f.html#ga0b5b7ca2a69f5f56099d5c68b7e03396", null ],
     [ "R_DSMIF_VersionGet", "group___d_s_m_i_f.html#ga3b6d34539762e02aacb1032d61890240", null ]
 ];

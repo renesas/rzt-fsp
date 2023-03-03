@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2M Flexible Software Package Documentation: Shared Memory (r_shared_memory)</title>
+<title>RZ/T2 Flexible Software Package Documentation: Shared Memory (r_shared_memory)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,8 +32,8 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.1.0</span>
+   <div id="projectname">RZ/T2 Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v1.2.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -107,6 +107,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga9e1b9dfbef670952ccc4c528896d2781"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga29111715e468d4fb8c5a89bec0fa1cf5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga29111715e468d4fb8c5a89bec0fa1cf5">R_SHARED_MEMORY_StatusGet</a> (<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__status__t">shared_memory_status_t</a> *p_status)</td></tr>
 <tr class="separator:ga29111715e468d4fb8c5a89bec0fa1cf5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9e40be0bd2bb6a2296ea081046ccb8a7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga9e40be0bd2bb6a2296ea081046ccb8a7">R_SHARED_MEMORY_CallbackSet</a> (<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga9e40be0bd2bb6a2296ea081046ccb8a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4b742d135513908117753fa6e6c45ce4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga4b742d135513908117753fa6e6c45ce4">R_SHARED_MEMORY_Close</a> (<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_api_ctrl)</td></tr>
 <tr class="separator:ga4b742d135513908117753fa6e6c45ce4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -159,6 +161,7 @@ This module can be added to the Stacks tab via New Stack &gt; Driver &gt; System
 <td>Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function can be provided here. If this callback function is provided, it is called from the callback function of Inter-CPU IRQ Driver (RX) </td></tr>
 </table>
 </p>
+<p>This module can be selected only when using Dual core devices.</p>
 <h2><a class="anchor" id="r-shared-memory-clock-configuration"></a>
 Clock Configuration</h2>
 <p>This module does not require any specific clock settings.</p>
@@ -406,6 +409,55 @@ Read / Write operation</div></div>
 
 </div>
 </div>
+<a id="ga9e40be0bd2bb6a2296ea081046ccb8a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9e40be0bd2bb6a2296ea081046ccb8a7">&#9670;&nbsp;</a></span>R_SHARED_MEMORY_CallbackSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SHARED_MEMORY_CallbackSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_api_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#a5a9759ff64d18a23271b6a89c574c328">shared_memory_api_t::callbackSet</a></p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ga4b742d135513908117753fa6e6c45ce4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga4b742d135513908117753fa6e6c45ce4">&#9670;&nbsp;</a></span>R_SHARED_MEMORY_Close()</h2>
 
@@ -439,7 +491,7 @@ Read / Write operation</div></div>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

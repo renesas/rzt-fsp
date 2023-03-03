@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2M Flexible Software Package Documentation: SPI Interface</title>
+<title>RZ/T2 Flexible Software Package Documentation: SPI Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -32,8 +32,8 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2M Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.1.0</span>
+   <div id="projectname">RZ/T2 Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v1.2.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -104,7 +104,8 @@ $(document).ready(function(){initNavTree('group___s_p_i___a_p_i.html','');});
 Summary</h1>
 <p>Provides a common interface for communication using the SPI Protocol.</p>
 <p>Implemented by:</p><ul>
-<li><a class="el" href="group___s_p_i.html">Serial Peripheral Interface (r_spi)</a> </li>
+<li><a class="el" href="group___s_p_i.html">Serial Peripheral Interface (r_spi)</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html">Serial Communications Interface (SCI) SPI (r_sci_spi)</a> </li>
 </ul>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -331,6 +332,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Initialize a channel for SPI communication mode. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___s_p_i.html#ga4c30ef8817407bd4b394ee9cc8b90a0b">R_SPI_Open()</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html#ga9ce8ace26bb551a1ad4b320202c894ec">R_SCI_SPI_Open()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -356,6 +358,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Receive data from a SPI device. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___s_p_i.html#ga9427801ef2c771a88fad0ab4524d7d42">R_SPI_Read()</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html#ga9fdab8bddaabefc2116cc078c207bc4f">R_SCI_SPI_Read()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -383,6 +386,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Transmit data to a SPI device. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___s_p_i.html#ga97b928cbe1a9df78d4ab5ff69732dbcd">R_SPI_Write()</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html#ga7f7f0fbe5dc85ac7dac6c5676965e432">R_SCI_SPI_Write()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -410,6 +414,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Simultaneously transmit data to a SPI device while receiving data from a SPI device (full duplex). </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___s_p_i.html#ga459fb4dfcfc9ee278599ae431237f549">R_SPI_WriteRead()</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html#ga061962640303cb50a61285212571a85a">R_SCI_SPI_WriteRead()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -438,6 +443,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___s_p_i.html#ga2812fdb85312afcc52ef06c97f41fceb">R_SPI_CallbackSet()</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html#ga9980c52ccbe2e8e2f4e21888ca7a0d95">R_SCI_SPI_CallbackSet()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -465,6 +471,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 </div><div class="memdoc">
 <p>Remove power to the SPI channel designated by the handle and disable the associated interrupts. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___s_p_i.html#ga2130d38f52a95911a8f0cec6018ec041">R_SPI_Close()</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html#ga80b7c1f5e687731bbc3de8df267a1c15">R_SCI_SPI_Close()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -487,8 +494,9 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the version information of the underlying driver. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
+<p>DEPRECATED Get the version information of the underlying driver. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
 <li><a class="el" href="group___s_p_i.html#ga1dab68b64b294d346c3ef3b69feba59b">R_SPI_VersionGet()</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html#ga5ca04d5041e7cdb94ef2655a78e11e8a">R_SCI_SPI_VersionGet()</a></li>
 </ul>
 </dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
@@ -552,7 +560,8 @@ Pointer to the API structure for this instance. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>SPI control block. Allocate an instance specific control block to pass into the SPI API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_p_i.html#structspi__instance__ctrl__t">spi_instance_ctrl_t</a> </li>
+<li><a class="el" href="group___s_p_i.html#structspi__instance__ctrl__t">spi_instance_ctrl_t</a></li>
+<li><a class="el" href="group___s_c_i___s_p_i.html#structsci__spi__instance__ctrl__t">sci_spi_instance_ctrl_t</a> </li>
 </ul>
 </dd></dl>
 
@@ -726,7 +735,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.1.0 User's Manual Copyright © (2022) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>
