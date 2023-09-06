@@ -45,10 +45,8 @@
 /** "ETHE" in ASCII.  Used to determine if the control block is open. */
 #define GMAC_OPEN                                      (0x45544845U)
 
-/* Definition of the maximum / minimum number of data that can be sent at one time in the Ethernet */
-#define GMAC_MAXIMUM_FRAME_SIZE                        (1514U)                       /* Maximum number of transmitted data */
-#define GMAC_MAXIMUM_MGTAG_FRAME_SIZE                  (GMAC_MAXIMUM_FRAME_SIZE + 8) /* Max number of transmitted data /w MGTAG */
-#define GMAC_MINIMUM_FRAME_SIZE                        (60U)                         /* Minimum number of transmitted data */
+/* Definition of the maximum of data that can be sent at one time in the Ethernet */
+#define GMAC_MINIMUM_FRAME_SIZE                        (60U) /* Minimum number of transmitted data */
 
 /* the number of byte for FCS in ethernet frame */
 #define GMAC_FCS_SIZE                                  (4U)
@@ -919,7 +917,7 @@ fsp_err_t R_GMAC_Read (ether_ctrl_t * const p_ctrl, void * const p_buffer, uint3
                 *pp_read_buffer = p_read_buffer;
             }
 
-            *length_bytes = received_size - GMAC_FCS_SIZE;
+            *length_bytes = received_size;
         }
         /* When there is no data to receive */
         else
@@ -1240,8 +1238,7 @@ static fsp_err_t gmac_write_param_check (gmac_instance_ctrl_t * p_instance_ctrl,
     FSP_ASSERT(p_instance_ctrl);
     GMAC_ERROR_RETURN(GMAC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     GMAC_ERROR_RETURN(NULL != p_buffer, FSP_ERR_INVALID_POINTER);
-
-    GMAC_ERROR_RETURN(GMAC_MAXIMUM_FRAME_SIZE >= frame_length, FSP_ERR_INVALID_ARGUMENT);
+    GMAC_ERROR_RETURN(p_instance_ctrl->p_gmac_cfg->ether_buffer_size >= frame_length, FSP_ERR_INVALID_ARGUMENT);
 #else
     FSP_PARAMETER_NOT_USED(p_buffer);
     FSP_PARAMETER_NOT_USED(frame_length);
@@ -2097,6 +2094,9 @@ void gmac_configure_operation (gmac_instance_ctrl_t * const p_instance_ctrl)
     p_reg_gmac->Operation_Mode_b.TSF = 1; /* Transmit Store and Forward */
     p_reg_gmac->Operation_Mode_b.SR  = 1; /* Start or Stop Receive */
     p_reg_gmac->Operation_Mode_b.ST  = 1; /* Start or Stop Transmission Command */
+
+    /* CRC Stripping for Type Frames */
+    p_reg_gmac->MAC_Configuration_b.CST = 1;
 
     /* Enable receive and transmit. */
     p_reg_gmac->MAC_Configuration_b.RE = 1;

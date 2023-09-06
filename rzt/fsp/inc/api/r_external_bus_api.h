@@ -63,7 +63,7 @@ typedef enum e_external_bus_chip_select
     EXTERNAL_BUS_CHIP_SELECT_7,        ///< Device connected to Chip-Select 7
 } external_bus_chip_select_t;
 
-/** External bus width. */
+/** External bus data bus width. */
 typedef enum e_external_bus_data_bus_width
 {
     EXTERNAL_BUS_DATA_BUS_WIDTH_8BIT  = 0x01, ///< Data bus width 8bit

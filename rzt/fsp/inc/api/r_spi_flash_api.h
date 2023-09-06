@@ -83,7 +83,12 @@ typedef enum e_spi_flash_protocol
     SPI_FLASH_PROTOCOL_DOPI = 4,
 
     SPI_FLASH_PROTOCOL_1S_1S_1S = 0x000, ///< 1S-1S-1S protocol
-    SPI_FLASH_PROTOCOL_4D_4D_4D = 0x3B2, ///< 4D-4D-4D protocol
+
+    /** DEPRECATED 4D-4D-4D protocol 'SPI_FLASH_PROTOCOL_4D_4D_4D' is wrong and will be replaced with 'SPI_FLASH_PROTOCOL_4S_4D_4D' in the next major release */
+    SPI_FLASH_PROTOCOL_4D_4D_4D = 0x3B2,
+
+    SPI_FLASH_PROTOCOL_4S_4D_4D = 0x3B2, ///< 4S-4D-4D protocol
+
     SPI_FLASH_PROTOCOL_8D_8D_8D = 0x3FF, ///< 8D-8D-8D protocol
     SPI_FLASH_PROTOCOL_1S_2S_2S = 0x048, ///< 1S-2S-2S protocol
     SPI_FLASH_PROTOCOL_2S_2S_2S = 0x049, ///< 2S-2S-2S protocol
@@ -164,15 +169,16 @@ typedef struct st_spi_flash_erase_command
     uint32_t size;                     ///< Size of erase for associated command, set to SPI_FLASH_ERASE_SIZE_CHIP_ERASE for chip erase
 } spi_flash_erase_command_t;
 
+/** Structure to define a direct transfer. */
 typedef struct st_spi_flash_direct_transfer
 {
-    uint32_t address;
-    uint32_t data;
-    uint16_t command;
-    uint8_t  dummy_cycles;
-    uint8_t  command_length;
-    uint8_t  address_length;
-    uint8_t  data_length;
+    uint32_t address;                  ///< Starting address
+    uint32_t data;                     ///< Data
+    uint16_t command;                  ///< Transfer command
+    uint8_t  dummy_cycles;             ///< Number of dummy cycles
+    uint8_t  command_length;           ///< Command length
+    uint8_t  address_length;           ///< Address lengrh
+    uint8_t  data_length;              ///< Data length
 } spi_flash_direct_transfer_t;
 
 /** User configuration structure used by the open function */
@@ -188,7 +194,7 @@ typedef struct st_spi_flash_cfg
     spi_flash_data_lines_t            page_program_address_lines;
     uint8_t                           write_status_bit;          ///< Which bit determines write status
     uint8_t                           write_enable_bit;          ///< Which bit determines write status
-    uint32_t                          page_size_bytes;           ///< Page size in bytes (maximum number of bytes for page program)
+    uint32_t                          page_size_bytes;           ///< Page size in bytes (maximum number of bytes for page program). Used to specify single continuous write size (bytes) in case of OSPI RAM.
     uint8_t                           page_program_command;      ///< Page program command
     uint8_t                           write_enable_command;      ///< Command to enable write or erase, typically 0x06
     uint8_t                           status_command;            ///< Command to read the write status
@@ -339,6 +345,15 @@ typedef struct st_spi_flash_api
      * @param[in] bank                 The bank number
      **/
     fsp_err_t (* bankSet)(spi_flash_ctrl_t * p_ctrl, uint32_t bank);
+
+    /** AutoCalibrate the SPI flash driver module. Expected to be used when auto-calibrating OSPI RAM device.
+     * @par Implemented as
+     * - @ref R_XSPI_QSPI_AutoCalibrate()
+     * - @ref R_XSPI_OSPI_AutoCalibrate()
+     *
+     * @param[in] p_ctrl               Pointer to a driver handle
+     **/
+    fsp_err_t (* autoCalibrate)(spi_flash_ctrl_t * p_ctrl);
 
     /** Close the SPI flash driver module.
      * @par Implemented as

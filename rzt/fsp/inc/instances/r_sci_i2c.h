@@ -37,7 +37,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define SCI_I2C_MASTER_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define SCI_I2C_MASTER_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define SCI_I2C_MASTER_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -141,6 +141,7 @@ fsp_err_t R_SCI_I2C_CallbackSet(i2c_master_ctrl_t * const          p_api_ctrl,
                                 void (                           * p_callback)(i2c_master_callback_args_t *),
                                 void const * const                 p_context,
                                 i2c_master_callback_args_t * const p_callback_memory);
+fsp_err_t R_SCI_I2C_StatusGet(i2c_master_ctrl_t * const p_api_ctrl, i2c_master_status_t * p_status);
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

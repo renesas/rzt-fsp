@@ -41,7 +41,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define IOPORT_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define IOPORT_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define IOPORT_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 #define IOPORT_SINGLE_PORT_NUM       (4)
 #define IOPORT_PORT_GROUP_NUM        (2)

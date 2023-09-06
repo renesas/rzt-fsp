@@ -120,6 +120,39 @@
 #define ETHSW_LK_ADDR_PRIO_REG_OFFSET         (18)
 #define ETHSW_LK_ADDR_MASKANDFLAGS_MASK       (0xFFFFU << 16)
 
+/* FRM_LENGTH_P[n] Register Bit Definitions */
+#define ETHSW_FRAMESIZE_MASK                  0x3FFF ///< maximum frame size mask
+
+#define ETHSW_PORT_TX_MSK                     (1)    ///< COMMAND_CONFIG_P[n] - mask for tx_ena
+#define ETHSW_PORT_RX_MSK                     (2)    ///< COMMAND_CONFIG_P[n] - mask for rx_ena
+#define ETHSW_PORT_RXTX                       (ETHSW_PORT_TX_MSK | ETHSW_PORT_RX_MSK)
+
+#define ETHSW_COUNTER_OFFSET                  (0x400)
+
+#define ETHSW_PHY_LINK                        (4)
+
+/* Register offset for Port-n */
+#define ETHSW_PORT_OFFSET                     (0x400)
+
+/* DLR_IRQ_CONTROL Register Bit Definitions */
+#define ETHSW_TGT_DLR_INT_NEWSTATUS           (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_state_chng_ena_Pos)   ///< new ring status
+#define ETHSW_TGT_DLR_INT_BEACONTMO_0         (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_bec_tmr0_exp_ena_Pos) ///< beacon timeout port 0
+#define ETHSW_TGT_DLR_INT_BEACONTMO_1         (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_bec_tmr1_exp_ena_Pos) ///< beacon timeout port 1
+#define ETHSW_TGT_DLR_INT_SUVICHNG            (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_supr_chng_ena_Pos)    ///< Supervisor changed
+#define ETHSW_TGT_DLR_INT_LNKCHNG_0           (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_link_chng0_ena_Pos)   ///< link status changed port 0
+#define ETHSW_TGT_DLR_INT_LNKCHNG_1           (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_link_chng1_ena_Pos)   ///< link status changed port 1
+#define ETHSW_TGT_DLR_INT_BECONRCV_0          (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_bec_rcv0_ena_Pos)     ///< beacon frame received port 0
+#define ETHSW_TGT_DLR_INT_BECONRCV_1          (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_bec_rcv1_ena_Pos)     ///< beacon frame received port 1
+#define ETHSW_TGT_DLR_INT_LOCALLOOP_0         (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_frm_dscrd0_Pos)       ///< loop detected port 0
+#define ETHSW_TGT_DLR_INT_LOCALLOOP_1         (1 << R_ETHSW_DLR_IRQ_CONTROL_IRQ_frm_dscrd1_Pos)       ///< loop detected port 1
+
+#define ETHSW_RN_ADVSW_DLR_ETHTYPE            (0x80E1U)                                               ///< DLR EtherType for DLR module
+#define ETHSW_RN_ADVSW_DLR_TICKS              (200U)                                                  ///< ticks for 1 us
+
+/* Multicast MAC Address used by DLR */
+#define ETHSW_MULTICAST_BEACON                {0x01, 0x21, 0x6c, 0x00, 0x00, 0x01}
+#define ETHSW_MULTICAST_DLR                   {0x01, 0x21, 0x6c, 0x00, 0x00, 0x00}
+
 /***********************************************************************************************************************
  * Typedef definitions
  ***********************************************************************************************************************/
@@ -150,6 +183,8 @@ static void ethsw_enable_icu(ethsw_instance_ctrl_t * const p_instance_ctrl);
 static void ethsw_disable_icu(ethsw_instance_ctrl_t * const p_instance_ctrl);
 
 void ethsw_isr_intr(void);
+
+static void ethsw_isr_dlr(ethsw_instance_ctrl_t * p_instance_ctrl);
 
 /***********************************************************************************************************************
  * Private global variables
@@ -191,7 +226,27 @@ const ethsw_api_t g_ethsw_on_ethsw =
     .portForwardAdd  = R_ETHSW_PortForwardAdd,
     .portForwardDel  = R_ETHSW_PortForwardDel,
     .floodUnknownSet = R_ETHSW_FloodUnknownSet,
+
+    /* MAC */
+    .linkStateGet    = R_ETHSW_LinkStateGet,
+    .frameSizeMaxSet = R_ETHSW_FrameSizeMaxSet,
+
+    /* DLR */
+    .dlrInitSet        = R_ETHSW_DlrInitSet,
+    .dlrUninitSet      = R_ETHSW_DlrUninitSet,
+    .dlrEnableSet      = R_ETHSW_DlrEnableSet,
+    .dlrDisableSet     = R_ETHSW_DlrDisableSet,
+    .dlrBeaconStateGet = R_ETHSW_DlrBeaconStateGet,
+    .dlrNodeStateGet   = R_ETHSW_DlrNodeStateGet,
+    .dlrSvIpGet        = R_ETHSW_DlrSvIpGet,
+    .dlrSvPrecGet      = R_ETHSW_DlrSvPrecGet,
+    .dlrVlanGet        = R_ETHSW_DlrVlanGet,
+    .dlrSvMacGet       = R_ETHSW_DlrSvMacGet,
 };
+
+void (* gp_ethsw_dlr_callback)(        ///< pointer of callback function called when an DLR Interupt occurs
+    ethsw_dlr_event_t event,
+    uint32_t          port);
 
 /*******************************************************************************************************************//**
  * @addtogroup ETHSW
@@ -1020,6 +1075,460 @@ fsp_err_t R_ETHSW_FloodUnknownSet (ethsw_ctrl_t * const p_ctrl, ethsw_flood_unk_
 }                                      /* End of function R_ETHSW_FloodUnknownSet() */
 
 /*******************************************************************************************************************//**
+ * Return link state for given port.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ * @retval  FSP_ERR_INVALID_ARGUMENT    Invalid input parameter.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_LinkStateGet (ethsw_ctrl_t * const p_ctrl, uint32_t port, uint32_t * p_state_link)
+{
+    const volatile uint32_t * p_reg;   /* Register */
+
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+    uint32_t                port_num;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((ETHSW_PORT_COUNT_ALL > (port & ~ETHSW_PORT_HOST)), FSP_ERR_INVALID_ARGUMENT);
+
+    ETHSW_ERROR_RETURN((NULL != p_state_link), FSP_ERR_INVALID_POINTER);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    port_num = (port & ETHSW_PORT_HOST) ? ETHSW_HOST_PORT_NUMBER : port;
+
+    p_reg = (const volatile uint32_t *) ((uint8_t *) &p_switch_reg->STATUS_P0 +
+                                         ETHSW_COUNTER_OFFSET * port_num);
+
+    *p_state_link = (*p_reg & ETHSW_PHY_LINK) ?
+                    ETHSW_STATE_UP : ETHSW_STATE_DOWN;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_LinkStateGet() */
+
+/*******************************************************************************************************************//**
+ * Sets maximum frame size of given port.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_ARGUMENT    Invalid input parameter.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_FrameSizeMaxSet (ethsw_ctrl_t * const p_ctrl, uint32_t port, uint32_t frame_size_max)
+{
+    volatile uint32_t * p_reg;         /* Register */
+    uint32_t            port_num;      /* port */
+
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((ETHSW_PORT_COUNT_ALL > (port & ~ETHSW_PORT_HOST)), FSP_ERR_INVALID_ARGUMENT);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    /* calculate per port address of the frame size register */
+    port_num = (port & ETHSW_PORT_HOST) ? ETHSW_HOST_PORT_NUMBER : port;
+
+    p_reg = (volatile uint32_t *) ((uint8_t *) &p_switch_reg->FRM_LENGTH_P0 + (ETHSW_PORT_OFFSET * port_num));
+
+    /* assign masked command data to register */
+    *p_reg = frame_size_max & ETHSW_FRAMESIZE_MASK;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_FrameSizeMaxSet() */
+
+/*******************************************************************************************************************//**
+ * Initialize DLR module
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ * @retval  FSP_ERR_TIMEOUT             Timeout error
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrInitSet (ethsw_ctrl_t * const p_ctrl, ethsw_dlr_init_t * p_dlr_init)
+{
+    ethsw_mactab_entry_t mac_entry = {0}; // MAC table entry
+    fsp_err_t            res;             // result
+    uint8_t              cnt;             // loop counter
+
+    /* Multicast MAC for Beacon Frames */
+    uint8_t dlr_mac[ETHSW_MAC_ADDR_LEN] = ETHSW_MULTICAST_BEACON;
+
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((NULL != p_dlr_init), FSP_ERR_INVALID_POINTER);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    /* Forced Forwarding via Static MAC Table entries */
+    mac_entry.mac_addr = (ethsw_mac_addr_t *) &dlr_mac;
+
+    /* --> Beacon Frames (01:21:6c:00:00:01) ports 0, 1 */
+    dlr_mac[5]          = 0x01;
+    mac_entry.port_mask = (1U << ETHSW_PORT(0)) | (1U << ETHSW_PORT(1));
+    res                 = R_ETHSW_MacTableSet(p_ctrl, &mac_entry);
+    if (FSP_SUCCESS != res)
+    {
+        return res;
+    }
+
+    /* --> Neighbor_Check/SignOn Frames (01:21:6c:00:00:02) port 3 */
+    dlr_mac[5]          = 0x02;
+    mac_entry.port_mask = ETHSW_PORT_HOST;
+
+    res = R_ETHSW_MacTableSet(p_ctrl, &mac_entry);
+    if (FSP_SUCCESS != res)
+    {
+        return res;
+    }
+
+    /* --> other Frames (01:21:6c:00:00:{03..05}) ports 0, 1, 3 */
+    mac_entry.port_mask = (1U << ETHSW_PORT(0)) | (1U << ETHSW_PORT(1)) | ETHSW_PORT_HOST;
+    for (cnt = 3; cnt < 6; cnt++)
+    {
+        dlr_mac[5] = cnt;
+        res        = R_ETHSW_MacTableSet(p_ctrl, &mac_entry);
+        if (FSP_SUCCESS != res)
+        {
+            return res;
+        }
+    }
+
+    /* write local MAC for Loop Filter */
+    uint8_t * p_host_addr = (uint8_t *) p_dlr_init->p_host_addr;
+
+    p_switch_reg->DLR_LOC_MAClo = (((uint32_t) p_host_addr[0] << 0) |
+                                   ((uint32_t) p_host_addr[1] << 8) |
+                                   ((uint32_t) p_host_addr[2] << 16) |
+                                   ((uint32_t) p_host_addr[3] << 24));
+
+    p_switch_reg->DLR_LOC_MAChi = (((uint32_t) p_host_addr[4] << 0) |
+                                   ((uint32_t) p_host_addr[5] << 8));
+
+    /* callback function pointer  */
+    gp_ethsw_dlr_callback = p_dlr_init->p_dlr_callback;
+
+    /* set DLR EtherType */
+    p_switch_reg->DLR_ETH_TYP_b.DLR_ETH_TYP = ETHSW_RN_ADVSW_DLR_ETHTYPE;
+
+    /* set number of cycles for 1 us */
+    /* 200 MHz -> 200 Ticks = 1 us */
+    p_switch_reg->DLR_CONTROL_b.US_TIME = ETHSW_RN_ADVSW_DLR_TICKS;
+
+    /* discard Bacon frames with invalid Timeout values  */
+    p_switch_reg->DLR_CONTROL_b.IGNORE_INVTM = 0;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrInit() */
+
+/*******************************************************************************************************************//**
+ * Uninitialize DLR module
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ * @retval  FSP_ERR_TIMEOUT             Timeout error
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrUninitSet (ethsw_ctrl_t * const p_ctrl)
+{
+    uint8_t              dlr_mac[ETHSW_MAC_ADDR_LEN] = ETHSW_MULTICAST_DLR; /* Multicast MAC for DLR */
+    ethsw_mactab_entry_t mac_entry = {0};                                   /* Mac table entry */
+    fsp_err_t            res;                                               /* result */
+    uint32_t             cnt;                                               /* count */
+
+    /* initialize MAC Table entries */
+    mac_entry.mac_addr = (ethsw_mac_addr_t *) &dlr_mac;
+
+    for (cnt = 1; cnt < 6; cnt++)
+    {
+        /* set DLR Multicast MAC address */
+        dlr_mac[5] = (uint8_t) cnt;
+
+        /* delete address entry from MAC Table */
+        mac_entry.port_mask = 0;
+
+        res = R_ETHSW_MacTableSet(p_ctrl, &mac_entry);
+        if (FSP_SUCCESS != res)
+        {
+            return res;
+        }
+    }
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrForward() */
+
+/*******************************************************************************************************************//**
+ * Enable DLR module
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrEnableSet (ethsw_ctrl_t * const p_ctrl)
+{
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    /* interrupts */
+    p_switch_reg->DLR_IRQ_STAT_ACK = ETHSW_HEX_0000FFFF;
+
+    p_switch_reg->INT_CONFIG_b.IRQ_EN  = 1;
+    p_switch_reg->INT_CONFIG_b.DLR_INT = 1;
+
+    p_switch_reg->DLR_IRQ_CONTROL = ETHSW_TGT_DLR_INT_BEACONTMO_0 |
+                                    ETHSW_TGT_DLR_INT_BEACONTMO_1 |
+                                    ETHSW_TGT_DLR_INT_SUVICHNG |
+                                    ETHSW_TGT_DLR_INT_LNKCHNG_0 |
+                                    ETHSW_TGT_DLR_INT_LNKCHNG_1 |
+                                    ETHSW_TGT_DLR_INT_NEWSTATUS |
+                                    ETHSW_TGT_DLR_INT_LOCALLOOP_0 |
+                                    ETHSW_TGT_DLR_INT_LOCALLOOP_1;
+
+    p_switch_reg->DLR_CONTROL_b.LOOP_FILTER_ENA = 1;
+    p_switch_reg->DLR_CONTROL_b.ENABLE          = 1;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrEnable() */
+
+/*******************************************************************************************************************//**
+ * Disable DLR module.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrDisableSet (ethsw_ctrl_t * const p_ctrl)
+{
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    p_switch_reg->DLR_CONTROL_b.ENABLE          = 0;
+    p_switch_reg->DLR_CONTROL_b.LOOP_FILTER_ENA = 0;
+
+    p_switch_reg->INT_CONFIG_b.DLR_INT = 0;
+    p_switch_reg->DLR_IRQ_CONTROL      = 0;
+    p_switch_reg->DLR_IRQ_STAT_ACK     = ETHSW_HEX_0000FFFF;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrShutdown() */
+
+/*******************************************************************************************************************//**
+ * Gets the beacon receive status of the specified port.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ * @retval  FSP_ERR_INVALID_ARGUMENT    Invalid input parameter.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrBeaconStateGet (ethsw_ctrl_t * const p_ctrl, uint32_t port, uint32_t * p_state_dlr)
+{
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((NULL != p_state_dlr), FSP_ERR_INVALID_POINTER);
+    ETHSW_ERROR_RETURN((2 > port), FSP_ERR_INVALID_ARGUMENT);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    if (((ETHSW_PORT(0) == port) && (0 != (p_switch_reg->DLR_STATUS_b.LastBcnRcvPort & 0x01))) ||
+        ((ETHSW_PORT(1) == port) && (0 != (p_switch_reg->DLR_STATUS_b.LastBcnRcvPort & 0x02))))
+    {
+        *p_state_dlr = 1;
+    }
+    else
+    {
+        *p_state_dlr = 0;
+    }
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrLastBeacon() */
+
+/*******************************************************************************************************************//**
+ * Gets DLR node status.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrNodeStateGet (ethsw_ctrl_t * const p_ctrl, uint32_t * p_state_dlr)
+{
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((NULL != p_state_dlr), FSP_ERR_INVALID_POINTER);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    *p_state_dlr = p_switch_reg->DLR_STATUS_b.NODE_STATE;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrNodeState() */
+
+/*******************************************************************************************************************//**
+ * Gets IP address of DLR supervisor.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrSvIpGet (ethsw_ctrl_t * const p_ctrl, uint32_t * p_state_dlr)
+{
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((NULL != p_state_dlr), FSP_ERR_INVALID_POINTER);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    *p_state_dlr = p_switch_reg->DLR_SUPR_IPADR;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrSvIp() */
+
+/*******************************************************************************************************************//**
+ * Gets preference of DLR supervisor.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrSvPrecGet (ethsw_ctrl_t * const p_ctrl, uint32_t * p_state_dlr)
+{
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((NULL != p_state_dlr), FSP_ERR_INVALID_POINTER);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    *p_state_dlr = p_switch_reg->DLR_SUPR_MAChi_b.PRECE;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrSvPrec() */
+
+/*******************************************************************************************************************//**
+ * Gets VLAN ID of DLR beacon frame.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrVlanGet (ethsw_ctrl_t * const p_ctrl, uint32_t * p_state_dlr)
+{
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((NULL != p_state_dlr), FSP_ERR_INVALID_POINTER);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    *p_state_dlr = p_switch_reg->DLR_STATE_VLAN_b.VLANINFO;
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrVlan() */
+
+/*******************************************************************************************************************//**
+ * Gets MAC address of DLR beacon frame.
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_DlrSvMacGet (ethsw_ctrl_t * const p_ctrl, ethsw_mac_addr_t * pp_addr_mac)
+{
+    uint32_t regVal;                   /* register value */
+
+    ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_Type volatile * p_switch_reg;
+
+#if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    ETHSW_ERROR_RETURN((NULL != pp_addr_mac), FSP_ERR_INVALID_POINTER);
+#endif
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    regVal            = p_switch_reg->DLR_SUPR_MAClo;
+    (*pp_addr_mac)[0] = (uint8_t) (regVal & ETHSW_HEX_000000FF) >> 0;
+    (*pp_addr_mac)[1] = (uint8_t) ((regVal & ETHSW_HEX_0000FF00) >> 8);
+    (*pp_addr_mac)[2] = (uint8_t) ((regVal & ETHSW_HEX_00FF0000) >> 16);
+    (*pp_addr_mac)[3] = (uint8_t) ((regVal & ETHSW_HEX_FF000000) >> 24);
+
+    regVal            = p_switch_reg->DLR_SUPR_MAChi;
+    (*pp_addr_mac)[4] = (uint8_t) (regVal & ETHSW_HEX_000000FF);
+    (*pp_addr_mac)[5] = (uint8_t) ((regVal & ETHSW_HEX_0000FF00) >> 8);
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_DlrSvMac() */
+
+/*******************************************************************************************************************//**
  * @} (end addtogroup ETHSW)
  **********************************************************************************************************************/
 
@@ -1070,7 +1579,142 @@ void ethsw_isr_intr (void)
 
         (*p_instance_ctrl->p_switch_cfg->p_callback)((void *) &callback_arg);
     }
+
+    /* DLR Interrupt */
+    if (ETHSW_INT_CONFIG_DLR_INT == (ulInt_Stat_Ack_Val & ETHSW_INT_CONFIG_DLR_INT))
+    {
+        ethsw_isr_dlr(p_instance_ctrl);
+    }
 }
+
+/*******************************************************************************************************************//**
+ * Call the callback function registered for the DLR.
+ *
+ * @param[in]   event           event ID
+ * @param[in]   port            source port of DLR event
+ *
+ * @retval      none
+ **********************************************************************************************************************/
+static void ethsw_dlr_callback (ethsw_dlr_event_t event, uint32_t port)
+{
+    if (0 != gp_ethsw_dlr_callback)
+    {
+        (*gp_ethsw_dlr_callback)(event, port);
+    }
+}                                      /* End of ethsw_dlr_callback() */
+
+/*******************************************************************************************************************//**
+ * Interrupt handler for DLR
+ * This function is called by ethsw_isr_intr
+ *
+ * @param[in]   p_instance_ctrl     pointer to control structure
+ *
+ * @retval      none
+ **********************************************************************************************************************/
+static void ethsw_isr_dlr (ethsw_instance_ctrl_t * p_instance_ctrl)
+{
+    R_ETHSW_Type * p_switch_reg;
+    uint32_t       link_state = 0;     /* link state */
+    uint32_t       int_ID;             /* interrupt Flag */
+    uint32_t       reg_val;            /* register content */
+    int32_t        cnt;                /* loop counter */
+
+    p_switch_reg = p_instance_ctrl->p_reg_switch;
+
+    while (p_switch_reg->DLR_IRQ_STAT_ACK)
+    {
+        reg_val = p_switch_reg->DLR_IRQ_STAT_ACK;
+        p_switch_reg->DLR_IRQ_STAT_ACK = reg_val;
+
+        /* scan all status bits */
+        for (cnt = 0; cnt < 16; cnt++)
+        {
+            int_ID = reg_val & (1U << cnt);
+
+            if (int_ID == 0)
+            {
+                /* bit wasn't set, check next one */
+                continue;
+            }
+
+            switch (int_ID)
+            {
+                case ETHSW_TGT_DLR_INT_NEWSTATUS:
+                {
+                    ethsw_dlr_callback(ETHSW_DLR_EVENT_NEWSTATE, ETHSW_PORT_HOST);
+                    break;
+                }
+
+                case ETHSW_TGT_DLR_INT_BEACONTMO_0:
+                {
+                    ethsw_dlr_callback(ETHSW_DLR_EVENT_BEACONTIMEOUT, ETHSW_PORT(0));
+                    break;
+                }
+
+                case ETHSW_TGT_DLR_INT_BEACONTMO_1:
+                {
+                    ethsw_dlr_callback(ETHSW_DLR_EVENT_BEACONTIMEOUT, ETHSW_PORT(1));
+                    break;
+                }
+
+                case ETHSW_TGT_DLR_INT_SUVICHNG:
+                {
+                    ethsw_dlr_callback(ETHSW_DLR_EVENT_NEWSUPERVISOR, ETHSW_PORT(0));
+                    break;
+                }
+
+                case ETHSW_TGT_DLR_INT_LNKCHNG_0:
+                {
+                    R_ETHSW_LinkStateGet((ethsw_ctrl_t *) p_instance_ctrl, ETHSW_PORT(0), &link_state);
+
+                    if (ETHSW_STATE_UP == link_state)
+                    {
+                        ethsw_dlr_callback(ETHSW_DLR_EVENT_LINKRESTORED, ETHSW_PORT(0));
+                    }
+                    else
+                    {
+                        ethsw_dlr_callback(ETHSW_DLR_EVENT_LINKLOST, ETHSW_PORT(0));
+                    }
+
+                    break;
+                }
+
+                case ETHSW_TGT_DLR_INT_LNKCHNG_1:
+                {
+                    R_ETHSW_LinkStateGet((ethsw_ctrl_t *) p_instance_ctrl, ETHSW_PORT(1), &link_state);
+
+                    if (ETHSW_STATE_UP == link_state)
+                    {
+                        ethsw_dlr_callback(ETHSW_DLR_EVENT_LINKRESTORED, ETHSW_PORT(1));
+                    }
+                    else
+                    {
+                        ethsw_dlr_callback(ETHSW_DLR_EVENT_LINKLOST, ETHSW_PORT(1));
+                    }
+
+                    break;
+                }
+
+                case ETHSW_TGT_DLR_INT_LOCALLOOP_0:
+                {
+                    ethsw_dlr_callback(ETHSW_DLR_EVENT_OWNFRAME, ETHSW_PORT(0));
+                    break;
+                }
+
+                case ETHSW_TGT_DLR_INT_LOCALLOOP_1:
+                {
+                    ethsw_dlr_callback(ETHSW_DLR_EVENT_OWNFRAME, ETHSW_PORT(1));
+                    break;
+                }
+
+                default:
+                {
+                    break;
+                }
+            }
+        }
+    }
+}                                      /* End of ethsw_isr_dlr() */
 
 /*******************************************************************************************************************//**
  * Enable ICU for Ether Switcht

@@ -45,7 +45,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define ELC_API_VERSION_MAJOR    (1U)  // DEPRECATED
-#define ELC_API_VERSION_MINOR    (2U)  // DEPRECATED
+#define ELC_API_VERSION_MINOR    (3U)  // DEPRECATED
 
 #if (1 == BSP_FEATURE_ELC_PERIPHERAL_TYPE)
  #define ELC_PERIPHERAL_NUM      (55U)

@@ -407,7 +407,7 @@ void r_shared_memory_callback (icu_inter_cpu_irq_callback_args_t * p_args)
         p_args_memory->state = SHARED_MEMORY_STATE_READY_TO_WRITE;
     }
 
-    p_ctrl->p_cfg->p_callback(p_args_memory);
+    p_ctrl->p_callback(p_args_memory);
 
     if (NULL != p_ctrl->p_callback_memory)
     {

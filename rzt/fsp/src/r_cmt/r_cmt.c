@@ -102,9 +102,6 @@ const timer_api_t g_timer_on_cmt =
 /*******************************************************************************************************************//**
  * Initializes the timer module and applies configurations. Implements @ref timer_api_t::open.
  *
- * Example:
- * @snippet r_cmt_example.c R_CMT_Open
- *
  * @retval FSP_SUCCESS                    Initialization was successful and timer has started.
  * @retval FSP_ERR_ASSERTION              A required input pointer is NULL or the source divider is invalid.
  * @retval FSP_ERR_ALREADY_OPEN           Module is already open.
@@ -149,9 +146,6 @@ fsp_err_t R_CMT_Open (timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_c
 /*******************************************************************************************************************//**
  * Stops timer. Implements @ref timer_api_t::stop.
  *
- * Example:
- * @snippet r_cmt_example.c R_CMT_Stop
- *
  * @retval FSP_SUCCESS                 Timer successfully stopped.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -176,9 +170,6 @@ fsp_err_t R_CMT_Stop (timer_ctrl_t * const p_ctrl)
 
 /*******************************************************************************************************************//**
  * Starts timer. Implements @ref timer_api_t::start.
- *
- * Example:
- * @snippet r_cmt_example.c R_CMT_Start
  *
  * @retval FSP_SUCCESS                 Timer successfully started.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
@@ -253,9 +244,6 @@ fsp_err_t R_CMT_Disable (timer_ctrl_t * const p_ctrl)
  * Updates period. The new period is updated immediately and the counter is reset to 0.
  *
  * Implements @ref timer_api_t::periodSet.
- *
- * Example:
- * @snippet r_cmt_example.c R_CMT_PeriodSet
  *
  * @retval FSP_SUCCESS                 Period value written successfully.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
@@ -333,9 +321,6 @@ fsp_err_t R_CMT_InfoGet (timer_ctrl_t * const p_ctrl, timer_info_t * const p_inf
 
 /*******************************************************************************************************************//**
  * Get current timer status and store it in provided pointer p_status. Implements @ref timer_api_t::statusGet.
- *
- * Example:
- * @snippet r_cmt_example.c R_CMT_StatusGet
  *
  * @retval FSP_SUCCESS                 Current timer state and counter value set successfully.
  * @retval FSP_ERR_ASSERTION           p_ctrl or p_status was NULL.

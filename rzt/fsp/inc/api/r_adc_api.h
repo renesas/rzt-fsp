@@ -56,7 +56,7 @@ FSP_HEADER
 
 /* Version Number of API.  */
 #define ADC_API_VERSION_MAJOR    (1U)  // DEPRECATED
-#define ADC_API_VERSION_MINOR    (2U)  // DEPRECATED
+#define ADC_API_VERSION_MINOR    (3U)  // DEPRECATED
 
 /*****************************************************************************
  * Typedef definitions

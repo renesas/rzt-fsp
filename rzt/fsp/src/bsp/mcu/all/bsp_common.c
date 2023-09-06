@@ -202,6 +202,17 @@ fsp_err_t R_FSP_VersionGet (fsp_pack_version_t * const p_version)
     return FSP_SUCCESS;
 }
 
+/*******************************************************************************************************************//**
+ * Invalidates instruction and data caches of arm core processor.
+ * Use the MRC or MCR instructions to access coprocessor registers. If you access the coprocessor with a C compiler,
+ * use inline assembly language.
+ * The cache invalidation process is defined in bsp_cache.c for each device.
+ **********************************************************************************************************************/
+__WEAK void R_BSP_CacheInvalidate (void)
+{
+    /* The cache invalidation process is defined in bsp_cache.c for each device. */
+}
+
 #if ((1 == BSP_CFG_ERROR_LOG) || (1 == BSP_CFG_ASSERT))
 
 /*******************************************************************************************************************//**

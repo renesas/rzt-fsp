@@ -185,20 +185,20 @@ typedef struct
 /** Break duration data */
 typedef struct
 {
-    uint16_t wtime_ms;                 ///< Duration of Break
+    uint16_t wtime_ms;                                                                                           ///< Duration of Break
 } usb_hcdc_breakduration_t;
 
-void usb_hcdc_set_control_line_state(usb_instance_ctrl_t * p_ctrl, uint8_t device_address, usb_setup_t * setup);
+void usb_hcdc_set_control_line_state(usb_instance_ctrl_t * p_ctrl, uint8_t device_address, usb_setup_t * setup); /* DEPRECATED */
 void usb_hcdc_set_line_coding(usb_instance_ctrl_t   * p_ctrl,
                               uint8_t                 device_address,
                               usb_hcdc_linecoding_t * g_com_parm,
-                              usb_setup_t           * setup);
+                              usb_setup_t           * setup);                                                    /* DEPRECATED */
 void usb_hcdc_get_line_coding(usb_instance_ctrl_t   * p_ctrl,
                               uint8_t                 device_address,
                               usb_hcdc_linecoding_t * g_com_parm,
-                              usb_setup_t           * setup);
+                              usb_setup_t           * setup);                                                    /* DEPRECATED */
 
-#endif                                 /* R_USB_HCDC_API_H */
+#endif                                                                                                           /* R_USB_HCDC_API_H */
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup USB_HCDC_API)

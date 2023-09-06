@@ -37,7 +37,7 @@ FSP_HEADER
 
 /* Leading zeroes removed to avoid coding standards violation. */
 #define CMTW_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define CMTW_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define CMTW_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /** Maximum number of clock counts in 16 bit timer. */
 #define CMTW_MAX_CLOCK_COUNTS      (UINT32_MAX)

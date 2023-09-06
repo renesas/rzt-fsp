@@ -39,7 +39,7 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 #define SPI_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define SPI_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define SPI_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /*************************************************************************************************
  * Type defines for the SPI interface API
@@ -139,7 +139,7 @@ typedef struct st_spi_extended_cfg
     spi_delay_count_t            spck_delay;         ///< SPI Clock Delay Register Setting
     spi_delay_count_t            ssl_negation_delay; ///< SPI Slave Select Negation Delay Register Setting
     spi_delay_count_t            next_access_delay;  ///< SPI Next-Access Delay Register Setting
-    spi_synchronizer_t           sync_bypass;        ///< Clock synchronizer selection
+    spi_synchronizer_t           sync_bypass;        ///< DEPRECATED - Clock synchronizer selection
     uint8_t transmit_fifo_threshold;                 ///< Transmit FIFO threshold (0~3)
     uint8_t receive_fifo_threshold;                  ///< Receive FIFO threshold (0~3)
     uint8_t receive_data_ready_detect_adjustment;    ///< Receive data ready detect timing(0~255PCLKSPIn)
@@ -153,10 +153,10 @@ typedef struct st_spi_instance_ctrl
     R_SPI0_Type     * p_regs;          ///< Base register for this channel
     void const      * p_tx_data;       ///< Buffer to transmit
     void            * p_rx_data;       ///< Buffer to receive
-    uint32_t          tx_count;        ///< Number of Data Frames to transfer (8-bit, 16-bit, 32-bit)
-    uint32_t          rx_count;        ///< Number of Data Frames to transfer (8-bit, 16-bit, 32-bit)
-    uint32_t          count;           ///< Number of Data Frames to transfer (8-bit, 16-bit, 32-bit)
-    spi_bit_width_t   bit_width;       ///< Bits per Data frame (8-bit, 16-bit, 32-bit)
+    uint32_t          tx_count;        ///< Number of Data Frames to transfer (4 to 32 bits)
+    uint32_t          rx_count;        ///< Number of Data Frames to transfer (4 to 32 bits)
+    uint32_t          count;           ///< Number of Data Frames to transfer (4 to 32 bits)
+    spi_bit_width_t   bit_width;       ///< Bits per Data frame (4 to 32 bits)
 
     /* Pointer to callback and optional working memory */
     void (* p_callback)(spi_callback_args_t *);

@@ -768,7 +768,7 @@ usb_er_t usb_pstd_set_submitutr (usb_utr_t * utrmsg)
             usb_cstd_pipe_msg_clear(utrmsg, pipenum);
         }
 
- #else                                 /* BSP_CFG_RTOS_USED == 1 */
+ #else                                 /* BSP_CFG_RTOS == 2 */
         /* Transfer stop */
         usb_pstd_forced_termination(pipenum, (uint16_t) USB_DATA_ERR, utrmsg);
  #endif /* (BSP_CFG_RTOS == 2) */
@@ -1294,7 +1294,7 @@ usb_er_t usb_pstd_transfer_start (usb_utr_t * ptr)
     uint16_t pipenum;
   #if (BSP_CFG_RTOS == 2)
     usb_utr_t * p_tran_data;
-  #endif                               /* BSP_CFG_RTOS_USED == 1 */
+  #endif                               /* BSP_CFG_RTOS == 2 */
 
     pipenum = ptr->keyword;
     if (USB_PIPE0 == pipenum)

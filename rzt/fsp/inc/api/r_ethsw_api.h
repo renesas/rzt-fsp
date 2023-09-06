@@ -52,7 +52,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define ETHSW_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHSW_API_VERSION_MINOR    (2U) // DEPRECATED
+#define ETHSW_API_VERSION_MINOR    (3U) // DEPRECATED
 
 #define ETHSW_MAC_ADDR_LEN         (6U)
 
@@ -64,6 +64,11 @@ FSP_HEADER
 #define ETHSW_PORT(x)        ((ethsw_port_cast) (x) & ~ETHSW_PORT_MASK)
 #define ETHSW_PORT_BIT(x)    ((ethsw_port_cast) (1 << (x)) | ETHSW_PORT_MASK)
 #define ETHSW_PORT_BITS            (~(ETHSW_PORT_HOST | ETHSW_PORT_MASK))
+
+#define ETHSW_STATE_DEFAULT        0   ///< default state
+#define ETHSW_STATE_UNKNOWN        1   ///< unknown state
+#define ETHSW_STATE_DOWN           2   ///< state down
+#define ETHSW_STATE_UP             3   ///< state up
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -178,6 +183,27 @@ typedef struct st_ethsw_flood_unk_conf
     ethsw_port_mask_t port_mask_ucast; ///< flood domain port mask for unicasts with unkown destination
 } ethsw_flood_unk_conf_t;
 
+/** DLR events for the DLR State Machine */
+typedef enum e_ethsw_dlr_event
+{
+    ETHSW_DLR_EVENT_LINKLOST,          ///< Link was lost
+    ETHSW_DLR_EVENT_OWNFRAME,          ///< the device received its own frame
+    ETHSW_DLR_EVENT_LINKRESTORED,      ///< Link is restored
+    ETHSW_DLR_EVENT_BEACONFRAME,       ///< Beacon Frame received
+    ETHSW_DLR_EVENT_BEACONTIMEOUT,     ///< Beacon Timer timed out
+    ETHSW_DLR_EVENT_NEWSUPERVISOR,     ///< a new Ring Supervisor was detected
+    ETHSW_DLR_EVENT_NEWSTATE           ///< Beacon Hardware detected new state
+} ethsw_dlr_event_t;
+
+/** DLR initilize */
+typedef struct st_ethsw_dlr_init
+{
+    ethsw_mac_addr_t * p_host_addr;    ///< host MAC address pointer
+    void (* p_dlr_callback)(           ///< callback function pointer
+        ethsw_dlr_event_t event,
+        uint32_t          port);
+} ethsw_dlr_init_t;
+
 /** Functions implemented at the HAL layer will follow this API. */
 typedef struct st_ethsw_api
 {
@@ -288,6 +314,114 @@ typedef struct st_ethsw_api
      * @param[in]  p_flood_unk_conf Pointer to configuration of flood domain for frames with unknown destination.
      */
     fsp_err_t (* floodUnknownSet)(ethsw_ctrl_t * const p_api_ctrl, ethsw_flood_unk_conf_t * p_flood_unk_conf);
+
+    /** Gets link state for given port.
+     * @par Implemented as
+     * - @ref  R_ETHSW_LinkStateGet()
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  port             Port number.
+     * @param[out] p_state_link     Pointer to Link state (up/down).
+     */
+    fsp_err_t (* linkStateGet)(ethsw_ctrl_t * const p_api_ctrl, uint32_t port, uint32_t * p_state_link);
+
+    /** Sets maximum frame size of given port.
+     * @par Implemented as
+     * - @ref  R_ETHSW_FrameSizeMaxSet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     * @param[in]       port                    Port number.
+     * @param[in]       frame_size_max          Maximum frame size.
+     */
+    fsp_err_t (* frameSizeMaxSet)(ethsw_ctrl_t * const p_api_ctrl, uint32_t port, uint32_t frame_size_max);
+
+    /** Initialize DLR module.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrInitSet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     * @param[in]       p_dlr_init              Pointer to DLR initilize info.
+     */
+    fsp_err_t (* dlrInitSet)(ethsw_ctrl_t * const p_api_ctrl, ethsw_dlr_init_t * p_dlr_init);
+
+    /** Uninitialize DLR module.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrUninitSet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     */
+    fsp_err_t (* dlrUninitSet)(ethsw_ctrl_t * const p_api_ctrl);
+
+    /** Enable DLR module.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrEnableSet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     */
+    fsp_err_t (* dlrEnableSet)(ethsw_ctrl_t * const p_api_ctrl);
+
+    /** Disable DLR module.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrDisableSet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     */
+    fsp_err_t (* dlrDisableSet)(ethsw_ctrl_t * const p_api_ctrl);
+
+    /** Gets DLR last beacon status.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrBeaconStateGet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     * @param[in]       port                    Port number.
+     * @param[out]      p_state_dlr             Pointer to DLR last beacon status.
+     */
+    fsp_err_t (* dlrBeaconStateGet)(ethsw_ctrl_t * const p_api_ctrl, uint32_t port, uint32_t * p_state_dlr);
+
+    /** Gets DLR node status.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrNodeStateGet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     * @param[out]      p_state_dlr             Pointer to DLR node status.
+     */
+    fsp_err_t (* dlrNodeStateGet)(ethsw_ctrl_t * const p_api_ctrl, uint32_t * p_state_dlr);
+
+    /** Gets IP address of DLR supervisor.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrSvIpGet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     * @param[out]      p_state_dlr             Pointer to IP address of DLR supervisor.
+     */
+    fsp_err_t (* dlrSvIpGet)(ethsw_ctrl_t * const p_api_ctrl, uint32_t * p_state_dlr);
+
+    /** Gets preference of DLR supervisor.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrSvPrecGet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     * @param[out]      p_state_dlr             Pointer to preference of DLR supervisor.
+     */
+    fsp_err_t (* dlrSvPrecGet)(ethsw_ctrl_t * const p_api_ctrl, uint32_t * p_state_dlr);
+
+    /** Gets VLAN ID of DLR beacon frame.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrVlanGet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     * @param[out]      p_state_dlr             Pointer to VLAN ID of DLR beacon frame.
+     */
+    fsp_err_t (* dlrVlanGet)(ethsw_ctrl_t * const p_api_ctrl, uint32_t * p_state_dlr);
+
+    /** Gets MAC address of DLR beacon frame.
+     * @par Implemented as
+     * - @ref  R_ETHSW_DlrSvMacGet()
+     *
+     * @param[in]       p_api_ctrl              Pointer to control structure.
+     * @param[out]      pp_addr_mac             Pointer to pointer to MAC address of DLR beacon frame.
+     */
+    fsp_err_t (* dlrSvMacGet)(ethsw_ctrl_t * const p_api_ctrl, ethsw_mac_addr_t * pp_addr_mac);
 } ethsw_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */

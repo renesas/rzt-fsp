@@ -47,7 +47,7 @@ FSP_HEADER
  * Typedef definitions
  **********************************************************************************************************************/
 
-/** NOR Flash chip select. */
+/** SDRAM chip select. */
 typedef enum e_sdram_chip_select
 {
     SDRAM_CHIP_SELECT_0 = 0x00,        ///< Device connected to Chip-Select 0
@@ -127,7 +127,7 @@ typedef struct st_sdram_cfg
 
 /** SDRAM control block.  Allocate an instance specific control block to pass into the SDRAM API calls.
  * @par Implemented as
- * - bsc_instance_ctrl_t
+ * - bsc_sdram_instance_ctrl_t
  */
 typedef void sdram_ctrl_t;
 

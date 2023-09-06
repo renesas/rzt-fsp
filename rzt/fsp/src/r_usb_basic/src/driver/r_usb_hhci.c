@@ -149,7 +149,7 @@ USB_BUFFER_PLACE_IN_SECTION;
  * Return       : void
  * Note         :
  ***********************************************************************************************************************/
-void r_usb_hstd_hci_task (void)
+void usb_hstd_hci_task (void)
 {
     usb_utr_t              * p_mess;
     usb_utr_t              * ptr;
@@ -168,93 +168,103 @@ void r_usb_hstd_hci_task (void)
 
     /* receive message */
 
-    /* err = USB_RCV_MSG(USB_HCI_MBX, (usb_msg_t**)&dummy); */
+ #if (BSP_CFG_RTOS == 0)
     err = USB_RCV_MSG(USB_HCI_MBX, (usb_msg_t **) &p_mess);
     if (err != USB_OK)
     {
-        return;
     }
-
-    p_task_info = &usb_hci_manage_info.task[USB_HCI_TASK];
-
-    /* Taking out of message */
-    if (p_task_info->mess_cnt)
+    else
+ #else                                 /* #if (BSP_CFG_RTOS == 2) */
+    while (1)
     {
-        usb_hstd_int_disable();
-
-        message = (uint32_t) p_task_info->mess_buff[p_task_info->mess_read];
-        data1   = p_task_info->data1_buff[p_task_info->mess_read];
-        data2   = p_task_info->data2_buff[p_task_info->mess_read];
-        data3   = p_task_info->data3_buff[p_task_info->mess_read];
-
-        ptr      = p_mess;
-        hp       = (usb_hciinfo_t *) p_mess;
-        rootport = ptr->keyword;
-        pipenum  = ptr->keyword;
-
-        p_task_info->mess_read++;
-        if (USB_HCI_MESS_MAX <= p_task_info->mess_read)
+        err = USB_TRCV_MSG(USB_HCI_MBX, (usb_msg_t **) &p_mess, (usb_tm_t) 0);
+        if (err != USB_OK)
         {
-            p_task_info->mess_read = 0UL;
         }
+        else
+ #endif                                /* #if (BSP_CFG_RTOS == 2) */
+    {
+        p_task_info = &usb_hci_manage_info.task[USB_HCI_TASK];
 
-        p_task_info->mess_cnt--;
-
-        usb_hstd_int_enable();
-
-        /* Processing of message */
-        switch (message)
+        /* Taking out of message */
+        if (p_task_info->mess_cnt)
         {
-            case USB_HCI_MESS_EHCI_PORT_CHANGE_DETECT:
+            usb_hstd_int_disable();
+
+            message = (uint32_t) p_task_info->mess_buff[p_task_info->mess_read];
+            data1   = p_task_info->data1_buff[p_task_info->mess_read];
+            data2   = p_task_info->data2_buff[p_task_info->mess_read];
+            data3   = p_task_info->data3_buff[p_task_info->mess_read];
+
+            ptr      = p_mess;
+            hp       = (usb_hciinfo_t *) p_mess;
+            rootport = ptr->keyword;
+            pipenum  = ptr->keyword;
+
+            p_task_info->mess_read++;
+            if (USB_HCI_MESS_MAX <= p_task_info->mess_read)
             {
-                USB_HCI_PRINTF0("USB_HCI_MESS_EHCI_PORT_CHANGE_DETECT \n");
-                usb_hstd_ehci_int_port_change(ptr);
-                break;
+                p_task_info->mess_read = 0UL;
             }
 
-            case USB_HCI_MESS_EHCI_HOST_SYSTEM_ERROR:
-            {
-                USB_HCI_PRINTF0_R("USB_HCI_MESS_EHCI_HOST_SYSTEM_ERROR \n");
-                break;
-            }
+            p_task_info->mess_cnt--;
 
-            case USB_HCI_MESS_EHCI_USBINT:
-            {
-                USB_HCI_PRINTF0("USB_HCI_MESS_EHCI_USBINT \n");
-                usb_hstd_ehci_int_transfer_end(ptr);
-                break;
-            }
+            usb_hstd_int_enable();
 
-            case USB_HCI_MESS_EHCI_USBERRINT:
+            /* Processing of message */
+            switch (message)
             {
-                USB_HCI_PRINTF0_R("USB_HCI_MESS_EHCI_USBERRINT \n");
-                usb_hstd_ehci_int_transfer_end(ptr);
-                break;
-            }
+                case USB_HCI_MESS_EHCI_PORT_CHANGE_DETECT:
+                {
+                    USB_HCI_PRINTF0("USB_HCI_MESS_EHCI_PORT_CHANGE_DETECT \n");
+                    usb_hstd_ehci_int_port_change(ptr);
+                    break;
+                }
 
-            case USB_HCI_MESS_EHCI_FRAME_LIST_ROLLOVER:
-            {
-                USB_HCI_PRINTF0("USB_HCI_MESS_EHCI_FRAME_LIST_ROLLOVER \n");
-                break;
-            }
+                case USB_HCI_MESS_EHCI_HOST_SYSTEM_ERROR:
+                {
+                    USB_HCI_PRINTF0_R("USB_HCI_MESS_EHCI_HOST_SYSTEM_ERROR \n");
+                    break;
+                }
 
-            case USB_HCI_MESS_EHCI_INTERRUPT_ON_ASYNC_ADVANCE:
-            {
-                USB_HCI_PRINTF0("USB_HCI_MESS_EHCI_INTERRUPT_ON_ASYNC_ADVANCE \n");
-                break;
-            }
+                case USB_HCI_MESS_EHCI_USBINT:
+                {
+                    USB_HCI_PRINTF0("USB_HCI_MESS_EHCI_USBINT \n");
+                    usb_hstd_ehci_int_transfer_end(ptr);
+                    break;
+                }
 
-            case USB_HCI_MESS_OHCI_INT:
-            {
-                USB_HCI_PRINTF3("USB_HCI_MESS_OHCI_INT : %08x %08x %08x\n", data1, data2, data3);
-                usb_hstd_OhciMainRoutine(ptr, data1, data2, data3);
-                break;
-            }
+                case USB_HCI_MESS_EHCI_USBERRINT:
+                {
+                    USB_HCI_PRINTF0_R("USB_HCI_MESS_EHCI_USBERRINT \n");
+                    usb_hstd_ehci_int_transfer_end(ptr);
+                    break;
+                }
 
-            default:
-            {
-                USB_HCI_PRINTF0_R("Error: HCI transfer task unknown message \n");
-                break;
+                case USB_HCI_MESS_EHCI_FRAME_LIST_ROLLOVER:
+                {
+                    USB_HCI_PRINTF0("USB_HCI_MESS_EHCI_FRAME_LIST_ROLLOVER \n");
+                    break;
+                }
+
+                case USB_HCI_MESS_EHCI_INTERRUPT_ON_ASYNC_ADVANCE:
+                {
+                    USB_HCI_PRINTF0("USB_HCI_MESS_EHCI_INTERRUPT_ON_ASYNC_ADVANCE \n");
+                    break;
+                }
+
+                case USB_HCI_MESS_OHCI_INT:
+                {
+                    USB_HCI_PRINTF3("USB_HCI_MESS_OHCI_INT : %08x %08x %08x\n", data1, data2, data3);
+                    usb_hstd_OhciMainRoutine(ptr, data1, data2, data3);
+                    break;
+                }
+
+                default:
+                {
+                    USB_HCI_PRINTF0_R("Error: HCI transfer task unknown message \n");
+                    break;
+                }
             }
         }
     }
@@ -263,6 +273,10 @@ void r_usb_hstd_hci_task (void)
     FSP_PARAMETER_NOT_USED(hp);
     FSP_PARAMETER_NOT_USED(pipenum);
     FSP_PARAMETER_NOT_USED(dummy);
+
+ #if (BSP_CFG_RTOS != 0)
+}
+ #endif                                /* #if (BSP_CFG_RTOS == 0) */
 }                                      /* End of function r_usb_hstd_hci_task() */
 
 /***********************************************************************************************************************
@@ -382,7 +396,11 @@ void usb_hstd_hci_send_message_from_int (usb_utr_t * ptr,
     /* Notification of message sending */
 
 /* USB_SND_MSG(USB_HCI_MBX, (usb_msg_t *)NULL); */
+ #if (BSP_CFG_RTOS == 0)
     USB_SND_MSG(USB_HCI_MBX, (usb_msg_t *) ptr);
+ #else
+    USB_ISND_MSG(USB_HCI_MBX, (usb_msg_t *) ptr);
+ #endif
 }                                      /* End of function usb_hstd_hci_send_message_from_int() */
 
 /***********************************************************************************************************************

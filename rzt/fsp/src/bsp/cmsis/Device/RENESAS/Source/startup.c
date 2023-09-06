@@ -60,8 +60,8 @@
 #define ATTRINDEX6              (6 << 1)
 #define ATTRINDEX7              (7 << 1)
 
-/* Attr0    1111_1111b Normal Memory, Outer&Inner R/W allocate ,Write-Back non-transient, but treated as WriteThrough in CR52 */
-/* Attr1    1011_1011b Normal Memory, Outer&Inner R/W allocate ,Write-Through non-transient */
+/* Attr0 1111_1111b Normal Memory, Outer&Inner R/W allocate ,Write-Back non-transient, but treated as WriteThrough in CR52 */
+/* Attr1 1011_1011b Normal Memory, Outer&Inner R/W allocate ,Write-Through non-transient */
 /* Attr2 1000_1000b Normal Memory, Outer&Inner non-allocate ,Write-Through non-transient */
 /* Attr3 0100_0100b Normal Memory, Outer&Inner Non-Cacheable */
 /* Attr4 0000_0000b Device-nGnRnE memory */
@@ -231,12 +231,6 @@
 /***********************************************************************************************************************
  * Exported global variables (to be accessed by other files)
  **********************************************************************************************************************/
-#if BSP_CFG_RAM_EXECUTION
- #if defined(__ICCARM__)
-extern void __iar_data_init3(void);
-
- #endif
-#endif
 
 #if (0 == BSP_CFG_CPU)
 extern void bsp_m_mpu_init(void);
@@ -249,17 +243,23 @@ extern void bsp_tfu_init(void);
 #endif
 
 #if BSP_CFG_C_RUNTIME_INIT
+extern void bsp_loader_data_init(void);
+extern void bsp_loader_bss_init(void);
 extern void bsp_static_constructor_init(void);
 
 #endif
 
 #if !(BSP_CFG_RAM_EXECUTION)
-extern void bsp_copy_to_atcm(void);
+extern void bsp_copy_to_ram(void);
 extern void bsp_application_bss_init(void);
 
 #endif
 
+#if !BSP_CFG_PORT_PROTECT
 extern void bsp_release_port_protect(void);
+
+#endif
+
 extern void R_BSP_WarmStart(bsp_warm_start_event_t event);
 
 /***********************************************************************************************************************
@@ -280,12 +280,6 @@ BSP_TARGET_ARM void                         bsp_mpu_init(void);
  #pragma section=".und_stack"
  #pragma section=".sys_stack"
 
- #pragma section="LDR_DATA_RBLOCK"
- #pragma section="LDR_DATA_WBLOCK"
- #pragma section="LDR_DATA_ZBLOCK"
-
- #pragma section="SHARED_NONCACHE_BUFFER_ZBLOCK"
- #pragma section="NONCACHE_BUFFER_ZBLOCK"
 #endif
 
 #if BSP_CFG_EARLY_INIT
@@ -312,7 +306,11 @@ void Default_Handler (void)
 #if defined(__ICCARM__)
  #define WEAK_REF_ATTRIBUTE
 
- #pragma weak Reset_Handler         = Default_Handler
+ #if (0 == BSP_CFG_CPU)
+  #pragma weak Reset_Handler         = Default_Handler
+
+ #endif
+
  #pragma weak Undefined_Handler     = Default_Handler
  #pragma weak SVC_Handler           = Default_Handler
  #pragma weak Prefetch_Handler      = Default_Handler
@@ -324,7 +322,11 @@ void Default_Handler (void)
  #define WEAK_REF_ATTRIBUTE    __attribute__((weak, alias("Default_Handler")))
 #endif
 
+#if (0 == BSP_CFG_CPU)
 void Reset_Handler(void) WEAK_REF_ATTRIBUTE;
+
+#endif
+
 void Undefined_Handler(void) WEAK_REF_ATTRIBUTE;
 void SVC_Handler(void) WEAK_REF_ATTRIBUTE;
 void Prefetch_Handler(void) WEAK_REF_ATTRIBUTE;
@@ -353,10 +355,25 @@ BSP_DONT_REMOVE static uint8_t g_heap[BSP_CFG_HEAP_BYTES] BSP_ALIGN_VARIABLE(BSP
     BSP_PLACE_IN_SECTION(BSP_SECTION_HEAP);
 #endif
 
+#if defined(__GNUC__)
+BSP_DONT_REMOVE static const void * g_bsp_dummy BSP_PLACE_IN_SECTION(".dummy");
+
+ #if BSP_CFG_RAM_EXECUTION
+BSP_DONT_REMOVE static const void * g_bsp_loader_dummy BSP_PLACE_IN_SECTION(".loader_dummy");
+
+ #endif
+
+#endif
+
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void __Vectors (void)
 {
     __asm volatile (
+#if (0 == BSP_CFG_CPU)
         "    ldr pc,=Reset_Handler            \n"
+#elif (1 == BSP_CFG_CPU)
+        "    ldr pc,=system_init              \n"
+#endif
+
         "    ldr pc,=Undefined_Handler        \n"
         "    ldr pc,=SVC_Handler              \n"
         "    ldr pc,=Prefetch_Handler         \n"
@@ -379,50 +396,50 @@ BSP_TARGET_ARM void system_init (void)
 {
     __asm volatile (
         "set_hactlr:                              \n"
-        "   MOVW  r0, %[bsp_hactlr_bit_l]         \n" /* Set HACTLR bits(L) */
+        "   MOVW  r0, %[bsp_hactlr_bit_l]         \n" /* Set value of HACTLR bits(L) */
         "   MOVT  r0, #0                          \n"
         "   MCR   p15, #4, r0, c1, c0, #1         \n" /* Write r0 to HACTLR */
         ::[bsp_hactlr_bit_l] "i" (BSP_HACTLR_BIT_L) : "memory");
 
     __asm volatile (
         "set_hcr:                                 \n"
-        "    MRC   p15, #4, r1, c1, c1, #0        \n" /* Read Hyp Configuration Register */
+        "    MRC   p15, #4, r1, c1, c1, #0        \n" /* Read HCR to r1 */
         "    ORR   r1, r1, %[bsp_hcr_hcd_disable] \n" /* HVC instruction disable */
-        "    MCR   p15, #4, r1, c1, c1, #0        \n" /* Write Hyp Configuration Register */
+        "    MCR   p15, #4, r1, c1, c1, #0        \n" /* Write r1 to HCR */
         ::[bsp_hcr_hcd_disable] "i" (BSP_HCR_HCD_DISABLE) : "memory");
 
     __asm volatile (
         "set_vbar:                           \n"
         "    LDR   r0, =__Vectors            \n"
-        "    MCR   p15, #0, r0, c12, c0, #0  \n" /* Write r0 to VBAR */
+        "    MCR   p15, #0, r0, c12, c0, #0  \n" /* Write vector table address to VBAR */
         ::: "memory");
 
 #if (0 == BSP_CFG_CPU)
     __asm volatile (
         "LLPP_access_enable:                     \n"
 
-        /* Enable PERIPHPREGIONR (LLPP) */
-        "    mrc        p15,#0, r1, c15, c0,#0   \n" /* PERIPHPREGIONR */
-        "    orr        r1, r1, #(0x1 << 1)      \n" /* Enable PERIPHPREGIONR EL2 */
-        "    orr        r1, r1, #(0x1)           \n" /* Enable PERIPHPREGIONR EL1 and EL0 */
+        /* Enable peripheral port (LLPP access). */
+        "    mrc        p15,#0, r1, c15, c0,#0   \n" /* Read IMP_PERIPHPREGIONR to r1 */
+        "    orr        r1, r1, #(0x1 << 1)      \n" /* Enable peripheral port at EL2 */
+        "    orr        r1, r1, #(0x1)           \n" /* Enable peripheral port at EL1 and EL0 */
         "    dsb                                 \n" /* Ensuring memory access complete */
-        "    mcr        p15,#0, r1, c15, c0,#0   \n" /* PERIPHREGIONR */
+        "    mcr        p15,#0, r1, c15, c0,#0   \n" /* Write r1 to IMP_PERIPHPREGIONR */
         "    isb                                 \n" /* Ensuring Context-changing */
         ::: "memory");
 #endif
 
     __asm volatile (
         "cpsr_save:                              \n"
-        "    MRS   r0, cpsr                      \n" /* Original PSR value */
+        "    MRS   r0, cpsr                      \n" /* Read original CPSR value to r0 */
         "    BIC   r0, r0, %[bsp_mode_mask]      \n" /* Clear the mode bits */
-        "    ORR   r0, r0, %[bsp_svc_mode]       \n" /* Set SVC mode bits */
-        "    MSR   SPSR_hyp, r0                  \n"
+        "    ORR   r0, r0, %[bsp_svc_mode]       \n" /* Set value of SVC mode bits */
+        "    MSR   SPSR_hyp, r0                  \n" /* Write r0 to SPSR_hyp */
         ::[bsp_mode_mask] "i" (BSP_MODE_MASK), [bsp_svc_mode] "i" (BSP_SVC_MODE) : "memory");
 
     __asm volatile (
         "exception_return:                       \n"
         "    LDR   r1, =stack_init               \n"
-        "    MSR   ELR_hyp, r1                   \n"
+        "    MSR   ELR_hyp, r1                   \n" /* Write stack_init address to ELR_hyp */
         "    ERET                                \n" /* Branch to stack_init and enter EL1 */
         ::: "memory");
 }
@@ -438,7 +455,7 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init (void)
     __asm volatile (
         "stack_initialization:        \n"
 
-        /* Stack setting for EL1 */
+        /* Stack setting for EL1. */
         "    cps  #17                 \n" /* FIQ mode */
         "    mov  sp, %[fiq_stack]    \n"
         ::[fiq_stack] "r" (__section_end(".fiq_stack")) : "memory");
@@ -471,7 +488,7 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init (void)
     __asm volatile (
         "stack_initialization:             \n"
 
-        /* Stack setting for EL1 */
+        /* Stack setting for EL1. */
         "    cps  #17                      \n" /* FIQ mode */
         "    ldr  sp, =__FiqStackLimit     \n"
         "    cps  #18                      \n" /* IRQ mode */
@@ -501,15 +518,15 @@ BSP_TARGET_ARM void mpu_cache_init (void)
     __asm volatile (
         "FPU_AdvancedSIMD_init:                         \n"
 
-        /* Initialize FPU and Advanced SIMD setting */
-        "    mrc  p15, #0, r0, c1, c0, #2               \n" /* Enables cp10 and cp11 accessing */
-        "    orr  r0, r0, #0xF00000                     \n"
-        "    mcr  p15, #0, r0, c1, c0, #2               \n"
+        /* Initialize FPU and Advanced SIMD setting. */
+        "    mrc  p15, #0, r0, c1, c0, #2               \n" /* Read CPACR to r0 */
+        "    orr  r0, r0, #0xF00000                     \n" /* Enables cp10 and cp11 accessing */
+        "    mcr  p15, #0, r0, c1, c0, #2               \n" /* Write r0 to CPACR */
         "    isb                                        \n" /* Ensuring Context-changing */
 
-        "    vmrs r0, fpexc                             \n" /* Enables the FPU */
-        "    orr  r0, r0, #0x40000000                   \n"
-        "    vmsr  fpexc, r0                            \n"
+        "    vmrs r0, fpexc                             \n" /* Read FPEXC to r0 */
+        "    orr  r0, r0, #0x40000000                   \n" /* Enables the FPU */
+        "    vmsr  fpexc, r0                            \n" /* Write r0 to FPEXC */
         "    isb                                        \n" /* Ensuring Context-changing */
         ::: "memory");
 #endif
@@ -531,205 +548,12 @@ BSP_TARGET_ARM void mpu_cache_init (void)
     R_BSP_WarmStart(BSP_WARM_START_POST_CLOCK);
 
 #if BSP_CFG_C_RUNTIME_INIT
- #if defined(__ICCARM__)
-    __asm volatile (
-        "loader_data_init:                                  \n"
 
-        "    mov  r1, %[sfb_ldr_data_wblock]                \n"
-        ::[sfb_ldr_data_wblock] "r" (__section_begin("LDR_DATA_WBLOCK")) : "r1");
+    /* Copy the loader data from external Flash to internal RAM. */
+    bsp_loader_data_init();
 
-    __asm volatile (
-        "    mov  r2, %[sizeof_ldr_data_wblock]             \n"
-        ::[sizeof_ldr_data_wblock] "r" (__section_size("LDR_DATA_WBLOCK")) : "r2");
-
-    __asm volatile (
-        "    mov  r3, %[sfb_ldr_data_rblock]                \n"
-        ::[sfb_ldr_data_rblock] "r" (__section_begin("LDR_DATA_RBLOCK")) : "r3");
-
-    __asm volatile (
-        "    cmp  r2, #0                                    \n"
-        "    beq  loader_data_init_end                      \n"
-
-        "copy_to_LDR_DATA:                                  \n"
-        "    ldrb  r0, [r3], #1                             \n"
-        "    strb  r0, [r1], #1                             \n"
-        "    subs  r2, r2, #1                               \n"
-        "    bne   copy_to_LDR_DATA                         \n"
-        "    dsb                                            \n" /* Ensuring data-changing */
-
-        "loader_data_init_end:                              \n"
-        ::: "memory");
-
-    __asm volatile (
-        "loader_bss_init:                                   \n"
-
-        /* Clear the loader bss used by the loader */
-        "    mov  r1, %[sfb_ldr_data_zblock]                \n"
-        ::[sfb_ldr_data_zblock] "r" (__section_begin("LDR_DATA_ZBLOCK")) : "r1");
-
-    __asm volatile (
-        "    mov  r2, %[sfe_ldr_data_zblock]                \n"
-        ::[sfe_ldr_data_zblock] "r" (__section_end("LDR_DATA_ZBLOCK")) : "r2");
-
-    __asm volatile (
-        "    cmp  r2, r1                                    \n"
-        "    beq  loader_bss_init_end                       \n"
-
-        "clear_loader_bss:                                  \n"
-        "    ldr   r0, =0x00000000                          \n"
-        "    strb  r0, [r1], #0                             \n"
-        "    add   r1, r1, #1                               \n"
-        "    cmp   r2, r1                                   \n"
-        "    bne   clear_loader_bss                         \n"
-        "    dsb                                            \n" /* Ensuring data-changing */
-
-        "loader_bss_init_end:                               \n"
-        ::: "memory");
-  #if BSP_CFG_RAM_EXECUTION
-
-    /* Initialize the application data and clear the application bss.
-     * This code is for RAM Execution. If you want to boot with ROM,
-     * enable app_copy and app_bss_init, and disable this code.
-     * Also need to change icf file. */
-    __iar_data_init3();
-
-    __asm volatile (
-        "shared_noncache_buffer_init:                       \n"
-
-        /* Clear the shared-non cache buffer */
-        "    mov  r1, %[sfb_shared_noncache_buffer_zblock]  \n"
-        ::[sfb_shared_noncache_buffer_zblock] "r" (__section_begin("SHARED_NONCACHE_BUFFER_ZBLOCK")) : "r1");
-
-    __asm volatile (
-        "    mov  r2, %[sfb_shared_noncache_buffer_zblock]  \n"
-        ::[sfb_shared_noncache_buffer_zblock] "r" (__section_end("SHARED_NONCACHE_BUFFER_ZBLOCK")) : "r2");
-
-    __asm volatile (
-        "    cmp  r2, r1                                    \n"
-        "    beq  shared_noncache_buffer_init_end           \n"
-
-        "clear_shared_noncache_buffer:                      \n"
-        "    ldr   r0, =0x00000000                          \n"
-        "    strb  r0, [r1], #0                             \n"
-        "    add   r1, r1, #1                               \n"
-        "    cmp   r2, r1                                   \n"
-        "    bne   clear_shared_noncache_buffer             \n"
-        "    dsb                                            \n" /* Ensuring data-changing */
-
-        "shared_noncache_buffer_init_end:                  \n"
-        ::: "memory");
-
-    __asm volatile (
-        "noncache_buffer_init:                             \n"
-
-        /* Clear the shared-non cache buffer */
-        "    mov  r1, %[sfb_noncache_buffer_zblock]        \n"
-        ::[sfb_noncache_buffer_zblock] "r" (__section_begin("NONCACHE_BUFFER_ZBLOCK")) : "r1");
-
-    __asm volatile (
-        "    mov  r2, %[sfb_noncache_buffer_zblock]        \n"
-        ::[sfb_noncache_buffer_zblock] "r" (__section_end("NONCACHE_BUFFER_ZBLOCK")) : "r2");
-
-    __asm volatile (
-        "    cmp  r2, r1                                    \n"
-        "    beq  noncache_buffer_init_end                  \n"
-
-        "clear_noncache_buffer:                             \n"
-        "    ldr   r0, =0x00000000                          \n"
-        "    strb  r0, [r1], #0                             \n"
-        "    add   r1, r1, #1                               \n"
-        "    cmp   r2, r1                                   \n"
-        "    bne   clear_noncache_buffer                    \n"
-        "    dsb                                            \n" /* Ensuring data-changing */
-
-        "noncache_buffer_init_end:                         \n"
-        ::: "memory");
-  #endif
- #elif defined(__GNUC__)
-    __asm volatile (
-  #if !(BSP_CFG_RAM_EXECUTION)
-        "loader_data_init:                                   \n"
-
-        /* Initialize loader_data. */
-        "    ldr r1, = __loader_data_start                   \n"
-        "    ldr r2, = __loader_data_end                     \n"
-        "    ldr r3, = _mloader_data                         \n"
-        "    cmp r2, r1                                      \n"
-        "    beq loader_data_init_end                        \n"
-
-        "set_loader_data:                                    \n"
-        "    ldrb r0, [r3], #1                               \n"
-        "    strb r0, [r1], #1                               \n"
-        "    cmp r2, r1                                      \n"
-        "    bne set_loader_data                             \n"
-        "    loader_data_init_end:                           \n"
-        "    dsb                                             \n" /* Ensuring data-changing */
-  #endif
-        "loader_bss_init:                                    \n"
-
-        /* Clear loader_bss. */
-        "    ldr r0, = 0x00000000                            \n"
-        "    ldr r1, = __loader_bss_start                    \n"
-        "    ldr r2, = __loader_bss_end                      \n"
-        "    cmp r2, r1                                      \n"
-        "    beq application_bss_init                        \n"
-
-        "clear_loader_bss:                                   \n"
-        "    strb r0, [r1], #0                               \n"
-        "    add r1, r1, #1                                  \n"
-        "    cmp r2, r1                                      \n"
-        "    bne clear_loader_bss                            \n"
-        "    dsb                                             \n" /* Ensuring data-changing */
-
-        "application_bss_init:                               \n"
-
-  #if BSP_CFG_RAM_EXECUTION
-
-        /* Clear BSS. */
-        "    ldr r0, = 0x00000000                            \n"
-        "    ldr r1, = __bss_start__                         \n"
-        "    ldr r2, = __bss_end__                           \n"
-        "    cmp r2, r1                                      \n"
-        "    beq bss_init_end                                \n"
-
-        "clear_bss:                                          \n"
-        "    strb r0, [r1], #0                               \n"
-        "    add r1, r1, #1                                  \n"
-        "    cmp r2, r1                                      \n"
-        "    bne clear_bss                                   \n"
-        "    bss_init_end:                                   \n"
-        "    dsb                                             \n" /* Ensuring data-changing */
-
-        /* Clear shared non-cache buffer. */
-        "    ldr  r0, =0x00000000                            \n"
-        "    ldr  r1, =_sncbuffer_start                      \n"
-        "    ldr  r2, =_sncbuffer_end                        \n"
-        "    cmp  r2, r1                                     \n"
-        "    beq  shared_noncache_buffer_init_end            \n"
-        "clear_shared_noncache_buffer:                       \n"
-        "    strb  r0, [r1], #0                              \n"
-        "    add   r1, r1, #1                                \n"
-        "    cmp   r2, r1                                    \n"
-        "    bne   clear_shared_noncache_buffer              \n"
-        "    shared_noncache_buffer_init_end:                \n"
-        "    dsb                                             \n" /* Ensuring data-changing */
-
-        /* Clear non-cache buffer. */
-        "    ldr  r0, =0x00000000                            \n"
-        "    ldr  r1, =_ncbuffer_start                       \n"
-        "    ldr  r2, =_ncbuffer_end                         \n"
-        "    cmp  r2, r1                                     \n"
-        "    beq  noncache_buffer_init_end                   \n"
-        "clear_noncache_buffer:                              \n"
-        "    strb  r0, [r1], #0                              \n"
-        "    add   r1, r1, #1                                \n"
-        "    cmp   r2, r1                                    \n"
-        "    bne   clear_noncache_buffer                     \n"
-        "    noncache_buffer_init_end:                       \n"
-        "    dsb                                             \n" /* Ensuring data-changing */
-  #endif
-        ::: "memory");
- #endif
+    /* Clear loader bss section in internal RAM. */
+    bsp_loader_bss_init();
 #endif
 
     SystemCoreClockUpdate();
@@ -738,29 +562,29 @@ BSP_TARGET_ARM void mpu_cache_init (void)
         "MPU_default_memory_map_enable:                            \n"
 
         /* Adopt EL1 default memory map as background map. */
-        "    mov  r0, %[bsp_sctlr_br_bit]                          \n" /* Set SCTLR.BR bit to 1 */
-        "    mrc  p15, #0, r1, c1, c0, #0                          \n"
-        "    orr  r1, r1, r0                                       \n"
+        "    mov  r0, %[bsp_sctlr_br_bit]                          \n" /* Set value of SCTLR.BR to 1 */
+        "    mrc  p15, #0, r1, c1, c0, #0                          \n" /* Read SCTLR to r1 */
+        "    orr  r1, r1, r0                                       \n" /* Background region for EL1 */
         "    dsb                                                   \n" /* Ensuring memory access complete */
-        "    mcr  p15, #0, r1, c1, c0, #0                          \n"
+        "    mcr  p15, #0, r1, c1, c0, #0                          \n" /* Write r1 to SCTLR */
         "    isb                                                   \n" /* Ensuring Context-changing */
         ::[bsp_sctlr_br_bit] "i" (BSP_SCTLR_BR_BIT) : "memory");
 
     __asm volatile (
         "MPU_init:                                                 \n"
 
-        /* Configure Memory Attribute Indirection Registers */
-        "    movw r0, %[attr_3_2_1_0_l]                            \n"
-        "    movt r0, %[attr_3_2_1_0_h]                            \n"
-        "    movw r1, %[attr_7_6_5_4_l]                            \n"
-        "    movt r1, %[attr_7_6_5_4_h]                            \n"
-        "    mcr  p15, #0, r0, c10, c2, #0                         \n" /* Set MAIR0 */
-        "    mcr  p15, #0, r1, c10, c2, #1                         \n" /* Set MAIR1 */
+        /* Configure Memory Attribute Indirection Registers. */
+        "    movw r0, %[attr_3_2_1_0_l]                            \n" /* Set value of MAIR0(L) to r0 */
+        "    movt r0, %[attr_3_2_1_0_h]                            \n" /* Set value of MAIR0(H) to r0 */
+        "    movw r1, %[attr_7_6_5_4_l]                            \n" /* Set value of MAIR1(L) to r1 */
+        "    movt r1, %[attr_7_6_5_4_h]                            \n" /* Set value of MAIR1(H) to r1 */
+        "    mcr  p15, #0, r0, c10, c2, #0                         \n" /* Write r0 to MAIR0 */
+        "    mcr  p15, #0, r1, c10, c2, #1                         \n" /* Write r1 to MAIR1 */
         "    dsb                                                   \n" /* Ensuring memory access complete */
         ::[attr_3_2_1_0_l] "i" (ATTR_3_2_1_0_L), [attr_3_2_1_0_h] "i" (ATTR_3_2_1_0_H),
         [attr_7_6_5_4_l] "i" (ATTR_7_6_5_4_L), [attr_7_6_5_4_h] "i" (ATTR_7_6_5_4_H) : "memory");
 
-    /* Setup region 0 - 12 */
+    /* Setup region 0 - 12. */
     __asm volatile (
         "    mov  r0, #0                                           \n" /* region No.0 */
         "    movw r2, %[el1_mpu_region00_base_l]                   \n"
@@ -932,15 +756,15 @@ BSP_TARGET_ARM void mpu_cache_init (void)
     __asm volatile (
         "cache_invalidate:\n"
 
-        /* Invalidate instruction cache */
+        /* Invalidate instruction cache. */
         "    dsb                                                   \n" /* Ensure memory operations are completed this does cache write back */
         "    mov     r0, #0                                        \n"
-        "    mcr     p15, 0, r0, c7, c5, 0                         \n" /* Invalidate entire instruction cache */
+        "    mcr     p15, 0, r0, c7, c5, 0                         \n" /* ICIALLU - Invalidate entire instruction cache */
 
         /* Invalidate data cache. RZ microprocessor only has L1 cache. */
-        "    mcr     p15, 2, r0, c0, c0, 0                         \n" /* Select Data L1 in Cache Size selection register */
-        "    isb                                                   \n" /* ISB to sync the change to the CacheSizeID reg */
-        "    mrc     p15, 1, r1, c0, c0, 0                         \n" /* Read current Cache Size ID register to r1 */
+        "    mcr     p15, 2, r0, c0, c0, 0                         \n" /* Select Data L1 in CSSELR */
+        "    isb                                                   \n" /* ISB to sync the change to CCSIDR */
+        "    mrc     p15, 1, r1, c0, c0, 0                         \n" /* Read CCSIDR to r1 */
         "    and     r2, r1, #7                                    \n" /* Get the line length field in r2 */
         "    add     r2, r2, #4                                    \n" /* Add 4 for the line length bit offset (log2 16 bytes) */
         "    ldr     r4, =0x3FF                                    \n"
@@ -966,40 +790,40 @@ BSP_TARGET_ARM void mpu_cache_init (void)
     __asm volatile (
         "MPU_enable:                                               \n"
 
-        /* Enables EL1 MPU operation */
-        "    mov  r0, %[bsp_sctlr_m_bit]                           \n" /* Set SCTLR.M bit to 1 */
-        "    mrc  p15, #0, r1, c1, c0, #0                          \n"
-        "    orr  r1, r1, r0                                       \n"
+        /* Enables EL1 MPU operation. */
+        "    mov  r0, %[bsp_sctlr_m_bit]                           \n" /* Set value of SCTLR.M to 1 */
+        "    mrc  p15, #0, r1, c1, c0, #0                          \n" /* Read SCTLR to r1 */
+        "    orr  r1, r1, r0                                       \n" /* Enable EL1-controlled MPU */
         "    dsb                                                   \n" /* Ensuring memory access complete */
-        "    mcr  p15, #0, r1, c1, c0, #0                          \n"
+        "    mcr  p15, #0, r1, c1, c0, #0                          \n" /* Write r1 to SCTLR */
         "    isb                                                   \n" /* Ensuring Context-changing */
         ::[bsp_sctlr_m_bit] "i" (BSP_SCTLR_M_BIT) : "memory");
 
     __asm volatile (
         "cache_validate:\n"
 
-        /* Enables I1,D1 cache operation */
-        "     movw  r0, %[bsp_sctlr_i_c_bit_l]                     \n" /* Set SCTLR.I and C bit to 1 */
-        "     movt  r0, %[bsp_sctlr_i_c_bit_h]                     \n" /* Set SCTLR.I and C bit to 1 */
-        "     mrc  p15, #0, r1, c1, c0, #0                         \n"
-        "     orr  r1, r1, r0                                      \n"
+        /* Enables I1,D1 cache operation. */
+        "     movw  r0, %[bsp_sctlr_i_c_bit_l]                     \n" /* Set value of SCTLR.I and SCTLR.C to 1 */
+        "     movt  r0, %[bsp_sctlr_i_c_bit_h]                     \n"
+        "     mrc  p15, #0, r1, c1, c0, #0                         \n" /* Read SCTLR to r1 */
+        "     orr  r1, r1, r0                                      \n" /* Instruction cache and data cache enable */
         "     dsb                                                  \n" /* Ensuring memory access complete */
-        "     mcr  p15, #0, r1, c1, c0, #0                         \n"
+        "     mcr  p15, #0, r1, c1, c0, #0                         \n" /* Write r1 to SCTLR */
         "     isb                                                  \n" /* Ensuring Context-changing */
         ::[bsp_sctlr_i_c_bit_l] "i" (BSP_SCTLR_I_C_BIT_L), [bsp_sctlr_i_c_bit_h] "i" (BSP_SCTLR_I_C_BIT_H) : "memory");
 
 #if !(BSP_CFG_RAM_EXECUTION)
 
-    /* Copy the application program from external Flash to ATCM. */
-    bsp_copy_to_atcm();
+    /* Copy the application program from external Flash to internal RAM. */
+    bsp_copy_to_ram();
 
-    /* Clear bss section in ATCM. */
+    /* Clear bss section in internal RAM. */
     bsp_application_bss_init();
 #endif
 
 #if BSP_CFG_C_RUNTIME_INIT
 
-    /* Initialize static constructors */
+    /* Initialize static constructors. */
     bsp_static_constructor_init();
 #endif
 
@@ -1026,11 +850,11 @@ BSP_TARGET_ARM void mpu_cache_init (void)
     __asm volatile (
         "SlaveTCM_enable:                              \n"
 
-        /* Enable SLAVEPCTLR TCM access lvl slaves */
-        "     mrc        p15,#0, r1, c11, c0,#0        \n" /* SLAVEPCTLR */
+        /* Enable SLAVEPCTLR TCM access lvl slaves. */
+        "     mrc        p15,#0, r1, c11, c0,#0        \n" /* Read IMP_SLAVEPCTLR to r1 */
         "     orr        r1, r1, #(0x3)                \n" /* Enable TCM access priv and non priv */
         "     dsb                                      \n" /* Ensuring memory access complete */
-        "     mcr        p15,#0, r1, c11, c0,#0        \n" /* SLAVEPCTLR */
+        "     mcr        p15,#0, r1, c11, c0,#0        \n" /* Write r1 to IMP_SLAVEPCTLR */
         "     isb                                      \n" /* Ensuring Context-changing */
         ::: "memory");
 
@@ -1041,17 +865,17 @@ BSP_TARGET_ARM void mpu_cache_init (void)
     __asm volatile (
         "bsp_irq_cfg_common:                           \n"
 
-        /* GIC initialization */
-        "     mov  r0, %[bsp_priority_mask]            \n" /* Set ICC_PMR */
-        "     mcr  p15, #0, r0, c4, c6, #0             \n"
+        /* GIC initialization. */
+        "     mov  r0, %[bsp_priority_mask]            \n" /* Set value of ICC_PMR*/
+        "     mcr  p15, #0, r0, c4, c6, #0             \n" /* Write r0 to ICC_PMR */
 
-        "     mov  r0, %[bsp_enable_group_int]         \n"
-        "     mcr  p15, #0, r0, c12, c12, #7           \n" /* Set ICC_IGRPEN1 */
+        "     mov  r0, %[bsp_enable_group_int]         \n" /* Set value of ICC_IGRPEN1 */
+        "     mcr  p15, #0, r0, c12, c12, #7           \n" /* Write r0 to ICC_IGRPEN1 */
 
-        "     mov  r0, %[bsp_icc_ctlr]                 \n" /* Set ICC_CTLR */
-        "     mrc  p15, #0, r1, c12, c12, #4           \n"
-        "     orr  r1, r1, r0                          \n"
-        "     mcr  p15, #0, r1, c12, c12, #4           \n"
+        "     mov  r0, %[bsp_icc_ctlr]                 \n" /* Set value of ICC_CTLR.CBPR */
+        "     mrc  p15, #0, r1, c12, c12, #4           \n" /* Read ICC_CTLR to r1 */
+        "     orr  r1, r1, r0                          \n" /* ICC_BPR0 is used for interrupt preemption */
+        "     mcr  p15, #0, r1, c12, c12, #4           \n" /* Write r1 to ICC_CTLR */
         "     isb                                      \n" /* Ensuring Context-changing */
         ::[bsp_priority_mask] "i" (BSP_PRIORITY_MASK), [bsp_enable_group_int] "i" (BSP_ENABLE_GROUP_INT),
         [bsp_icc_ctlr] "i" (BSP_ICC_CTLR) : "memory");
@@ -1067,7 +891,7 @@ BSP_TARGET_ARM void mpu_cache_init (void)
  #endif
 #endif
 
-    /* Jump to main */
+    /* Jump to main. */
     main();
 }
 
@@ -1077,11 +901,11 @@ BSP_TARGET_ARM void mpu_cache_init (void)
 BSP_TARGET_ARM void bsp_mpu_init (void)
 {
     __asm volatile (
-        "    mcr  p15, #0, r0, c6, c2, #1              \n" /* Set PRSELR */
+        "    mcr  p15, #0, r0, c6, c2, #1              \n" /* Write r0 to PRSELR */
         "    dsb                                       \n" /* Ensuring memory access complete */
-        "    mcr  p15, #0, r2, c6, c3, #0              \n" /* Write Rt to PRBAR */
+        "    mcr  p15, #0, r2, c6, c3, #0              \n" /* Write r2 to PRBAR */
         "    dsb                                       \n" /* Ensuring memory access complete */
-        "    mcr  p15, #0, r3, c6, c3, #1              \n" /* Write Rt to PRLAR */
+        "    mcr  p15, #0, r3, c6, c3, #1              \n" /* Write r3 to PRLAR */
         "    dsb                                       \n" /* Ensuring memory access complete */
         "    bx  lr                                    \n"
         ::: "memory");
@@ -1103,46 +927,46 @@ __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void IRQ_Handler (void)
 {
     __asm volatile (
         "SUB     lr, lr, #4                       \n"
-        "SRSDB   sp!, #31                         \n" /* Store LR_irq and SPSR_irq in system mode stack. */
-        "CPS     #31                              \n" /* Switch to system mode. */
-        "PUSH    {r0-r3, r12}                     \n" /* Store other AAPCS registers. */
+        "SRSDB   sp!, #31                         \n" /* Store LR_irq and SPSR_irq in system mode stack */
+        "CPS     #31                              \n" /* Switch to system mode */
+        "PUSH    {r0-r3, r12}                     \n" /* Store other AAPCS registers */
 
 #if __FPU_USED
         "VMRS    r0, fpscr                        \n"
-        "STMDB   sp!, {r0}                        \n" /* Store fpscr register. */
+        "STMDB   sp!, {r0}                        \n" /* Store FPSCR */
         "SUB     sp, sp, #4                       \n"
-        "VPUSH   {d0-d15}                         \n" /* Store fpu registers. */
-        "VPUSH   {d16-d31}                        \n" /* Store fpu registers. */
+        "VPUSH   {d0-d15}                         \n" /* Store Floating-point extension registers */
+        "VPUSH   {d16-d31}                        \n" /* Store Floating-point extension registers */
 #endif
 
-        "mrc p15, #0, r3, c12, c12, #2            \n" /* Read HPPIR1 to r3. */
-        "mrc p15, #0, r0, c12, c12, #0            \n" /* Read IAR1 to r0. */
+        "mrc p15, #0, r3, c12, c12, #2            \n" /* Read ICC_HPPIR1 to r3 */
+        "mrc p15, #0, r0, c12, c12, #0            \n" /* Read ICC_IAR1 to r0 */
 
-        "PUSH    {r0}                             \n" /* Store the INTID. */
-        "MOV     r1, sp                           \n" /* Make alignment for stack. */
+        "PUSH    {r0}                             \n" /* Store the INTID */
+        "MOV     r1, sp                           \n" /* Make alignment for stack */
         "AND     r1, r1, #4                       \n"
         "SUB     sp, sp, r1                       \n"
         "PUSH    {r1, lr}                         \n"
 
         "LDR     r1,=bsp_common_interrupt_handler \n"
-        "BLX     r1                               \n" /* Jump to bsp_common_interrupt_handler, First argument (r0) = ICC_IAR1 read value. */
+        "BLX     r1                               \n" /* Jump to bsp_common_interrupt_handler, First argument (r0) = ICC_IAR1 read value */
 
         "POP     {r1, lr}                         \n"
         "ADD     sp, sp, r1                       \n"
-        "POP     {r0}                             \n" /* Restore the INTID to r0. */
+        "POP     {r0}                             \n" /* Restore the INTID to r0 */
 
-        "mcr p15, #0, r0, c12, c12, #1            \n" /* Write INTID to EOIR. */
+        "mcr p15, #0, r0, c12, c12, #1            \n" /* Write INTID to ICC_EOIR1 */
 
 #if __FPU_USED
-        "VPOP    {d16-d31}                        \n" /* Restore fpu registers. */
-        "VPOP    {d0-d15}                         \n" /* Restore fpu registers. */
+        "VPOP    {d16-d31}                        \n" /* Restore Floating-point extension registers */
+        "VPOP    {d0-d15}                         \n" /* Restore Floating-point extension registers */
         "ADD     sp, sp, #4                       \n"
         "POP     {r0}                             \n"
-        "VMSR    fpscr, r0                        \n" /* Restore fpscr register. */
+        "VMSR    fpscr, r0                        \n" /* Restore FPSCR */
 #endif
 
-        "POP     {r0-r3, r12}                     \n" /* Restore registers. */
-        "RFEIA   sp!                              \n" /* Return from system mode tack using RFE. */
+        "POP     {r0-r3, r12}                     \n" /* Restore registers */
+        "RFEIA   sp!                              \n" /* Return from system mode tack using RFE */
         ::: "memory");
 }
 

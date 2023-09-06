@@ -41,7 +41,7 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 #define DSMIF_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define DSMIF_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define DSMIF_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 #define DSMIF_MAX_NUM_CHANNELS      (3U)
 

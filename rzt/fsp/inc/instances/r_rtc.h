@@ -47,7 +47,9 @@ FSP_HEADER
 /** RTC extended configuration */
 typedef struct st_rtc_extended_cfg
 {
-    /** The frequency comparison value for Main-clock. */
+    /** DEPRECATED - freq_compare_value will be moved to RTC API in the major release
+     *
+     * The frequency comparison value for Main-clock. */
     uint32_t freq_compare_value;
 } rtc_extended_cfg_t;
 

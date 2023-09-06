@@ -154,9 +154,6 @@ const cgc_api_t g_cgc_on_cgc =
 /*******************************************************************************************************************//**
  * Initialize the CGC API.  Implements @ref cgc_api_t::open.
  *
- * Example:
- * @snippet r_cgc_example.c R_CGC_Open
- *
  * @retval FSP_SUCCESS              CGC successfully initialized.
  * @retval FSP_ERR_ASSERTION        Invalid input argument.
  * @retval FSP_ERR_ALREADY_OPEN     Module is already open.
@@ -194,9 +191,6 @@ fsp_err_t R_CGC_Open (cgc_ctrl_t * const p_ctrl, cgc_cfg_t const * const p_cfg)
  * operation completes.
  *
  * Implements @ref cgc_api_t::clocksCfg.
- *
- * Example:
- * @snippet r_cgc_example.c R_CGC_ClocksCfg
  *
  * @retval FSP_SUCCESS                  Clock configuration applied successfully.
  * @retval FSP_ERR_ASSERTION            Invalid input argument.
@@ -306,9 +300,6 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
 /*******************************************************************************************************************//**
  * Start the specified clock if it is not currently active. Implements @ref cgc_api_t::clockStart.
  *
- * Example:
- * @snippet r_cgc_example.c R_CGC_ClockStart
- *
  * @retval FSP_SUCCESS                  Clock initialized successfully.
  * @retval FSP_ERR_ASSERTION            Invalid input argument.
  * @retval FSP_ERR_NOT_OPEN             Module is not open.
@@ -339,9 +330,6 @@ fsp_err_t R_CGC_ClockStart (cgc_ctrl_t * const p_ctrl, cgc_clock_t clock_source,
 
 /*******************************************************************************************************************//**
  * Stop the specified clock if it is active.  Implements @ref cgc_api_t::clockStop.
- *
- * Example:
- * @snippet r_cgc_example.c R_CGC_ClockStop
  *
  * @retval FSP_SUCCESS                      Clock stopped successfully.
  * @retval FSP_ERR_ASSERTION                Invalid input argument.
@@ -380,9 +368,6 @@ fsp_err_t R_CGC_ClockStop (cgc_ctrl_t * const p_ctrl, cgc_clock_t clock_source)
 /*******************************************************************************************************************//**
  * Set the specified clock as the system clock and configure the internal dividers.
  * Implements @ref cgc_api_t::systemClockSet.
- *
- * Example:
- * @snippet r_cgc_example.c R_CGC_SystemClockSet
  *
  * This function also updates the SystemCoreClock CMSIS global variable.
  *
@@ -720,17 +705,21 @@ static bool r_cgc_stabilization_check (cgc_clock_t clock, cgc_prv_clock_state_t 
 }
 
 /*******************************************************************************************************************//**
- * This function starts or stops the selected clock.  Do not call this subroutine with CGC_CLOCK_CHANGE_NONE.
+ * This function starts or stops the selected clock.
+ * Do not call this subroutine with CGC_CLOCK_CHANGE_NONE or CGC_CLOCK_CHANGE_UNSUPPORTED.
  *
  * @param[in]  clock   Clock to start or stop
  * @param[in]  state   1 to stop clock, 0 to start clock
  **********************************************************************************************************************/
 static void r_cgc_clock_change (cgc_clock_t clock, cgc_clock_change_t state)
 {
-    *gp_cgc_clock_stp_registers[clock] = (uint32_t) state;
+    /* Convert api defined value to register setting value. */
+    uint32_t state_set_value = ((uint32_t) (~state) & 0x00000001U);
+
+    *gp_cgc_clock_stp_registers[clock] = state_set_value;
 
     /* Wait setting to be reflected in hardware registers. */
-    FSP_HARDWARE_REGISTER_WAIT(*gp_cgc_clock_stp_registers[clock], (uint32_t) state);
+    FSP_HARDWARE_REGISTER_WAIT(*gp_cgc_clock_stp_registers[clock], state_set_value);
 }
 
 /*******************************************************************************************************************//**

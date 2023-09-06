@@ -25,6 +25,9 @@
  * @brief Interface for data transfer functions.
  *
  * @section TRANSFER_API_SUMMARY Summary
+ *
+ * DEPRECATED - This transfer API header file will be replaced with newer transfer API header file in the next major release
+ *
  * The transfer interface supports background data transfer (no CPU intervention).
  *
  * Implemented by:
@@ -50,7 +53,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define TRANSFER_API_VERSION_MAJOR            (1U) // DEPRECATED
-#define TRANSFER_API_VERSION_MINOR            (2U) // DEPRECATED
+#define TRANSFER_API_VERSION_MINOR            (3U) // DEPRECATED
 
 #define TRANSFER_SETTINGS_MODE_BITS           (30U)
 #define TRANSFER_SETTINGS_SIZE_BITS           (28U)
@@ -77,10 +80,10 @@ typedef enum e_transfer_mode
     TRANSFER_MODE_NORMAL = 0,
 
     /** Repeat mode. */
-    TRANSFER_MODE_REPEAT = 2,
+    TRANSFER_MODE_REPEAT = 1,
 
     /** Block mode. */
-    TRANSFER_MODE_BLOCK = 1
+    TRANSFER_MODE_BLOCK = 2
 } transfer_mode_t;
 
 /** Transfer size specifies the size of each individual transfer. */
@@ -88,20 +91,20 @@ typedef enum e_transfer_size
 {
     TRANSFER_SIZE_1_BYTE = 0,          ///< Each transfer transfers a 8-bit value
     TRANSFER_SIZE_2_BYTE = 1,          ///< Each transfer transfers a 16-bit value
-    TRANSFER_SIZE_4_BYTE = 2,          ///< Each transfer transfers a 32-bit value
+    TRANSFER_SIZE_4_BYTE = 2           ///< Each transfer transfers a 32-bit value
 } transfer_size_t;
 
 /** Address mode specifies whether to modify (increment or decrement) pointer after each transfer. */
 typedef enum e_transfer_addr_mode
 {
     /** Address pointer remains fixed after each transfer. */
-    TRANSFER_ADDR_MODE_FIXED = 1,
+    TRANSFER_ADDR_MODE_FIXED = 0,
 
     /** Offset is added to the address pointer after each transfer. */
-    TRANSFER_ADDR_MODE_OFFSET = 2,
+    TRANSFER_ADDR_MODE_OFFSET = 1,
 
     /** Address pointer is incremented by associated @ref transfer_size_t after each transfer. */
-    TRANSFER_ADDR_MODE_INCREMENTED = 0,
+    TRANSFER_ADDR_MODE_INCREMENTED = 2,
 
     /** Address pointer is decremented by associated @ref transfer_size_t after each transfer. */
     TRANSFER_ADDR_MODE_DECREMENTED = 3
@@ -157,6 +160,7 @@ typedef struct st_transfer_info
 {
     union
     {
+        /* DEPRECATED: Removed due to newer transfer API in the next major release. */
         struct
         {
             uint32_t : 16;
@@ -186,6 +190,37 @@ typedef struct st_transfer_info
             /** Select mode from @ref transfer_mode_t. */
             transfer_mode_t mode : 2;
         };
+
+        struct
+        {
+            uint32_t : 16;
+            uint32_t : 2;
+
+            /** Select what happens to destination pointer after each transfer. */
+            transfer_addr_mode_t dest_addr_mode : 2;
+
+            /** Select to repeat source or destination area, unused in @ref TRANSFER_MODE_NORMAL. */
+            transfer_repeat_area_t repeat_area : 1;
+
+            /** Select if interrupts should occur after each individual transfer or after the completion of all planned
+             *  transfers. */
+            transfer_irq_t irq : 1;
+
+            /** Select when the chain transfer ends. */
+            transfer_chain_mode_t chain_mode : 2;
+
+            uint32_t : 2;
+
+            /** Select what happens to source pointer after each transfer. */
+            transfer_addr_mode_t src_addr_mode : 2;
+
+            /** Select number of bytes to transfer at once. @see transfer_info_t::length. */
+            transfer_size_t size : 2;
+
+            /** Select mode from @ref transfer_mode_t. */
+            transfer_mode_t mode : 2;
+        } transfer_settings_word_b;
+
         uint32_t transfer_settings_word;
     };
 

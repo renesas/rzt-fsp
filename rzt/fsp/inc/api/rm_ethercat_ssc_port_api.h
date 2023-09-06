@@ -52,7 +52,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define ETHERCAT_SSC_PORT_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHERCAT_SSC_PORT_API_VERSION_MINOR    (2U) // DEPRECATED
+#define ETHERCAT_SSC_PORT_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions

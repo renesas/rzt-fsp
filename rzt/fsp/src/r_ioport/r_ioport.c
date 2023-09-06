@@ -293,23 +293,23 @@ fsp_err_t R_IOPORT_PortRead (ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, i
     ioport_size_t        safe_value;
     ioport_size_t        nsafe_value;
 
-    /* Get the RSELP register value */
-    ioport_size_t rslep_value = (ioport_size_t) R_PTADR->RSELP[port];
-
     /* Get port number */
     uint32_t port_num = (IOPORT_PRV_PORT_BITS & (ioport_size_t) port) >> IOPORT_PRV_PORT_OFFSET;
+
+    /* Get the RSELP register value */
+    ioport_size_t rselp_value = (ioport_size_t) R_PTADR->RSELP[port_num];
 
     /* Get the port register address in non safety region */
     p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
 
     /* Read the specified port states in non safety region */
-    nsafe_value = (ioport_size_t) (p_ioport_regs->PIN[port_num] & rslep_value);
+    nsafe_value = (ioport_size_t) (p_ioport_regs->PIN[port_num] & rselp_value);
 
     /* Get the port register address in safety region */
     p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_SAFE);
 
     /* Read the specified port states in safety region */
-    safe_value = (ioport_size_t) (p_ioport_regs->PIN[port_num] & ~(rslep_value));
+    safe_value = (ioport_size_t) (p_ioport_regs->PIN[port_num] & ~(rselp_value));
 
     /* Read the specified port states */
     *p_port_value = nsafe_value | safe_value;
@@ -357,10 +357,10 @@ fsp_err_t R_IOPORT_PortWrite (ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, 
     uint32_t port_num = (IOPORT_PRV_PORT_BITS & (ioport_size_t) port) >> IOPORT_PRV_PORT_OFFSET;
 
     /* Get the RSELP register value */
-    ioport_size_t rslep_value = R_PTADR->RSELP[port_num];
+    ioport_size_t rselp_value = R_PTADR->RSELP[port_num];
 
     /* Set value to non safety region register */
-    write_mask = rslep_value & mask;
+    write_mask = rselp_value & mask;
     if (write_mask)
     {
         /* Get the port register address */
@@ -374,7 +374,7 @@ fsp_err_t R_IOPORT_PortWrite (ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, 
     }
 
     /* Set value to safety region register */
-    write_mask = (ioport_size_t) ((~rslep_value) & mask);
+    write_mask = (ioport_size_t) ((~rselp_value) & mask);
     if (write_mask)
     {
         /* Get the port register address */

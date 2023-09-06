@@ -176,7 +176,7 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Generate (icu_inter_cpu_irq_ctrl_t * const p_api_c
 
 /*******************************************************************************************************************//**
  * Updates the user callback with the option to provide memory for the callback argument structure.
- * Implements icu_inter_cpu_irq_api_t::callbackSet.
+ * Implements @ref icu_inter_cpu_irq_api_t::callbackSet().
  *
  * @retval  FSP_SUCCESS                  Callback updated successfully.
  * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
@@ -289,7 +289,7 @@ static void r_icu_inter_cpu_irq_call_callback (icu_inter_cpu_irq_instance_ctrl_t
         *p_args_memory = *p_args;
     }
 
-    p_ctrl->p_cfg->p_callback(p_args_memory);
+    p_ctrl->p_callback(p_args_memory);
 
     if (NULL != p_ctrl->p_callback_memory)
     {

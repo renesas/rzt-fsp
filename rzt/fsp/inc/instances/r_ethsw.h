@@ -41,7 +41,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define ETHSW_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHSW_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define ETHSW_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -100,6 +100,20 @@ fsp_err_t R_ETHSW_PortForwardAdd(ethsw_ctrl_t * const p_ctrl, uint32_t port);
 fsp_err_t R_ETHSW_PortForwardDel(ethsw_ctrl_t * const p_ctrl, uint32_t port);
 
 fsp_err_t R_ETHSW_FloodUnknownSet(ethsw_ctrl_t * const p_ctrl, ethsw_flood_unk_conf_t * p_flood_unk_conf);
+
+fsp_err_t R_ETHSW_LinkStateGet(ethsw_ctrl_t * const p_ctrl, uint32_t port, uint32_t * p_state_link);
+fsp_err_t R_ETHSW_FrameSizeMaxSet(ethsw_ctrl_t * const p_ctrl, uint32_t port, uint32_t frame_size_max);
+
+fsp_err_t R_ETHSW_DlrInitSet(ethsw_ctrl_t * const p_ctrl, ethsw_dlr_init_t * p_dlr_init);
+fsp_err_t R_ETHSW_DlrUninitSet(ethsw_ctrl_t * const p_ctrl);
+fsp_err_t R_ETHSW_DlrEnableSet(ethsw_ctrl_t * const p_ctrl);
+fsp_err_t R_ETHSW_DlrDisableSet(ethsw_ctrl_t * const p_ctrl);
+fsp_err_t R_ETHSW_DlrBeaconStateGet(ethsw_ctrl_t * const p_ctrl, uint32_t port, uint32_t * p_state_dlr);
+fsp_err_t R_ETHSW_DlrNodeStateGet(ethsw_ctrl_t * const p_ctrl, uint32_t * p_state_dlr);
+fsp_err_t R_ETHSW_DlrSvIpGet(ethsw_ctrl_t * const p_ctrl, uint32_t * p_state_dlr);
+fsp_err_t R_ETHSW_DlrSvPrecGet(ethsw_ctrl_t * const p_ctrl, uint32_t * p_state_dlr);
+fsp_err_t R_ETHSW_DlrVlanGet(ethsw_ctrl_t * const p_ctrl, uint32_t * p_state_dlr);
+fsp_err_t R_ETHSW_DlrSvMacGet(ethsw_ctrl_t * const p_ctrl, ethsw_mac_addr_t * pp_addr_mac);
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHSW)

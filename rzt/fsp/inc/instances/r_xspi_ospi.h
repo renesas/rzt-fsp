@@ -41,7 +41,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define XSPI_OSPI_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define XSPI_OSPI_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define XSPI_OSPI_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -189,6 +189,7 @@ fsp_err_t R_XSPI_OSPI_VersionGet(fsp_version_t * const p_version);
 fsp_err_t R_XSPI_OSPI_DirectTransfer(spi_flash_ctrl_t                  * p_ctrl,
                                      spi_flash_direct_transfer_t * const p_transfer,
                                      spi_flash_direct_transfer_dir_t     direction);
+fsp_err_t R_XSPI_OSPI_AutoCalibrate(spi_flash_ctrl_t * p_ctrl);
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

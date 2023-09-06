@@ -53,7 +53,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define I2C_MASTER_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define I2C_MASTER_API_VERSION_MINOR    (2U) // DEPRECATED
+#define I2C_MASTER_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -88,6 +88,12 @@ typedef struct st_i2c_master_callback_args
     void const       * p_context;      ///< Pointer to user-provided context
     i2c_master_event_t event;          ///< Event code
 } i2c_master_callback_args_t;
+
+/** I2C status indicators */
+typedef struct st_i2c_master_status
+{
+    bool open;                         ///< True if driver is open
+} i2c_master_status_t;
 
 /** I2C configuration block */
 typedef struct st_i2c_master_cfg
@@ -195,6 +201,15 @@ typedef struct st_i2c_master_api
      */
     fsp_err_t (* callbackSet)(i2c_master_ctrl_t * const p_api_ctrl, void (* p_callback)(i2c_master_callback_args_t *),
                               void const * const p_context, i2c_master_callback_args_t * const p_callback_memory);
+
+    /** Gets the status of the configured I2C device.
+     * @par Implemented as
+     * - @ref R_IIC_MASTER_StatusGet()
+     *
+     * @param[in]   p_ctrl             Pointer to the IIC Master control block.
+     * @param[out]  p_status           Pointer to store current status.
+     */
+    fsp_err_t (* statusGet)(i2c_master_ctrl_t * const p_api_ctrl, i2c_master_status_t * p_status);
 
     /** Closes the driver and releases the I2C Master device.
      * @par Implemented as

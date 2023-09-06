@@ -28,6 +28,8 @@
  *
  * @section CGC_API_SUMMARY Summary
  *
+ * DEPRECATED - This CGC API header file will be replaced with newer CGC API header file in the next major release
+ *
  * The CGC interface provides the ability to configure and use all of the CGC module's capabilities. Among the
  * capabilities is the selection of several clock sources to use as the system clock source. Additionally, the
  * system clocks can be divided down to provide a wide range of frequencies for various system and peripheral needs.
@@ -58,7 +60,7 @@ FSP_HEADER
 
 /* Version Number of API. */
 #define CGC_API_VERSION_MAJOR    (1U)  // DEPRECATED
-#define CGC_API_VERSION_MINOR    (2U)  // DEPRECATED
+#define CGC_API_VERSION_MINOR    (3U)  // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -204,9 +206,9 @@ typedef enum e_cgc_usb_clock_div
 /** Clock options */
 typedef enum e_cgc_clock_change
 {
-    CGC_CLOCK_CHANGE_UNSUPPORTED = -1,
-    CGC_CLOCK_CHANGE_START       = 1,  ///< Start the clock
-    CGC_CLOCK_CHANGE_STOP        = 0,  ///< Stop the clock
+    CGC_CLOCK_CHANGE_UNSUPPORTED = 0xF,
+    CGC_CLOCK_CHANGE_START       = 0,  ///< Start the clock
+    CGC_CLOCK_CHANGE_STOP        = 1,  ///< Stop the clock
     CGC_CLOCK_CHANGE_NONE        = 2,  ///< No change to the clock
 } cgc_clock_change_t;
 

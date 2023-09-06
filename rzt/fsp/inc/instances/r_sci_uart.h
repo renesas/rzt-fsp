@@ -40,13 +40,14 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define SCI_UART_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define SCI_UART_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define SCI_UART_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
 
-/** Enumeration for SCI clock source */
+/** Enumeration for SCI clock source.
+ * This enumeration name will be changed in the major release. */
 typedef enum e_sci_clk_src
 {
     SCI_UART_CLOCK_INT,                      ///< Use internal clock for baud generation
@@ -55,12 +56,16 @@ typedef enum e_sci_clk_src
     SCI_UART_CLOCK_EXT16X                    ///< Use external clock 16x baud rate
 } sci_clk_src_t;
 
-/** UART communication mode definition */
+/** UART communication mode definition.
+ * This enumeration name will be changed in the major release. */
 typedef enum e_uart_mode
 {
-    UART_MODE_RS232    = 0U,           ///< Enables RS232 communication mode
-    UART_MODE_RS485_HD = 1U,           ///< Enables RS485 half duplex communication mode
-    UART_MODE_RS485_FD = 2U,           ///< Enables RS485 full duplex communication mode
+    UART_MODE_RS232        = 0U,       ///< Deprecated - Enables RS232 communication mode
+    UART_MODE_RS485_HD     = 1U,       ///< Deprecated - Enables RS485 half duplex communication mode
+    UART_MODE_RS485_FD     = 2U,       ///< Deprecated - Enables RS485 full duplex communication mode
+    SCI_UART_MODE_RS232    = 0U,       ///< Enables RS232 communication mode
+    SCI_UART_MODE_RS485_HD = 1U,       ///< Enables RS485 half duplex communication mode
+    SCI_UART_MODE_RS485_FD = 2U,       ///< Enables RS485 full duplex communication mode
 } uart_mode_t;
 
 /** UART instance control block. */
@@ -144,8 +149,12 @@ typedef struct st_baud_setting_t
 {
     union
     {
+        /* DEPRECATED */
         uint32_t ccr2_baudrate_bits;
 
+        uint32_t baudrate_bits;
+
+        /* DEPRECATED */
         struct
         {
             uint8_t       : 4;
@@ -160,6 +169,21 @@ typedef struct st_baud_setting_t
             uint8_t       : 2;
             uint8_t mddr  : 8;         ///< Modulation Duty Register setting
         };
+
+        struct
+        {
+            uint32_t       : 4;
+            uint32_t bgdm  : 1;        ///< Baud Rate Generator Double-Speed Mode Select
+            uint32_t abcs  : 1;        ///< Asynchronous Mode Base Clock Select
+            uint32_t abcse : 1;        ///< Asynchronous Mode Extended Base Clock Select 1
+            uint32_t       : 1;
+            uint32_t brr   : 8;        ///< Bit Rate Register setting
+            uint32_t brme  : 1;        ///< Bit Rate Modulation Enable
+            uint32_t       : 3;
+            uint32_t cks   : 2;        ///< CKS  value to get divisor (CKS = N)
+            uint32_t       : 2;
+            uint32_t mddr  : 8;        ///< Modulation Duty Register setting
+        } baudrate_bits_b;
     };
 } baud_setting_t;
 
@@ -177,7 +201,7 @@ typedef struct st_sci_uart_extended_cfg
     uart_mode_t              uart_mode;          ///< UART communication mode selection
     bsp_io_port_pin_t        flow_control_pin;   ///< UART Driver Enable pin
     sci_uart_ctsrts_config_t ctsrts_en;          ///< CTS/RTS function of the SSn pin
-    sci_uart_synchronizer_t  sync_bypass;        ///< Clock synchronizer selection
+    sci_uart_synchronizer_t  sync_bypass;        ///< DEPRECATED - Clock synchronizer selection
 } sci_uart_extended_cfg_t;
 
 /**********************************************************************************************************************
@@ -206,6 +230,7 @@ fsp_err_t R_SCI_UART_CallbackSet(uart_ctrl_t * const          p_api_ctrl,
                                  void (                     * p_callback)(uart_callback_args_t *),
                                  void const * const           p_context,
                                  uart_callback_args_t * const p_callback_memory);
+fsp_err_t R_SCI_UART_ReadStop(uart_ctrl_t * const p_api_ctrl, uint32_t * remaining_bytes);
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup SCI_UART)

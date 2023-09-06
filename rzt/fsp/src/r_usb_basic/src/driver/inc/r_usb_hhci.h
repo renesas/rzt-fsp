@@ -200,7 +200,6 @@ extern uint32_t usb_portsc1;
  **********************************************************************************************************************/
 
 /* function */
-void     r_usb_hstd_hci_task(void);
 int32_t  r_usb_hstd_hci_init(st_usb_hci_cb_info_t * cb_info);
 uint16_t r_usb_hstd_hci_make_transfer_request(void   * p_utr,
                                               void   * setup,

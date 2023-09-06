@@ -56,7 +56,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define UART_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define UART_API_VERSION_MINOR    (2U) // DEPRECATED
+#define UART_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -78,16 +78,16 @@ typedef enum e_sf_event
 /** UART Data bit length definition */
 typedef enum e_uart_data_bits
 {
-    UART_DATA_BITS_8,                  ///< Data bits 8-bit
-    UART_DATA_BITS_7,                  ///< Data bits 7-bit
-    UART_DATA_BITS_9                   ///< Data bits 9-bit
+    UART_DATA_BITS_9 = 0U,             ///< Data bits 9-bit
+    UART_DATA_BITS_8 = 2U,             ///< Data bits 8-bit
+    UART_DATA_BITS_7 = 3U,             ///< Data bits 7-bit
 } uart_data_bits_t;
 
 /** UART Parity definition */
 typedef enum e_uart_parity
 {
     UART_PARITY_OFF  = 0U,             ///< No parity
-    UART_PARITY_EVEN = 1U,             ///< Even parity
+    UART_PARITY_EVEN = 2U,             ///< Even parity
     UART_PARITY_ODD  = 3U,             ///< Odd parity
 } uart_parity_t;
 
@@ -258,6 +258,15 @@ typedef struct st_uart_api
      * @param[in]   p_ctrl     Pointer to the UART control block.
      */
     fsp_err_t (* close)(uart_ctrl_t * const p_ctrl);
+
+    /** Stop ongoing read and return the number of bytes remaining in the read.
+     * @par Implemented as
+     * - @ref R_SCI_UART_ReadStop()
+     *
+     * @param[in]   p_ctrl                  Pointer to the UART control block.
+     * @param[in,out]   remaining_bytes     Pointer to location to store remaining bytes for read.
+     */
+    fsp_err_t (* readStop)(uart_ctrl_t * const p_ctrl, uint32_t * remaining_bytes);
 
     /** DEPRECATED Get version.
      * @par Implemented as

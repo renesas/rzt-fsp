@@ -172,7 +172,7 @@ typedef struct st_rtc_info
 typedef struct st_rtc_cfg
 {
     rtc_clock_source_t clock_source;                    ///< Clock source for the RTC block
-    uint32_t           freq_compare_value_loco;         ///< The frequency comparison value for LOCO
+    uint32_t           freq_compare_value_loco;         ///< DEPRECATED - The frequency comparison value for LOCO
     rtc_error_adjustment_cfg_t const * const p_err_cfg; ///< Pointer to Error Adjustment configuration
     uint8_t   alarm_ipl;                                ///< Alarm interrupt priority
     IRQn_Type alarm_irq;                                ///< Alarm interrupt vector

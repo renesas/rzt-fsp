@@ -40,7 +40,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define CMT_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define CMT_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define CMT_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions

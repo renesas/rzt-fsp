@@ -235,7 +235,7 @@ fsp_err_t R_IIC_SLAVE_Open (i2c_slave_ctrl_t * const p_api_ctrl, i2c_slave_cfg_t
      * 'Initial Settings' of the RZ microprocessor manual). */
     iic_open_hw_slave(p_ctrl);
 
-    R_BSP_IrqCfgEnable(p_ctrl->p_cfg->eri_irq, p_ctrl->p_cfg->ipl, p_ctrl);
+    R_BSP_IrqCfgEnable(p_ctrl->p_cfg->eri_irq, p_ctrl->p_cfg->eri_ipl, p_ctrl);
     R_BSP_IrqCfgEnable(p_ctrl->p_cfg->txi_irq, p_ctrl->p_cfg->ipl, p_ctrl);
     R_BSP_IrqCfgEnable(p_ctrl->p_cfg->tei_irq, p_ctrl->p_cfg->ipl, p_ctrl);
     R_BSP_IrqCfgEnable(p_ctrl->p_cfg->rxi_irq, p_ctrl->p_cfg->ipl, p_ctrl);
@@ -618,10 +618,31 @@ static void iic_open_hw_slave (iic_slave_instance_ctrl_t * const p_ctrl)
                                                   cks_value &
                                                   IIC_SLAVE_INTERNAL_REF_CLOCK_SELECT_MAX) << 4U));
 
-    /* Set the digital filter.
-     * ACKBT should be set to 0 after reset to send out an ACK upon slave address match.
-     */
-    p_ctrl->p_reg->ICMR3 = (uint8_t) (digital_filter_stages > 0U ? (digital_filter_stages - 1U) : 0U);
+    /* 1. Set the digital filter.
+     * 2. ACKBT should be set to 0 after reset to send out an ACK upon slave address match.
+     * 3. Set WAIT bit based on user config.
+     * Refer Section ICMR3 : I2C Bus Mode Register 3 :
+     * 'WAIT bit (WAIT)' and 'RDRFS bit (RDRF Flag Set Timing Select)'
+     * of the RZ microprocessor manual.
+     * Since RDRFS = 0:
+     * - SCLn line will *not* be held low at the falling edge of the 8th clock cycle.
+     * - RDRF flag will be set at the rising edge of the 9th clock cycle. (Cause of iic_rxi_slave)
+     * This means that iic_rxi_slave will be invoked during the 9th clock cycle (High) if there is no preemption.
+     * Set the WAIT = 1 so that the SCLn line is held low from the falling edge of the 9th clock cycle.
+     * This is done to support clock stretching during the 'iic_slave_initiate_transaction'/user event callback (more often)
+     * and if iic_rxi_slave can get preempted.
+     *
+     * Note 1: If the preemption happens after the Read API is called in the user event callback,
+     *         WAIT = 1 will be able to handle that scenario,
+     *         however if the preemption happens before, the slave will timeout if the Read API
+     *         is not called within 'Long Timeout Mode' duration.
+     *
+     * Note 2: When WAIT = 1, this driver no longer supports data reception utilizing the double buffer HW setup.
+     *
+     * Note 3: WAIT bit is dont-care during transmission.
+     * */
+    p_ctrl->p_reg->ICMR3 = (uint8_t) ((uint8_t) (digital_filter_stages > 0U ? (digital_filter_stages - 1U) : 0U) |
+                                      (uint8_t) (p_ctrl->p_cfg->clock_stretching_enable << R_IIC0_ICMR3_WAIT_Pos));
 
     p_ctrl->p_reg->ICIER = (uint8_t) ((uint8_t) IIC_RXI_EN_BIT | (uint8_t) IIC_TXI_EN_BIT);
 

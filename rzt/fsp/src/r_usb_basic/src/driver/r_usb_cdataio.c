@@ -280,17 +280,10 @@ usb_er_t usb_ctrl_read (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t si
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
     usb_er_t    err;
     usb_utr_t * p_tran_data;
-  #if (BSP_CFG_RTOS == 2)
-    usb_utr_t tran_data_host;
-  #endif                               /* #if (BSP_CFG_RTOS == 2) */
 
     if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
     {
-  #if (BSP_CFG_RTOS == 2)
-        p_tran_data = &tran_data_host;
-  #else                                        /* #if (BSP_CFG_RTOS == 2) */
         p_tran_data = &g_usb_hdata[p_ctrl->module_number][USB_PIPE0];
-  #endif /* #if (BSP_CFG_RTOS == 2) */
 
         p_tran_data->read_req_len = size;      /* Save Read Request Length */
         p_tran_data->keyword      = USB_PIPE0; /* Pipe No */
@@ -298,7 +291,7 @@ usb_er_t usb_ctrl_read (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t si
         p_tran_data->tranlen      = size;      /* Data Size */
 
         /* Callback function */
-        p_tran_data->complete = usb_class_request_complete;
+        p_tran_data->complete = (usb_cb_t) &usb_class_request_complete;
         g_usb_ctrl_request[p_ctrl->module_number][p_ctrl->device_address].address = p_ctrl->device_address;
         g_usb_ctrl_request[p_ctrl->module_number][p_ctrl->device_address].setup   = p_ctrl->setup;
 
@@ -344,17 +337,10 @@ usb_er_t usb_ctrl_write (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t s
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
     usb_er_t    err;
     usb_utr_t * p_tran_data;
-  #if (BSP_CFG_RTOS == 2)
-    usb_utr_t tran_data_host;
-  #endif                               /* #if (BSP_CFG_RTOS == 2) */
 
     if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
     {
-  #if (BSP_CFG_RTOS == 2)
-        p_tran_data = &tran_data_host;
-  #else                                     /* #if (BSP_CFG_RTOS == 2) */
         p_tran_data = &g_usb_hdata[p_ctrl->module_number][USB_PIPE0];
-  #endif /* #if (BSP_CFG_RTOS == 2) */
 
         p_tran_data->read_req_len = size;   /* Save Read Request Length */
 
@@ -363,7 +349,7 @@ usb_er_t usb_ctrl_write (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t s
         p_tran_data->tranlen   = size;      /* Data Size */
 
         /* Callback function */
-        p_tran_data->complete = usb_class_request_complete;
+        p_tran_data->complete = (usb_cb_t) &usb_class_request_complete;
         g_usb_ctrl_request[p_ctrl->module_number][p_ctrl->device_address].address = p_ctrl->device_address;
         g_usb_ctrl_request[p_ctrl->module_number][p_ctrl->device_address].setup   = p_ctrl->setup;
 
@@ -471,11 +457,13 @@ usb_er_t usb_data_read (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t si
     usb_er_t    err = USB_OK;
     usb_utr_t * p_tran_data;
 #if (BSP_CFG_RTOS == 2)
+ #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
     usb_utr_t tran_data;
+ #endif                                /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 #endif                                 /* #if (BSP_CFG_RTOS == 2) */
 #if USB_IP_EHCI_OHCI == 1
     uint8_t epnum;
-#endif /* USB_IP_EHCI_OHCI == 1 */
+#endif                                 /* USB_IP_EHCI_OHCI == 1 */
 
     pipe = usb_get_usepipe(p_ctrl, USB_TRANSFER_READ);
 
@@ -487,11 +475,7 @@ usb_er_t usb_data_read (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t si
     if (USB_CLASS_INTERNAL_PVND < (usb_class_internal_t) (p_ctrl->type))
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
- #if (BSP_CFG_RTOS == 2)
-        p_tran_data = &tran_data;
- #else                                                                   /* #if (BSP_CFG_RTOS == 2) */
         p_tran_data = &g_usb_hdata[p_ctrl->module_number][pipe];
- #endif /* #if (BSP_CFG_RTOS == 2) */
 
         p_tran_data->read_req_len = size;                                /* Save Read Request Length */
 
@@ -590,11 +574,13 @@ usb_er_t usb_data_write (usb_instance_ctrl_t * p_ctrl, uint8_t const * const buf
     usb_er_t    err = USB_OK;
     usb_utr_t * p_tran_data;
 #if (BSP_CFG_RTOS == 2)
+ #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
     usb_utr_t tran_data;
+ #endif                                /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 #endif                                 /* #if (BSP_CFG_RTOS == 2) */
 #if USB_IP_EHCI_OHCI == 1
     uint8_t epnum;
-#endif /* USB_IP_EHCI_OHCI == 1 */
+#endif                                 /* USB_IP_EHCI_OHCI == 1 */
 
     pipe = usb_get_usepipe(p_ctrl, USB_TRANSFER_WRITE);
 
@@ -606,11 +592,7 @@ usb_er_t usb_data_write (usb_instance_ctrl_t * p_ctrl, uint8_t const * const buf
     if (USB_CLASS_INTERNAL_PVND < (usb_class_internal_t) (p_ctrl->type))
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
- #if (BSP_CFG_RTOS == 2)
-        p_tran_data = &tran_data;
- #else                                 /* #if (BSP_CFG_RTOS == 2) */
         p_tran_data = &g_usb_hdata[p_ctrl->module_number][pipe];
- #endif /* #if (BSP_CFG_RTOS == 2) */
 
         memcpy(g_data_write_buf[p_tran_data->ip][p_ctrl->device_address], buf, size);
 
@@ -656,12 +638,12 @@ usb_er_t usb_data_write (usb_instance_ctrl_t * p_ctrl, uint8_t const * const buf
         if (USB_CFG_PCDC_INT_IN != pipe)
         {
   #if (USB_CFG_DMA == USB_CFG_ENABLE)
-            memcpy(g_data_write_buf[p_tran_data->ip][p_ctrl->device_address], buf, size);
-            p_tran_data->p_tranadr = g_data_write_buf[p_tran_data->ip][p_ctrl->device_address]; /* Data address */
+            memcpy(g_data_write_buf[p_ctrl->module_number][p_ctrl->device_address], buf, size);
+            p_tran_data->p_tranadr = g_data_write_buf[p_ctrl->module_number][p_ctrl->device_address]; /* Data address */
   #else
-            p_tran_data->p_tranadr = buf;                                                       /* Data address */
+            p_tran_data->p_tranadr = buf;                                                             /* Data address */
   #endif
-            p_tran_data->tranlen = size;                                                        /* Data Size */
+            p_tran_data->tranlen = size;                                                              /* Data Size */
         }
         else
         {

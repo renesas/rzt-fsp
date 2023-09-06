@@ -80,7 +80,6 @@ uint8_t * g_p_usb_hhid_interface_table[USB_NUM_USBIP];                          
 /******************************************************************************
  * Renesas Abstracted USB Driver functions
  ******************************************************************************/
-#if (BSP_CFG_RTOS == 0)
 
 /******************************************************************************
  * Function Name   : usb_hhid_check_result
@@ -145,10 +144,10 @@ static void usb_hhid_enumeration (usb_utr_t * mess)
     uint8_t * p_iftable;
     uint16_t  desc_len;
     uint8_t   protocol;
- #ifdef USB_DEBUGPRINT_PP
+#ifdef USB_DEBUGPRINT_PP
     uint8_t * table;
     uint8_t   pdata[32], j;
- #endif                                /* #ifdef USB_DEBUGPRINT_PP */
+#endif                                 /* #ifdef USB_DEBUGPRINT_PP */
 
     /* Branch for Enumeration Sequence */
     switch (g_usb_hhid_enum_seq[mess->ip])
@@ -192,7 +191,7 @@ static void usb_hhid_enumeration (usb_utr_t * mess)
             /* String descriptor check */
             if ((usb_er_t) USB_CTRL_END == mess->status)
             {
- #ifdef USB_DEBUGPRINT_PP
+#ifdef USB_DEBUGPRINT_PP
 
                 /* String descriptor iProduct Address set */
                 table = (uint8_t *) &g_usb_hhid_string_data[mess->ip];
@@ -220,7 +219,7 @@ static void usb_hhid_enumeration (usb_utr_t * mess)
 
                 /* Display Product name */
                 USB_PRINTF1("  %s\n", pdata);
- #endif                                /* #ifdef USB_DEBUGPRINT_PP */
+#endif                                 /* #ifdef USB_DEBUGPRINT_PP */
             }
             else
             {
@@ -334,7 +333,6 @@ void usb_hhid_task (usb_vp_int_t stacd)
 /******************************************************************************
  * End of function usb_hhid_task
  ******************************************************************************/
-#endif                                 /* (BSP_CFG_RTOS == 0) */
 
 /******************************************************************************
  * Function Name   : usb_hhid_pipe_info
@@ -499,7 +497,11 @@ static uint16_t usb_hhid_cmd_submit (usb_utr_t * ptr, usb_cb_t complete)
     usb_shhid_string_req[ptr->ip].ipp = ptr->ipp;
 
 #if (BSP_CFG_RTOS)
+ #if USB_IP_EHCI_OHCI == 1
+    err = usb_hstd_transfer_start(&usb_shhid_string_req[ptr->ip]);
+ #else                                 /* #if USB_IP_EHCI_OHCI == 0 */
     err = usb_hstd_transfer_start_req(&usb_shhid_string_req[ptr->ip]);
+ #endif /* #if USB_IP_EHCI_OHCI == 0 */
     if (USB_OK == err)
     {
         hhid_retval = usb_hhid_req_trans_wait_tmo((uint16_t) USB_VALUE_3000);
@@ -533,9 +535,9 @@ static uint16_t usb_hhid_cmd_submit (usb_utr_t * ptr, usb_cb_t complete)
 
     return ret;
 #else                                  /* (BSP_CFG_RTOS) */
- #if BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1 || BSP_MCU_GROUP_RZA3UL == 1
+ #if USB_IP_EHCI_OHCI == 1
     err = usb_hstd_transfer_start(&usb_shhid_string_req[ptr->ip]);
- #else /* BSP_MCU_GROUP_RZT2M == 1 */
+ #else /* USB_IP_EHCI_OHCI == 1 */
     err = usb_hstd_transfer_start_req(&usb_shhid_string_req[ptr->ip]);
  #endif
     if (USB_QOVR == err)
@@ -620,6 +622,7 @@ void usb_hid_detach (usb_utr_t * ptr, uint16_t devadr, uint16_t data2)
     FSP_PARAMETER_NOT_USED(data2);
 
     usb_hstd_clr_pipe_table(ptr->ip, devadr);
+    R_USB_HstdClearPipe(devadr);
     ctrl.module_number  = ptr->ip;           /* Module number setting */
     ctrl.device_address = (uint8_t) devadr;
     ctrl.type           = USB_CLASS_HHID;
@@ -790,6 +793,9 @@ void usb_hhid_registration (usb_utr_t * ptr)
     usb_hhub_registration(ptr, (usb_hcdreg_t *) USB_NULL); /* Hub registration. */
 #else                                                      /* USB_CFG_HUB == USB_CFG_ENABLE */
     usb_hstd_driver_registration(ptr, &driver);            /* Host HID class driver registration. */
+ #if (BSP_CFG_RTOS == 2)
+    R_USB_CstdSetTaskPri(USB_HHID_TSK, USB_PRI_3);
+ #endif                                                    /* #if (BSP_CFG_RTOS == 2) */
 #endif  /* USB_CFG_HUB == USB_CFG_ENABLE */
 }
 
@@ -920,7 +926,7 @@ void usb_hhid_class_check (usb_utr_t * ptr, uint16_t ** table)
     g_usb_hhid_num_endpoint[ptr->ip][g_usb_hhid_devaddr[ptr->ip]] =
         g_p_usb_hhid_interface_table[ptr->ip][USB_IF_B_NUMENDPOINTS];    /* Num Endpoints */
 
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZA3UL)
+#if USB_IP_EHCI_OHCI == 1
     R_USB_HstdSetPipe(table);
 #endif /* #if defined(BSP_MCU_GROUP_RZA3UL) */
     /* Enumeration Sequence String Descriptor #0 receive request */
@@ -1052,6 +1058,9 @@ uint16_t usb_hhid_get_string_info (usb_utr_t * mess, uint16_t addr, uint16_t str
         /* Enumeration class check OK */
         retval = USB_OK;
     }
+
+    /* return to MGR */
+    usb_hstd_return_enu_mgr(mess, retval);
 
     return retval;
 }

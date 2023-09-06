@@ -42,7 +42,7 @@ FSP_HEADER
 
 /* Version of code that implements the API defined in this file */
 #define TSU_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define TSU_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define TSU_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions

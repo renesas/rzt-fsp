@@ -39,7 +39,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define POEG_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define POEG_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define POEG_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions

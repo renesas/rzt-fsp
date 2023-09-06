@@ -99,6 +99,7 @@ typedef struct
     uint16_t       devstate;           /* Device state */
     uint16_t       ifclass;            /* Interface Class */
     uint16_t     * p_tpl;              /* Target peripheral list (Vendor ID, Product ID) */
+    usb_cb_t       classinit;          /* Driver init */
     usb_cb_check_t classcheck;         /* Driver check */
     usb_cb_t       devconfig;          /* Device configured */
     usb_cb_t       devdetach;          /* Device detach */
@@ -138,6 +139,7 @@ usb_er_t R_USB_HstdClearPipe(uint16_t devaddr);
 void     R_USB_HstdMgrTask(void);
 void     R_USB_HstdDelayXms(uint32_t ms);
 void     R_USB_HstdMgrClose(void);
+void     r_usb_hstd_mgr_task(void);
 
 /* USB API (Hub) */
 void R_USB_HhubTask(void);

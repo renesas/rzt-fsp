@@ -49,7 +49,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define IOPORT_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define IOPORT_API_VERSION_MINOR    (2U) // DEPRECATED
+#define IOPORT_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /* Private definition to set enumeration values. */
 #define IOPORT_P_OFFSET             (0U)

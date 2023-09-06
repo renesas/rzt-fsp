@@ -40,12 +40,13 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define CGC_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define CGC_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define CGC_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
 
+/** DEPRECATED: Removed due to newer CGC API in the next major release. */
 typedef enum e_cgc_xspi_clock_div
 {
     CGC_XSPI_CLOCK_DIV_18  = 0x02,     ///< XSPI_CLKn 133.3MHz
@@ -105,6 +106,7 @@ typedef enum e_cgc_baseclock_div
     CGC_BASECLOCK_DIV_4 = 1,           ///< Base clock divided by 4 (ICLK=150.0MHz etc.)
 } cgc_baseclock_div_t;
 
+/** DEPRECATED: Removed due to newer CGC API in the next major release. */
 typedef struct st_cgc_sckcr_cfg
 {
     cgc_xspi_clock_div_t      fselxspi0_div;  ///< Divider value for XSPI_CLK0
@@ -122,6 +124,7 @@ typedef struct st_cgc_sckcr_cfg
     cgc_sci_async_clock_t     sci4_async_sel; ///< SCI4 asynchronous serial clock
 } cgc_sckcr_cfg_t;
 
+/** DEPRECATED: Removed due to newer CGC API in the next major release. */
 typedef struct st_cgc_sckcr2_cfg
 {
     cgc_cpu_clock_div_t   fsel0cr52;      ///< Divider value for Cortex-R52 CPU0
@@ -131,6 +134,7 @@ typedef struct st_cgc_sckcr2_cfg
     cgc_sci_async_clock_t sci5_async_sel; ///< SCI5 asynchronous serial clock
 } cgc_sckcr2_cfg_t;
 
+/** DEPRECATED: Removed due to newer CGC API in the next major release. */
 typedef struct st_cgc_clock_extend_cfg
 {
     cgc_sckcr_cfg_t    sckcr;          ///< System Clock Control Register Settings

@@ -117,9 +117,6 @@ const elc_api_t g_elc_on_elc =
  * The configuration structure passed in to this function includes links for every event source included in the ELC
  * and sets them all at once. To set or clear an individual link use R_ELC_LinkSet and R_ELC_LinkBreak respectively.
  *
- * Example:
- * @snippet r_elc_example.c R_ELC_Open
- *
  * @retval FSP_SUCCESS             Initialization was successful
  * @retval FSP_ERR_ASSERTION       p_ctrl or p_cfg was NULL
  * @retval FSP_ERR_ALREADY_OPEN    The module is currently open
@@ -232,9 +229,6 @@ fsp_err_t R_ELC_SoftwareEventGenerate (elc_ctrl_t * const p_ctrl, elc_software_e
 
 /*******************************************************************************************************************//**
  * Create a single event link. Implements @ref elc_api_t::linkSet
- *
- * Example:
- * @snippet r_elc_example.c R_ELC_LinkSet
  *
  * @retval FSP_SUCCESS             Initialization was successful
  * @retval FSP_ERR_ASSERTION       p_ctrl was NULL

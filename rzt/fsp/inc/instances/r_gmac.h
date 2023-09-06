@@ -44,7 +44,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define GMAC_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define GMAC_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define GMAC_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions

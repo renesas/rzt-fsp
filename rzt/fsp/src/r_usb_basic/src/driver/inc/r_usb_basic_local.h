@@ -36,7 +36,11 @@
  * Includes   <System Includes> , "Project Includes"
  **********************************************************************************************************************/
 #include "r_usb_basic_if.h"
-#include "r_usb_rtos_config.h"
+
+#if (BSP_CFG_RTOS == 2)
+ #include "r_usb_rtos_config.h"
+ #include "r_usb_cstd_rtos.h"
+#endif
 
 /***********************************************************************************************************************
  * Macro definitions
@@ -146,7 +150,7 @@ typedef struct
 extern st_usb_pipe_t g_usb_hstd_pipe[USB_MAXPIPE + 1U]; /* pipe information */
 extern uint16_t      g_usb_msg_check;
 
-#if (BSP_CFG_RTOS_USED == 1)
+#if (BSP_CFG_RTOS == 2)
 
 /* RTOS semaphore */
 extern uint32_t g_usb_sem;
@@ -167,7 +171,6 @@ usb_er_t usb_hstd_rel_blk(uint8_t id, st_usb_utr_t * p_blk);
 void     usb_hstd_sche_init(void);
 
 /* r_usb_hDriver.c */
-uint8_t  usb_hstd_convert_epnum(uint8_t pipe_id);
 uint16_t usb_hstd_get_pipe_type(uint16_t pipe_id);
 void     usb_hstd_set_rootport(uint16_t devaddr, uint16_t rootport);
 uint16_t usb_hstd_get_rootport(uint16_t devaddr);
@@ -175,6 +178,7 @@ void     usb_hstd_a_or_detach_cb(usb_utr_t * p_utr);
 void     usb_hstd_port_reset_cb(usb_utr_t * p_utr);
 void     usb_hstd_over_current_cb(void * p_utr);
 void     usb_hstd_transfer_end_cb(usb_utr_t * ptr, void * p_utr, uint32_t actual_size, uint16_t status);
+uint8_t  usb_hstd_convert_epnum(uint8_t pipe_id);
 
 /* r_usb_hManager.c */
 

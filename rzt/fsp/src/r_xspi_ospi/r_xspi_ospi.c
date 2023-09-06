@@ -177,6 +177,7 @@ const spi_flash_api_t g_spi_flash_on_xspi_ospi =
     .xipEnter       = R_XSPI_OSPI_XipEnter,
     .xipExit        = R_XSPI_OSPI_XipExit,
     .bankSet        = R_XSPI_OSPI_BankSet,
+    .autoCalibrate  = R_XSPI_OSPI_AutoCalibrate,
     .close          = R_XSPI_OSPI_Close,
     .versionGet     = R_XSPI_OSPI_VersionGet,
 };
@@ -189,9 +190,6 @@ const spi_flash_api_t g_spi_flash_on_xspi_ospi =
  * Open the OSPI driver module. After the driver is open, the OSPI can be accessed like internal flash memory.
  *
  * Implements @ref spi_flash_api_t::open.
- *
- * Example:
- * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_Open
  *
  * @retval FSP_SUCCESS              Configuration was successful.
  * @retval FSP_ERR_ASSERTION        The parameter p_ctrl or p_cfg is NULL.
@@ -329,9 +327,6 @@ fsp_err_t R_XSPI_OSPI_DirectRead (spi_flash_ctrl_t * p_ctrl, uint8_t * const p_d
  *
  * Implements @ref spi_flash_api_t::directTransfer.
  *
- * Example:
- * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_DirectTransfer
- *
  * @retval FSP_SUCCESS                 The flash was programmed successfully.
  * @retval FSP_ERR_ASSERTION           A required pointer is NULL.
  * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
@@ -385,9 +380,6 @@ fsp_err_t R_XSPI_OSPI_XipExit (spi_flash_ctrl_t * p_ctrl)
  *
  * Implements @ref spi_flash_api_t::write.
  *
- * Example:
- * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_Write
- *
  * @retval FSP_SUCCESS                 The flash was programmed successfully.
  * @retval FSP_ERR_ASSERTION           p_instance_ctrl, p_dest or p_src is NULL, or byte_count crosses a page boundary.
  * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
@@ -421,6 +413,9 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     r_xspi_ospi_write_enable(p_instance_ctrl);
 
     uint32_t i = 0;
+
+    FSP_CRITICAL_SECTION_DEFINE;
+    FSP_CRITICAL_SECTION_ENTER;
 
     /* Word access */
     if (0 == byte_count % XSPI_OSPI_PRV_WORD_ACCESS_SIZE)
@@ -496,6 +491,8 @@ fsp_err_t R_XSPI_OSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     /* Wait until memory access starts in write API. */
     FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->COMSTT_b.MEMACC, 1);
 
+    FSP_CRITICAL_SECTION_EXIT;
+
     return FSP_SUCCESS;
 }
 
@@ -569,9 +566,6 @@ fsp_err_t R_XSPI_OSPI_Erase (spi_flash_ctrl_t * p_ctrl, uint8_t * const p_device
  *
  * Implements @ref spi_flash_api_t::statusGet.
  *
- * Example:
- * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_StatusGet
- *
  * @retval FSP_SUCCESS                 The write status is in p_status.
  * @retval FSP_ERR_ASSERTION           p_instance_ctrl or p_status is NULL.
  * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
@@ -626,9 +620,6 @@ fsp_err_t R_XSPI_OSPI_BankSet (spi_flash_ctrl_t * p_ctrl, uint32_t bank)
  *
  * Implements @ref spi_flash_api_t::spiProtocolSet.
  *
- * Example:
- * @snippet r_xspi_ospi_example.c R_XSPI_OSPI_SpiProtocolSet
- *
  * @retval FSP_SUCCESS                SPI protocol updated on MPU peripheral.
  * @retval FSP_ERR_ASSERTION          A required pointer is NULL.
  * @retval FSP_ERR_NOT_OPEN           Driver is not opened.
@@ -646,6 +637,20 @@ fsp_err_t R_XSPI_OSPI_SpiProtocolSet (spi_flash_ctrl_t * p_ctrl, spi_flash_proto
 
     /* Update the SPI protocol and its associated registers. */
     return r_xspi_ospi_spi_protocol_specific_settings(p_instance_ctrl, spi_protocol);
+}
+
+/*******************************************************************************************************************//**
+ * Auto-calibrate the OctaRAM device using the preamble pattern. Unsupported by XSPI_OSPI.
+ *
+ * Implements @ref spi_flash_api_t::autoCalibrate.
+ *
+ * @retval FSP_ERR_UNSUPPORTED         API not supported by XSPI_OSPI
+ **********************************************************************************************************************/
+fsp_err_t R_XSPI_OSPI_AutoCalibrate (spi_flash_ctrl_t * p_ctrl)
+{
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+
+    return FSP_ERR_UNSUPPORTED;
 }
 
 /*******************************************************************************************************************//**

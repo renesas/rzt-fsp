@@ -478,8 +478,8 @@ void usb_cpu_usbint_init (uint8_t ip_type, usb_cfg_t const * const cfg)
 #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
         R_BSP_IrqCfgEnable(cfg->irq_r, cfg->ipl_r, (void *) cfg);   /* USBR enable */
 #endif /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) */
-        R_BSP_IrqCfgEnable(cfg->irq, cfg->ipl, (void *) cfg);       /* USBI enable */
         host_cfg = (usb_cfg_t *) cfg;
+        R_BSP_IrqCfgEnable(cfg->irq, cfg->ipl, (void *) cfg);       /* USBI enable */
     }
 
     if (ip_type == USB_IP1)

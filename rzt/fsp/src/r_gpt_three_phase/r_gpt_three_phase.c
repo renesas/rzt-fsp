@@ -106,9 +106,6 @@ const three_phase_api_t g_gpt_three_phase_on_gpt_three_phase =
  * Initializes the 3-phase timer module (and associated timers) and applies configurations. Implements
  * @ref three_phase_api_t::open.
  *
- * Example:
- * @snippet r_gpt_three_phase_example.c R_GPT_THREE_PHASE_Open
- *
  * @retval FSP_SUCCESS                    Initialization was successful.
  * @retval FSP_ERR_ASSERTION              A required input pointer is NULL.
  * @retval FSP_ERR_ALREADY_OPEN           Module is already open.
@@ -202,9 +199,6 @@ fsp_err_t R_GPT_THREE_PHASE_Stop (three_phase_ctrl_t * const p_ctrl)
 /*******************************************************************************************************************//**
  * Starts all timers synchronously. Implements @ref three_phase_api_t::start.
  *
- * Example:
- * @snippet r_gpt_three_phase_example.c R_GPT_THREE_PHASE_Start
- *
  * @retval FSP_SUCCESS                 Timers successfully started.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -258,9 +252,6 @@ fsp_err_t R_GPT_THREE_PHASE_Reset (three_phase_ctrl_t * const p_ctrl)
  *
  * @note It is recommended to call this function in a high-priority callback to ensure that it is not interrupted and
  * that no GPT events occur during setting that would result in a duty cycle buffer load operation.
- *
- * Example:
- * @snippet r_gpt_three_phase_example.c R_GPT_THREE_PHASE_DutyCycleSet
  *
  * @retval FSP_SUCCESS                 Duty cycle updated successfully.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL

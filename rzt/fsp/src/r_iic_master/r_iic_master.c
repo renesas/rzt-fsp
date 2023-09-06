@@ -83,7 +83,7 @@
 #define IIC_MASTER_FUNCTION_ENABLE_INIT_SETTINGS    (0x77U)
 #define IIC_MASTER_STATUS_REGISTER_2_ERR_MASK       (0x1FU)
 #define IIC_MASTER_BUS_MODE_REGISTER_1_MASK         (0x08U)
-#define IIC_MASTER_BUS_MODE_REGISTER_2_MASK         (0x06U)
+#define IIC_MASTER_BUS_MODE_REGISTER_2_MASK         (0x04U)
 #define IIC_MASTER_PRV_SCL_SDA_NOT_DRIVEN           (0x1FU)
 #define IIC_MASTER_ICCR1_ICE_BIT_MASK               (0x80)
 #define IIC_MASTER_ICCR1_IICRST_BIT_MASK            (0x40)
@@ -198,6 +198,7 @@ i2c_master_api_t const g_i2c_master_on_iic =
     .abort           = R_IIC_MASTER_Abort,
     .slaveAddressSet = R_IIC_MASTER_SlaveAddressSet,
     .close           = R_IIC_MASTER_Close,
+    .statusGet       = R_IIC_MASTER_StatusGet,
     .versionGet      = R_IIC_MASTER_VersionGet,
     .callbackSet     = R_IIC_MASTER_CallbackSet
 };
@@ -266,8 +267,6 @@ fsp_err_t R_IIC_MASTER_Open (i2c_master_ctrl_t * const p_api_ctrl, i2c_master_cf
         /* Safety Peripheral */
         p_ctrl->p_reg = (R_IIC0_Type *) BSP_FEATURE_IIC_SAFETY_CHANNEL_BASE_ADDRESS;
     }
-
-    p_ctrl->timeout_mode = ((iic_master_extended_cfg_t *) p_cfg->p_extend)->timeout_mode;
 
     /* Record the pointer to the configuration structure for later use */
     p_ctrl->p_cfg             = p_cfg;
@@ -455,6 +454,26 @@ fsp_err_t R_IIC_MASTER_CallbackSet (i2c_master_ctrl_t * const          p_api_ctr
     p_ctrl->p_callback        = p_callback;
     p_ctrl->p_context         = p_context;
     p_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
+ * Provides driver status.
+ *
+ * @retval     FSP_SUCCESS                   Status stored in p_status.
+ * @retval     FSP_ERR_ASSERTION             NULL pointer.
+ **********************************************************************************************************************/
+fsp_err_t R_IIC_MASTER_StatusGet (i2c_master_ctrl_t * const p_api_ctrl, i2c_master_status_t * p_status)
+{
+    iic_master_instance_ctrl_t * p_ctrl = (iic_master_instance_ctrl_t *) p_api_ctrl;
+
+#if IIC_MASTER_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl != NULL);
+    FSP_ASSERT(p_status != NULL);
+#endif
+
+    p_status->open = (IIC_MASTER_OPEN == p_ctrl->open);
 
     return FSP_SUCCESS;
 }
@@ -683,25 +702,9 @@ static void iic_master_abort_seq_master (iic_master_instance_ctrl_t * const p_ct
              * See 'Note' under Table "Interrupt sources" of the RZ microprocessor manual */
             IIC_MASTER_HARDWARE_REGISTER_WAIT(p_ctrl->p_reg->ICIER, 0, timeout_count);
 
-            /* Do I2C internal reset to clear all the transaction states and release the bus */
-            p_ctrl->p_reg->ICCR1 = (uint8_t) IIC_MASTER_PRV_SCL_SDA_NOT_DRIVEN;
-
-            /* Reset */
-            p_ctrl->p_reg->ICCR1 = (uint8_t) (IIC_MASTER_ICCR1_IICRST_BIT_MASK | IIC_MASTER_PRV_SCL_SDA_NOT_DRIVEN);
-
-            /* Clear pending interrupt in ICU and GIC. It is ok to re-enable interrupts  at GIC here. */
-            R_BSP_IrqEnable(p_ctrl->p_cfg->eri_irq);
-            R_BSP_IrqEnable(p_ctrl->p_cfg->rxi_irq);
-            R_BSP_IrqEnable(p_ctrl->p_cfg->tei_irq);
-            R_BSP_IrqEnable(p_ctrl->p_cfg->txi_irq);
-
-            /* Release peripheral from internal reset */
-            p_ctrl->p_reg->ICCR1 =
-                (uint8_t) (IIC_MASTER_ICCR1_ICE_BIT_MASK | IIC_MASTER_ICCR1_IICRST_BIT_MASK |
-                           IIC_MASTER_PRV_SCL_SDA_NOT_DRIVEN);
-
-            /* Reset */
-            p_ctrl->p_reg->ICCR1 = (uint8_t) (IIC_MASTER_ICCR1_ICE_BIT_MASK | IIC_MASTER_PRV_SCL_SDA_NOT_DRIVEN);
+            /* This helper function would do a full IIC reset
+             * followed by re-initializing the required peripheral registers. */
+            iic_master_open_hw_master(p_ctrl, p_ctrl->p_cfg);
         }
 
         /* Update the transfer descriptor to show no longer in-progress and an error */
@@ -740,6 +743,12 @@ static void iic_master_open_hw_master (iic_master_instance_ctrl_t * const p_ctrl
     /* Reset */
     p_ctrl->p_reg->ICCR1 = (uint8_t) (IIC_MASTER_ICCR1_IICRST_BIT_MASK | IIC_MASTER_PRV_SCL_SDA_NOT_DRIVEN);
 
+    /* Set valid interrupt contexts and user provided priority. Enable the interrupts at the GIC  */
+    R_BSP_IrqCfgEnable(p_cfg->eri_irq, p_cfg->ipl, p_ctrl);
+    R_BSP_IrqCfgEnable(p_cfg->txi_irq, p_cfg->ipl, p_ctrl);
+    R_BSP_IrqCfgEnable(p_cfg->tei_irq, p_cfg->ipl, p_ctrl);
+    R_BSP_IrqCfgEnable(p_cfg->rxi_irq, p_cfg->ipl, p_ctrl);
+
     /* Come out of IIC reset to internal reset */
     p_ctrl->p_reg->ICCR1 =
         (uint8_t) (IIC_MASTER_ICCR1_ICE_BIT_MASK | IIC_MASTER_ICCR1_IICRST_BIT_MASK |
@@ -769,8 +778,12 @@ static void iic_master_open_hw_master (iic_master_instance_ctrl_t * const p_ctrl
      * Only Set/Clear TMOS here to select long or short mode.
      * (see Section 'I2C Bus Mode Register 2 (ICMR2)' of the RZ microprocessor manual).
      */
-    p_ctrl->p_reg->ICMR2 = IIC_MASTER_BUS_MODE_REGISTER_2_MASK |
-                           (uint8_t) (IIC_MASTER_TIMEOUT_MODE_SHORT == p_ctrl->timeout_mode);
+    p_ctrl->p_reg->ICMR2 = (uint8_t) (IIC_MASTER_BUS_MODE_REGISTER_2_MASK |
+                                      (uint8_t) (IIC_MASTER_TIMEOUT_MODE_SHORT ==
+                                                 ((iic_master_extended_cfg_t *) p_ctrl->p_cfg->p_extend)->timeout_mode)
+                                      |
+                                      (uint8_t) (((iic_master_extended_cfg_t *) p_ctrl->p_cfg->p_extend)->
+                                                 timeout_scl_low << R_IIC0_ICMR2_TMOL_Pos));
 
     /* ICFER Register Settings:
      * 1. Enable timeout function.
@@ -795,12 +808,6 @@ static void iic_master_open_hw_master (iic_master_instance_ctrl_t * const p_ctrl
      * (see Section 'I2C Bus Interrupt Enable Register (ICIER)' of the RZ microprocessor manual).
      */
     p_ctrl->p_reg->ICIER = IIC_MASTER_INTERRUPT_ENABLE_INIT_MASK;
-
-    /* Set valid interrupt contexts and user provided priority. Enable the interrupts at the GIC  */
-    R_BSP_IrqCfgEnable(p_cfg->eri_irq, p_cfg->ipl, p_ctrl);
-    R_BSP_IrqCfgEnable(p_cfg->txi_irq, p_cfg->ipl, p_ctrl);
-    R_BSP_IrqCfgEnable(p_cfg->tei_irq, p_cfg->ipl, p_ctrl);
-    R_BSP_IrqCfgEnable(p_cfg->rxi_irq, p_cfg->ipl, p_ctrl);
 
     /* Release IIC from internal reset */
 
@@ -882,8 +889,12 @@ static fsp_err_t iic_master_run_hw_master (iic_master_instance_ctrl_t * const p_
      * Only Set/Clear TMOS here to select long or short mode.
      * (see Section 'I2C Bus Mode Register 2 (ICMR2)' of the RZ microprocessor manual).
      */
-    p_ctrl->p_reg->ICMR2 = IIC_MASTER_BUS_MODE_REGISTER_2_MASK |
-                           (uint8_t) (IIC_MASTER_TIMEOUT_MODE_SHORT == p_ctrl->timeout_mode);
+    p_ctrl->p_reg->ICMR2 = (uint8_t) (IIC_MASTER_BUS_MODE_REGISTER_2_MASK |
+                                      (uint8_t) (IIC_MASTER_TIMEOUT_MODE_SHORT ==
+                                                 ((iic_master_extended_cfg_t *) p_ctrl->p_cfg->p_extend)->timeout_mode)
+                                      |
+                                      (uint8_t) (((iic_master_extended_cfg_t *) p_ctrl->p_cfg->p_extend)->
+                                                 timeout_scl_low << R_IIC0_ICMR2_TMOL_Pos));
 
     /* Enable timeout function */
     p_ctrl->p_reg->ICFER_b.TMOE = 1U;
@@ -1214,7 +1225,8 @@ static void iic_master_err_master (iic_master_instance_ctrl_t * p_ctrl)
         p_ctrl->p_reg->ICCR2 = (uint8_t) IIC_MASTER_ICCR2_SP_BIT_MASK; /* It is safe to write 0's to other bits. */
         /* Allow timeouts to be generated on the low value of SCL using either long or short mode */
         p_ctrl->p_reg->ICMR2 = (uint8_t) 0x02U |
-                               (uint8_t) (IIC_MASTER_TIMEOUT_MODE_SHORT == p_ctrl->timeout_mode);
+                               (uint8_t) (IIC_MASTER_TIMEOUT_MODE_SHORT ==
+                                          ((iic_master_extended_cfg_t *) p_ctrl->p_cfg->p_extend)->timeout_mode);
         p_ctrl->p_reg->ICFER_b.TMOE = 1;
 
         /* This interrupt will be fired again when wither stop condition is sent

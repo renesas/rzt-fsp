@@ -39,7 +39,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define MTU3_PHASE_COUNT_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define MTU3_PHASE_COUNT_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define MTU3_PHASE_COUNT_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions

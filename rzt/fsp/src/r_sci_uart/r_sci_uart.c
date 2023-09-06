@@ -86,9 +86,8 @@
 #define SCI_UART_CCR1_CTSE_OFFSET             (0U)
 #define SCI_UART_CCR1_SPB2DT_BIT              (4U)
 #define SCI_UART_CCR1_OUTPUT_ENABLE_MASK      (0x00000020)
-#define SCI_UART_CCR1_PE_OFFSET               (8U)
-#define SCI_UART_CCR1_PM_OFFSET               (9U)
-#define SCI_UART_CCR1_PM_PE_VALUE_MASK        (0x03U)
+#define SCI_UART_CCR1_PARITY_OFFSET           (8U)
+#define SCI_UART_CCR1_PARITY_MASK             (0x00000300U)
 #define SCI_UART_CCR1_NFCS_OFFSET             (24U)
 #define SCI_UART_CCR1_NFCS_VALUE_MASK         (0x07U)
 #define SCI_UART_CCR1_NFEN_OFFSET             (28U)
@@ -318,6 +317,7 @@ const uart_api_t g_uart_on_sci =
     .versionGet         = R_SCI_UART_VersionGet,
     .communicationAbort = R_SCI_UART_Abort,
     .callbackSet        = R_SCI_UART_CallbackSet,
+    .readStop           = R_SCI_UART_ReadStop,
 };
 
 /*******************************************************************************************************************//**
@@ -964,8 +964,67 @@ fsp_err_t R_SCI_UART_Abort (uart_ctrl_t * const p_api_ctrl, uart_dir_t communica
 }
 
 /*******************************************************************************************************************//**
+ * Provides API to abort ongoing read. Reception is still enabled after abort(). Any characters received after abort()
+ * and before the transfer is reset in the next call to read(), will arrive via the callback function with event
+ * UART_EVENT_RX_CHAR.
+ * Implements @ref uart_api_t::readStop
+ *
+ * @retval  FSP_SUCCESS                  UART transaction aborted successfully.
+ * @retval  FSP_ERR_ASSERTION            Pointer to UART control block or remaining_bytes is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
+ * @retval  FSP_ERR_UNSUPPORTED          The requested Abort direction is unsupported.
+ *
+ * @return                       See @ref RENESAS_ERROR_CODES or functions called by this function for other possible
+ *                               return codes. This function calls:
+ *                                   * @ref transfer_api_t::disable
+ **********************************************************************************************************************/
+fsp_err_t R_SCI_UART_ReadStop (uart_ctrl_t * const p_api_ctrl, uint32_t * remaining_bytes)
+{
+    sci_uart_instance_ctrl_t * p_ctrl = (sci_uart_instance_ctrl_t *) p_api_ctrl;
+
+#if (SCI_UART_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(remaining_bytes);
+    FSP_ERROR_RETURN(SCI_UART_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+#if (SCI_UART_CFG_RX_ENABLE)
+    *remaining_bytes      = p_ctrl->rx_dest_bytes;
+    p_ctrl->rx_dest_bytes = 0U;
+ #if SCI_UART_CFG_DMAC_SUPPORTED
+    if (NULL != p_ctrl->p_cfg->p_transfer_rx)
+    {
+        fsp_err_t err = p_ctrl->p_cfg->p_transfer_rx->p_api->disable(p_ctrl->p_cfg->p_transfer_rx->p_ctrl);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+
+        /* Now that the transfer using DMAC is finished, enable the corresponding IRQ. */
+        R_BSP_IrqEnable(p_ctrl->p_cfg->rxi_irq);
+
+        transfer_properties_t transfer_info;
+        err = p_ctrl->p_cfg->p_transfer_rx->p_api->infoGet(p_ctrl->p_cfg->p_transfer_rx->p_ctrl, &transfer_info);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+        *remaining_bytes = transfer_info.transfer_length_remaining;
+    }
+ #endif
+ #if SCI_UART_CFG_FIFO_SUPPORT
+    if (0U != p_ctrl->fifo_depth)
+    {
+        /* Reset the receive fifo */
+        p_ctrl->p_reg->FCR_b.RFRST = 1U;
+    }
+ #endif
+#else
+
+    return FSP_ERR_UNSUPPORTED;
+#endif
+
+    return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
  * Calculates baud rate register settings. Evaluates and determines the best possible settings set to the baud rate
  * related registers.
+ * The argument structure of this function will be changed in the major release.
  *
  * @param[in]  baudrate                  Baud rate [bps]. For example, 19200, 57600, 115200, etc.
  * @param[in]  bitrate_modulation        Enable bitrate modulation
@@ -989,9 +1048,9 @@ fsp_err_t R_SCI_UART_BaudCalculate (uint32_t               baudrate,
     FSP_ERROR_RETURN((0U != baudrate), FSP_ERR_INVALID_ARGUMENT);
 #endif
 
-    p_baud_setting->brr  = SCI_UART_BRR_MAX;
-    p_baud_setting->brme = 0U;
-    p_baud_setting->mddr = SCI_UART_MDDR_MIN;
+    p_baud_setting->baudrate_bits_b.brr  = SCI_UART_BRR_MAX;
+    p_baud_setting->baudrate_bits_b.brme = 0U;
+    p_baud_setting->baudrate_bits_b.mddr = SCI_UART_MDDR_MIN;
 
     /* Find the best BRR (bit rate register) value.
      *  In table g_async_baud, divisor values are stored for BGDM, ABCS, ABCSE and N values.  Each set of divisors
@@ -1087,19 +1146,19 @@ fsp_err_t R_SCI_UART_BaudCalculate (uint32_t               baudrate,
                      */
                     if (bit_err < hit_bit_err)
                     {
-                        p_baud_setting->bgdm  = g_async_baud[i].bgdm;
-                        p_baud_setting->abcs  = g_async_baud[i].abcs;
-                        p_baud_setting->abcse = g_async_baud[i].abcse;
-                        p_baud_setting->cks   = g_async_baud[i].cks;
-                        p_baud_setting->brr   = (uint8_t) temp_brr;
-                        hit_bit_err           = bit_err;
-                        hit_mddr              = mddr;
+                        p_baud_setting->baudrate_bits_b.bgdm  = g_async_baud[i].bgdm;
+                        p_baud_setting->baudrate_bits_b.abcs  = g_async_baud[i].abcs;
+                        p_baud_setting->baudrate_bits_b.abcse = g_async_baud[i].abcse;
+                        p_baud_setting->baudrate_bits_b.cks   = g_async_baud[i].cks;
+                        p_baud_setting->baudrate_bits_b.brr   = (uint8_t) temp_brr;
+                        hit_bit_err = bit_err;
+                        hit_mddr    = mddr;
                     }
 
                     if (bitrate_modulation)
                     {
-                        p_baud_setting->brme = 1U;
-                        p_baud_setting->mddr = (uint8_t) hit_mddr;
+                        p_baud_setting->baudrate_bits_b.brme = 1U;
+                        p_baud_setting->baudrate_bits_b.mddr = (uint8_t) hit_mddr;
                     }
                     else
                     {
@@ -1355,7 +1414,12 @@ static void r_sci_uart_config_set (sci_uart_instance_ctrl_t * const p_ctrl, uart
     ccr1 |= (uint32_t) (1U << SCI_UART_CCR1_SPB2DT_BIT | SCI_UART_CCR1_OUTPUT_ENABLE_MASK);
 
     /* Configure parity bits. */
-    ccr1 |= (uint32_t) (p_cfg->parity & SCI_UART_CCR1_PM_PE_VALUE_MASK) << SCI_UART_CCR1_PE_OFFSET;
+    if (0 != p_cfg->parity)
+    {
+        ccr1 |=
+            (((UART_PARITY_EVEN ==
+               p_cfg->parity) ? 1U : 3U) << SCI_UART_CCR1_PARITY_OFFSET) & SCI_UART_CCR1_PARITY_MASK;
+    }
 
     /* Configure CTS flow control if CTS/RTS flow control is enabled. */
     ccr1 |= (uint32_t) (p_extend->ctsrts_en << SCI_UART_CCR1_CTSE_OFFSET);

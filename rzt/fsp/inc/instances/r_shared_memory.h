@@ -38,7 +38,7 @@ FSP_HEADER
  * Macro definitions
  ***********************************************************************************************************************/
 #define SHARED_MEMORY_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define SHARED_MEMORY_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define SHARED_MEMORY_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions

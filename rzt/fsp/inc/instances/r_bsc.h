@@ -39,6 +39,12 @@ FSP_HEADER
  * Typedef definitions
  **********************************************************************************************************************/
 
+/** BSC callback event definitions  */
+typedef enum e_bsc_event
+{
+    BSC_EVENT_EXTERNAL_WAIT_TIMEOUT,   ///< External wait timeout detection.
+} bsc_event_t;
+
 /** Memory type connected to a CS space */
 typedef enum e_bsc_memory_type
 {
@@ -86,38 +92,54 @@ typedef enum e_bsc_cs_wait_cycle_t
     BSC_CS_WAIT_CYCLE_3_5,             ///< CS wait 3.5 cycle insertion
 } bsc_cs_wait_cycle_t;
 
+/** External wait timeout detection setting */
+typedef enum e_bsc_external_wait_timeout
+{
+    BSC_EXTERNAL_WAIT_TIMEOUT_DISABLE = 0x00, ///< External WAIT timeout detection disable
+    BSC_EXTERNAL_WAIT_TIMEOUT_ENABLE  = 0x01, ///< External WAIT timeout detection enable
+} bsc_external_wait_timeout_t;
+
+/** Callback function parameter data. */
+typedef struct st_bsc_callback_args
+{
+    bsc_event_t  event;                ///< BSC callback event
+    void const * p_context;            ///< Placeholder for user data.
+} bsc_callback_args_t;
+
 /** Extended configuration. */
 typedef struct st_bsc_extended_cfg
 {
-    bsc_memory_type_t memory_type;     ///< Configure memory type
+    bsc_memory_type_t memory_type;                            ///< Configure memory type
 
-    /** Idle cycle between Read-Read cycles in the same CS space */
-    bsc_idle_cycle_t r_r_same_space_idle_cycle;
+    bsc_idle_cycle_t r_r_same_space_idle_cycle;               ///< Idle cycle between Read-Read cycles in the same CS space
+    bsc_idle_cycle_t r_r_different_space_idle_cycle;          ///< Idle cycle between Read-Read cycles in the different CS space
+    bsc_idle_cycle_t r_w_same_space_idle_cycle;               ///< Idle cycle between Read-Write cycles in the same CS space
+    bsc_idle_cycle_t r_w_different_space_idle_cycle;          ///< Idle cycle between Read-Write cycles in the different CS space
+    bsc_idle_cycle_t w_r_w_w_idle_cycle;                      ///< Idle cycle between Write-Read cycles and Write-Write cycles
 
-    /** Idle cycle between Read-Read cycles in the different CS space */
-    bsc_idle_cycle_t r_r_different_space_idle_cycle;
+    bsc_access_wait_cycle_t read_access_wait_cycle;           ///< Number of read access cycle waits
+    bsc_access_wait_cycle_t write_access_wait_cycle;          ///< Number of write access cycle waits
 
-    /** Idle cycle between Read-Write cycles in the same CS space */
-    bsc_idle_cycle_t r_w_same_space_idle_cycle;
+    bsc_cs_wait_cycle_t cs_pullup_lag;                        ///< Duration to de-assert CS line after RD#,WE# de-assert
+    bsc_cs_wait_cycle_t cs_pulldown_lead;                     ///< Duration to assert CS line before RD#,WE# assert
 
-    /** Idle cycle between Read-Write cycles in the different CS space */
-    bsc_idle_cycle_t r_w_different_space_idle_cycle;
+    bsc_external_wait_timeout_t external_wait_timeout_enable; ///< External wait timeout enable/disable setting
+    uint32_t external_wait_timeout_counts;                    ///< External wait timeout cycle
 
-    /** Idle cycle between Write-Read cycles and Write-Write cycles */
-    bsc_idle_cycle_t w_r_w_w_idle_cycle;
+    void (* p_callback)(bsc_callback_args_t * p_args);        ///< Callback for external wait timeout detection interrupt.
 
-    bsc_access_wait_cycle_t read_access_wait_cycle;  ///< Number of read access cycle waits
-    bsc_access_wait_cycle_t write_access_wait_cycle; ///< Number of write access cycle waits
-
-    bsc_cs_wait_cycle_t cs_pullup_lag;               ///< Duration to de-assert CS line after RD#,WE# de-assert
-    bsc_cs_wait_cycle_t cs_pulldown_lead;            ///< Duration to assert CS line before RD#,WE# assert
+    void const * p_context;                                   ///< Placeholder for user data.  Passed to the user p_callback in ::bsc_callback_args_t.
 } bsc_extended_cfg_t;
 
 /** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref external_bus_api_t::open is called */
 typedef struct st_bsc_instance_ctrl
 {
-    uint32_t open;                     // Whether or not driver is open
-    external_bus_cfg_t const * p_cfg;  // Pointer to initial configuration
+    uint32_t open;                              // Whether or not driver is open
+    external_bus_cfg_t const * p_cfg;           // Pointer to initial configuration
+
+    void (* p_callback)(bsc_callback_args_t *); // Pointer to callback
+    bsc_callback_args_t * p_callback_memory;    // Pointer to optional callback argument memory
+    void const          * p_context;            // Pointer to context to be passed into callback function
 } bsc_instance_ctrl_t;
 
 /**********************************************************************************************************************
@@ -132,6 +154,10 @@ extern const external_bus_api_t g_external_bus_on_bsc;
 
 fsp_err_t R_BSC_Open(external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * const p_cfg);
 fsp_err_t R_BSC_Close(external_bus_ctrl_t * p_ctrl);
+fsp_err_t R_BSC_CallbackSet(external_bus_ctrl_t       * p_ctrl,
+                            void (                    * p_callback)(bsc_callback_args_t *),
+                            void const * const          p_context,
+                            bsc_callback_args_t * const p_callback_memory);
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

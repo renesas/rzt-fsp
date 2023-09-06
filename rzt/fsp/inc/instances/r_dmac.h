@@ -39,7 +39,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define DMAC_CODE_VERSION_MAJOR            (1U) // DEPRECATED
-#define DMAC_CODE_VERSION_MINOR            (2U) // DEPRECATED
+#define DMAC_CODE_VERSION_MINOR            (3U) // DEPRECATED
 
 /** Max configurable number of transfers in TRANSFER_MODE_NORMAL. */
 #define DMAC_MAX_NORMAL_TRANSFER_LENGTH    (0xFFFFFFFF)
@@ -51,10 +51,63 @@ FSP_HEADER
  * Typedef definitions
  **********************************************************************************************************************/
 
+/** Indicates the descriptor is enabled or disabled. */
+typedef enum e_dmac_link_valid
+{
+    DMAC_LINK_VALID_DESCRIPTOR_DISABLE = 0, ///< The Descriptor is disabled.
+    DMAC_LINK_VALID_DESCRIPTOR_ENABLE  = 1, ///< The Descriptor is enabled.
+} dmac_link_valid_t;
+
+/** Indicates that the link ends during DMA transfer of this descriptor. */
+typedef enum e_dmac_link_end
+{
+    DMAC_LINK_END_DISABLE = 0,         ///< The link continues.
+    DMAC_LINK_END_ENABLE  = 1,         ///< The link ends.
+} dmac_link_end_t;
+
+/** Masks write back execution of the dmac_link_cfg_t::link_valid. When disable, DMAC does not perform write-back operation. */
+typedef enum e_dmac_link_write_back
+{
+    DMAC_LINK_WRITE_BACK_ENABLE  = 0,  ///< Set dmac_link_cfg_t::link_valid to disable after the DMA transfer ends.
+    DMAC_LINK_WRITE_BACK_DISABLE = 1,  ///< Remain dmac_link_cfg_t::link_valid after DMA transfer ends.
+} dmac_link_write_back_t;
+
+/** When dmac_link_cfg_t::link_valid is DMAC_LINK_VALID_DESCRIPTOR_DISABLE at loading of header, specifies whether DMA transfer completion interrupt mask or not. */
+typedef enum e_dmac_link_interrupt_mask
+{
+    DMAC_LINK_INTERRUPT_MASK_DISABLE = 0, ///< DMA transfer completion interrupt is asserted.
+    DMAC_LINK_INTERRUPT_MASK_ENABLE  = 1, ///< DMA transfer completion interrupt is masked.
+} dmac_link_interrupt_mask_t;
+
+/** Descriptor structure used in DMAC link mode, and variables of dmac_link_cfg_t must be allocated in the memory area. */
+typedef struct st_dmac_link_cfg
+{
+    union
+    {
+        uint32_t header_u32;                                   ///< Descriptor header
+        struct
+        {
+            dmac_link_valid_t          link_valid         : 1; ///< The descriptor is valid or not.
+            dmac_link_end_t            link_end           : 1; ///< The descriptor is end or not.
+            dmac_link_write_back_t     write_back_disable : 1; ///< Write back enable or not.
+            dmac_link_interrupt_mask_t interrupt_mask     : 1; ///< Interrupt mask is enable or not.
+            uint32_t                                      : 28;
+        } header;
+    };
+    void const * volatile p_src;                               ///< Source address.
+    void * volatile       p_dest;                              ///< Destination address.
+    volatile uint32_t     transaction_byte;                    ///< Transaction byte.
+    volatile uint32_t     channel_cfg;                         ///< Channel configuration (Set value for CHCFG_n register).
+    volatile uint32_t     channel_interval;                    ///< Channel interval (Set value for CHITVL register).
+    volatile uint32_t     channel_extension_cfg;               ///< Channel extension configuration (Set value for CHEXT_n register).
+    void * volatile       p_next_link_addr;                    ///< Next link address.
+} dmac_link_cfg_t;
+
 /** Events that can trigger a callback function. */
 typedef enum e_dmac_event
 {
-    DMAC_EVENT_TRANSFER_END = 0,       ///< DMA transfer has completed.
+    DMAC_EVENT_TRANSFER_END   = 0,     ///< DMA transfer has completed.
+    DMAC_EVENT_TRANSFER_ERROR = 1,     ///< DMA error has occurred.
 } dmac_event_t;
 
 /** Callback function parameter data. */
@@ -123,12 +176,22 @@ typedef enum e_dmac_channel_scheduling
     DMAC_CHANNEL_SCHEDULING_ROUND_ROBIN = 1, ///< Round-robin mode.
 } dmac_channel_scheduling_t;
 
+/** DMAC mode setting. */
+typedef enum e_dmac_mode_select
+{
+    DMAC_MODE_SELECT_REGISTER = 0,     ///< Register mode.
+    DMAC_MODE_SELECT_LINK     = 1,     ///< Link mode.
+} dmac_mode_select_t;
+
 /** Control block used by driver. DO NOT INITIALIZE - this structure will be initialized in @ref transfer_api_t::open. */
 typedef struct st_dmac_instance_ctrl
 {
     uint32_t open;                     // Driver ID
 
     transfer_cfg_t const * p_cfg;
+
+    dmac_mode_select_t      dmac_mode;
+    dmac_link_cfg_t const * p_descriptor;
 
     /* Pointer to base register. */
     R_DMAC0_Type * p_reg;
@@ -150,7 +213,11 @@ typedef struct st_dmac_extended_cfg
     dmac_detection_t         detection_mode;                   ///< DMAC request detection method
     dmac_request_direction_t activation_request_source_select; ///< DMAC activation request source
 
-    dmac_register_select_reverse_t next_register_operaion;     ///< Next register operation settings
+    dmac_register_select_reverse_t next_register_operaion;     ///< DEPRECATED - next_register_operaion will be renamed next_register_operation in the major release. Next register operation settings
+
+    dmac_mode_select_t dmac_mode;                              ///< DMAC Mode
+
+    dmac_link_cfg_t const * p_descriptor;                      ///< The address of the descriptor (DMA Link Mode only)
 
     uint16_t transfer_interval;                                ///< DMA transfer interval
     dmac_channel_scheduling_t channel_scheduling;              ///< DMA channel scheduling
@@ -161,7 +228,9 @@ typedef struct st_dmac_extended_cfg
     /** Placeholder for user data.  Passed to the user p_callback in ::dmac_callback_args_t. */
     void const * p_context;
 
-    /** Peripheral module handler that is called on completion of the transfer. */
+    /** DEPRECATED - p_peripheral_module_handler will be removed in the major release. Instead of this, p_callback will be used.
+     *
+     * Peripheral module handler that is called on completion of the transfer. */
     void (* p_peripheral_module_handler)(IRQn_Type);
 } dmac_extended_cfg_t;
 
@@ -204,6 +273,7 @@ fsp_err_t R_DMAC_Disable(transfer_ctrl_t * const p_api_ctrl);
 fsp_err_t R_DMAC_InfoGet(transfer_ctrl_t * const p_api_ctrl, transfer_properties_t * const p_info);
 fsp_err_t R_DMAC_Close(transfer_ctrl_t * const p_api_ctrl);
 fsp_err_t R_DMAC_VersionGet(fsp_version_t * const p_version);
+fsp_err_t R_DMAC_LinkDescriptorSet(transfer_ctrl_t * const p_api_ctrl, dmac_link_cfg_t * p_descriptor);
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

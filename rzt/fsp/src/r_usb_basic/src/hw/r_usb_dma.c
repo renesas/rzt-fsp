@@ -43,9 +43,11 @@
  ******************************************************************************/
   #if (BSP_CFG_RTOS == 0)
 usb_dma_int_t gs_usb_cstd_dma_int;
-  #endif                                                                                       /* (BSP_CFG_RTOS == 0) */
+  #endif                               /* (BSP_CFG_RTOS == 0) */
   #if (BSP_CFG_RTOS == 2)
+   #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
 static usb_utr_t g_usb_cstd_int_dma[USB_INT_BUFSIZE];
+   #endif /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) */
   #endif                                                                                       /* #if (BSP_CFG_RTOS == 2)*/
 
 usb_utr_t * get_usb_int_buf_dma(void);

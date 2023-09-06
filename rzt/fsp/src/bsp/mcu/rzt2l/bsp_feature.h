@@ -66,12 +66,17 @@
 
 #define BSP_FEATURE_BSC_32BIT_DATA_BUS_WIDTH_SUPPORTED    (0U)
 
-#define BSP_FEATURE_BSP_AFMT_SUPPORTED                    (1U)
-#define BSP_FEATURE_BSP_BISS_SUPPORTED                    (1U)
-#define BSP_FEATURE_BSP_CPU1_SUPPORTED                    (0U)
+#define BSP_FEATURE_BSP_AFMT_SUPPORTED                    (1U) // DEPRECATED
+#define BSP_FEATURE_BSP_AFMT_UNIT                         (2U)
+#define BSP_FEATURE_BSP_BISS_SUPPORTED                    (1U) // DEPRECATED
+#define BSP_FEATURE_BSP_BISS_UNIT                         (2U)
+#define BSP_FEATURE_BSP_CPU1_SUPPORTED                    (0U) // DEPRECATED
+#define BSP_FEATURE_BSP_CR52_CORE_NUM                     (0U)
 #define BSP_FEATURE_BSP_ENCOUT_SUPPORTED                  (1U)
-#define BSP_FEATURE_BSP_ENDAT_SUPPORTED                   (1U)
-#define BSP_FEATURE_BSP_HDSL_SUPPORTED                    (1U)
+#define BSP_FEATURE_BSP_ENDAT_SUPPORTED                   (1U) // DEPRECATED
+#define BSP_FEATURE_BSP_ENDAT_UNIT                        (2U)
+#define BSP_FEATURE_BSP_HDSL_SUPPORTED                    (1U) // DEPRECATED
+#define BSP_FEATURE_BSP_HDSL_UNIT                         (2U)
 #define BSP_FEATURE_BSP_IRQ_PRIORITY_MASK                 (0xF0U)
 #define BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT              (4U)
 #define BSP_FEATURE_BSP_SEMAPHORE_SUPPORTED               (0U)
@@ -95,8 +100,8 @@
 #define BSP_FEATURE_CGC_HAS_PCLKC                         (1U)
 #define BSP_FEATURE_CGC_HAS_PCLKD                         (1U)
 #define BSP_FEATURE_CGC_HAS_PLL                           (1U)
-#define BSP_FEATURE_CGC_HAS_PLL2                          (0U) // On the RA6M4 there is another PLL that can be used as a clock source for USB and OCTASPI.
-#define BSP_FEATURE_CGC_HAS_SRAMPRCR2                     (0U) // On the RA6M4 there is another register to enable write access for SRAMWTSC.
+#define BSP_FEATURE_CGC_HAS_PLL2                          (0U)
+#define BSP_FEATURE_CGC_HAS_SRAMPRCR2                     (0U)
 #define BSP_FEATURE_CGC_HAS_SRAMWTSC                      (1U)
 #define BSP_FEATURE_CGC_HOCOSF_BEFORE_OPCCR               (0U)
 #define BSP_FEATURE_CGC_HOCOWTCR_64MHZ_ONLY               (0U)
@@ -125,6 +130,9 @@
 #define BSP_FEATURE_CRC_VALID_CHANNEL_MASK                (0x3U)
 
 #define BSP_FEATURE_DMAC_MAX_CHANNEL                      (16U)
+#define BSP_FEATURE_DMAC_MAX_UNIT                         (2U)
+#define BSP_FEATURE_DMAC_UNIT0_ERROR_NUM                  (5U)
+#define BSP_FEATURE_DMAC_UNIT1_ERROR_NUM                  (6U)
 
 #define BSP_FEATURE_DSMIF_VERSION                         (2U)
 
@@ -177,7 +185,8 @@
 #define BSP_FEATURE_POEG_MAX_UNIT                         (2U)
 #define BSP_FEATURE_POEG_GROUP_OFSSET_ADDRESS             (0x400)
 
-#define BSP_FEATURE_ICU_ERROR_CPU1_SUPPORTED              (0U)
+#define BSP_FEATURE_ICU_ERROR_CPU1_SUPPORTED              (0U) // DEPRECATED
+#define BSP_FEATURE_ICU_ERROR_CR52_CPU1_SUPPORTED         (0U)
 #define BSP_FEATURE_ICU_ERROR_PERI_ERR_REG_NUM            (4U)
 #define BSP_FEATURE_ICU_ERROR_PERIPHERAL_TYPE             (2U)
 #define BSP_FEATURE_ICU_ERROR_PERI_ERR0_REG_MASK          (0xFFFFFEFFU)

@@ -111,9 +111,6 @@ const can_api_t g_canfd_on_canfd =
 /***************************************************************************************************************//**
  * Open and configure the CANFD channel for operation.
  *
- * Example:
- * @snippet r_canfd_example.c R_CANFD_Open
- *
  * @retval FSP_SUCCESS                            Channel opened successfully.
  * @retval FSP_ERR_ALREADY_OPEN                   Driver already open.
  * @retval FSP_ERR_IN_USE                         Channel is already in use.
@@ -402,9 +399,6 @@ fsp_err_t R_CANFD_Close (can_ctrl_t * const p_api_ctrl)
 /***************************************************************************************************************//**
  * Write data to the CANFD channel.
  *
- * Example:
- * @snippet r_canfd_example.c R_CANFD_Write
- *
  * @retval FSP_SUCCESS                      Operation succeeded.
  * @retval FSP_ERR_NOT_OPEN                 Control block not open.
  * @retval FSP_ERR_CAN_TRANSMIT_NOT_READY   Transmit in progress, cannot write data at this time.
@@ -514,9 +508,6 @@ fsp_err_t R_CANFD_Read (can_ctrl_t * const p_api_ctrl, uint32_t buffer, can_fram
 
 /***************************************************************************************************************//**
  * Switch to a different channel, global or test mode.
- *
- * Example:
- * @snippet r_canfd_example.c R_CANFD_ModeTransition
  *
  * @retval FSP_SUCCESS                      Operation succeeded.
  * @retval FSP_ERR_NOT_OPEN                 Control block not open.

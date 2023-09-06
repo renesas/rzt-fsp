@@ -183,9 +183,6 @@ const timer_api_t g_timer_on_gpt =
  *
  * The GPT implementation of the general timer can accept a gpt_extended_cfg_t extension parameter.
  *
- * Example:
- * @snippet r_gpt_example.c R_GPT_Open
- *
  * @retval FSP_SUCCESS                    Initialization was successful and timer has started.
  * @retval FSP_ERR_ASSERTION              A required input pointer is NULL or the source divider is invalid.
  * @retval FSP_ERR_ALREADY_OPEN           Module is already open.
@@ -240,9 +237,6 @@ fsp_err_t R_GPT_Open (timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_c
 /*******************************************************************************************************************//**
  * Stops timer. Implements @ref timer_api_t::stop.
  *
- * Example:
- * @snippet r_gpt_example.c R_GPT_Stop
- *
  * @retval FSP_SUCCESS                 Timer successfully stopped.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -263,9 +257,6 @@ fsp_err_t R_GPT_Stop (timer_ctrl_t * const p_ctrl)
 
 /*******************************************************************************************************************//**
  * Starts timer. Implements @ref timer_api_t::start.
- *
- * Example:
- * @snippet r_gpt_example.c R_GPT_Start
  *
  * @retval FSP_SUCCESS                 Timer successfully started.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
@@ -312,9 +303,6 @@ fsp_err_t R_GPT_Reset (timer_ctrl_t * const p_ctrl)
 /*******************************************************************************************************************//**
  * Enables external event triggers that start, stop, clear, or capture the counter. Implements @ref timer_api_t::enable.
  *
- * Example:
- * @snippet r_gpt_example.c R_GPT_Enable
- *
  * @retval FSP_SUCCESS                 External events successfully enabled.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -358,9 +346,6 @@ fsp_err_t R_GPT_Enable (timer_ctrl_t * const p_ctrl)
  *
  * @note The timer could be running after R_GPT_Disable(). To ensure it is stopped, call R_GPT_Stop().
  *
- * Example:
- * @snippet r_gpt_example.c R_GPT_Disable
- *
  * @retval FSP_SUCCESS                 External events successfully disabled.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -390,9 +375,6 @@ fsp_err_t R_GPT_Disable (timer_ctrl_t * const p_ctrl)
  * @warning If periodic output is used, the duty cycle buffer registers are updated after the period buffer register.
  * If this function is called while the timer is running and a GPT overflow occurs during processing, the duty cycle
  * will not be the desired 50% duty cycle until the counter overflow after processing completes.
- *
- * Example:
- * @snippet r_gpt_example.c R_GPT_PeriodSet
  *
  * @retval FSP_SUCCESS                 Period value written successfully.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
@@ -458,9 +440,6 @@ fsp_err_t R_GPT_PeriodSet (timer_ctrl_t * const p_ctrl, uint32_t const period_co
  *
  * Duty cycle is updated in the buffer register. The updated duty cycle is reflected after the next cycle end (counter
  * overflow).
- *
- * Example:
- * @snippet r_gpt_example.c R_GPT_DutyCycleSet
  *
  * @param[in] p_ctrl                   Pointer to instance control block.
  * @param[in] duty_cycle_counts        Duty cycle to set in counts.
@@ -556,9 +535,6 @@ fsp_err_t R_GPT_DutyCycleSet (timer_ctrl_t * const p_ctrl, uint32_t const duty_c
 /*******************************************************************************************************************//**
  * Get timer information and store it in provided pointer p_info. Implements @ref timer_api_t::infoGet.
  *
- * Example:
- * @snippet r_gpt_example.c R_GPT_InfoGet
- *
  * @retval FSP_SUCCESS                 Period, count direction, frequency, and ELC event written to caller's
  *                                     structure successfully.(External clock(GTETRGA - GTETRGD) cannot be acquired.)
  * @retval FSP_ERR_ASSERTION           p_ctrl or p_info was NULL.
@@ -595,9 +571,6 @@ fsp_err_t R_GPT_InfoGet (timer_ctrl_t * const p_ctrl, timer_info_t * const p_inf
 
 /*******************************************************************************************************************//**
  * Get current timer status and store it in provided pointer p_status. Implements @ref timer_api_t::statusGet.
- *
- * Example:
- * @snippet r_gpt_example.c R_GPT_StatusGet
  *
  * @retval FSP_SUCCESS                 Current timer state and counter value set successfully.
  * @retval FSP_ERR_ASSERTION           p_ctrl or p_status was NULL.

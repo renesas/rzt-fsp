@@ -47,7 +47,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define ADC_CODE_VERSION_MAJOR                 (1U) // DEPRECATED
-#define ADC_CODE_VERSION_MINOR                 (2U) // DEPRECATED
+#define ADC_CODE_VERSION_MINOR                 (3U) // DEPRECATED
 
 /* Typical values that can be used to modify the sample states.
  * The minimum sample state count value is either 6 or 7 depending on the clock ratios.

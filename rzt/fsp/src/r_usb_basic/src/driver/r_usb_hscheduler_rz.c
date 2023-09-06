@@ -33,10 +33,9 @@
  ***********************************************************************************************************************/
 
 #include "r_usb_basic_local.h"
-#if (BSP_CFG_RTOS_USED == 1)
- #include "r_usbh_rtos.h"
-#endif                                 /* (BSP_CFG_RTOS_USED == 1) */
-
+#if (BSP_CFG_RTOS == 2)
+ #include "r_usb_cstd_rtos.h"
+#endif                                 /* (BSP_CFG_RTOS == 2) */
 #if  USB_IP_EHCI_OHCI == 1
 
 /***********************************************************************************************************************
@@ -53,8 +52,6 @@ extern void usb_hstd_int_disable(void);
  * Private global variables and functions
  ***********************************************************************************************************************/
 
-usb_er_t usb_hstd_rtos_snd_msg(uint8_t id, usb_msg_t * mess);
-usb_er_t usb_hstd_rtos_rec_msg(uint8_t id, usb_msg_t ** mess, uint16_t tm);
 usb_er_t R_USB_CstdiSndMsg(uint8_t id, usb_msg_t * p_mess);
 
 /***********************************************************************************************************************
@@ -82,28 +79,10 @@ static uint8_t     gs_usb_hstd_id_use;
 static usb_msg_t * gsp_usb_hstd_wait_add[USB_IDMAX];
 static uint16_t    gs_usb_hstd_wait_counter[USB_IDMAX];
 
- #if (BSP_CFG_RTOS_USED == 1)
+ #if (BSP_CFG_RTOS == 2)
 
 /** Declare an array of mailbox handlers. **/
-p_os_msg_queue_handle_t * g_usb_msg_table[] =
-{
-    &g_usb_hmgr_msg_hdl,               // A message handler of USB HCI task ... MGR Handler
-    &g_usb_hmgr_msg_hdl,               // A message handler of USB MGR task
-    &g_usb_hhub_msg_hdl,               // A message handler of USB HUB task
-    NULL,                              // Not used
-    NULL,                              // Not used
-    NULL,                              // Not used
-    &g_usb_hmsc_msg_hdl,               // A message handler of USB
-    &g_usb_hstrg_msg_hdl,              // A message handler of USB
-    NULL,                              // Not used
-    &g_usb_hhid_msg_hdl,               // A message handler of USB
-    NULL,                              // Not used
-    NULL,                              // Not used
-    NULL,                              // Not used
-    NULL,                              // Not used
-    NULL,                              // Not used
-};
- #endif /* (BSP_CFG_RTOS_USED == 1) */
+ #endif                                /* (BSP_CFG_RTOS == 2) */
 
 /***********************************************************************************************************************
  * Function Name   : usb_hstd_rec_msg
@@ -473,10 +452,6 @@ void R_USB_CstdScheduler (void)
     uint8_t usb_pri;                   /* Priority Counter */
     uint8_t usb_read;                  /* Priority Table read pointer */
 
- #if (BSP_CFG_RTOS_USED == 1)
-    if (0 == g_usb_msg_check)
-    {
- #endif                                /* (BSP_CFG_RTOS_USED == 1) */
     /* wait msg */
     usb_hstd_wait_scheduler();
 
@@ -502,22 +477,13 @@ void R_USB_CstdScheduler (void)
             gs_usb_hstd_schedule_flag               = USB_FLGSET;
 
             usb_pri = USB_PRIMAX;
-
- #if (BSP_CFG_RTOS_USED == 1)
-            g_usb_msg_check |= (1 << gs_usb_hstd_id_use);
-            USB_RTOS_SND_MSG(gs_usb_hstd_id_use, gsp_usb_hstd_add_use);
- #endif                                /* (BSP_CFG_RTOS_USED == 1) */
         }
         else
         {
             usb_pri++;
         }
     }
-
- #if (BSP_CFG_RTOS_USED == 1)
-}
- #endif                                /* (BSP_CFG_RTOS_USED == 1) */
-} /* End of function R_USB_CstdScheduler() */
+}                                      /* End of function R_USB_CstdScheduler() */
 
 /***********************************************************************************************************************
  * Function Name   : R_USB_CstdSetTaskPri
@@ -561,91 +527,6 @@ uint8_t R_USB_CstdCheckSchedule (void)
     return flg;
 }                                      /* End of function R_USB_CstdCheckSchedule() */
 
- #if (BSP_CFG_RTOS_USED == 1)
-
-/***********************************************************************************************************************
- * Function Name   : usb_hstd_rtos_snd_msg
- * Description     :
- * Argument        :
- * Return          :
- ***********************************************************************************************************************/
-usb_er_t usb_hstd_rtos_snd_msg (uint8_t id, usb_msg_t * mess)
-{
-    BaseType_t    err;
-    QueueHandle_t handle;
-
-    if ((NULL == mess) && (USB_TID_0 != id))
-    {
-        return USB_ERROR;
-    }
-
-    handle = (QueueHandle_t) (*(g_usb_msg_table[id]));
-    if (NULL == handle)
-    {
-        return USB_ERROR;
-    }
-
-    /** Send message to queue specified by *(msg_table[id]) **/
-    err = xQueueSend(handle, (const void *) &mess, (TickType_t) (0));
-    if (pdTRUE == err)
-    {
-        return USB_OK;
-    }
-    else
-    {
-        return USB_ERROR;
-    }
-}
-
-/***********************************************************************************************************************
- * Function Name   : usb_hstd_rtos_rec_msg
- * Description     :
- * Argument        :
- * Return          :
- ***********************************************************************************************************************/
-usb_er_t usb_hstd_rtos_rec_msg (uint8_t id, usb_msg_t ** mess, uint16_t tm)
-{
-    BaseType_t    err;
-    QueueHandle_t handle;
-
-    (void *) tm;
-
-    if (NULL == mess)
-    {
-        return USB_ERROR;
-    }
-
-    handle = (QueueHandle_t) (*(g_usb_msg_table[id]));
-    *mess  = NULL;
-
-    /** Receive message from queue specified by *(mbx_table[id]) **/
-    if (0 == tm)
-    {
-        tm = portMAX_DELAY;
-    }
-
-    /* err = xQueueReceive(handle, (void *)mess, (TickType_t)(tm)); */
-    while (pdFALSE == err)
-    {
-        err = xQueueReceive(handle, (void *) mess, (TickType_t) (tm));
-    }
-
-    if ((USB_HCI_TSK == id) && (NULL == *mess))
-    {
-        return USB_OK;
-    }
-
-    if ((pdTRUE == err) && (NULL != (*mess)))
-    {
-        return USB_OK;
-    }
-    else
-    {
-        return USB_ERROR;
-    }
-}
-
- #endif                                /* (BSP_CFG_RTOS_USED == 1) */
 #endif                                 /* USB_IP_EHCI_OHCI == 1 */
 
 /***********************************************************************************************************************

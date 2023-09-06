@@ -38,7 +38,8 @@
  ******************************************************************************/
 
 #if (BSP_CFG_RTOS == 2)
-uint16_t usb_hcdc_get_string_info(usb_utr_t * mess, uint16_t addr, uint16_t string);
+uint16_t    usb_hcdc_get_string_info(usb_utr_t * mess, uint16_t addr, uint16_t string);
+static void usb_hcdc_check_result(usb_utr_t * mess, uint16_t data1, uint16_t data2);
 
 #else                                  /* (BSP_CFG_RTOS == 2) */
 static void usb_hcdc_check_result(usb_utr_t * mess, uint16_t data1, uint16_t data2);
@@ -64,9 +65,9 @@ uint8_t * g_p_usb_hcdc_config_table[USB_NUM_USBIP];
 uint8_t * g_p_usb_hcdc_interface_table[USB_NUM_USBIP];
 uint16_t  g_usb_hcdc_speed[USB_NUM_USBIP];
 uint16_t  g_usb_hcdc_devaddr[USB_NUM_USBIP];
-#if BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1
+#if USB_IP_EHCI_OHCI == 1
 uint16_t g_usb_hcdc_num_endpoint[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1]; /* Num Endpoints */
-#endif /*BSP_MCU_GROUP_RZT2M == 1*/
+#endif /* USB_IP_EHCI_OHCI == 1*/
 
 /******************************************************************************
  * Renesas USB Host CDC Driver functions
@@ -209,6 +210,7 @@ void usb_hcdc_enumeration (usb_clsinfo_t * mess)
 /******************************************************************************
  * End of function usb_hcdc_enumeration
  ******************************************************************************/
+#endif                                 /* (BSP_CFG_RTOS == 0) */
 
 /******************************************************************************
  * Function Name   : usb_hcdc_check_result
@@ -259,6 +261,7 @@ static void usb_hcdc_check_result (usb_utr_t * mess, uint16_t data1, uint16_t da
 /******************************************************************************
  * End of function usb_hcdc_check_result
  ******************************************************************************/
+#if (BSP_CFG_RTOS == 0)
 
 /******************************************************************************
  * Function Name   : usb_hcdc_task
@@ -680,12 +683,12 @@ void usb_hcdc_class_check (usb_utr_t * ptr, uint16_t ** table)
     g_usb_hcdc_devaddr[ptr->ip]           = *table[7];                /* Set device address */
 
     *table[3] = USB_OK;                                               /* Set class check done  */
-#if  BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1
+#if USB_IP_EHCI_OHCI == 1
     g_usb_hcdc_num_endpoint[ptr->ip][g_usb_hcdc_devaddr[ptr->ip]] =
         g_p_usb_hcdc_interface_table[ptr->ip][USB_IF_B_NUMENDPOINTS]; /* Num Endpoints */
 
     R_USB_HstdSetPipe(table);
-#endif /* BSP_MCU_GROUP_RZT2M == 1 */
+#endif /* USB_IP_EHCI_OHCI == 1 */
 #if (BSP_CFG_RTOS == 2)
 
     /* Get String Descriptors */
@@ -911,6 +914,9 @@ uint16_t usb_hcdc_get_string_info (usb_utr_t * mess, uint16_t addr, uint16_t str
     {
         retval = USB_OK;
     }
+
+    /* return to MGR */
+    usb_hstd_return_enu_mgr(mess, retval);
 
     return retval;
 }                                      /* End of function usb_hcdc_get_string_info() */

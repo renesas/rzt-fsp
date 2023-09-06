@@ -45,7 +45,7 @@ FSP_HEADER
  * Macro definitions
  ***********************************************************************************************************************/
 #define SHARED_MEMORY_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define SHARED_MEMORY_API_VERSION_MINOR    (2U) // DEPRECATED
+#define SHARED_MEMORY_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -54,7 +54,7 @@ FSP_HEADER
 /** States of SHARED_MEMORY module **/
 typedef enum e_shared_memory_state
 {
-    SHARED_MEMORY_STATE_NOT_READY,           ///< This driver has been opened. But the oppsite driver has not
+    SHARED_MEMORY_STATE_NOT_READY,           ///< This driver has been opened. But the opposite driver has not opened.
     SHARED_MEMORY_STATE_READY_TO_WRITE,      ///< This driver can write data
     SHARED_MEMORY_STATE_READY_TO_READ_WRITE, ///< This driver can write and read data
 } shared_memory_state_t;
@@ -144,7 +144,7 @@ typedef struct st_shared_memory_api
      * @par Implemented as
      * - @ref R_SHARED_MEMORY_CallbackSet()
      *
-     * @param[in]   p_ctrl                   Pointer to the SPI control block.
+     * @param[in]   p_ctrl                   Pointer to control block set in @ref shared_memory_api_t::open call.
      * @param[in]   p_callback               Callback function
      * @param[in]   p_context                Pointer to send to callback function
      * @param[in]   p_working_memory         Pointer to volatile memory where callback structure can be allocated.

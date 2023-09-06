@@ -41,8 +41,16 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHER_PHY_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHER_PHY_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define ETHER_PHY_CODE_VERSION_MAJOR    (1U)       // DEPRECATED
+#define ETHER_PHY_CODE_VERSION_MINOR    (3U)       // DEPRECATED
+
+/* PHY chip */
+#define ETHER_PHY_CHIP_VSC8541          (1U << 0)  ///< VSC8541
+#define ETHER_PHY_CHIP_KSZ9131          (1U << 1)  ///< KSZ9131
+#define ETHER_PHY_CHIP_KSZ9031          (1U << 2)  ///< KSZ9031
+#define ETHER_PHY_CHIP_KSZ8081          (1U << 3)  ///< KSZ8081
+#define ETHER_PHY_CHIP_KSZ8041          (1U << 4)  ///< KSZ8041
+#define ETHER_PHY_CHIP_OTHER            (1U << 15) ///< Other
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -81,11 +89,12 @@ typedef enum e_ether_phy_mdio
 /** Identify PHY-LSI */
 typedef enum e_ether_phy_chip
 {
-    ETHER_PHY_CHIP_VSC8541 = (1 << 0), ///< VSC8541
-    ETHER_PHY_CHIP_KSZ9131 = (1 << 1), ///< KSZ9131
-    ETHER_PHY_CHIP_KSZ9031 = (1 << 2), ///< KSZ9031
-    ETHER_PHY_CHIP_KSZ8081 = (1 << 3), ///< KSZ8081
-    ETHER_PHY_CHIP_KSZ8041 = (1 << 4)  ///< KSZ8041
+    ETHER_PHY_CHIP_VSC8541_TYPE = ETHER_PHY_CHIP_VSC8541, ///< VSC8541
+    ETHER_PHY_CHIP_KSZ9131_TYPE = ETHER_PHY_CHIP_KSZ9131, ///< KSZ9131
+    ETHER_PHY_CHIP_KSZ9031_TYPE = ETHER_PHY_CHIP_KSZ9031, ///< KSZ9031
+    ETHER_PHY_CHIP_KSZ8081_TYPE = ETHER_PHY_CHIP_KSZ8081, ///< KSZ8081
+    ETHER_PHY_CHIP_KSZ8041_TYPE = ETHER_PHY_CHIP_KSZ8041, ///< KSZ8041
+    ETHER_PHY_CHIP_OTHER_TYPE   = ETHER_PHY_CHIP_OTHER    ///< Other
 } ether_phy_chip_t;
 
 /** PHY Speed for setting */

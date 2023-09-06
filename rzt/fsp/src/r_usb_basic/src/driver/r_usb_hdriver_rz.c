@@ -78,7 +78,7 @@ uint16_t usb_hstd_get_epnum (uint16_t pipe_id)
  ***********************************************************************************************************************/
 uint8_t usb_hstd_convert_epnum (uint8_t pipe_id)
 {
-    return (uint8_t) (g_usb_pipe_table[0][pipe_id].pipe_cfg & 0x000F);
+    return (uint8_t) g_usb_pipe_table[0][pipe_id].pipe_cfg & 0x0F;
 }                                      /* End of function usb_hstd_get_epnum() */
 
 /***********************************************************************************************************************
@@ -319,13 +319,8 @@ usb_er_t usb_hstd_transfer_start (st_usb_utr_t * p_utr)
                                                    );
     }
 
-/*    if(g_j == 11)
- *  {
- *      cc_temp[g_j+1] = 100;
- *  }*/                                                                         // cc_temp[g_j] = gs_usb_hstd_ohci_td_memory[0].hc_td.control.cc;
-
     return err;
-}                                                                               /* End of function usb_hstd_transfer_start() */
+}                                      /* End of function usb_hstd_transfer_start() */
 
   #endif /* USB_IP_EHCI_OHCI == 1 */
  #endif  /* (USB_UT_MODE == 0) */

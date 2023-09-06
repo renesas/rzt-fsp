@@ -1829,9 +1829,16 @@ static uint16_t usb_hstd_cmd_submit (usb_utr_t * ptr)
     g_usb_hstd_class_ctrl[ptr->ip].ip  = ptr->ip;
     g_usb_hstd_class_ctrl[ptr->ip].ipp = ptr->ipp;
 
-    retval = (uint16_t) usb_hstd_transfer_start_req(&g_usb_hstd_class_ctrl[ptr->ip]);
-
-    if (USB_QOVR == retval)
+  #if USB_IP_EHCI_OHCI == 1
+    retval = (uint16_t) usb_hstd_transfer_start(&g_usb_hstd_class_ctrl[ptr->ip]);
+  #else                                /* USB_IP_EHCI_OHCI == 1 */
+    retval = usb_hstd_transfer_start_req(&g_usb_hstd_class_ctrl[ptr->ip]);
+  #endif /* USB_IP_EHCI_OHCI == 1 */
+    if (USB_OK == retval)
+    {
+        retval = class_trans_wait_tmo(ptr, (uint16_t) USB_VALUE_3000);
+    }
+    else if (USB_QOVR == retval)
     {
         /** Submit overlap error **/
         /** Retry **/
@@ -1839,13 +1846,16 @@ static uint16_t usb_hstd_cmd_submit (usb_utr_t * ptr)
         do
         {
             usb_cpu_delay_xms((uint16_t) 2);
-            retval = (uint16_t) usb_hstd_transfer_start_req(&g_usb_hstd_class_ctrl[ptr->ip]);
+  #if USB_IP_EHCI_OHCI == 1
+            retval = (uint16_t) usb_hstd_transfer_start(&g_usb_hstd_class_ctrl[ptr->ip]);
+  #else                                /* USB_IP_EHCI_OHCI == 1 */
+            retval = usb_hstd_transfer_start_req(&g_usb_hstd_class_ctrl[ptr->ip]);
+  #endif /* USB_IP_EHCI_OHCI == 1 */
         } while (USB_QOVR == retval);
     }
-
-    if (USB_OK == retval)
+    else
     {
-        retval = class_trans_wait_tmo(ptr, (uint16_t) USB_VALUE_3000);
+        retval = USB_ERROR;
     }
 
     return retval;
@@ -2235,36 +2245,36 @@ void usb_hstd_mgr_task (void * stacd)
     (void) stacd;
 
  #if USB_IP_EHCI_OHCI == 1
-    r_usb_hstd_hci_task();
+  #if (BSP_CFG_RTOS == 0)
+    usb_hstd_hci_task();
+  #endif                               /*  #if (BSP_CFG_RTOS == 0) */
  #endif                                /* USB_IP_EHCI_OHCI == 1 */
 
- #if (BSP_CFG_RTOS == 2)
+ #if (BSP_CFG_RTOS != 0)
 
     /* WAIT_LOOP */
     while (1)
     {
- #endif                                /* (BSP_CFG_RTOS == 2) */
+ #endif                                /* (BSP_CFG_RTOS != 0) */
     /* Receive message */
     err = USB_TRCV_MSG(USB_MGR_MBX, (usb_msg_t **) &mess, (usb_tm_t) 10000);
     if (USB_OK != err)
     {
- #if (BSP_CFG_RTOS == 2)
+ #if (BSP_CFG_RTOS != 0)
         result = 1;
- #else                                 /* (BSP_CFG_RTOS == 2) */
+ #else                                 /* (BSP_CFG_RTOS != 0) */
         result = 0;
- #endif /* (BSP_CFG_RTOS == 2) */
+ #endif /* (BSP_CFG_RTOS != 0) */
     }
 
     else
     {
         p_usb_shstd_mgr_msg[mess->ip] = (usb_mgrinfo_t *) mess;
-        rootport = p_usb_shstd_mgr_msg[mess->ip]->keyword;
+        rootport = mess->ip;
         devaddr  = p_usb_shstd_mgr_msg[mess->ip]->keyword;
         pipenum  = p_usb_shstd_mgr_msg[mess->ip]->keyword;
- #if (BSP_CFG_RTOS == 0)
- #endif                                /* (BSP_CFG_RTOS == 2) */
-        hp  = (usb_hcdinfo_t *) mess;
-        ptr = mess;
+        hp       = (usb_hcdinfo_t *) mess;
+        ptr      = mess;
 
         /* Detach is all device */
         msginfo = p_usb_shstd_mgr_msg[ptr->ip]->msginfo;
@@ -2617,6 +2627,7 @@ void usb_hstd_mgr_task (void * stacd)
                             else
                             {
  #if   USB_IP_EHCI_OHCI == 1
+                                usb_hstd_attach_function();
                                 g_usb_hstd_mgr_mode[ptr->ip] = USB_DEFAULT;
                                 r_usb_hstd_hci_set_device_address_of_rootpoot(ptr->ip, g_usb_hstd_device_addr[ptr->ip]);
                                 r_usb_hstd_hci_port_reset(ptr);
@@ -2827,22 +2838,22 @@ void usb_hstd_mgr_task (void * stacd)
         }
     }
 
- #if (BSP_CFG_RTOS == 2)
+ #if (BSP_CFG_RTOS != 0)
     if (1 == result)
     {
         continue;
     }
 
- #else                                 /* (BSP_CFG_RTOS == 2) */
+ #else                                 /* (BSP_CFG_RTOS != 0) */
     if (0 == result)
     {
         return;
     }
- #endif                                /* (BSP_CFG_RTOS == 2) */
+ #endif                                /* (BSP_CFG_RTOS != 0) */
 
- #if (BSP_CFG_RTOS == 2)
+ #if (BSP_CFG_RTOS != 0)
 }                                      /* End of while(1) */
- #endif                                /* (BSP_CFG_RTOS == 2) */
+ #endif                                /* (BSP_CFG_RTOS != 0) */
 }
 
 /******************************************************************************

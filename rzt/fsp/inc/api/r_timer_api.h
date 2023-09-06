@@ -70,12 +70,12 @@ typedef enum e_timer_event
     TIMER_EVENT_CAPTURE_A,                     ///< A capture has occurred on signal A
     TIMER_EVENT_CAPTURE_B,                     ///< A capture has occurred on signal B
     TIMER_EVENT_TROUGH,                        ///< Timer trough event (counter is 0, triangle-wave PWM only
-    TIMER_EVENT_OUTPUT_COMPARE_0,              ///< An output has occurred on signal 0
-    TIMER_EVENT_OUTPUT_COMPARE_1,              ///< An output has occurred on signal 1
+    TIMER_EVENT_OUTPUT_COMPARE_0,              ///< DEPRECATED - This will be replaced with TIMER_EVENT_COMPARE_A in the next major release. An output has occurred on signal 0
+    TIMER_EVENT_OUTPUT_COMPARE_1,              ///< DEPRECATED - This will be replaced with TIMER_EVENT_COMPARE_B in the next major release. An output has occurred on signal 1
     TIMER_EVENT_DEAD_TIME,                     ///< Dead time event
-    TIMER_EVENT_CAPTURE_U,                     ///< A capture has occurred on signal U
-    TIMER_EVENT_CAPTURE_V,                     ///< A capture has occurred on signal V
-    TIMER_EVENT_CAPTURE_W,                     ///< A capture has occurred on signal W
+    TIMER_EVENT_CAPTURE_U,                     ///< DEPRECATED - A capture has occurred on signal U
+    TIMER_EVENT_CAPTURE_V,                     ///< DEPRECATED - A capture has occurred on signal V
+    TIMER_EVENT_CAPTURE_W,                     ///< DEPRECATED - A capture has occurred on signal W
 } timer_event_t;
 
 /** Timer variant types. */
@@ -115,6 +115,7 @@ typedef enum e_timer_mode
     TIMER_MODE_PERIODIC,                          ///< Timer restarts after period elapses.
     TIMER_MODE_ONE_SHOT,                          ///< Timer stops after period elapses.
     TIMER_MODE_PWM,                               ///< Timer generates saw-wave PWM output.
+    TIMER_MODE_ONE_SHOT_PULSE,                    ///< Saw-wave one-shot pulse mode (fixed buffer operation).
     TIMER_MODE_TRIANGLE_WAVE_SYMMETRIC_PWM  = 4U, ///< Timer generates symmetric triangle-wave PWM output.
     TIMER_MODE_TRIANGLE_WAVE_ASYMMETRIC_PWM = 5U, ///< Timer generates asymmetric triangle-wave PWM output.
 

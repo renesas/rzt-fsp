@@ -36,7 +36,7 @@
 #define     USB_NOPIPE                 ((uint8_t) 0xFF)
 
 /* Host Sample Task */
-#if (BSP_CFG_RTOS_USED == 0)
+#if (BSP_CFG_RTOS != 2)
  #define USB_HCDC_TSK                  (USB_TID_6)    /* Task ID */
  #define USB_HCDC_MBX                  (USB_HCDC_TSK) /* Mailbox ID */
  #define USB_HCDC_MPL                  (USB_HCDC_TSK) /* Memorypool ID */

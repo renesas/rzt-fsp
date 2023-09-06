@@ -18,39 +18,48 @@
  * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
  **********************************************************************************************************************/
 
-#if (BSP_CFG_RTOS == 2)
 #include "r_usb_basic.h"
-#include "FreeRTOS.h"
-#include "task.h"
-#include "queue.h"
+#if (BSP_CFG_RTOS == 2)
+ #include "FreeRTOS.h"
+ #include "task.h"
+ #include "queue.h"
 
-#include "r_usb_typedef.h"
+ #include "r_usb_typedef.h"
 
-#ifndef FREERTOS_USB_TASK_H_
- #define FREERTOS_USB_TASK_H_
+ #ifndef FREERTOS_USB_TASK_H_
+  #define FREERTOS_USB_TASK_H_
 
 /******************************************************************************
  * Macro definitions
  ******************************************************************************/
 
 /** Size of a queue **/
- #define QUEUE_SIZE         (10)
+  #define QUEUE_SIZE         (10)
 
 /** USB task's priority **/
- #define HCD_TSK_PRI        (configMAX_PRIORITIES - 1)
- #define HUB_TSK_PRI        (configMAX_PRIORITIES - 3)
- #define MGR_TSK_PRI        (configMAX_PRIORITIES - 2)
- #define PCD_TSK_PRI        (configMAX_PRIORITIES - 1)
- #define PMSC_TSK_PRI       (configMAX_PRIORITIES - 2)
+  #if USB_IP_EHCI_OHCI == 0
+   #define HCD_TSK_PRI       (configMAX_PRIORITIES - 1)
+  #else
+   #define HCI_TSK_PRI       (configMAX_PRIORITIES - 1)
+  #endif
+  #define HUB_TSK_PRI        (configMAX_PRIORITIES - 3)
+  #define MGR_TSK_PRI        (configMAX_PRIORITIES - 2)
+  #define PCD_TSK_PRI        (configMAX_PRIORITIES - 1)
+  #define PMSC_TSK_PRI       (configMAX_PRIORITIES - 2)
+  #define HHID_TSK_PRI       (configMAX_PRIORITIES - 3)
 
 /** USB task stack size in words **/
- #define HCD_STACK_SIZE     (512)
- #define HUB_STACK_SIZE     (512)
- #define MGR_STACK_SIZE     (512)
- #define PCD_STACK_SIZE     (512)
- #define PMSC_STACK_SIZE    (512)
- #define HCDC_STACK_SIZE    (512)
- #define HHID_STACK_SIZE    (512)
+  #if USB_IP_EHCI_OHCI == 0
+   #define HCD_STACK_SIZE    (512)
+  #else
+   #define HCI_STACK_SIZE    (1536)
+  #endif
+  #define HUB_STACK_SIZE     (1536)
+  #define MGR_STACK_SIZE     (1536)
+  #define PCD_STACK_SIZE     (1536)
+  #define PMSC_STACK_SIZE    (512)
+  #define HCDC_STACK_SIZE    (512)
+  #define HHID_STACK_SIZE    (512)
 
 /******************************************************************************
  * Typedef definitions
@@ -77,6 +86,8 @@ extern QueueHandle_t * g_mpl_table[];
  ******************************************************************************/
 usb_rtos_err_t usb_rtos_configuration(void);
 usb_rtos_err_t usb_rtos_delete(void);
+usb_er_t       usb_hstd_rtos_snd_msg(uint8_t id, usb_msg_t * mess);
+usb_er_t       usb_hstd_rtos_rec_msg(uint8_t id, usb_msg_t ** mess, TickType_t tm);
 
-#endif
+ #endif
 #endif                                 /* FREERTOS_USB_TASK_H_ */

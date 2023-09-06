@@ -39,7 +39,7 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 #define MTU3_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define MTU3_CODE_VERSION_MINOR    (2U) // DEPRECATED
+#define MTU3_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -352,6 +352,8 @@ typedef struct st_mtu3_extended_cfg
     /* Debounce filter for MTCLKx input signal pin. */
     mtu3_noise_filter_mtclk_setting_t  noise_filter_mtclk_setting;
     mtu3_noise_filter_external_clock_t noise_filter_mtclk_clk;
+
+    bool adc_request_enable;                   ///< A/D Converter Start Request Enable(ch5 and ch8 are excluded)
 
     /* Used for other than MTU5 */
     uint8_t   capture_a_ipl;                   ///< Capture/Compare match A interrupt priority

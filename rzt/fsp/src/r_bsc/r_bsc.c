@@ -54,6 +54,19 @@
 #define BSC_PRV_CSNWCR_MPXWSBAS_VALUE_MASK         (0x01U)
 #define BSC_PRV_CSNWCR_SZSEL_VALUE_MASK            (0x01U)
 
+#define BSC_PRV_TOENR_CSNTOEN_VALUE_MASK           (0x01U)
+
+/***********************************************************************************************************************
+ * Private function prototypes
+ **********************************************************************************************************************/
+static void r_bsc_call_callback(bsc_instance_ctrl_t * p_ctrl, bsc_event_t event);
+void        bsc_wto_int_isr(uint32_t id);
+
+/***********************************************************************************************************************
+ * Private global variables
+ **********************************************************************************************************************/
+static volatile bsc_instance_ctrl_t * gp_ctrl[6] = {NULL};
+
 /*******************************************************************************************************************//**
  * @addtogroup BSC
  * @{
@@ -73,9 +86,6 @@ const external_bus_api_t g_external_bus_on_bsc =
  * at address 0x70000000 or 0x50000000.
  *
  * Implements @ref external_bus_api_t::open.
- *
- * Example:
- * @snippet r_bsc_example.c R_BSC_Open
  *
  * @retval FSP_SUCCESS             Configuration was successful.
  * @retval FSP_ERR_ASSERTION       The parameter p_instance_ctrl or p_cfg is NULL.
@@ -121,6 +131,11 @@ fsp_err_t R_BSC_Open (external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * c
 
     /* Save configurations. */
     p_instance_ctrl->p_cfg = p_cfg;
+
+    /* Set callback and context pointers, if configured */
+    p_instance_ctrl->p_callback        = p_cfg_extend->p_callback;
+    p_instance_ctrl->p_context         = p_cfg_extend->p_context;
+    p_instance_ctrl->p_callback_memory = NULL;
 
     /* Calculate the CSnWCR register base address. */
     uint32_t   address_gap = (uint32_t) &R_BSC->CS3WCR_0 - (uint32_t) &R_BSC->CS2WCR_0;
@@ -168,8 +183,22 @@ fsp_err_t R_BSC_Open (external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * c
     /* Set external wait setting. */
     csnwcr |= (p_cfg->external_wait_en & BSC_PRV_CSNWCR_WM_VALUE_MASK) << R_BSC_CS0WCR_0_WM_Pos;
 
+    /* Set CSn Space Bus Control Register. */
     R_BSC->CSnBCR[p_cfg->chip_select] = csnbcr;
+
+    /* Set CSn Space Wait Control Register. */
     *p_csnwcr = csnwcr;
+
+    /* Set Timeout Cycle Constant Register.
+     * If user sets the timeout count to 65536, a cast with (uint16_t) store 0 in the TOSCOR register. */
+    R_BSC->TOSCOR[p_cfg->chip_select] = (uint16_t) p_cfg_extend->external_wait_timeout_counts;
+
+    /* Set Timeout Enable Register. */
+    R_BSC->TOENR |= (p_cfg_extend->external_wait_timeout_enable & BSC_PRV_TOENR_CSNTOEN_VALUE_MASK) <<
+                    (p_cfg->chip_select);
+
+    /* Track ctrl struct */
+    gp_ctrl[p_cfg->chip_select] = p_ctrl;
 
     p_instance_ctrl->open = BSC_PRV_OPEN;
 
@@ -205,5 +234,107 @@ fsp_err_t R_BSC_Close (external_bus_ctrl_t * p_ctrl)
 }
 
 /*******************************************************************************************************************//**
+ * Updates the user callback with the option to provide memory for the callback argument structure.
+ *
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
+ **********************************************************************************************************************/
+fsp_err_t R_BSC_CallbackSet (external_bus_ctrl_t       * p_ctrl,
+                             void (                    * p_callback)(bsc_callback_args_t *),
+                             void const * const          p_context,
+                             bsc_callback_args_t * const p_callback_memory)
+{
+    bsc_instance_ctrl_t * p_instance_ctrl = (bsc_instance_ctrl_t *) p_ctrl;
+
+#if BSC_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_instance_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(BSC_PRV_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback and context */
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
+
+    return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
  * @} (end addtogroup BSC)
  **********************************************************************************************************************/
+
+/***********************************************************************************************************************
+ * Private Functions
+ **********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_ctrl     Pointer to BSC instance control block
+ * @param[in]     event      Event code
+ **********************************************************************************************************************/
+static void r_bsc_call_callback (bsc_instance_ctrl_t * p_ctrl, bsc_event_t event)
+{
+    bsc_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available. */
+    bsc_callback_args_t * p_args = p_ctrl->p_callback_memory;
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
+
+    p_args->event     = event;
+    p_args->p_context = p_ctrl->p_context;
+
+    p_ctrl->p_callback(p_args);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args;
+    }
+}
+
+/*******************************************************************************************************************//**
+ * BSC ISR
+ **********************************************************************************************************************/
+void bsc_wto_int_isr (uint32_t id)
+{
+    FSP_PARAMETER_NOT_USED(id);
+
+    uint32_t tostr    = R_BSC->TOSTR;
+    uint32_t error_cs = 0;
+    while (tostr)
+    {
+        /* Scan and search for error CS channel one by one */
+        uint32_t next_tostr = __CLZ(__RBIT(tostr));
+        tostr   >>= next_tostr;
+        error_cs += next_tostr;
+
+        bsc_instance_ctrl_t * p_ctrl = (bsc_instance_ctrl_t *) gp_ctrl[error_cs];
+
+        /* Call user registered callback */
+        if (NULL != p_ctrl)
+        {
+            if (NULL != p_ctrl->p_callback)
+            {
+                r_bsc_call_callback(p_ctrl, BSC_EVENT_EXTERNAL_WAIT_TIMEOUT);
+            }
+
+            /* Clear TOSTR register. */
+            R_BSC->TOSTR &= ~(1U << p_ctrl->p_cfg->chip_select);
+        }
+
+        /* Clear the scanned flags one by one */
+        tostr &= ~(1UL);
+    }
+}

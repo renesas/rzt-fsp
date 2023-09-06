@@ -159,13 +159,13 @@ static fsp_err_t r_rtc_periodic_irq_rate_validate(rtc_periodic_irq_select_t cons
 fsp_err_t R_RTC_Open (rtc_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg)
 {
     rtc_instance_ctrl_t * p_instance_ctrl = (rtc_instance_ctrl_t *) p_ctrl;
-    rtc_extended_cfg_t  * p_extend        = (rtc_extended_cfg_t *) p_cfg->p_extend;
     fsp_err_t             err             = FSP_SUCCESS;
 
     /* Parameter checking */
 #if RTC_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_cfg);
+    FSP_ASSERT(NULL != p_cfg->p_extend);
     FSP_ERROR_RETURN(RTC_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 #endif
 
@@ -175,6 +175,8 @@ fsp_err_t R_RTC_Open (rtc_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg)
     p_instance_ctrl->p_callback        = p_cfg->p_callback;
     p_instance_ctrl->p_context         = p_cfg->p_context;
     p_instance_ctrl->p_callback_memory = NULL;
+
+    rtc_extended_cfg_t * p_extend = (rtc_extended_cfg_t *) p_cfg->p_extend;
 
 #if RTC_CFG_PARAM_CHECKING_ENABLE
 

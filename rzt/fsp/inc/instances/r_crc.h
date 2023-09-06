@@ -47,7 +47,10 @@ FSP_HEADER
 /** CRC extended configuration */
 typedef struct st_crc_extended_cfg
 {
-    uint8_t channel;                   ///< Channel number
+    /** DEPRECATED - channel will be moved to CRC API in the major release
+     *
+     * Channel number. */
+    uint8_t channel;
 } crc_extended_cfg_t;
 
 /** Driver instance control structure. */

@@ -149,9 +149,10 @@ extern usb_instance_ctrl_t g_usb_cstd_event[];
 extern usb_hdl_t           g_usb_cur_task_hdl[];
 #else                                  /* #if (BSP_CFG_RTOS == 2) */
 extern usb_event_t g_usb_cstd_event;
- #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
-  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-   #if USB_CFG_DMA == USB_CFG_ENABLE
+#endif                                 /*#if (BSP_CFG_RTOS == 2)*/
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
+ #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
+  #if USB_CFG_DMA == USB_CFG_ENABLE
 uint8_t usb_cstd_dma_ref_ch_no(uint8_t ip_no, uint16_t use_port);
 void    usb_dma_set_ch_no(uint16_t ip_no, uint16_t use_port, uint8_t dma_ch_no);
 
@@ -170,10 +171,9 @@ void r_usb_dmaca_intDMAC0I_isr(void);
 /* DMACA DMAC1I */
 void r_usb_dmaca_intDMAC1I_isr(void);
 
-   #endif                              /* USB_CFG_DMA == USB_CFG_ENABLE */
-  #endif /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
- #endif                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
-#endif                                 /*#if (BSP_CFG_RTOS == 2)*/
+  #endif                               /* USB_CFG_DMA == USB_CFG_ENABLE */
+ #endif  /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
+#endif                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 
 extern usb_pipe_table_t g_usb_pipe_table[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1];
 extern uint16_t         g_usb_cstd_bemp_skip[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
@@ -403,7 +403,14 @@ uint8_t * usb_hstd_con_descriptor(usb_utr_t * ptr);
 void      usb_hstd_device_resume(usb_utr_t * ptr, uint16_t devaddr);
 usb_er_t  usb_hstd_hcd_snd_mbx(usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, uint16_t * adr, usb_cb_t callback);
 void      usb_hstd_mgr_snd_mbx(usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, uint16_t res);
-void      usb_hstd_hcd_task(void * stacd);
+
+ #if USB_IP_EHCI_OHCI == 0
+void usb_hstd_hcd_task(void * stacd);
+
+ #else                                 /* #if USB_IP_EHCI_OHCI == 0 */
+void usb_hstd_hci_task(void);
+
+ #endif /* #if USB_IP_EHCI_OHCI == 0 */
 
 uint16_t usb_hstd_get_max_packet_size(uint16_t pipe_id);
 uint16_t usb_hstd_get_epnum(uint16_t pipe_id);
