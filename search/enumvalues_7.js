@@ -23,6 +23,8 @@ var searchData=
   ['i2c_5fslave_5frate_5fstandard',['I2C_SLAVE_RATE_STANDARD',['../group___i2_c___s_l_a_v_e___a_p_i.html#ggaa26f7dd0df29bb18d57fa02c7f64588dafbf6971c770f59039c152748515d3da6',1,'r_i2c_slave_api.h']]],
   ['iic_5fmaster_5ftimeout_5fmode_5flong',['IIC_MASTER_TIMEOUT_MODE_LONG',['../group___i_i_c___m_a_s_t_e_r.html#ggaf8ecd43a76bfa058281bb8b6b3981d3facc441997b6e18766361457d26227b4bd',1,'r_iic_master.h']]],
   ['iic_5fmaster_5ftimeout_5fmode_5fshort',['IIC_MASTER_TIMEOUT_MODE_SHORT',['../group___i_i_c___m_a_s_t_e_r.html#ggaf8ecd43a76bfa058281bb8b6b3981d3fa4afacd0b267f604d06e2b83891c0e577',1,'r_iic_master.h']]],
+  ['iic_5fmaster_5ftimeout_5fscl_5flow_5fdisabled',['IIC_MASTER_TIMEOUT_SCL_LOW_DISABLED',['../group___i_i_c___m_a_s_t_e_r.html#gga9789e54472d093bd5348f202205d28eca0773c9356e560a84576f1d5498234a09',1,'r_iic_master.h']]],
+  ['iic_5fmaster_5ftimeout_5fscl_5flow_5fenabled',['IIC_MASTER_TIMEOUT_SCL_LOW_ENABLED',['../group___i_i_c___m_a_s_t_e_r.html#gga9789e54472d093bd5348f202205d28eca62238f63df0d06f25af5b158bbfb2169',1,'r_iic_master.h']]],
   ['ioport_5fcfg_5fanalog_5fenable',['IOPORT_CFG_ANALOG_ENABLE',['../group___i_o_p_o_r_t___a_p_i.html#ggac617eebcb7c2c1e45fa8e04fc473e574a8d329786cc601ca9341427dd0bed8ad8',1,'r_ioport_api.h']]],
   ['ioport_5fcfg_5fdrive_5fhigh',['IOPORT_CFG_DRIVE_HIGH',['../group___i_o_p_o_r_t___a_p_i.html#ggac617eebcb7c2c1e45fa8e04fc473e574aec6a07e7759576dc172a9beb052cf3a0',1,'r_ioport_api.h']]],
   ['ioport_5fcfg_5fdrive_5fhs_5fhigh',['IOPORT_CFG_DRIVE_HS_HIGH',['../group___i_o_p_o_r_t___a_p_i.html#ggac617eebcb7c2c1e45fa8e04fc473e574a3c3c46358b6255f284cc393dcaf14aca',1,'r_ioport_api.h']]],

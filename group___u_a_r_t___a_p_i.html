@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -364,6 +364,8 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <tr class="separator:a51b74df27fb26e85700d9524cdfc7c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e7e47514702ff0e3515280590dd9659"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#a4e7e47514702ff0e3515280590dd9659">close</a> )(<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:a4e7e47514702ff0e3515280590dd9659"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acb47c360a2ac4ddd36e53f0a4ad71b92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#acb47c360a2ac4ddd36e53f0a4ad71b92">readStop</a> )(<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, uint32_t *remaining_bytes)</td></tr>
+<tr class="separator:acb47c360a2ac4ddd36e53f0a4ad71b92"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afd111f21ce7f755b470b5e5d90249768"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#afd111f21ce7f755b470b5e5d90249768">versionGet</a> )(<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *p_version)</td></tr>
 <tr class="separator:afd111f21ce7f755b470b5e5d90249768"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -572,6 +574,31 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 
 </div>
 </div>
+<a id="acb47c360a2ac4ddd36e53f0a4ad71b92"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acb47c360a2ac4ddd36e53f0a4ad71b92">&#9670;&nbsp;</a></span>readStop</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  uart_api_t::readStop) (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, uint32_t *remaining_bytes)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Stop ongoing read and return the number of bytes remaining in the read. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
+<li><a class="el" href="group___s_c_i___u_a_r_t.html#gae084836f4ee37c2730f7a8b332d58325">R_SCI_UART_ReadStop()</a></li>
+</ul>
+</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">remaining_bytes</td><td>Pointer to location to store remaining bytes for read. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="afd111f21ce7f755b470b5e5d90249768"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#afd111f21ce7f755b470b5e5d90249768">&#9670;&nbsp;</a></span>versionGet</h2>
 
@@ -701,11 +728,11 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>UART Data bit length definition </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadc68b8fd9ded3990f84129df23fee798ad768185f3773e2d5953b28f3345561db"></a>UART_DATA_BITS_8&#160;</td><td class="fielddoc"><p>Data bits 8-bit. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadc68b8fd9ded3990f84129df23fee798a57a012c58e476a76ed8f54db28d94810"></a>UART_DATA_BITS_9&#160;</td><td class="fielddoc"><p>Data bits 9-bit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggadc68b8fd9ded3990f84129df23fee798ad768185f3773e2d5953b28f3345561db"></a>UART_DATA_BITS_8&#160;</td><td class="fielddoc"><p>Data bits 8-bit. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggadc68b8fd9ded3990f84129df23fee798a317e473e32315f1632829d176fbfd545"></a>UART_DATA_BITS_7&#160;</td><td class="fielddoc"><p>Data bits 7-bit. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggadc68b8fd9ded3990f84129df23fee798a57a012c58e476a76ed8f54db28d94810"></a>UART_DATA_BITS_9&#160;</td><td class="fielddoc"><p>Data bits 9-bit. </p>
 </td></tr>
 </table>
 
@@ -784,7 +811,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

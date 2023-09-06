@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -102,6 +102,7 @@ $(document).ready(function(){initNavTree('group___c_g_c___a_p_i.html','');});
 <p>Interface for clock generation. </p>
 <h1><a class="anchor" id="CGC_API_SUMMARY"></a>
 Summary</h1>
+<p>DEPRECATED - This CGC API header file will be replaced with newer CGC API header file in the next major release</p>
 <p>The CGC interface provides the ability to configure and use all of the CGC module's capabilities. Among the capabilities is the selection of several clock sources to use as the system clock source. Additionally, the system clocks can be divided down to provide a wide range of frequencies for various system and peripheral needs.</p>
 <p>Clock stability can be checked and clocks may also be stopped to save power when not needed. The API has a function to return the frequency of the system and system peripheral clocks at run time. There is also a feature to detect when the main oscillator has stopped, with the option of calling a user provided callback function.</p>
 <p>The CGC interface is implemented by:</p><ul>
@@ -235,7 +236,7 @@ sckdivcr_w</td>
 <td class="fielddoc">
 (@ 0x4001E020) System clock Division control register </td></tr>
 <tr><td class="fieldtype">
-<a id="a3c9b650d7479b8249d015c7dab050b56"></a>struct <a class="el" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t_8____unnamed____">cgc_divider_cfg_t</a></td>
+<a id="af063da1136be43b1ceaaec099cbc1a75"></a>struct <a class="el" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t_8____unnamed____">cgc_divider_cfg_t</a></td>
 <td class="fieldname">
 __unnamed__</td>
 <td class="fielddoc">
@@ -1042,7 +1043,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

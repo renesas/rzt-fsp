@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -297,7 +297,7 @@ Data Structures</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Initializes the timer module and applies configurations. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#af49a90087a53c8019d642a3f7abaa8ad">timer_api_t::open</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___c_m_t.html#gae0838b0cd959eafefc2096e8b056cedc">R_CMT_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful and timer has started. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL or the source divider is invalid. </td></tr>
@@ -326,7 +326,7 @@ Data Structures</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Stops timer. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#aed0139dbf5102e39719ddbc51f16a21e">timer_api_t::stop</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Stop the timer. */</span></div><div class="line">    (void) <a class="code" href="group___c_m_t.html#ga58c4f5c2b956ef92f41584cf46629971">R_CMT_Stop</a>(&amp;g_timer0_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Timer successfully stopped. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -353,7 +353,7 @@ Data Structures</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Starts timer. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#afcc7e85d01c3d7dc0c6e09954631f47f">timer_api_t::start</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___c_m_t.html#gaf75b20a5151c2464f203c53bce7d00db">R_CMT_Start</a>(&amp;g_timer0_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Timer successfully started. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -468,7 +468,7 @@ Data Structures</h2></td></tr>
 </div><div class="memdoc">
 <p>Updates period. The new period is updated immediately and the counter is reset to 0.</p>
 <p>Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#ae9aad84a01ccd7ce0039ed491faeff19">timer_api_t::periodSet</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Get the source clock frequency (in Hz). There are several ways to do this in FSP:</span></div><div class="line"><span class="comment">     *  - Use the R_CMT_InfoGet function (it accounts for the clock source and divider).</span></div><div class="line"><span class="comment">     *  - Calculate the current PCLKL frequency using R_FSP_SystemClockHzGet(FSP_PRIV_CLOCK_PCLKL) and right shift</span></div><div class="line"><span class="comment">     *    by timer_cfg_t::source_div.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * This example uses the last option (R_FSP_SystemClockHzGet).</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    uint32_t timer_freq_hz = <a class="code" href="group___b_s_p___m_c_u.html#gaac289335b731d0bdb5cb8e6d243898ef">R_FSP_SystemClockHzGet</a>(FSP_PRIV_CLOCK_PCLKL) &gt;&gt; g_timer0_cfg.source_div;</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate the desired period based on the current clock. Note that this calculation could overflow if the</span></div><div class="line"><span class="comment">     * desired period is larger than UINT32_MAX / pclkl_freq_hz. A cast to uint64_t is used to prevent this. */</span></div><div class="line">    uint32_t period_counts =</div><div class="line">        (uint32_t) (((uint64_t) timer_freq_hz * CMT_EXAMPLE_DESIRED_PERIOD_MSEC) / CMT_EXAMPLE_MSEC_PER_SEC);</div><div class="line"></div><div class="line">    <span class="comment">/* Set the calculated period. This will return an error if parameter checking is enabled and the calculated</span></div><div class="line"><span class="comment">     * period is larger than UINT16_MAX. */</span></div><div class="line">    err = <a class="code" href="group___c_m_t.html#ga9151976a4b9b4c53dac63dc88a7eb122">R_CMT_PeriodSet</a>(&amp;g_timer0_ctrl, period_counts);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Period value written successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -583,7 +583,7 @@ Data Structures</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Get current timer status and store it in provided pointer p_status. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a11321e8dde7c33a4e6835a1bf64f7689">timer_api_t::statusGet</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Read the current counter value. Counter value is in status.counter. */</span></div><div class="line">    <a class="code" href="group___t_i_m_e_r___a_p_i.html#structtimer__status__t">timer_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___c_m_t.html#ga721e3133aeb356538010ef8c6f45d026">R_CMT_StatusGet</a>(&amp;g_timer0_ctrl, &amp;status);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Current timer state and counter value set successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_status was NULL. </td></tr>
@@ -740,7 +740,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

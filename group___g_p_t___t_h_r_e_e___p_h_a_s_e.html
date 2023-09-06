@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -308,7 +308,7 @@ Data Structures</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Initializes the 3-phase timer module (and associated timers) and applies configurations. Implements <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a17727ce358ca8b02f4e1a060416302b1">three_phase_api_t::open</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga776f6c4ff8d40a4d5c0407aa00ed05af">R_GPT_THREE_PHASE_Open</a>(&amp;g_gpt_three_phase_ctrl, &amp;g_gpt_three_phase_cfg);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL. </td></tr>
@@ -362,7 +362,7 @@ Data Structures</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Starts all timers synchronously. Implements <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a79bcfbc70abd0445130845ff9cc81b79">three_phase_api_t::start</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga37d33bb736f75695d27f33a65ce4a0db">R_GPT_THREE_PHASE_Start</a>(&amp;g_gpt_three_phase_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Timers successfully started. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -429,7 +429,7 @@ Data Structures</h2></td></tr>
 <p>In symmetric PWM mode duty cycle values are reflected after the next trough. In asymmetric PWM mode values are reflected at the next trough OR crest, whichever comes first.</p>
 <p>When double-buffering is enabled the values in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a12e51857fcd253e9b3e35d1532e66694">three_phase_duty_cycle_t::duty_buffer</a> are set to the double-buffer registers. When values are reflected the first time the single buffer values (<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a1e0c2575f75d5aed37039d04b13a757b">three_phase_duty_cycle_t::duty</a>) are used. On the second reflection the duty_buffer values are used. In asymmetric PWM mode this enables both count-up and count-down PWM values to be set at trough (or crest) exclusively.</p>
 <dl class="section note"><dt>Note</dt><dd>It is recommended to call this function in a high-priority callback to ensure that it is not interrupted and that no GPT events occur during setting that would result in a duty cycle buffer load operation.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">        <span class="comment">/* Update duty cycle values */</span></div><div class="line">        err = <a class="code" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga17a5ead483eb9c65c1c0e6aae4e968b0">R_GPT_THREE_PHASE_DutyCycleSet</a>(&amp;g_gpt_three_phase_ctrl, &amp;duty_cycle);</div><div class="line">        handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Duty cycle updated successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL </td></tr>
@@ -549,7 +549,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

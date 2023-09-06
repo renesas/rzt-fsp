@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -93,6 +93,7 @@ $(document).ready(function(){initNavTree('group___e_t_h_e_r___p_h_y.html','');})
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">Ethernet PHY (r_ether_phy)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
@@ -157,6 +158,8 @@ KSZ9031</li>
 KSZ8081</li>
 <li>
 KSZ8041</li>
+<li>
+Other</li>
 </ul>
 </td><td>config.driver.ether_phy.phy_lsi.default,config.driver.ether_phy.phy_lsi.0,config.driver.ether_phy.phy_lsi.1,config.driver.ether_phy.phy_lsi.2,config.driver.ether_phy.phy_lsi.3,config.driver.ether_phy.phy_lsi.4 </td><td>Select PHY chips to use on all ports. </td></tr>
 </table>
@@ -211,6 +214,8 @@ KSZ9031</li>
 KSZ8081</li>
 <li>
 KSZ8041</li>
+<li>
+Other</li>
 </ul>
 </td><td>Default </td><td>Select PHY chip to use. Selecting 'Default' will automatically choose the correct option when using a Renesas development board. </td></tr>
 <tr>
@@ -328,6 +333,33 @@ Data Structures</h2></td></tr>
 <tr class="separator:structether__phy__instance__ctrl__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structether__phy__extend__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#structether__phy__extend__cfg__t">ether_phy_extend_cfg_t</a></td></tr>
 <tr class="separator:structether__phy__extend__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
+Macros</h2></td></tr>
+<tr class="memitem:gae5c70cd934eef385539a720a7c104063"><td class="memItemLeft" align="right" valign="top"><a id="gae5c70cd934eef385539a720a7c104063"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gae5c70cd934eef385539a720a7c104063">ETHER_PHY_CHIP_VSC8541</a></td></tr>
+<tr class="memdesc:gae5c70cd934eef385539a720a7c104063"><td class="mdescLeft">&#160;</td><td class="mdescRight">VSC8541. <br /></td></tr>
+<tr class="separator:gae5c70cd934eef385539a720a7c104063"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad857e113585f4bfddc32dd136d50b6c4"><td class="memItemLeft" align="right" valign="top"><a id="gad857e113585f4bfddc32dd136d50b6c4"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gad857e113585f4bfddc32dd136d50b6c4">ETHER_PHY_CHIP_KSZ9131</a></td></tr>
+<tr class="memdesc:gad857e113585f4bfddc32dd136d50b6c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">KSZ9131. <br /></td></tr>
+<tr class="separator:gad857e113585f4bfddc32dd136d50b6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga854881e3d91f76bd9cc28faffe31f0f2"><td class="memItemLeft" align="right" valign="top"><a id="ga854881e3d91f76bd9cc28faffe31f0f2"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga854881e3d91f76bd9cc28faffe31f0f2">ETHER_PHY_CHIP_KSZ9031</a></td></tr>
+<tr class="memdesc:ga854881e3d91f76bd9cc28faffe31f0f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">KSZ9031. <br /></td></tr>
+<tr class="separator:ga854881e3d91f76bd9cc28faffe31f0f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga431d3b387d89b947505226754ec08d27"><td class="memItemLeft" align="right" valign="top"><a id="ga431d3b387d89b947505226754ec08d27"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga431d3b387d89b947505226754ec08d27">ETHER_PHY_CHIP_KSZ8081</a></td></tr>
+<tr class="memdesc:ga431d3b387d89b947505226754ec08d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">KSZ8081. <br /></td></tr>
+<tr class="separator:ga431d3b387d89b947505226754ec08d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga2d9a5ee906477251c2e1db3f01c27c6b"><td class="memItemLeft" align="right" valign="top"><a id="ga2d9a5ee906477251c2e1db3f01c27c6b"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga2d9a5ee906477251c2e1db3f01c27c6b">ETHER_PHY_CHIP_KSZ8041</a></td></tr>
+<tr class="memdesc:ga2d9a5ee906477251c2e1db3f01c27c6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">KSZ8041. <br /></td></tr>
+<tr class="separator:ga2d9a5ee906477251c2e1db3f01c27c6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga85196d6e2a8767b4bc686cc4646d81b7"><td class="memItemLeft" align="right" valign="top"><a id="ga85196d6e2a8767b4bc686cc4646d81b7"></a>
+#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga85196d6e2a8767b4bc686cc4646d81b7">ETHER_PHY_CHIP_OTHER</a></td></tr>
+<tr class="memdesc:ga85196d6e2a8767b4bc686cc4646d81b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Other. <br /></td></tr>
+<tr class="separator:ga85196d6e2a8767b4bc686cc4646d81b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -517,15 +549,17 @@ Instance of selector driver. </td></tr>
 </div><div class="memdoc">
 <p>Identify PHY-LSI </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfab5c2ab44d7a0c82dbc5f1807a6c64e64"></a>ETHER_PHY_CHIP_VSC8541&#160;</td><td class="fielddoc"><p>VSC8541. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa5260433494f3e984d7ecc76fbf6b4923"></a>ETHER_PHY_CHIP_VSC8541_TYPE&#160;</td><td class="fielddoc"><p>VSC8541. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa20c205be386b1686792ac793dfdc8262"></a>ETHER_PHY_CHIP_KSZ9131&#160;</td><td class="fielddoc"><p>KSZ9131. </p>
+<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa0401f6a635180fd30af62f8097fe2e9b"></a>ETHER_PHY_CHIP_KSZ9131_TYPE&#160;</td><td class="fielddoc"><p>KSZ9131. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa4c1a03b0ecabedea3bf42dcb17f20ba3"></a>ETHER_PHY_CHIP_KSZ9031&#160;</td><td class="fielddoc"><p>KSZ9031. </p>
+<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfade0de25cee66902db44372e6896b1023"></a>ETHER_PHY_CHIP_KSZ9031_TYPE&#160;</td><td class="fielddoc"><p>KSZ9031. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa4114d12951c74b6a936e9c1e570d8410"></a>ETHER_PHY_CHIP_KSZ8081&#160;</td><td class="fielddoc"><p>KSZ8081. </p>
+<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa004e79ce7ebd80926acf79e506602779"></a>ETHER_PHY_CHIP_KSZ8081_TYPE&#160;</td><td class="fielddoc"><p>KSZ8081. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa97758ca76dbd02a1816797d3bd760962"></a>ETHER_PHY_CHIP_KSZ8041&#160;</td><td class="fielddoc"><p>KSZ8041. </p>
+<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa204f5b8e0aa0c9c136723384e7dcbdc2"></a>ETHER_PHY_CHIP_KSZ8041_TYPE&#160;</td><td class="fielddoc"><p>KSZ8041. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa82fc5e40db8667612fb03dcd37902be7"></a>ETHER_PHY_CHIP_OTHER_TYPE&#160;</td><td class="fielddoc"><p>Other. </p>
 </td></tr>
 </table>
 
@@ -814,7 +848,7 @@ Instance of selector driver. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -13,6 +13,7 @@ var searchData=
   ['read_5fbytes_5fmax',['read_bytes_max',['../group___u_a_r_t___a_p_i.html#a5cd3c3cd9abff685e954033d13e82bd2',1,'uart_info_t']]],
   ['read_5fcommand',['read_command',['../group___s_p_i___f_l_a_s_h___a_p_i.html#a7c61a9a4dbc8bb415233c42cfdc34d6d',1,'spi_flash_cfg_t']]],
   ['read_5fmode',['read_mode',['../group___s_p_i___f_l_a_s_h___a_p_i.html#a40a6269760d8c4aaf75bf84613d1f551',1,'spi_flash_cfg_t']]],
+  ['readstop',['readStop',['../group___u_a_r_t___a_p_i.html#acb47c360a2ac4ddd36e53f0a4ad71b92',1,'uart_api_t']]],
   ['receive_5fdata_5fready_5fdetect_5fadjustment',['receive_data_ready_detect_adjustment',['../group___s_p_i.html#ad7b4f59fbf21e9340b7f34735e8fc41d',1,'spi_extended_cfg_t']]],
   ['receive_5ffifo_5fthreshold',['receive_fifo_threshold',['../group___s_p_i.html#aaec4f30a0be22d7f1270c25c3a577c81',1,'spi_extended_cfg_t']]],
   ['reconfigure',['reconfigure',['../group___t_r_a_n_s_f_e_r___a_p_i.html#a1e38b8ef4e4fa3e59efb257102e72b72',1,'transfer_api_t']]],

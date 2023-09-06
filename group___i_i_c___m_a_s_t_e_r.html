@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -113,6 +113,8 @@ Functions</h2></td></tr>
 <tr class="separator:gac71642b0b148f43ffb3e6b8cf2a3c949"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga535b73426b62ef08adecfde663160133"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga535b73426b62ef08adecfde663160133">R_IIC_MASTER_CallbackSet</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t">i2c_master_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t">i2c_master_callback_args_t</a> *const p_callback_memory)</td></tr>
 <tr class="separator:ga535b73426b62ef08adecfde663160133"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8913f214f86f2ec06b31bfd68925e050"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga8913f214f86f2ec06b31bfd68925e050">R_IIC_MASTER_StatusGet</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__status__t">i2c_master_status_t</a> *p_status)</td></tr>
+<tr class="separator:ga8913f214f86f2ec06b31bfd68925e050"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga88558649a9cf9ccd54b745457227ab7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga88558649a9cf9ccd54b745457227ab7c">R_IIC_MASTER_Close</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl)</td></tr>
 <tr class="separator:ga88558649a9cf9ccd54b745457227ab7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga5ff4810180163d8d57963043bc8c1bfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga5ff4810180163d8d57963043bc8c1bfa">R_IIC_MASTER_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
@@ -192,7 +194,9 @@ Standard</li>
 <li>
 Fast-mode</li>
 </ul>
-</td><td>Standard </td><td>Select the transfer rate. </td></tr>
+</td><td>Standard </td><td>Select the transfer rate.<br />
+<br />
+If the requested transfer rate cannot be achieved, the settings with the largest possible transfer rate that is less than or equal to the requested transfer rate are used. The theoretical calculated transfer rate and duty cycle are printed in a comment in the generated <a class="el" href="group___i_i_c___m_a_s_t_e_r.html#structiic__master__extended__cfg__t">iic_master_extended_cfg_t</a> structure. </td></tr>
 <tr>
 <td>Rise Time (ns)</td><td>Value must be a non-negative integer</td><td>120 </td><td>Set the rise time (tr) in nanoseconds. </td></tr>
 <tr>
@@ -217,6 +221,14 @@ Short Mode</li>
 Long Mode</li>
 </ul>
 </td><td>Short Mode </td><td>Select the timeout mode to detect bus hang. </td></tr>
+<tr>
+<td>Timeout during SCL Low</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Enabled </td><td>Select if the timeout can occur when SCL is held low for a duration longer than what is set in the timeout mode. </td></tr>
 <tr>
 <td>Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function must be provided. This will be called from the interrupt service routine (ISR) upon IIC transaction completion reporting the transaction status. </td></tr>
 <tr>
@@ -287,6 +299,8 @@ Data Structures</h2></td></tr>
 Enumerations</h2></td></tr>
 <tr class="memitem:gaf8ecd43a76bfa058281bb8b6b3981d3f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gaf8ecd43a76bfa058281bb8b6b3981d3f">iic_master_timeout_mode_t</a> </td></tr>
 <tr class="separator:gaf8ecd43a76bfa058281bb8b6b3981d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9789e54472d093bd5348f202205d28ec"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga9789e54472d093bd5348f202205d28ec">iic_master_timeout_scl_low_t</a> </td></tr>
+<tr class="separator:ga9789e54472d093bd5348f202205d28ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structiic__master__clock__settings__t" id="structiic__master__clock__settings__t"></a>
@@ -427,10 +441,6 @@ volatile bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 volatile bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#a28be3bc532d9d7b0817221f631939f5d">address_restarted</a></td></tr>
 <tr class="memdesc:a28be3bc532d9d7b0817221f631939f5d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Tracks whether the restart condition is send on 10 bit read. <br /></td></tr>
 <tr class="separator:a28be3bc532d9d7b0817221f631939f5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e9f285c33f95af2eada2c1c176e583f"><td class="memItemLeft" align="right" valign="top"><a id="a7e9f285c33f95af2eada2c1c176e583f"></a>
-<a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gaf8ecd43a76bfa058281bb8b6b3981d3f">iic_master_timeout_mode_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#a7e9f285c33f95af2eada2c1c176e583f">timeout_mode</a></td></tr>
-<tr class="memdesc:a7e9f285c33f95af2eada2c1c176e583f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Holds the timeout mode value. i.e short mode or long mode. <br /></td></tr>
-<tr class="separator:a7e9f285c33f95af2eada2c1c176e583f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 
 </div>
@@ -455,6 +465,12 @@ volatile bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 timeout_mode</td>
 <td class="fielddoc">
 Timeout Detection Time Select: Long Mode = 0 and Short Mode = 1. </td></tr>
+<tr><td class="fieldtype">
+<a id="af255cfc08c0e74ebe9e15f4dda240b53"></a><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga9789e54472d093bd5348f202205d28ec">iic_master_timeout_scl_low_t</a></td>
+<td class="fieldname">
+timeout_scl_low</td>
+<td class="fielddoc">
+Allows timeouts to occur when SCL is held low. </td></tr>
 <tr><td class="fieldtype">
 <a id="a3e2c32c0a211b6485aff83502c3c41a2"></a><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#structiic__master__clock__settings__t">iic_master_clock_settings_t</a></td>
 <td class="fieldname">
@@ -482,6 +498,26 @@ I2C Clock settings. </td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaf8ecd43a76bfa058281bb8b6b3981d3facc441997b6e18766361457d26227b4bd"></a>IIC_MASTER_TIMEOUT_MODE_LONG&#160;</td><td class="fielddoc"><p>Timeout Detection Time Select: Long Mode -&gt; TMOS = 0. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggaf8ecd43a76bfa058281bb8b6b3981d3fa4afacd0b267f604d06e2b83891c0e577"></a>IIC_MASTER_TIMEOUT_MODE_SHORT&#160;</td><td class="fielddoc"><p>Timeout Detection Time Select: Short Mode -&gt; TMOS = 1. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="ga9789e54472d093bd5348f202205d28ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9789e54472d093bd5348f202205d28ec">&#9670;&nbsp;</a></span>iic_master_timeout_scl_low_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga9789e54472d093bd5348f202205d28ec">iic_master_timeout_scl_low_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga9789e54472d093bd5348f202205d28eca0773c9356e560a84576f1d5498234a09"></a>IIC_MASTER_TIMEOUT_SCL_LOW_DISABLED&#160;</td><td class="fielddoc"><p>Timeout detection during SCL low disabled. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga9789e54472d093bd5348f202205d28eca62238f63df0d06f25af5b158bbfb2169"></a>IIC_MASTER_TIMEOUT_SCL_LOW_ENABLED&#160;</td><td class="fielddoc"><p>Timeout detection during SCL low enabled. </p>
 </td></tr>
 </table>
 
@@ -754,6 +790,42 @@ I2C Clock settings. </td></tr>
 
 </div>
 </div>
+<a id="ga8913f214f86f2ec06b31bfd68925e050"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8913f214f86f2ec06b31bfd68925e050">&#9670;&nbsp;</a></span>R_IIC_MASTER_StatusGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_StatusGet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_api_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__status__t">i2c_master_status_t</a> *&#160;</td>
+          <td class="paramname"><em>p_status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Provides driver status.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Status stored in p_status. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>NULL pointer. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ga88558649a9cf9ccd54b745457227ab7c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga88558649a9cf9ccd54b745457227ab7c">&#9670;&nbsp;</a></span>R_IIC_MASTER_Close()</h2>
 
@@ -814,7 +886,7 @@ I2C Clock settings. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

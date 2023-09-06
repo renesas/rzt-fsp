@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -507,6 +507,14 @@ Mode 2</li>
 <td>Extra Features &gt; ADC Trigger &gt; ADC A Compare Match (Raw Counts)</td><td>Must be a valid non-negative integer with a maximum configurable value of 65535 (0xffff).</td><td>0x0000 </td><td>Timer A/D Converter start request cycle A (MTU4 or MTU7). </td></tr>
 <tr>
 <td>Extra Features &gt; ADC Trigger &gt; ADC B Compare Match (Raw Counts)</td><td>Must be a valid non-negative integer with a maximum configurable value of 65535 (0xffff).</td><td>0x0000 </td><td>Timer A/D Converter start request cycle B (MTU4 or MTU7). </td></tr>
+<tr>
+<td>Extra Features &gt; ADC Trigger &gt; MTUn.TGRA (n = 0 to 4, 6, 7) Input Capture/Compare Match</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>A/D Conversion Start by MTUn.TGRA (n = 0 to 4, 6, 7) Input Capture/Compare Match or at Trough of MTUm.TCNT (m = 4 or 7) in Complementary PWM Mode. </td></tr>
 <tr>
 <td>Extra Features &gt; Extra Features</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -1100,6 +1108,12 @@ noise_filter_mtclk_setting</td>
 noise_filter_mtclk_clk</td>
 <td class="fielddoc">
 </td></tr>
+<tr><td class="fieldtype">
+<a id="a7ae31131abc22f57ae63b0293416b113"></a>bool</td>
+<td class="fieldname">
+adc_request_enable</td>
+<td class="fielddoc">
+A/D Converter Start Request Enable(ch5 and ch8 are excluded) </td></tr>
 <tr><td class="fieldtype">
 <a id="ae357d03fb305808acc1a5f971e9ae205"></a>uint8_t</td>
 <td class="fieldname">
@@ -2103,7 +2117,7 @@ Advanced PWM features, optional. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

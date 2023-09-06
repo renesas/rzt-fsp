@@ -41,8 +41,6 @@ var searchData=
   ['usb_20_28r_5fusb_5fbasic_29',['USB (r_usb_basic)',['../group___u_s_b.html',1,'']]],
   ['usb_20interface',['USB Interface',['../group___u_s_b___a_p_i.html',1,'']]],
   ['usb_5fapi_5ft',['usb_api_t',['../group___u_s_b___a_p_i.html#structusb__api__t',1,'']]],
-  ['usb_5fapi_5fversion_5fmajor',['USB_API_VERSION_MAJOR',['../group___u_s_b___a_p_i.html#ga38294965ef266ae12bd57803aacbec9a',1,'r_usb_basic_api.h']]],
-  ['usb_5fapi_5fversion_5fminor',['USB_API_VERSION_MINOR',['../group___u_s_b___a_p_i.html#gaec0b78dd4858a6e50c460c170851b383',1,'r_usb_basic_api.h']]],
   ['usb_5fbcport_5fcdp',['USB_BCPORT_CDP',['../group___u_s_b___a_p_i.html#ggae493db3a65e22cbc31478e187242b9d6a9b3660477ceefe3f2d5a266e6a18ee8d',1,'r_usb_basic_api.h']]],
   ['usb_5fbcport_5fdcp',['USB_BCPORT_DCP',['../group___u_s_b___a_p_i.html#ggae493db3a65e22cbc31478e187242b9d6a60203618156a71cc7888c0b6a3f422d7',1,'r_usb_basic_api.h']]],
   ['usb_5fbcport_5fsdp',['USB_BCPORT_SDP',['../group___u_s_b___a_p_i.html#ggae493db3a65e22cbc31478e187242b9d6a8409a0bde1863cfa160837a28053034d',1,'r_usb_basic_api.h']]],

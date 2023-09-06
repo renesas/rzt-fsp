@@ -35,6 +35,9 @@ var group___e_t_h_s_w___a_p_i =
       [ "port_mask_mcast", "group___e_t_h_s_w___a_p_i.html#ac1f56c5efb61731ae5f8b24195626608", null ],
       [ "port_mask_ucast", "group___e_t_h_s_w___a_p_i.html#a175a62e53d9bb2b200fe26cdc5f4e21c", null ]
     ] ],
+    [ "ethsw_dlr_init_t", "group___e_t_h_s_w___a_p_i.html#structethsw__dlr__init__t", [
+      [ "p_host_addr", "group___e_t_h_s_w___a_p_i.html#ac6d56c69de8969e6989ecadca92a6f70", null ]
+    ] ],
     [ "ethsw_api_t", "group___e_t_h_s_w___a_p_i.html#structethsw__api__t", [
       [ "open", "group___e_t_h_s_w___a_p_i.html#a3bec5d8fd5d63fdaa5c7991ed160af0a", null ],
       [ "close", "group___e_t_h_s_w___a_p_i.html#a2e4ee3f93c99590773bbd02fede624f4", null ],
@@ -47,7 +50,19 @@ var group___e_t_h_s_w___a_p_i =
       [ "learningSet", "group___e_t_h_s_w___a_p_i.html#aedcdf271a61d8d8c88650a9b5ab01476", null ],
       [ "portForwardAdd", "group___e_t_h_s_w___a_p_i.html#a02eb86bd8bfd5ea97a6cbb2d899a1559", null ],
       [ "portForwardDel", "group___e_t_h_s_w___a_p_i.html#a6f208565a50d36feeea7c98622a76c9a", null ],
-      [ "floodUnknownSet", "group___e_t_h_s_w___a_p_i.html#ac5188e4ef3d2b4b50c959ebfe5c5e6a6", null ]
+      [ "floodUnknownSet", "group___e_t_h_s_w___a_p_i.html#ac5188e4ef3d2b4b50c959ebfe5c5e6a6", null ],
+      [ "linkStateGet", "group___e_t_h_s_w___a_p_i.html#aa3b6b3602468203afcdd104e3f62c2a7", null ],
+      [ "frameSizeMaxSet", "group___e_t_h_s_w___a_p_i.html#a1452b798126f95220b5842065f0fa87d", null ],
+      [ "dlrInitSet", "group___e_t_h_s_w___a_p_i.html#a8476e5df103e7521f161e005c3b6f431", null ],
+      [ "dlrUninitSet", "group___e_t_h_s_w___a_p_i.html#a97efd73f45c78a26385bc61301f1affb", null ],
+      [ "dlrEnableSet", "group___e_t_h_s_w___a_p_i.html#a3bca1e4f2c83e4cefdd2fcca0c3df87e", null ],
+      [ "dlrDisableSet", "group___e_t_h_s_w___a_p_i.html#a3d78a2c420456d02341aa7079805c8df", null ],
+      [ "dlrBeaconStateGet", "group___e_t_h_s_w___a_p_i.html#a3b2603cb02906ab8ea3ad984514a2b8b", null ],
+      [ "dlrNodeStateGet", "group___e_t_h_s_w___a_p_i.html#afe05dcad3b0089800fe952d4b13052c4", null ],
+      [ "dlrSvIpGet", "group___e_t_h_s_w___a_p_i.html#a0c529468d8d7104172331e4a8837f6f6", null ],
+      [ "dlrSvPrecGet", "group___e_t_h_s_w___a_p_i.html#ab98a4c736d90ba09295ed55c77981ad4", null ],
+      [ "dlrVlanGet", "group___e_t_h_s_w___a_p_i.html#a2c05681006155e473a4dafc6113a75b1", null ],
+      [ "dlrSvMacGet", "group___e_t_h_s_w___a_p_i.html#ae7d0908ce1441f4fd2f31729a0fad2e3", null ]
     ] ],
     [ "ethsw_instance_t", "group___e_t_h_s_w___a_p_i.html#structethsw__instance__t", [
       [ "p_ctrl", "group___e_t_h_s_w___a_p_i.html#adc92d7a3a032d44c8661868cfe2f0337", null ],
@@ -55,6 +70,10 @@ var group___e_t_h_s_w___a_p_i =
       [ "p_api", "group___e_t_h_s_w___a_p_i.html#a4a25322c0714cd38ebaf704a796ff43b", null ]
     ] ],
     [ "ETHSW_PORT_HOST", "group___e_t_h_s_w___a_p_i.html#gafd8200a026146ecb905d86d0ea548343", null ],
+    [ "ETHSW_STATE_DEFAULT", "group___e_t_h_s_w___a_p_i.html#gad2ca20ec9b939457755e955eb2be3d9c", null ],
+    [ "ETHSW_STATE_UNKNOWN", "group___e_t_h_s_w___a_p_i.html#ga18f3fb77d6dc6c221ba2b7837419824a", null ],
+    [ "ETHSW_STATE_DOWN", "group___e_t_h_s_w___a_p_i.html#ga4856d3f47b95003593df5074d65f1403", null ],
+    [ "ETHSW_STATE_UP", "group___e_t_h_s_w___a_p_i.html#ga7c59d1d27a59b4cfa3fa8e3aae79aa67", null ],
     [ "ethsw_ctrl_t", "group___e_t_h_s_w___a_p_i.html#gac93b1273b8939790b2cbb64166a3d441", null ],
     [ "ethsw_link_speed_t", "group___e_t_h_s_w___a_p_i.html#gab114e32819a7182617060fff577cf198", [
       [ "ETHSW_LINK_SPEED_NO_LINK", "group___e_t_h_s_w___a_p_i.html#ggab114e32819a7182617060fff577cf198abc1a366a36e1900b9ea26273eba9ec63", null ],
@@ -80,5 +99,14 @@ var group___e_t_h_s_w___a_p_i =
       [ "ETHSW_MACTAB_CLR_STATIC", "group___e_t_h_s_w___a_p_i.html#gga40bb2ee719730c92e3b7b9d56c8454bdafca28754e373b34181e1725e4bd2c090", null ],
       [ "ETHSW_MACTAB_CLR_DYNAMIC", "group___e_t_h_s_w___a_p_i.html#gga40bb2ee719730c92e3b7b9d56c8454bdaa67511e0fcc5f21f612a8f58fa9946f7", null ],
       [ "ETHSW_MACTAB_CLR_ALL", "group___e_t_h_s_w___a_p_i.html#gga40bb2ee719730c92e3b7b9d56c8454bdaf0639ea564e384c87348596e8e33ee9b", null ]
+    ] ],
+    [ "ethsw_dlr_event_t", "group___e_t_h_s_w___a_p_i.html#gab09ef9060e778a6fc65429cc89a92e9d", [
+      [ "ETHSW_DLR_EVENT_LINKLOST", "group___e_t_h_s_w___a_p_i.html#ggab09ef9060e778a6fc65429cc89a92e9da6ab5e4369d3e9639603424b29e9ac427", null ],
+      [ "ETHSW_DLR_EVENT_OWNFRAME", "group___e_t_h_s_w___a_p_i.html#ggab09ef9060e778a6fc65429cc89a92e9da68cb6ef7ea417c4c7097f8279edc9542", null ],
+      [ "ETHSW_DLR_EVENT_LINKRESTORED", "group___e_t_h_s_w___a_p_i.html#ggab09ef9060e778a6fc65429cc89a92e9da507517da372f34f97f68fcf0aef8e516", null ],
+      [ "ETHSW_DLR_EVENT_BEACONFRAME", "group___e_t_h_s_w___a_p_i.html#ggab09ef9060e778a6fc65429cc89a92e9da67adab8ba745a0a802075bc776ad30db", null ],
+      [ "ETHSW_DLR_EVENT_BEACONTIMEOUT", "group___e_t_h_s_w___a_p_i.html#ggab09ef9060e778a6fc65429cc89a92e9da453879347ccdcd85618725f624cf7d10", null ],
+      [ "ETHSW_DLR_EVENT_NEWSUPERVISOR", "group___e_t_h_s_w___a_p_i.html#ggab09ef9060e778a6fc65429cc89a92e9da0a18bd77121ff0e452feb768eaeea5b0", null ],
+      [ "ETHSW_DLR_EVENT_NEWSTATE", "group___e_t_h_s_w___a_p_i.html#ggab09ef9060e778a6fc65429cc89a92e9da2ba6a1ecfcc6042b35c3185ff5bb15a7", null ]
     ] ]
 ];

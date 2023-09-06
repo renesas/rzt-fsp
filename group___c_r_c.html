@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -201,9 +201,13 @@ Limitations</h2>
 <li>Online CRC32 calculators usually invert the output prior to presenting it as a result. It is up to the application program to include this step if needed.</li>
 <li>The seed value of 0xFFFFFFFF needs to be used by both the online calculator and the R_CRC module API (CRC32 polynomials)</li>
 <li>Make sure the bit orientation of the R_CRC CRC32 is set for LSB and that you have CRC32 selected and not CRC32C.</li>
-<li>Some online CRC tools XOR the final result with 0xFFFFFFFF. </li>
+<li>Some online CRC tools XOR the final result with 0xFFFFFFFF.</li>
 </ul>
-<table class="memberdecls">
+<h1><a class="anchor" id="r-crc-examples"></a>
+Examples</h1>
+<h2>Basic Example</h2>
+<p>This is a basic example of minimal use of the CRC module in an application.</p>
+<div class="fragment"><div class="line"></div><div class="line"><span class="keywordtype">void</span> crc_example ()</div><div class="line">{</div><div class="line">    uint32_t length;</div><div class="line">    uint32_t uint8_calculated_value;</div><div class="line"></div><div class="line">    length = <span class="keyword">sizeof</span>(g_data_8bit) / <span class="keyword">sizeof</span>(g_data_8bit[0]);</div><div class="line"></div><div class="line">    <a class="code" href="group___c_r_c___a_p_i.html#structcrc__input__t">crc_input_t</a> example_input =</div><div class="line">    {</div><div class="line">        .p_input_buffer = g_data_8bit,</div><div class="line">        .num_bytes      = length,</div><div class="line">        .crc_seed       = 0,</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Open CRC module with 8 bit polynomial */</span></div><div class="line">    <a class="code" href="group___c_r_c.html#gae4cc2bba5d6aeaadd9f4d43948fca5ac">R_CRC_Open</a>(&amp;crc_ctrl, &amp;g_crc_test_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* 8-bit CRC calculation */</span></div><div class="line">    <a class="code" href="group___c_r_c.html#ga89b0be959ce83ac6ca053329b1fddb75">R_CRC_Calculate</a>(&amp;crc_ctrl, &amp;example_input, &amp;uint8_calculated_value);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structcrc__extended__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_r_c.html#structcrc__extended__cfg__t">crc_extended_cfg_t</a></td></tr>
@@ -231,7 +235,9 @@ Data Structures</h2></td></tr>
 <td class="fieldname">
 channel</td>
 <td class="fielddoc">
-Channel number. </td></tr>
+<p>DEPRECATED - channel will be moved to CRC API in the major release</p>
+<p>Channel number. </p>
+</td></tr>
 </table>
 
 </div>
@@ -283,7 +289,7 @@ Channel number. </td></tr>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_cfg is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl, p_cfg, or p_cfg-&gt;p_extend is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>Module already open. </td></tr>
     <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>The requested channel does not exist on this MCU. </td></tr>
   </table>
@@ -357,7 +363,7 @@ Channel number. </td></tr>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Calculation successful. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Either p_ctrl, inputBuffer, or calculatedValue is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Either p_ctrl, p_crc_input, inputBuffer, or calculatedValue is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>length value is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The driver is not opened. </td></tr>
   </table>
@@ -471,7 +477,7 @@ Channel number. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

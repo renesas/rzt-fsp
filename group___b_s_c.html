@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -105,6 +105,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga7c3d30081be56f6d48df4ec233d65560"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2c9708fc8de8351718a51b21e6373fa6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ga2c9708fc8de8351718a51b21e6373fa6">R_BSC_Close</a> (<a class="el" href="group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#ga0782cb893b9306ec3e7ae4be05275d8b">external_bus_ctrl_t</a> *p_ctrl)</td></tr>
 <tr class="separator:ga2c9708fc8de8351718a51b21e6373fa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7f1d9adf203eb85be6a9892463a07eea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ga7f1d9adf203eb85be6a9892463a07eea">R_BSC_CallbackSet</a> (<a class="el" href="group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#ga0782cb893b9306ec3e7ae4be05275d8b">external_bus_ctrl_t</a> *p_ctrl, void(*p_callback)(<a class="el" href="group___b_s_c.html#structbsc__callback__args__t">bsc_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___b_s_c.html#structbsc__callback__args__t">bsc_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga7f1d9adf203eb85be6a9892463a07eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the BSC peripheral on RZ microprocessor. This module implements the <a class="el" href="group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html">External Bus Interface</a>. </p>
@@ -314,6 +316,26 @@ The Same As Number Of Read Access Wait (Select when use CS0,2,3)</li>
 6 WAITS</li>
 </ul>
 </td><td>The Same As Number Of Read Access Wait (Select when use CS0,2,3) </td><td>The number of waits that are necessary for write access. </td></tr>
+<tr>
+<td>External WAIT# &gt; External WAIT# input</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disable</li>
+<li>
+Enable</li>
+</ul>
+</td><td>Disable </td><td>Specifies whether the external wait input is valid. </td></tr>
+<tr>
+<td>External WAIT# &gt; External WAIT# timeout detection error</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disable</li>
+<li>
+Enable</li>
+</ul>
+</td><td>Disable </td><td>Specifies enabling or disabling the detection of timeout for waiting in the CS space. </td></tr>
+<tr>
+<td>External WAIT# &gt; External WAIT# timeout cycles (Valid only when External WAIT# timeout detection error is Enabled)</td><td>Value must be a non-negative integer between 1 and 65536.</td><td>65536 </td><td>Timeout Cycle Number </td></tr>
+<tr>
+<td>External WAIT# &gt; External WAIT# timeout Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function. If this callback function is provided, it is called from the interrupt service routine (ISR) each time any interrupt occurs. </td></tr>
 </table>
 </p>
 <h2><a class="anchor" id="r-bsc-clock-configuration"></a>
@@ -345,6 +367,9 @@ Usage Notes</h1>
 <tr>
 <td>0x7C000000 to 0x7FFFFFFF </td><td>CS5 space </td></tr>
 </table>
+<h2><a class="anchor" id="r-bsc-interrupt"></a>
+Interrupt</h2>
+<p>The BSC outputs an error signal to the ICU. ICU can output PERI_ERRn interrupt (Peripherals error event n) to GIC or cause error reset when ICU accepts error signal from BSC when external wait timeout is detected. To use PERI_ERRn interrupt or reset at BSC, <a class="el" href="group___i_c_u___e_r_r_o_r.html">Interruput Controller Unit (ICU) ERROR (r_icu_error)</a> need to be configured. When the PERI_ERRn interrupt is configured to use interrupt and triggered, the callback function registered during open is called.</p>
 <h1><a class="anchor" id="r-bsc-examples"></a>
 Examples</h1>
 <h2><a class="anchor" id="r-bsc-examples-basic"></a>
@@ -353,6 +378,8 @@ Basic Example</h2>
 <div class="fragment"><div class="line"><span class="preprocessor">#define CS0_BASE                   (0x50000000)</span></div><div class="line"><span class="preprocessor">#define BSC_EXAMPLE_DATA_LENGTH    (256)</span></div><div class="line">uint16_t write_data[BSC_EXAMPLE_DATA_LENGTH];</div><div class="line">uint16_t read_data[BSC_EXAMPLE_DATA_LENGTH];</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_bsc_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Write some data to the write buffer */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; BSC_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        write_data[i] = i;</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Open the BSC instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___b_s_c.html#ga7c3d30081be56f6d48df4ec233d65560">R_BSC_Open</a>(&amp;g_bsc0_ctrl, &amp;g_bsc0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* After R_BSC_Open() and any required device specific initialization, data can be write directly</span></div><div class="line"><span class="comment">     * to the SRAM connected to BSC. */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; BSC_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        *((<span class="keyword">volatile</span> uint16_t *) CS0_BASE + 0x0000 + i) = write_data[i];</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* After R_BSC_Open() and any required device specific initialization, data can be read directly</span></div><div class="line"><span class="comment">     * from the SRAM connected to BSC. */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; BSC_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        read_data[i] = *((<span class="keyword">volatile</span> uint16_t *) CS0_BASE + 0x0000 + i);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the read_data. */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; BSC_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        <span class="keywordflow">if</span> (read_data[i] != write_data[i])</div><div class="line">        {</div><div class="line">            <span class="comment">/* Verify error. */</span></div><div class="line">            __BKPT(0);</div><div class="line">        }</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        ;</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
+<tr class="memitem:structbsc__callback__args__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#structbsc__callback__args__t">bsc_callback_args_t</a></td></tr>
+<tr class="separator:structbsc__callback__args__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structbsc__extended__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#structbsc__extended__cfg__t">bsc_extended_cfg_t</a></td></tr>
 <tr class="separator:structbsc__extended__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structbsc__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#structbsc__instance__ctrl__t">bsc_instance_ctrl_t</a></td></tr>
@@ -360,6 +387,8 @@ Data Structures</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
+<tr class="memitem:ga197dcd591c2ff38ca1f2f62b5c3dd368"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ga197dcd591c2ff38ca1f2f62b5c3dd368">bsc_event_t</a> </td></tr>
+<tr class="separator:ga197dcd591c2ff38ca1f2f62b5c3dd368"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4dcab475b25b2abe8b33dccee9434155"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ga4dcab475b25b2abe8b33dccee9434155">bsc_memory_type_t</a> </td></tr>
 <tr class="separator:ga4dcab475b25b2abe8b33dccee9434155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga47b27cba49c26983d5f32ef3490b9cd5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a> </td></tr>
@@ -368,8 +397,40 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga655b6f94bc36125fe183147259dce83c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7f6ba9334628f6ef35eeb76632140ba7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ga7f6ba9334628f6ef35eeb76632140ba7">bsc_cs_wait_cycle_t</a> </td></tr>
 <tr class="separator:ga7f6ba9334628f6ef35eeb76632140ba7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga79afabce0217028b1179700fb474be63"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ga79afabce0217028b1179700fb474be63">bsc_external_wait_timeout_t</a> </td></tr>
+<tr class="separator:ga79afabce0217028b1179700fb474be63"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
+<a name="structbsc__callback__args__t" id="structbsc__callback__args__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structbsc__callback__args__t">&#9670;&nbsp;</a></span>bsc_callback_args_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct bsc_callback_args_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Callback function parameter data. </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="abdb4221bf9459b4f52731a746eef92ca"></a><a class="el" href="group___b_s_c.html#ga197dcd591c2ff38ca1f2f62b5c3dd368">bsc_event_t</a></td>
+<td class="fieldname">
+event</td>
+<td class="fielddoc">
+BSC callback event. </td></tr>
+<tr><td class="fieldtype">
+<a id="adedfced957026b096cdcbba7f81c77dd"></a>void const  *</td>
+<td class="fieldname">
+p_context</td>
+<td class="fielddoc">
+Placeholder for user data. </td></tr>
+</table>
+
+</div>
+</div>
 <a name="structbsc__extended__cfg__t" id="structbsc__extended__cfg__t"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#structbsc__extended__cfg__t">&#9670;&nbsp;</a></span>bsc_extended_cfg_t</h2>
 
@@ -382,73 +443,64 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>Extended configuration. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="ac6c3b7ef2454f2fffe515b0b27753001"></a><a class="el" href="group___b_s_c.html#ga4dcab475b25b2abe8b33dccee9434155">bsc_memory_type_t</a></td>
-<td class="fieldname">
-memory_type</td>
-<td class="fielddoc">
-Configure memory type. </td></tr>
-<tr><td class="fieldtype">
-<a id="a6528387f4302aeecc04b440ef80eb866"></a><a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a></td>
-<td class="fieldname">
-r_r_same_space_idle_cycle</td>
-<td class="fielddoc">
-<p>Idle cycle between Read-Read cycles in the same CS space </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="af6c27203b709c7dfe4e062a2f95d8550"></a><a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a></td>
-<td class="fieldname">
-r_r_different_space_idle_cycle</td>
-<td class="fielddoc">
-<p>Idle cycle between Read-Read cycles in the different CS space </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="adf493f01cb68efb5ebe25913609dd705"></a><a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a></td>
-<td class="fieldname">
-r_w_same_space_idle_cycle</td>
-<td class="fielddoc">
-<p>Idle cycle between Read-Write cycles in the same CS space </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="aa27592b60f2ed27f8ad581a8fb6b41d5"></a><a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a></td>
-<td class="fieldname">
-r_w_different_space_idle_cycle</td>
-<td class="fielddoc">
-<p>Idle cycle between Read-Write cycles in the different CS space </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="a770eb68f00518b8a6a6b4d7ae50eff22"></a><a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a></td>
-<td class="fieldname">
-w_r_w_w_idle_cycle</td>
-<td class="fielddoc">
-<p>Idle cycle between Write-Read cycles and Write-Write cycles </p>
-</td></tr>
-<tr><td class="fieldtype">
-<a id="ad00a209697f16265dadb20aa482c8b81"></a><a class="el" href="group___b_s_c.html#ga655b6f94bc36125fe183147259dce83c">bsc_access_wait_cycle_t</a></td>
-<td class="fieldname">
-read_access_wait_cycle</td>
-<td class="fielddoc">
-Number of read access cycle waits. </td></tr>
-<tr><td class="fieldtype">
-<a id="a33da24ce7bcafd99dce0216afaf872f5"></a><a class="el" href="group___b_s_c.html#ga655b6f94bc36125fe183147259dce83c">bsc_access_wait_cycle_t</a></td>
-<td class="fieldname">
-write_access_wait_cycle</td>
-<td class="fielddoc">
-Number of write access cycle waits. </td></tr>
-<tr><td class="fieldtype">
-<a id="a83918c02fb0e7d59f9ffa788aea703b4"></a><a class="el" href="group___b_s_c.html#ga7f6ba9334628f6ef35eeb76632140ba7">bsc_cs_wait_cycle_t</a></td>
-<td class="fieldname">
-cs_pullup_lag</td>
-<td class="fielddoc">
-Duration to de-assert CS line after RD#,WE# de-assert. </td></tr>
-<tr><td class="fieldtype">
-<a id="aa9990a99b05b23f8ca1f9fe3ffca3ae2"></a><a class="el" href="group___b_s_c.html#ga7f6ba9334628f6ef35eeb76632140ba7">bsc_cs_wait_cycle_t</a></td>
-<td class="fieldname">
-cs_pulldown_lead</td>
-<td class="fielddoc">
-Duration to assert CS line before RD#,WE# assert. </td></tr>
+</div><table class="memberdecls">
+<tr><td colspan="2"><h3>Data Fields</h3></td></tr>
+<tr class="memitem:ac6c3b7ef2454f2fffe515b0b27753001"><td class="memItemLeft" align="right" valign="top"><a id="ac6c3b7ef2454f2fffe515b0b27753001"></a>
+<a class="el" href="group___b_s_c.html#ga4dcab475b25b2abe8b33dccee9434155">bsc_memory_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ac6c3b7ef2454f2fffe515b0b27753001">memory_type</a></td></tr>
+<tr class="memdesc:ac6c3b7ef2454f2fffe515b0b27753001"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure memory type. <br /></td></tr>
+<tr class="separator:ac6c3b7ef2454f2fffe515b0b27753001"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6528387f4302aeecc04b440ef80eb866"><td class="memItemLeft" align="right" valign="top"><a id="a6528387f4302aeecc04b440ef80eb866"></a>
+<a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#a6528387f4302aeecc04b440ef80eb866">r_r_same_space_idle_cycle</a></td></tr>
+<tr class="memdesc:a6528387f4302aeecc04b440ef80eb866"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idle cycle between Read-Read cycles in the same CS space. <br /></td></tr>
+<tr class="separator:a6528387f4302aeecc04b440ef80eb866"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af6c27203b709c7dfe4e062a2f95d8550"><td class="memItemLeft" align="right" valign="top"><a id="af6c27203b709c7dfe4e062a2f95d8550"></a>
+<a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#af6c27203b709c7dfe4e062a2f95d8550">r_r_different_space_idle_cycle</a></td></tr>
+<tr class="memdesc:af6c27203b709c7dfe4e062a2f95d8550"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idle cycle between Read-Read cycles in the different CS space. <br /></td></tr>
+<tr class="separator:af6c27203b709c7dfe4e062a2f95d8550"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf493f01cb68efb5ebe25913609dd705"><td class="memItemLeft" align="right" valign="top"><a id="adf493f01cb68efb5ebe25913609dd705"></a>
+<a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#adf493f01cb68efb5ebe25913609dd705">r_w_same_space_idle_cycle</a></td></tr>
+<tr class="memdesc:adf493f01cb68efb5ebe25913609dd705"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idle cycle between Read-Write cycles in the same CS space. <br /></td></tr>
+<tr class="separator:adf493f01cb68efb5ebe25913609dd705"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa27592b60f2ed27f8ad581a8fb6b41d5"><td class="memItemLeft" align="right" valign="top"><a id="aa27592b60f2ed27f8ad581a8fb6b41d5"></a>
+<a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#aa27592b60f2ed27f8ad581a8fb6b41d5">r_w_different_space_idle_cycle</a></td></tr>
+<tr class="memdesc:aa27592b60f2ed27f8ad581a8fb6b41d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idle cycle between Read-Write cycles in the different CS space. <br /></td></tr>
+<tr class="separator:aa27592b60f2ed27f8ad581a8fb6b41d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a770eb68f00518b8a6a6b4d7ae50eff22"><td class="memItemLeft" align="right" valign="top"><a id="a770eb68f00518b8a6a6b4d7ae50eff22"></a>
+<a class="el" href="group___b_s_c.html#ga47b27cba49c26983d5f32ef3490b9cd5">bsc_idle_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#a770eb68f00518b8a6a6b4d7ae50eff22">w_r_w_w_idle_cycle</a></td></tr>
+<tr class="memdesc:a770eb68f00518b8a6a6b4d7ae50eff22"><td class="mdescLeft">&#160;</td><td class="mdescRight">Idle cycle between Write-Read cycles and Write-Write cycles. <br /></td></tr>
+<tr class="separator:a770eb68f00518b8a6a6b4d7ae50eff22"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad00a209697f16265dadb20aa482c8b81"><td class="memItemLeft" align="right" valign="top"><a id="ad00a209697f16265dadb20aa482c8b81"></a>
+<a class="el" href="group___b_s_c.html#ga655b6f94bc36125fe183147259dce83c">bsc_access_wait_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#ad00a209697f16265dadb20aa482c8b81">read_access_wait_cycle</a></td></tr>
+<tr class="memdesc:ad00a209697f16265dadb20aa482c8b81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of read access cycle waits. <br /></td></tr>
+<tr class="separator:ad00a209697f16265dadb20aa482c8b81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a33da24ce7bcafd99dce0216afaf872f5"><td class="memItemLeft" align="right" valign="top"><a id="a33da24ce7bcafd99dce0216afaf872f5"></a>
+<a class="el" href="group___b_s_c.html#ga655b6f94bc36125fe183147259dce83c">bsc_access_wait_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#a33da24ce7bcafd99dce0216afaf872f5">write_access_wait_cycle</a></td></tr>
+<tr class="memdesc:a33da24ce7bcafd99dce0216afaf872f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Number of write access cycle waits. <br /></td></tr>
+<tr class="separator:a33da24ce7bcafd99dce0216afaf872f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83918c02fb0e7d59f9ffa788aea703b4"><td class="memItemLeft" align="right" valign="top"><a id="a83918c02fb0e7d59f9ffa788aea703b4"></a>
+<a class="el" href="group___b_s_c.html#ga7f6ba9334628f6ef35eeb76632140ba7">bsc_cs_wait_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#a83918c02fb0e7d59f9ffa788aea703b4">cs_pullup_lag</a></td></tr>
+<tr class="memdesc:a83918c02fb0e7d59f9ffa788aea703b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to de-assert CS line after RD#,WE# de-assert. <br /></td></tr>
+<tr class="separator:a83918c02fb0e7d59f9ffa788aea703b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa9990a99b05b23f8ca1f9fe3ffca3ae2"><td class="memItemLeft" align="right" valign="top"><a id="aa9990a99b05b23f8ca1f9fe3ffca3ae2"></a>
+<a class="el" href="group___b_s_c.html#ga7f6ba9334628f6ef35eeb76632140ba7">bsc_cs_wait_cycle_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#aa9990a99b05b23f8ca1f9fe3ffca3ae2">cs_pulldown_lead</a></td></tr>
+<tr class="memdesc:aa9990a99b05b23f8ca1f9fe3ffca3ae2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Duration to assert CS line before RD#,WE# assert. <br /></td></tr>
+<tr class="separator:aa9990a99b05b23f8ca1f9fe3ffca3ae2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5590c228da11a549e5f35eb20b7e0b53"><td class="memItemLeft" align="right" valign="top"><a id="a5590c228da11a549e5f35eb20b7e0b53"></a>
+<a class="el" href="group___b_s_c.html#ga79afabce0217028b1179700fb474be63">bsc_external_wait_timeout_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#a5590c228da11a549e5f35eb20b7e0b53">external_wait_timeout_enable</a></td></tr>
+<tr class="memdesc:a5590c228da11a549e5f35eb20b7e0b53"><td class="mdescLeft">&#160;</td><td class="mdescRight">External wait timeout enable/disable setting. <br /></td></tr>
+<tr class="separator:a5590c228da11a549e5f35eb20b7e0b53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a498c769dee3fd189237a3cc07b069d49"><td class="memItemLeft" align="right" valign="top"><a id="a498c769dee3fd189237a3cc07b069d49"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#a498c769dee3fd189237a3cc07b069d49">external_wait_timeout_counts</a></td></tr>
+<tr class="memdesc:a498c769dee3fd189237a3cc07b069d49"><td class="mdescLeft">&#160;</td><td class="mdescRight">External wait timeout cycle. <br /></td></tr>
+<tr class="separator:a498c769dee3fd189237a3cc07b069d49"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aece4ea5c25f6b78fdde0a0398f013b74"><td class="memItemLeft" align="right" valign="top"><a id="aece4ea5c25f6b78fdde0a0398f013b74"></a>
+void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#aece4ea5c25f6b78fdde0a0398f013b74">p_callback</a> )(<a class="el" href="group___b_s_c.html#structbsc__callback__args__t">bsc_callback_args_t</a> *p_args)</td></tr>
+<tr class="memdesc:aece4ea5c25f6b78fdde0a0398f013b74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Callback for external wait timeout detection interrupt. <br /></td></tr>
+<tr class="separator:aece4ea5c25f6b78fdde0a0398f013b74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6934fe8a4726c5997d097de935140768"><td class="memItemLeft" align="right" valign="top"><a id="a6934fe8a4726c5997d097de935140768"></a>
+void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c.html#a6934fe8a4726c5997d097de935140768">p_context</a></td></tr>
+<tr class="memdesc:a6934fe8a4726c5997d097de935140768"><td class="mdescLeft">&#160;</td><td class="mdescRight">Placeholder for user data. Passed to the user p_callback in <a class="el" href="group___b_s_c.html#structbsc__callback__args__t">bsc_callback_args_t</a>. <br /></td></tr>
+<tr class="separator:a6934fe8a4726c5997d097de935140768"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 
 </div>
@@ -469,6 +521,25 @@ Duration to assert CS line before RD#,WE# assert. </td></tr>
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ga197dcd591c2ff38ca1f2f62b5c3dd368"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga197dcd591c2ff38ca1f2f62b5c3dd368">&#9670;&nbsp;</a></span>bsc_event_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___b_s_c.html#ga197dcd591c2ff38ca1f2f62b5c3dd368">bsc_event_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>BSC callback event definitions </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga197dcd591c2ff38ca1f2f62b5c3dd368adb8b081c5880a29dd3219089c1fffdba"></a>BSC_EVENT_EXTERNAL_WAIT_TIMEOUT&#160;</td><td class="fielddoc"><p>External wait timeout detection. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="ga4dcab475b25b2abe8b33dccee9434155"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga4dcab475b25b2abe8b33dccee9434155">&#9670;&nbsp;</a></span>bsc_memory_type_t</h2>
 
@@ -591,6 +662,27 @@ Duration to assert CS line before RD#,WE# assert. </td></tr>
 
 </div>
 </div>
+<a id="ga79afabce0217028b1179700fb474be63"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga79afabce0217028b1179700fb474be63">&#9670;&nbsp;</a></span>bsc_external_wait_timeout_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___b_s_c.html#ga79afabce0217028b1179700fb474be63">bsc_external_wait_timeout_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>External wait timeout detection setting </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga79afabce0217028b1179700fb474be63adefca16995da407e87571ea8bc8b6296"></a>BSC_EXTERNAL_WAIT_TIMEOUT_DISABLE&#160;</td><td class="fielddoc"><p>External WAIT timeout detection disable. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga79afabce0217028b1179700fb474be63a59e2e92bdc3142579be95868e178b94e"></a>BSC_EXTERNAL_WAIT_TIMEOUT_ENABLE&#160;</td><td class="fielddoc"><p>External WAIT timeout detection enable. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga7c3d30081be56f6d48df4ec233d65560"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga7c3d30081be56f6d48df4ec233d65560">&#9670;&nbsp;</a></span>R_BSC_Open()</h2>
@@ -619,7 +711,7 @@ Duration to assert CS line before RD#,WE# assert. </td></tr>
 </div><div class="memdoc">
 <p>Open the BSC driver module. After the driver is open, the BSC can be accessed like internal flash memory starting at address 0x70000000 or 0x50000000.</p>
 <p>Implements <a class="el" href="group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#a275722341f5144e887a1e5c10ad67459">external_bus_api_t::open</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Open the BSC instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___b_s_c.html#ga7c3d30081be56f6d48df4ec233d65560">R_BSC_Open</a>(&amp;g_bsc0_ctrl, &amp;g_bsc0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_instance_ctrl or p_cfg is NULL. </td></tr>
@@ -659,13 +751,62 @@ Duration to assert CS line before RD#,WE# assert. </td></tr>
 
 </div>
 </div>
+<a id="ga7f1d9adf203eb85be6a9892463a07eea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7f1d9adf203eb85be6a9892463a07eea">&#9670;&nbsp;</a></span>R_BSC_CallbackSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_BSC_CallbackSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html#ga0782cb893b9306ec3e7ae4be05275d8b">external_bus_ctrl_t</a> *&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___b_s_c.html#structbsc__callback__args__t">bsc_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___b_s_c.html#structbsc__callback__args__t">bsc_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Updates the user callback with the option to provide memory for the callback argument structure.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

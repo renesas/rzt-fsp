@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -117,6 +117,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga00f07c25ed95b9e1de217f34c42b9d38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga816beee7f9f27113cd2d792c54c6af53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga816beee7f9f27113cd2d792c54c6af53">R_SCI_UART_Abort</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___u_a_r_t___a_p_i.html#gac36c5a0dffa37b418fb9425a76c57740">uart_dir_t</a> communication_to_abort)</td></tr>
 <tr class="separator:ga816beee7f9f27113cd2d792c54c6af53"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae084836f4ee37c2730f7a8b332d58325"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gae084836f4ee37c2730f7a8b332d58325">R_SCI_UART_ReadStop</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, uint32_t *remaining_bytes)</td></tr>
+<tr class="separator:gae084836f4ee37c2730f7a8b332d58325"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga864f43cde0ddc087748610357cbcd6c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga864f43cde0ddc087748610357cbcd6c2">R_SCI_UART_BaudCalculate</a> (uint32_t baudrate, bool bitrate_modulation, uint32_t baud_rate_error_x_1000, <a class="el" href="group___s_c_i___u_a_r_t.html#structbaud__setting__t">baud_setting_t</a> *const p_baud_setting)</td></tr>
 <tr class="separator:ga864f43cde0ddc087748610357cbcd6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga93ce8503fe6cf6f1489f35f51e30eee2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga93ce8503fe6cf6f1489f35f51e30eee2">R_SCI_UART_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *p_version)</td></tr>
@@ -482,7 +484,7 @@ CTS/RTS function of the SSn pin. </td></tr>
 <td class="fieldname">
 sync_bypass</td>
 <td class="fielddoc">
-Clock synchronizer selection. </td></tr>
+DEPRECATED - Clock synchronizer selection. </td></tr>
 </table>
 
 </div>
@@ -499,7 +501,7 @@ Clock synchronizer selection. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Enumeration for SCI clock source </p>
+<p>Enumeration for SCI clock source. This enumeration name will be changed in the major release. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga5775d25bc461e9b175b7fcb87d71b7c7a628202878594fe0e906308ede0258d0f"></a>SCI_UART_CLOCK_INT&#160;</td><td class="fielddoc"><p>Use internal clock for baud generation. </p>
 </td></tr>
@@ -524,13 +526,19 @@ Clock synchronizer selection. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>UART communication mode definition </p>
+<p>UART communication mode definition. This enumeration name will be changed in the major release. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a482b7fc0f778e9b4fcb0e666dc4714ed"></a>UART_MODE_RS232&#160;</td><td class="fielddoc"><p>Enables RS232 communication mode. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a482b7fc0f778e9b4fcb0e666dc4714ed"></a>UART_MODE_RS232&#160;</td><td class="fielddoc"><p>Deprecated - Enables RS232 communication mode. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a01a3080d6ed29e6d3d73fb34e90fce73"></a>UART_MODE_RS485_HD&#160;</td><td class="fielddoc"><p>Enables RS485 half duplex communication mode. </p>
+<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a01a3080d6ed29e6d3d73fb34e90fce73"></a>UART_MODE_RS485_HD&#160;</td><td class="fielddoc"><p>Deprecated - Enables RS485 half duplex communication mode. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6aced4309bb9703b71521e3937d5974e55"></a>UART_MODE_RS485_FD&#160;</td><td class="fielddoc"><p>Enables RS485 full duplex communication mode. </p>
+<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6aced4309bb9703b71521e3937d5974e55"></a>UART_MODE_RS485_FD&#160;</td><td class="fielddoc"><p>Deprecated - Enables RS485 full duplex communication mode. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6afa139b79213b5e3929dfbeffb4543f5b"></a>SCI_UART_MODE_RS232&#160;</td><td class="fielddoc"><p>Enables RS232 communication mode. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a37d40397fc4e18348de98cc5f8fbf0f1"></a>SCI_UART_MODE_RS485_HD&#160;</td><td class="fielddoc"><p>Enables RS485 half duplex communication mode. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a7b0e73e318848da9078a1b65d6a786b4"></a>SCI_UART_MODE_RS485_FD&#160;</td><td class="fielddoc"><p>Enables RS485 full duplex communication mode. </p>
 </td></tr>
 </table>
 
@@ -988,6 +996,48 @@ Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
+<a id="gae084836f4ee37c2730f7a8b332d58325"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae084836f4ee37c2730f7a8b332d58325">&#9670;&nbsp;</a></span>R_SCI_UART_ReadStop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_ReadStop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_api_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *&#160;</td>
+          <td class="paramname"><em>remaining_bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Provides API to abort ongoing read. Reception is still enabled after abort(). Any characters received after abort() and before the transfer is reset in the next call to read(), will arrive via the callback function with event UART_EVENT_RX_CHAR. Implements <a class="el" href="group___u_a_r_t___a_p_i.html#acb47c360a2ac4ddd36e53f0a4ad71b92">uart_api_t::readStop</a></p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>UART transaction aborted successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to UART control block or remaining_bytes is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>The requested Abort direction is unsupported.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>See <a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html">Common Error Codes</a> or functions called by this function for other possible return codes. This function calls:<ul>
+<li><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a3188207ba386da0ec85946e134b4327a">transfer_api_t::disable</a> </li>
+</ul>
+</dd></dl>
+
+</div>
+</div>
 <a id="ga864f43cde0ddc087748610357cbcd6c2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga864f43cde0ddc087748610357cbcd6c2">&#9670;&nbsp;</a></span>R_SCI_UART_BaudCalculate()</h2>
 
@@ -1025,7 +1075,7 @@ Clock synchronizer selection. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Calculates baud rate register settings. Evaluates and determines the best possible settings set to the baud rate related registers.</p>
+<p>Calculates baud rate register settings. Evaluates and determines the best possible settings set to the baud rate related registers. The argument structure of this function will be changed in the major release.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">baudrate</td><td>Baud rate [bps]. For example, 19200, 57600, 115200, etc. </td></tr>
@@ -1084,7 +1134,7 @@ Clock synchronizer selection. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

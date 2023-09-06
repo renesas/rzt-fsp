@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -469,7 +469,7 @@ ADC B Compare Match</li>
 <li>
 ADC A and B Compare Match</li>
 </ul>
-</td><td>module.driver.timer.interrupt_skip.adc.none </td><td>Select ADC events to suppress when the interrupt skip count is not zero. </td></tr>
+</td><td>None </td><td>Select ADC events to suppress when the interrupt skip count is not zero. </td></tr>
 <tr>
 <td>Extra Features &gt; Extended Interrupt Skipping 1 &gt; Interrupt to Count</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -1521,7 +1521,7 @@ Advanced PWM features, optional. </td></tr>
 <p>Initializes the timer module and applies configurations. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#af49a90087a53c8019d642a3f7abaa8ad">timer_api_t::open</a>.</p>
 <p>GPT hardware does not support one-shot functionality natively. When using one-shot mode, the timer will be stopped in an ISR after the requested period has elapsed.</p>
 <p>The GPT implementation of the general timer can accept a <a class="el" href="group___g_p_t.html#structgpt__extended__cfg__t">gpt_extended_cfg_t</a> extension parameter.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#ga97d0a9c1a8fb6b88d1c12756dd8ce2d2">R_GPT_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful and timer has started. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL or the source divider is invalid. </td></tr>
@@ -1551,7 +1551,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Stops timer. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#aed0139dbf5102e39719ddbc51f16a21e">timer_api_t::stop</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Stop the timer. */</span></div><div class="line">    (void) <a class="code" href="group___g_p_t.html#ga1e6af74d7faaf735f5847a34121eff71">R_GPT_Stop</a>(&amp;g_timer0_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Timer successfully stopped. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -1578,7 +1578,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Starts timer. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#afcc7e85d01c3d7dc0c6e09954631f47f">timer_api_t::start</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___g_p_t.html#ga2769f9fda49613246bc84dba41aa4863">R_GPT_Start</a>(&amp;g_timer0_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Timer successfully started. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -1633,7 +1633,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Enables external event triggers that start, stop, clear, or capture the counter. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a13cb48d1657a9eda3380c111ba33aa2a">timer_api_t::enable</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Enable captures. Captured values arrive in the interrupt. */</span></div><div class="line">    (void) <a class="code" href="group___g_p_t.html#ga6e14d15c781e316e640c280b4983be28">R_GPT_Enable</a>(&amp;g_timer0_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>External events successfully enabled. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -1661,7 +1661,7 @@ Advanced PWM features, optional. </td></tr>
 </div><div class="memdoc">
 <p>Disables external event triggers that start, stop, clear, or capture the counter. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a8b69fad02aee5d83b941ed02fca18aca">timer_api_t::disable</a>.</p>
 <dl class="section note"><dt>Note</dt><dd>The timer could be running after <a class="el" href="group___g_p_t.html#ga338dd3c38477ee40c90c13f3a4c9ecfd">R_GPT_Disable()</a>. To ensure it is stopped, call <a class="el" href="group___g_p_t.html#ga1e6af74d7faaf735f5847a34121eff71">R_GPT_Stop()</a>.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Disable captures. */</span></div><div class="line">    (void) <a class="code" href="group___g_p_t.html#ga338dd3c38477ee40c90c13f3a4c9ecfd">R_GPT_Disable</a>(&amp;g_timer0_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>External events successfully disabled. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -1699,7 +1699,7 @@ Advanced PWM features, optional. </td></tr>
 </div><div class="memdoc">
 <p>Sets period value provided. If the timer is running, the period will be updated after the next counter overflow. If the timer is stopped, this function resets the counter and updates the period. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#ae9aad84a01ccd7ce0039ed491faeff19">timer_api_t::periodSet</a>.</p>
 <dl class="section warning"><dt>Warning</dt><dd>If periodic output is used, the duty cycle buffer registers are updated after the period buffer register. If this function is called while the timer is running and a GPT overflow occurs during processing, the duty cycle will not be the desired 50% duty cycle until the counter overflow after processing completes.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Get the source clock frequency (in Hz). There are 3 ways to do this in FSP:</span></div><div class="line"><span class="comment">     *  - If the PCLKGPTL frequency has not changed since reset, the source clock frequency is</span></div><div class="line"><span class="comment">     *    BSP_STARTUP_PCLKGPTL_HZ &gt;&gt; timer_cfg_t::source_div</span></div><div class="line"><span class="comment">     *  - Use the R_GPT_InfoGet function (it accounts for the divider).</span></div><div class="line"><span class="comment">     *  - Calculate the current PCLKD frequency using R_FSP_SystemClockHzGet(FSP_PRIV_CLOCK_PCLKGPTL) and right shift</span></div><div class="line"><span class="comment">     *    by timer_cfg_t::source_div.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * This example uses the 3rd option (R_FSP_SystemClockHzGet).</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    uint32_t pclkd_freq_hz = <a class="code" href="group___b_s_p___m_c_u.html#gaac289335b731d0bdb5cb8e6d243898ef">R_FSP_SystemClockHzGet</a>(FSP_PRIV_CLOCK_PCLKGPTL) &gt;&gt; g_timer0_cfg.source_div;</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate the desired period based on the current clock. Note that this calculation could overflow if the</span></div><div class="line"><span class="comment">     * desired period is larger than UINT32_MAX / pclkd_freq_hz. A cast to uint64_t is used to prevent this. */</span></div><div class="line">    uint32_t period_counts =</div><div class="line">        (uint32_t) (((uint64_t) pclkd_freq_hz * GPT_EXAMPLE_DESIRED_PERIOD_MSEC) / GPT_EXAMPLE_MSEC_PER_SEC);</div><div class="line"></div><div class="line">    <span class="comment">/* Set the calculated period. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#gafedbfd8bc3f534d06969588ff10a351b">R_GPT_PeriodSet</a>(&amp;g_timer0_ctrl, period_counts);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Period value written successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -1743,7 +1743,7 @@ Advanced PWM features, optional. </td></tr>
 </div><div class="memdoc">
 <p>Sets duty cycle on requested pin. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a819ed0740ca426ace0d6b67e16c6ddfc">timer_api_t::dutyCycleSet</a>.</p>
 <p>Duty cycle is updated in the buffer register. The updated duty cycle is reflected after the next cycle end (counter overflow).</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Get the current period setting. */</span></div><div class="line">    <a class="code" href="group___t_i_m_e_r___a_p_i.html#structtimer__info__t">timer_info_t</a> info;</div><div class="line">    (void) <a class="code" href="group___g_p_t.html#gaca62ac33de2c05918b0fc359aeaebd97">R_GPT_InfoGet</a>(&amp;g_timer0_ctrl, &amp;info);</div><div class="line">    uint32_t current_period_counts = info.<a class="code" href="group___t_i_m_e_r___a_p_i.html#a08b897cfbf2d0cefafe8d3abb1afc747">period_counts</a>;</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate the desired duty cycle based on the current period. Note that if the period could be larger than</span></div><div class="line"><span class="comment">     * UINT32_MAX / 100, this calculation could overflow. A cast to uint64_t is used to prevent this. The cast is</span></div><div class="line"><span class="comment">     * not required for 16-bit timers. */</span></div><div class="line">    uint32_t duty_cycle_counts =</div><div class="line">        (uint32_t) (((uint64_t) current_period_counts * GPT_EXAMPLE_DESIRED_DUTY_CYCLE_PERCENT) /</div><div class="line">                    GPT_EXAMPLE_MAX_PERCENT);</div><div class="line"></div><div class="line">    <span class="comment">/* Set the calculated duty cycle. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#gad14bacf6fb7fce88f3e877160be529ea">R_GPT_DutyCycleSet</a>(&amp;g_timer0_ctrl, duty_cycle_counts, <a class="code" href="group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60aebd74a7b9507fb082ec4cce60ebe9369">GPT_IO_PIN_GTIOCB</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="params"><dt>Parameters</dt><dd>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to instance control block. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">duty_cycle_counts</td><td>Duty cycle to set in counts. </td></tr>
@@ -1790,7 +1790,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Get timer information and store it in provided pointer p_info. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#aeaea79f26305c493566e4b45ae9e294c">timer_api_t::infoGet</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">        <span class="comment">/* (Optional) Get the current period if not known. */</span></div><div class="line">        <a class="code" href="group___t_i_m_e_r___a_p_i.html#structtimer__info__t">timer_info_t</a> info;</div><div class="line">        (void) <a class="code" href="group___g_p_t.html#gaca62ac33de2c05918b0fc359aeaebd97">R_GPT_InfoGet</a>(&amp;g_timer0_ctrl, &amp;info);</div><div class="line">        uint64_t period = info.<a class="code" href="group___t_i_m_e_r___a_p_i.html#a08b897cfbf2d0cefafe8d3abb1afc747">period_counts</a>;</div><div class="line"></div><div class="line">        <span class="comment">/* The maximum period is one more than the maximum 32-bit number, but will be reflected as 0 in</span></div><div class="line"><span class="comment">         * timer_info_t::period_counts. */</span></div><div class="line">        <span class="keywordflow">if</span> (0U == period)</div><div class="line">        {</div><div class="line">            period = UINT32_MAX + 1U;</div><div class="line">        }</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Period, count direction, frequency, and ELC event written to caller's structure successfully.(External clock(GTETRGA - GTETRGD) cannot be acquired.) </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_info was NULL. </td></tr>
@@ -1827,7 +1827,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Get current timer status and store it in provided pointer p_status. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a11321e8dde7c33a4e6835a1bf64f7689">timer_api_t::statusGet</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Read the current counter value. Counter value is in status.counter. */</span></div><div class="line">    <a class="code" href="group___t_i_m_e_r___a_p_i.html#structtimer__status__t">timer_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___g_p_t.html#gaa6234faf45320a83382d7ea1923a2c49">R_GPT_StatusGet</a>(&amp;g_timer0_ctrl, &amp;status);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Current timer state and counter value set successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_status was NULL. </td></tr>
@@ -2102,7 +2102,7 @@ Advanced PWM features, optional. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -30,6 +30,7 @@ var searchData=
   ['ethsw_5fapi_5ft',['ethsw_api_t',['../group___e_t_h_s_w___a_p_i.html#structethsw__api__t',1,'']]],
   ['ethsw_5fcallback_5fargs_5ft',['ethsw_callback_args_t',['../group___e_t_h_s_w___a_p_i.html#structethsw__callback__args__t',1,'']]],
   ['ethsw_5fcfg_5ft',['ethsw_cfg_t',['../group___e_t_h_s_w___a_p_i.html#structethsw__cfg__t',1,'']]],
+  ['ethsw_5fdlr_5finit_5ft',['ethsw_dlr_init_t',['../group___e_t_h_s_w___a_p_i.html#structethsw__dlr__init__t',1,'']]],
   ['ethsw_5fflood_5funk_5fconf_5ft',['ethsw_flood_unk_conf_t',['../group___e_t_h_s_w___a_p_i.html#structethsw__flood__unk__conf__t',1,'']]],
   ['ethsw_5finstance_5fctrl_5ft',['ethsw_instance_ctrl_t',['../group___e_t_h_s_w.html#structethsw__instance__ctrl__t',1,'']]],
   ['ethsw_5finstance_5ft',['ethsw_instance_t',['../group___e_t_h_s_w___a_p_i.html#structethsw__instance__t',1,'']]],

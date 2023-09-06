@@ -4,6 +4,7 @@ var searchData=
   ['i2c_5fmaster_5fcallback_5fargs_5ft',['i2c_master_callback_args_t',['../group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t',1,'']]],
   ['i2c_5fmaster_5fcfg_5ft',['i2c_master_cfg_t',['../group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__cfg__t',1,'']]],
   ['i2c_5fmaster_5finstance_5ft',['i2c_master_instance_t',['../group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__instance__t',1,'']]],
+  ['i2c_5fmaster_5fstatus_5ft',['i2c_master_status_t',['../group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__status__t',1,'']]],
   ['i2c_5fslave_5fapi_5ft',['i2c_slave_api_t',['../group___i2_c___s_l_a_v_e___a_p_i.html#structi2c__slave__api__t',1,'']]],
   ['i2c_5fslave_5fcallback_5fargs_5ft',['i2c_slave_callback_args_t',['../group___i2_c___s_l_a_v_e___a_p_i.html#structi2c__slave__callback__args__t',1,'']]],
   ['i2c_5fslave_5fcfg_5ft',['i2c_slave_cfg_t',['../group___i2_c___s_l_a_v_e___a_p_i.html#structi2c__slave__cfg__t',1,'']]],

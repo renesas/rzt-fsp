@@ -71,6 +71,7 @@ var group___m_t_u3 =
       [ "clk_edge", "group___m_t_u3.html#a032a2421eaa21dbc376ce103e7757068", null ],
       [ "mtu3_clear", "group___m_t_u3.html#a1f1b1918442a0305e70d102cb636e09d", null ],
       [ "mtioc_ctrl_setting", "group___m_t_u3.html#ac3d8f53d47a3063cf48b374411182243", null ],
+      [ "adc_request_enable", "group___m_t_u3.html#a7ae31131abc22f57ae63b0293416b113", null ],
       [ "capture_a_ipl", "group___m_t_u3.html#ae357d03fb305808acc1a5f971e9ae205", null ],
       [ "capture_b_ipl", "group___m_t_u3.html#aedd3dc71ec5728ef54295740297f16f7", null ],
       [ "capture_a_irq", "group___m_t_u3.html#a566d52f760c761f105831fae2c2f5125", null ],

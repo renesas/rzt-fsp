@@ -1,5 +1,32 @@
 var group___c_g_c =
 [
+    [ "cgc_sckcr_cfg_t", "group___c_g_c.html#structcgc__sckcr__cfg__t", [
+      [ "fselxspi0_div", "group___c_g_c.html#ad696145dc65c36f8ca2f37ea328babab", null ],
+      [ "fselxspi1_div", "group___c_g_c.html#aac970d455c0b285aebb15e3d30ccb5f8", null ],
+      [ "ckio_div", "group___c_g_c.html#a14e15929d66d010f674bb522d5ffc73b", null ],
+      [ "fselcanfd_div", "group___c_g_c.html#a58988f4d3a5964c07f4d703127f0c633", null ],
+      [ "phy_sel", "group___c_g_c.html#ab7312bdede2e12ee3b5b0ac0b44d75f3", null ],
+      [ "spi0_async_sel", "group___c_g_c.html#aa45755a0fb98c5f20b894675bef3eaa6", null ],
+      [ "spi1_async_sel", "group___c_g_c.html#a378f22954a792f630167ac2ff45b6df3", null ],
+      [ "spi2_async_sel", "group___c_g_c.html#ae7f08e8fa2d69d80e5ee993c689491bf", null ],
+      [ "sci0_async_sel", "group___c_g_c.html#a4c6a04c055c9e48e4cd58e844a79adc0", null ],
+      [ "sci1_async_sel", "group___c_g_c.html#aa4198fb7063ef2cb4edd0bd699098fd4", null ],
+      [ "sci2_async_sel", "group___c_g_c.html#a2641362291d16c69b33a7033d54d4d48", null ],
+      [ "sci3_async_sel", "group___c_g_c.html#a5756545c6856175059c9ff72a80e6a60", null ],
+      [ "sci4_async_sel", "group___c_g_c.html#ac273259f12963f8998186fd5ed7280ff", null ]
+    ] ],
+    [ "cgc_sckcr2_cfg_t", "group___c_g_c.html#structcgc__sckcr2__cfg__t", [
+      [ "fsel0cr52", "group___c_g_c.html#a24c9cea1aafb7af48e692fb2290f8c06", null ],
+      [ "fsel1cr52", "group___c_g_c.html#acaad80abb4472b125d5edfca416ee2ff", null ],
+      [ "div_sub_sel", "group___c_g_c.html#a3eda25afe2279eb5f08cf6320bbc7710", null ],
+      [ "spi3_async_sel", "group___c_g_c.html#a9611fae3323a0e57595abd10e616fbc0", null ],
+      [ "sci5_async_sel", "group___c_g_c.html#a2843d084cece337bf7bafd11cb493658", null ]
+    ] ],
+    [ "cgc_clock_extend_cfg_t", "group___c_g_c.html#structcgc__clock__extend__cfg__t", [
+      [ "sckcr", "group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9", null ],
+      [ "sckcr2", "group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc", null ],
+      [ "pll1_state", "group___c_g_c.html#a9f3c7b7b2d2ecb45b31db51e79142e83", null ]
+    ] ],
     [ "cgc_instance_ctrl_t", "group___c_g_c.html#structcgc__instance__ctrl__t", null ],
     [ "cgc_xspi_clock_div_t", "group___c_g_c.html#ga0b75c9c87f838ed5f90062bef3a8dbd9", [
       [ "CGC_XSPI_CLOCK_DIV_18", "group___c_g_c.html#gga0b75c9c87f838ed5f90062bef3a8dbd9ac82b3212ced6ba789039244928b2704b", null ],

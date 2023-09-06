@@ -55,6 +55,7 @@ var group___x_s_p_i___q_s_p_i =
     [ "R_XSPI_QSPI_StatusGet", "group___x_s_p_i___q_s_p_i.html#gaad73cce9b2ac857fbd0423223ae3388e", null ],
     [ "R_XSPI_QSPI_BankSet", "group___x_s_p_i___q_s_p_i.html#ga384be6c60819abe2478a7b35c9a7a98e", null ],
     [ "R_XSPI_QSPI_SpiProtocolSet", "group___x_s_p_i___q_s_p_i.html#gac03a7edb53183d589372bd8be1ecf870", null ],
+    [ "R_XSPI_QSPI_AutoCalibrate", "group___x_s_p_i___q_s_p_i.html#ga6fceaa55b924ce5ecf7a00a962b5d529", null ],
     [ "R_XSPI_QSPI_Close", "group___x_s_p_i___q_s_p_i.html#gaad19b3c8e517b9e614ee8697f8cef4e7", null ],
     [ "R_XSPI_QSPI_VersionGet", "group___x_s_p_i___q_s_p_i.html#ga43a6909cabda355a380ef98be9ece70f", null ]
 ];

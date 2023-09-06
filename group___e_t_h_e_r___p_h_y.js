@@ -17,6 +17,12 @@ var group___e_t_h_e_r___p_h_y =
       [ "phy_reset_time", "group___e_t_h_e_r___p_h_y.html#aefcd50086be1dbf21a6ebc18108d74e2", null ],
       [ "p_selector_instance", "group___e_t_h_e_r___p_h_y.html#a536aab016b410eeacbf8240db5f0cc5e", null ]
     ] ],
+    [ "ETHER_PHY_CHIP_VSC8541", "group___e_t_h_e_r___p_h_y.html#gae5c70cd934eef385539a720a7c104063", null ],
+    [ "ETHER_PHY_CHIP_KSZ9131", "group___e_t_h_e_r___p_h_y.html#gad857e113585f4bfddc32dd136d50b6c4", null ],
+    [ "ETHER_PHY_CHIP_KSZ9031", "group___e_t_h_e_r___p_h_y.html#ga854881e3d91f76bd9cc28faffe31f0f2", null ],
+    [ "ETHER_PHY_CHIP_KSZ8081", "group___e_t_h_e_r___p_h_y.html#ga431d3b387d89b947505226754ec08d27", null ],
+    [ "ETHER_PHY_CHIP_KSZ8041", "group___e_t_h_e_r___p_h_y.html#ga2d9a5ee906477251c2e1db3f01c27c6b", null ],
+    [ "ETHER_PHY_CHIP_OTHER", "group___e_t_h_e_r___p_h_y.html#ga85196d6e2a8767b4bc686cc4646d81b7", null ],
     [ "ether_phy_port_type_t", "group___e_t_h_e_r___p_h_y.html#ga8980d0ed39cd8aec1c24c899952a2a10", [
       [ "ETHER_PHY_PORT_TYPE_ETHERNET", "group___e_t_h_e_r___p_h_y.html#gga8980d0ed39cd8aec1c24c899952a2a10a2bd509e57ad2120c81f1acd947e87f9d", null ],
       [ "ETHER_PHY_PORT_TYPE_ETHER_CAT", "group___e_t_h_e_r___p_h_y.html#gga8980d0ed39cd8aec1c24c899952a2a10a68222d85b700aa6619ec69d54edd6b35", null ]
@@ -27,11 +33,12 @@ var group___e_t_h_e_r___p_h_y =
       [ "ETHER_PHY_MDIO_ESC", "group___e_t_h_e_r___p_h_y.html#ggac12ebcc88c3bc765eb1b8cdb2379824daeae999a2ecad23e28aad7d7099db41b5", null ]
     ] ],
     [ "ether_phy_chip_t", "group___e_t_h_e_r___p_h_y.html#gac1ea53147062c3fd66931899f43a42cf", [
-      [ "ETHER_PHY_CHIP_VSC8541", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfab5c2ab44d7a0c82dbc5f1807a6c64e64", null ],
-      [ "ETHER_PHY_CHIP_KSZ9131", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa20c205be386b1686792ac793dfdc8262", null ],
-      [ "ETHER_PHY_CHIP_KSZ9031", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa4c1a03b0ecabedea3bf42dcb17f20ba3", null ],
-      [ "ETHER_PHY_CHIP_KSZ8081", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa4114d12951c74b6a936e9c1e570d8410", null ],
-      [ "ETHER_PHY_CHIP_KSZ8041", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa97758ca76dbd02a1816797d3bd760962", null ]
+      [ "ETHER_PHY_CHIP_VSC8541_TYPE", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa5260433494f3e984d7ecc76fbf6b4923", null ],
+      [ "ETHER_PHY_CHIP_KSZ9131_TYPE", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa0401f6a635180fd30af62f8097fe2e9b", null ],
+      [ "ETHER_PHY_CHIP_KSZ9031_TYPE", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfade0de25cee66902db44372e6896b1023", null ],
+      [ "ETHER_PHY_CHIP_KSZ8081_TYPE", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa004e79ce7ebd80926acf79e506602779", null ],
+      [ "ETHER_PHY_CHIP_KSZ8041_TYPE", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa204f5b8e0aa0c9c136723384e7dcbdc2", null ],
+      [ "ETHER_PHY_CHIP_OTHER_TYPE", "group___e_t_h_e_r___p_h_y.html#ggac1ea53147062c3fd66931899f43a42cfa82fc5e40db8667612fb03dcd37902be7", null ]
     ] ],
     [ "ether_phy_speed_t", "group___e_t_h_e_r___p_h_y.html#ga31da5a218283f2b30053f008ece9d2c7", [
       [ "ETHER_PHY_SPEED_10_100", "group___e_t_h_e_r___p_h_y.html#gga31da5a218283f2b30053f008ece9d2c7a6633462415df23abadd54f8bea642e49", null ],

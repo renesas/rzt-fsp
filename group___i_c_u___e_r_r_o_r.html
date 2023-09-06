@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -220,11 +220,11 @@ This module can be added to the Stacks tab via New Stack &gt; Driver &gt; System
 <tr>
 <td>Peripheral Error Handler &gt; Peripheral Error 0 &gt; ERREVENT3</td><td>Name must be a valid C symbol</td><td>NULL </td><td>Peripheral Error handler. If this handler is provided, it is called from the error interrupt service routine (ISR). </td></tr>
 <tr>
-<td>Peripheral Error Handler &gt; Peripheral Error 0 &gt; ERREVENT4</td><td>Name must be a valid C symbol</td><td>NULL </td><td>Peripheral Error handler. If this handler is provided, it is called from the error interrupt service routine (ISR). </td></tr>
+<td>Peripheral Error Handler &gt; Peripheral Error 0 &gt; ERREVENT4</td><td>Name must be a valid C symbol</td><td>bsc_wto_int_isr </td><td>Peripheral Error handler. If this handler is provided, it is called from the error interrupt service routine (ISR). </td></tr>
 <tr>
-<td>Peripheral Error Handler &gt; Peripheral Error 0 &gt; ERREVENT5</td><td>Name must be a valid C symbol</td><td>NULL </td><td>Peripheral Error handler. If this handler is provided, it is called from the error interrupt service routine (ISR). </td></tr>
+<td>Peripheral Error Handler &gt; Peripheral Error 0 &gt; ERREVENT5</td><td>Name must be a valid C symbol</td><td>dmac_err_int_isr </td><td>Peripheral Error handler. If this handler is provided, it is called from the error interrupt service routine (ISR). </td></tr>
 <tr>
-<td>Peripheral Error Handler &gt; Peripheral Error 0 &gt; ERREVENT6</td><td>Name must be a valid C symbol</td><td>NULL </td><td>Peripheral Error handler. If this handler is provided, it is called from the error interrupt service routine (ISR). </td></tr>
+<td>Peripheral Error Handler &gt; Peripheral Error 0 &gt; ERREVENT6</td><td>Name must be a valid C symbol</td><td>dmac_err_int_isr </td><td>Peripheral Error handler. If this handler is provided, it is called from the error interrupt service routine (ISR). </td></tr>
 <tr>
 <td>Peripheral Error Handler &gt; Peripheral Error 0 &gt; ERREVENT7</td><td>Name must be a valid C symbol</td><td>wdt_underflow_isr </td><td>Peripheral Error handler. If this handler is provided, it is called from the error interrupt service routine (ISR). </td></tr>
 <tr>
@@ -982,7 +982,10 @@ Usage Notes</h1>
 <tr>
 <td>ICU_ERROR_PERIPHERAL_ERROR_3_AFMT1_TMOUT </td><td>AFMT1_TMOUT </td><td>AFMT1 Time out error </td></tr>
 </table>
-<h2 class="groupheader">Function Documentation</h2>
+<h2>Basic Example</h2>
+<p>This is a basic example of minimal use of the R_ICU_ERROR in an application.</p>
+<p>This example shows how to notify via a callback and clear the error flag when a CPU0_ERROR15 error occurs.</p>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> error_callback (<a class="code" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <span class="comment">/* Clear the error flags. */</span></div><div class="line">    <span class="keywordflow">if</span> ((ICU_ERROR_EVENT_SOURCE_CPU0 == p_args-&gt;<a class="code" href="group___e_r_r_o_r___a_p_i.html#a4c4e6b3119337d4da6d56c9d99eda69f">error_source</a>) &amp;&amp;</div><div class="line">        (ICU_ERROR_CPU0_ERROR_EVENT15 == p_args-&gt;<a class="code" href="group___e_r_r_o_r___a_p_i.html#a654a0c26bbefe3782931cad7c7bfdeb9">error_event</a>))</div><div class="line">    {</div><div class="line">        <a class="code" href="group___i_c_u___e_r_r_o_r.html#ga2baa7240d28bf1e6935ea15c662a2462">R_ICU_ERROR_StatusClear</a>(&amp;g_error_ctrl, ICU_ERROR_EVENT_SOURCE_CPU0, ICU_ERROR_CPU0_ERROR_EVENT15);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> simple_example ()</div><div class="line">{</div><div class="line">    <span class="comment">/* Open the ICU_ERROR driver to configure to occur an interrupt</span></div><div class="line"><span class="comment">     * when CPU0_ERROR15(Timeout for LLPP bus) event occurs. */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___i_c_u___e_r_r_o_r.html#ga18d916ce03534b1f773dfa7ee16aec4d">R_ICU_ERROR_Open</a>(&amp;g_error_ctrl, &amp;g_error_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Add code here. When CPU0_ERROR15(Timeout for LLPP bus) event occurs,</span></div><div class="line"><span class="comment">     * the ICU_ERROR driver notifies via a callback. */</span></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><h2 class="groupheader">Function Documentation</h2>
 <a id="ga18d916ce03534b1f773dfa7ee16aec4d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga18d916ce03534b1f773dfa7ee16aec4d">&#9670;&nbsp;</a></span>R_ICU_ERROR_Open()</h2>
 
@@ -1191,7 +1194,7 @@ Usage Notes</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

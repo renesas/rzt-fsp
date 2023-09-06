@@ -12,6 +12,7 @@ var searchData=
   ['linkpartnerabilityget',['linkPartnerAbilityGet',['../group___e_t_h_e_r___p_h_y___a_p_i.html#ad508caaca41fbabfe2ec5bdae28d790d',1,'ether_phy_api_t']]],
   ['linkprocess',['linkProcess',['../group___e_t_h_e_r___a_p_i.html#a125ca4ee69c6c63e1db42708324c0fb3',1,'ether_api_t']]],
   ['linkset',['linkSet',['../group___e_l_c___a_p_i.html#a05af30d0ca7743f5a033b10d664ded59',1,'elc_api_t']]],
+  ['linkstateget',['linkStateGet',['../group___e_t_h_s_w___a_p_i.html#aa3b6b3602468203afcdd104e3f62c2a7',1,'ethsw_api_t']]],
   ['linkstatusget',['linkStatusGet',['../group___e_t_h_e_r___p_h_y___a_p_i.html#aa2afea5d0c6c80b55cfd49f249612991',1,'ether_phy_api_t']]],
   ['loaded',['loaded',['../group___i_i_c___m_a_s_t_e_r.html#a43b87790a7ac9b19f2fe567e13dc89f7',1,'iic_master_instance_ctrl_t']]],
   ['local_5fadvertise',['local_advertise',['../group___e_t_h_e_r___p_h_y.html#aaa749ca05baa91975ca44896b3765e37',1,'ether_phy_instance_ctrl_t']]],

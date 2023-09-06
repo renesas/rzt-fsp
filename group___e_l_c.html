@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -254,7 +254,7 @@ Data Structures</h2></td></tr>
 </div><div class="memdoc">
 <p>Initialize all the links in the Event Link Controller. Implements <a class="el" href="group___e_l_c___a_p_i.html#ac4f753f3fcae95e036d24e3d6a84d1f5">elc_api_t::open</a></p>
 <p>The configuration structure passed in to this function includes links for every event source included in the ELC and sets them all at once. To set or clear an individual link use R_ELC_LinkSet and R_ELC_LinkBreak respectively.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Initializes the software and sets the links defined in the control structure. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga35864de459d2ef45a03da4343729712f">R_ELC_Open</a>(&amp;g_elc_ctrl, &amp;g_elc_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_cfg was NULL </td></tr>
@@ -359,7 +359,7 @@ Data Structures</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Create a single event link. Implements <a class="el" href="group___e_l_c___a_p_i.html#a05af30d0ca7743f5a033b10d664ded59">elc_api_t::linkSet</a></p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Create or modify a link between a peripheral function and an event source. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga4b40a4cb59194b6315cf608cd5e36bd9">R_ELC_LinkSet</a>(&amp;g_elc_ctrl, ELC_PERIPHERAL_ADC0_A, ELC_EVENT_GPT0_OVF);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL </td></tr>
@@ -489,7 +489,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

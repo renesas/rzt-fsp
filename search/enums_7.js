@@ -7,6 +7,7 @@ var searchData=
   ['i2c_5fslave_5fevent_5ft',['i2c_slave_event_t',['../group___i2_c___s_l_a_v_e___a_p_i.html#gad8b613f0d4e9d1b9511ca0b6d6ab7e8c',1,'r_i2c_slave_api.h']]],
   ['i2c_5fslave_5frate_5ft',['i2c_slave_rate_t',['../group___i2_c___s_l_a_v_e___a_p_i.html#gaa26f7dd0df29bb18d57fa02c7f64588d',1,'r_i2c_slave_api.h']]],
   ['iic_5fmaster_5ftimeout_5fmode_5ft',['iic_master_timeout_mode_t',['../group___i_i_c___m_a_s_t_e_r.html#gaf8ecd43a76bfa058281bb8b6b3981d3f',1,'r_iic_master.h']]],
+  ['iic_5fmaster_5ftimeout_5fscl_5flow_5ft',['iic_master_timeout_scl_low_t',['../group___i_i_c___m_a_s_t_e_r.html#ga9789e54472d093bd5348f202205d28ec',1,'r_iic_master.h']]],
   ['ioport_5fcfg_5foptions_5ft',['ioport_cfg_options_t',['../group___i_o_p_o_r_t___a_p_i.html#gac617eebcb7c2c1e45fa8e04fc473e574',1,'r_ioport_api.h']]],
   ['ioport_5fevent_5fcontrol_5ft',['ioport_event_control_t',['../group___i_o_p_o_r_t.html#ga04dddafb062136b04f33eeea27648397',1,'r_ioport.h']]],
   ['ioport_5fevent_5fdetection_5ft',['ioport_event_detection_t',['../group___i_o_p_o_r_t.html#ga4f8bf2319abee01387ae77ca7e85fb0a',1,'r_ioport.h']]],

@@ -59,6 +59,7 @@ var group___x_s_p_i___o_s_p_i =
     [ "R_XSPI_OSPI_StatusGet", "group___x_s_p_i___o_s_p_i.html#ga05ba32343ad208b17d950b55b33dc73b", null ],
     [ "R_XSPI_OSPI_BankSet", "group___x_s_p_i___o_s_p_i.html#ga5ccb97618f1ab68e8ab75bcb254824c5", null ],
     [ "R_XSPI_OSPI_SpiProtocolSet", "group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369", null ],
+    [ "R_XSPI_OSPI_AutoCalibrate", "group___x_s_p_i___o_s_p_i.html#gad2b24047e009a0c99a0e9ba116304938", null ],
     [ "R_XSPI_OSPI_Close", "group___x_s_p_i___o_s_p_i.html#gac4a104b286e181e85aa9f49cfd415743", null ],
     [ "R_XSPI_OSPI_VersionGet", "group___x_s_p_i___o_s_p_i.html#ga2ed2faabe20ea37038144ad4ad1d1a82", null ]
 ];

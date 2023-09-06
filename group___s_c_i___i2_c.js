@@ -20,6 +20,7 @@ var group___s_c_i___i2_c =
     [ "R_SCI_I2C_Abort", "group___s_c_i___i2_c.html#ga417258e6c32f4000c95198a60f2a699d", null ],
     [ "R_SCI_I2C_SlaveAddressSet", "group___s_c_i___i2_c.html#gaafb153ace0acecf6d61037ed2113c6da", null ],
     [ "R_SCI_I2C_CallbackSet", "group___s_c_i___i2_c.html#gaff974630e37963ed18027b7b529d9f0d", null ],
+    [ "R_SCI_I2C_StatusGet", "group___s_c_i___i2_c.html#ga56527ece3b09569cf8abdba614190b9f", null ],
     [ "R_SCI_I2C_Close", "group___s_c_i___i2_c.html#ga6ce2bd61f5a153cd7957c4a1b1350df8", null ],
     [ "R_SCI_I2C_VersionGet", "group___s_c_i___i2_c.html#ga075bd36361ec44fc1dc964248db8c7ff", null ]
 ];

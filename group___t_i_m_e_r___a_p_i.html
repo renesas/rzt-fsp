@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -822,17 +822,17 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba83cb2de8ac629fcd95525e94b94089f0"></a>TIMER_EVENT_TROUGH&#160;</td><td class="fielddoc"><p>Timer trough event (counter is 0, triangle-wave PWM only. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba5935edbb3d0b6d8b6f74a8402e758adf"></a>TIMER_EVENT_OUTPUT_COMPARE_0&#160;</td><td class="fielddoc"><p>An output has occurred on signal 0. </p>
+<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba5935edbb3d0b6d8b6f74a8402e758adf"></a>TIMER_EVENT_OUTPUT_COMPARE_0&#160;</td><td class="fielddoc"><p>DEPRECATED - This will be replaced with TIMER_EVENT_COMPARE_A in the next major release. An output has occurred on signal 0. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba1618c4f47f889499fe72ef5a3c2cf4eb"></a>TIMER_EVENT_OUTPUT_COMPARE_1&#160;</td><td class="fielddoc"><p>An output has occurred on signal 1. </p>
+<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba1618c4f47f889499fe72ef5a3c2cf4eb"></a>TIMER_EVENT_OUTPUT_COMPARE_1&#160;</td><td class="fielddoc"><p>DEPRECATED - This will be replaced with TIMER_EVENT_COMPARE_B in the next major release. An output has occurred on signal 1. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba83346d837d9c89b9b1bed8c9a0078660"></a>TIMER_EVENT_DEAD_TIME&#160;</td><td class="fielddoc"><p>Dead time event. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91ebadc420bfc9860b5d461f10e557f9bb043"></a>TIMER_EVENT_CAPTURE_U&#160;</td><td class="fielddoc"><p>A capture has occurred on signal U. </p>
+<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91ebadc420bfc9860b5d461f10e557f9bb043"></a>TIMER_EVENT_CAPTURE_U&#160;</td><td class="fielddoc"><p>DEPRECATED - A capture has occurred on signal U. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba25cd94f46448cd5938f32c6a25438091"></a>TIMER_EVENT_CAPTURE_V&#160;</td><td class="fielddoc"><p>A capture has occurred on signal V. </p>
+<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba25cd94f46448cd5938f32c6a25438091"></a>TIMER_EVENT_CAPTURE_V&#160;</td><td class="fielddoc"><p>DEPRECATED - A capture has occurred on signal V. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba58d231c0801a39b29b761e77dbdae2cf"></a>TIMER_EVENT_CAPTURE_W&#160;</td><td class="fielddoc"><p>A capture has occurred on signal W. </p>
+<tr><td class="fieldname"><a id="ggac3bee51f7c9078f794c5ac19522f91eba58d231c0801a39b29b761e77dbdae2cf"></a>TIMER_EVENT_CAPTURE_W&#160;</td><td class="fielddoc"><p>DEPRECATED - A capture has occurred on signal W. </p>
 </td></tr>
 </table>
 
@@ -898,6 +898,8 @@ Pointer to the API structure for this instance. </td></tr>
 <tr><td class="fieldname"><a id="gga6d4cd64aed5c0009ac26803efc9c13b2a140f07675d67258a7ca9a95a9a793e3a"></a>TIMER_MODE_ONE_SHOT&#160;</td><td class="fielddoc"><p>Timer stops after period elapses. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="gga6d4cd64aed5c0009ac26803efc9c13b2aca44e952a6930f39ac05393522392eac"></a>TIMER_MODE_PWM&#160;</td><td class="fielddoc"><p>Timer generates saw-wave PWM output. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga6d4cd64aed5c0009ac26803efc9c13b2afe99f13968cabc479896dfd0bc67fb6a"></a>TIMER_MODE_ONE_SHOT_PULSE&#160;</td><td class="fielddoc"><p>Saw-wave one-shot pulse mode (fixed buffer operation). </p>
 </td></tr>
 <tr><td class="fieldname"><a id="gga6d4cd64aed5c0009ac26803efc9c13b2a6a3c462f9e9cc1b26ab68f38efd79b14"></a>TIMER_MODE_TRIANGLE_WAVE_SYMMETRIC_PWM&#160;</td><td class="fielddoc"><p>Timer generates symmetric triangle-wave PWM output. </p>
 </td></tr>
@@ -975,7 +977,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -27,16 +27,20 @@ var group___i_i_c___m_a_s_t_e_r =
       [ "dummy_read_completed", "group___i_i_c___m_a_s_t_e_r.html#a1d08efea52b6463c1fd6e59ce67101ea", null ],
       [ "activation_on_rxi", "group___i_i_c___m_a_s_t_e_r.html#a73911a7ba79b268e105371a4f80e61b3", null ],
       [ "activation_on_txi", "group___i_i_c___m_a_s_t_e_r.html#a63182e37b4db69f3576650dbdfed6c1f", null ],
-      [ "address_restarted", "group___i_i_c___m_a_s_t_e_r.html#a28be3bc532d9d7b0817221f631939f5d", null ],
-      [ "timeout_mode", "group___i_i_c___m_a_s_t_e_r.html#a7e9f285c33f95af2eada2c1c176e583f", null ]
+      [ "address_restarted", "group___i_i_c___m_a_s_t_e_r.html#a28be3bc532d9d7b0817221f631939f5d", null ]
     ] ],
     [ "iic_master_extended_cfg_t", "group___i_i_c___m_a_s_t_e_r.html#structiic__master__extended__cfg__t", [
       [ "timeout_mode", "group___i_i_c___m_a_s_t_e_r.html#a25c3fc7a92165e8213ccf8308e1db1aa", null ],
+      [ "timeout_scl_low", "group___i_i_c___m_a_s_t_e_r.html#af255cfc08c0e74ebe9e15f4dda240b53", null ],
       [ "clock_settings", "group___i_i_c___m_a_s_t_e_r.html#a3e2c32c0a211b6485aff83502c3c41a2", null ]
     ] ],
     [ "iic_master_timeout_mode_t", "group___i_i_c___m_a_s_t_e_r.html#gaf8ecd43a76bfa058281bb8b6b3981d3f", [
       [ "IIC_MASTER_TIMEOUT_MODE_LONG", "group___i_i_c___m_a_s_t_e_r.html#ggaf8ecd43a76bfa058281bb8b6b3981d3facc441997b6e18766361457d26227b4bd", null ],
       [ "IIC_MASTER_TIMEOUT_MODE_SHORT", "group___i_i_c___m_a_s_t_e_r.html#ggaf8ecd43a76bfa058281bb8b6b3981d3fa4afacd0b267f604d06e2b83891c0e577", null ]
+    ] ],
+    [ "iic_master_timeout_scl_low_t", "group___i_i_c___m_a_s_t_e_r.html#ga9789e54472d093bd5348f202205d28ec", [
+      [ "IIC_MASTER_TIMEOUT_SCL_LOW_DISABLED", "group___i_i_c___m_a_s_t_e_r.html#gga9789e54472d093bd5348f202205d28eca0773c9356e560a84576f1d5498234a09", null ],
+      [ "IIC_MASTER_TIMEOUT_SCL_LOW_ENABLED", "group___i_i_c___m_a_s_t_e_r.html#gga9789e54472d093bd5348f202205d28eca62238f63df0d06f25af5b158bbfb2169", null ]
     ] ],
     [ "R_IIC_MASTER_Open", "group___i_i_c___m_a_s_t_e_r.html#gaf27ed4f61dc662c28564646bd8bf01c3", null ],
     [ "R_IIC_MASTER_Read", "group___i_i_c___m_a_s_t_e_r.html#ga6147f27a169deef934b6f46a0de3652f", null ],
@@ -44,6 +48,7 @@ var group___i_i_c___m_a_s_t_e_r =
     [ "R_IIC_MASTER_Abort", "group___i_i_c___m_a_s_t_e_r.html#ga85ef762ddd49f1a137ce9e24c6573059", null ],
     [ "R_IIC_MASTER_SlaveAddressSet", "group___i_i_c___m_a_s_t_e_r.html#gac71642b0b148f43ffb3e6b8cf2a3c949", null ],
     [ "R_IIC_MASTER_CallbackSet", "group___i_i_c___m_a_s_t_e_r.html#ga535b73426b62ef08adecfde663160133", null ],
+    [ "R_IIC_MASTER_StatusGet", "group___i_i_c___m_a_s_t_e_r.html#ga8913f214f86f2ec06b31bfd68925e050", null ],
     [ "R_IIC_MASTER_Close", "group___i_i_c___m_a_s_t_e_r.html#ga88558649a9cf9ccd54b745457227ab7c", null ],
     [ "R_IIC_MASTER_VersionGet", "group___i_i_c___m_a_s_t_e_r.html#ga5ff4810180163d8d57963043bc8c1bfa", null ]
 ];

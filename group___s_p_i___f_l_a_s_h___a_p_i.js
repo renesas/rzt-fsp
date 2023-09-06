@@ -4,6 +4,15 @@ var group___s_p_i___f_l_a_s_h___a_p_i =
       [ "command", "group___s_p_i___f_l_a_s_h___a_p_i.html#a27f37ac5d1f031fd33f3b2ff5b914751", null ],
       [ "size", "group___s_p_i___f_l_a_s_h___a_p_i.html#afb42b93f396ec30b863646150e9bb91d", null ]
     ] ],
+    [ "spi_flash_direct_transfer_t", "group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t", [
+      [ "address", "group___s_p_i___f_l_a_s_h___a_p_i.html#a5120cdb55dcd4ce8da04eb8baa69254d", null ],
+      [ "data", "group___s_p_i___f_l_a_s_h___a_p_i.html#a52ae9ed9880e98f7a02107c2b31b673b", null ],
+      [ "command", "group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246", null ],
+      [ "dummy_cycles", "group___s_p_i___f_l_a_s_h___a_p_i.html#ad4a653cf90fd97dc9d0a5f8fce3c3795", null ],
+      [ "command_length", "group___s_p_i___f_l_a_s_h___a_p_i.html#a521505cf1d98e638aef0e72ca5eb6463", null ],
+      [ "address_length", "group___s_p_i___f_l_a_s_h___a_p_i.html#a63de64208374fd3c6ea1db4ffb07111f", null ],
+      [ "data_length", "group___s_p_i___f_l_a_s_h___a_p_i.html#a5e3c48eb88187944722f745231f955f3", null ]
+    ] ],
     [ "spi_flash_cfg_t", "group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__cfg__t", [
       [ "spi_protocol", "group___s_p_i___f_l_a_s_h___a_p_i.html#a6f3cdf4d6de603634118801dcb54a6d5", null ],
       [ "read_mode", "group___s_p_i___f_l_a_s_h___a_p_i.html#a40a6269760d8c4aaf75bf84613d1f551", null ],
@@ -38,6 +47,7 @@ var group___s_p_i___f_l_a_s_h___a_p_i =
       [ "xipEnter", "group___s_p_i___f_l_a_s_h___a_p_i.html#ab5c6cc5c82e73038ddcef82a906b966f", null ],
       [ "xipExit", "group___s_p_i___f_l_a_s_h___a_p_i.html#a3a7c2aae058a733f879ae294c63ce2c6", null ],
       [ "bankSet", "group___s_p_i___f_l_a_s_h___a_p_i.html#a14581133205383b71df54a65439c0dcf", null ],
+      [ "autoCalibrate", "group___s_p_i___f_l_a_s_h___a_p_i.html#ad04434e2c049da61d3389355d5961f31", null ],
       [ "close", "group___s_p_i___f_l_a_s_h___a_p_i.html#a16810f14e3fff6ed04f36eca44353785", null ],
       [ "versionGet", "group___s_p_i___f_l_a_s_h___a_p_i.html#acf0f82982d8022e22796c252131063af", null ]
     ] ],
@@ -62,6 +72,7 @@ var group___s_p_i___f_l_a_s_h___a_p_i =
       [ "SPI_FLASH_PROTOCOL_DOPI", "group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535afd83f451b4164b209b240ebb0f4bb158", null ],
       [ "SPI_FLASH_PROTOCOL_1S_1S_1S", "group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535a3066069aa9be28b050e57faa29cf5be5", null ],
       [ "SPI_FLASH_PROTOCOL_4D_4D_4D", "group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535a7d4add0e57ac110005e7bfd97bde6934", null ],
+      [ "SPI_FLASH_PROTOCOL_4S_4D_4D", "group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535a54c52d62f8a1e16099da8ab9a203a1be", null ],
       [ "SPI_FLASH_PROTOCOL_8D_8D_8D", "group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535acf8fc61585bd2209fc3953d8d2eb4606", null ],
       [ "SPI_FLASH_PROTOCOL_1S_2S_2S", "group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535a6d421df12293ebbae4fa97b4cf152081", null ],
       [ "SPI_FLASH_PROTOCOL_2S_2S_2S", "group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535a668b4a0330a7e2de10b77f25fbea4567", null ],

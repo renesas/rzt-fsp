@@ -22,7 +22,10 @@ var group___s_c_i___u_a_r_t =
     [ "uart_mode_t", "group___s_c_i___u_a_r_t.html#ga93f7c73d772490ab4d22bda8fd0aa5a6", [
       [ "UART_MODE_RS232", "group___s_c_i___u_a_r_t.html#gga93f7c73d772490ab4d22bda8fd0aa5a6a482b7fc0f778e9b4fcb0e666dc4714ed", null ],
       [ "UART_MODE_RS485_HD", "group___s_c_i___u_a_r_t.html#gga93f7c73d772490ab4d22bda8fd0aa5a6a01a3080d6ed29e6d3d73fb34e90fce73", null ],
-      [ "UART_MODE_RS485_FD", "group___s_c_i___u_a_r_t.html#gga93f7c73d772490ab4d22bda8fd0aa5a6aced4309bb9703b71521e3937d5974e55", null ]
+      [ "UART_MODE_RS485_FD", "group___s_c_i___u_a_r_t.html#gga93f7c73d772490ab4d22bda8fd0aa5a6aced4309bb9703b71521e3937d5974e55", null ],
+      [ "SCI_UART_MODE_RS232", "group___s_c_i___u_a_r_t.html#gga93f7c73d772490ab4d22bda8fd0aa5a6afa139b79213b5e3929dfbeffb4543f5b", null ],
+      [ "SCI_UART_MODE_RS485_HD", "group___s_c_i___u_a_r_t.html#gga93f7c73d772490ab4d22bda8fd0aa5a6a37d40397fc4e18348de98cc5f8fbf0f1", null ],
+      [ "SCI_UART_MODE_RS485_FD", "group___s_c_i___u_a_r_t.html#gga93f7c73d772490ab4d22bda8fd0aa5a6a7b0e73e318848da9078a1b65d6a786b4", null ]
     ] ],
     [ "sci_uart_rx_fifo_trigger_t", "group___s_c_i___u_a_r_t.html#gadf7235ba7fd675f3416ef98c55b810f6", [
       [ "SCI_UART_RX_FIFO_TRIGGER_1", "group___s_c_i___u_a_r_t.html#ggadf7235ba7fd675f3416ef98c55b810f6acbf7b549f4da64e02ba6a63e7fb96f43", null ],
@@ -56,6 +59,7 @@ var group___s_c_i___u_a_r_t =
     [ "R_SCI_UART_BaudSet", "group___s_c_i___u_a_r_t.html#ga3b3a6c761a66c6cbcca3c72a451b3371", null ],
     [ "R_SCI_UART_InfoGet", "group___s_c_i___u_a_r_t.html#ga00f07c25ed95b9e1de217f34c42b9d38", null ],
     [ "R_SCI_UART_Abort", "group___s_c_i___u_a_r_t.html#ga816beee7f9f27113cd2d792c54c6af53", null ],
+    [ "R_SCI_UART_ReadStop", "group___s_c_i___u_a_r_t.html#gae084836f4ee37c2730f7a8b332d58325", null ],
     [ "R_SCI_UART_BaudCalculate", "group___s_c_i___u_a_r_t.html#ga864f43cde0ddc087748610357cbcd6c2", null ],
     [ "R_SCI_UART_VersionGet", "group___s_c_i___u_a_r_t.html#ga93ce8503fe6cf6f1489f35f51e30eee2", null ]
 ];

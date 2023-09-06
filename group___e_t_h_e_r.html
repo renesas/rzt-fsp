@@ -33,7 +33,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.2.0</span>
+   &#160;<span id="projectnumber">Release v1.3.0</span>
    </div>
   </td>
    <td>        <div id="MSearchBox" class="MSearchBoxInactive">
@@ -197,7 +197,7 @@ Enable</li>
 <tr>
 <td>Buffers &gt; Number of RX buffer</td><td>Must be an integer from 1 to 8</td><td>8 </td><td>Number of receive buffers </td></tr>
 <tr>
-<td>Buffers &gt; Buffer size</td><td>Must be lates the maximum Ethernet frame size of 1514+the management tag of 8 Bytes</td><td>2048 </td><td>Size of Ethernet buffer </td></tr>
+<td>Buffers &gt; Buffer size</td><td>Must be at least 1522 bytes (the maximum Ethernet frame size 1514 bytes + ethsw management tag size 8 bytes).</td><td>1524 </td><td>Size of Ethernet buffer </td></tr>
 <tr>
 <td>Interrupts &gt; SBD Interrupt priority</td><td>MCU Specific Options</td><td></td><td>Select the Ether GMAC SBD interrupt priority. </td></tr>
 <tr>
@@ -880,7 +880,7 @@ Partner pause bits got from PHY. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.2.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

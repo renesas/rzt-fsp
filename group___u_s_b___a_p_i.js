@@ -37,8 +37,6 @@ var group___u_s_b___a_p_i =
       [ "p_cfg", "group___u_s_b___a_p_i.html#aec007fd87340435c978cb5fa39c8a8ce", null ],
       [ "p_api", "group___u_s_b___a_p_i.html#a8c4c5e27d4a3243fcb6c5d57851e9143", null ]
     ] ],
-    [ "USB_API_VERSION_MAJOR", "group___u_s_b___a_p_i.html#ga38294965ef266ae12bd57803aacbec9a", null ],
-    [ "USB_API_VERSION_MINOR", "group___u_s_b___a_p_i.html#gaec0b78dd4858a6e50c460c170851b383", null ],
     [ "USB_BREQUEST", "group___u_s_b___a_p_i.html#ga3a6743f3e336fc05e70e59b05206f634", null ],
     [ "USB_GET_STATUS", "group___u_s_b___a_p_i.html#ga7ae4f2fc0c17aa90a9dbc09d05cbf011", null ],
     [ "USB_CLEAR_FEATURE", "group___u_s_b___a_p_i.html#gaf280fd0fa446bc77dd360dd5e59248fc", null ],

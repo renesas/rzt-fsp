@@ -1,5 +1,9 @@
 var group___b_s_c =
 [
+    [ "bsc_callback_args_t", "group___b_s_c.html#structbsc__callback__args__t", [
+      [ "event", "group___b_s_c.html#abdb4221bf9459b4f52731a746eef92ca", null ],
+      [ "p_context", "group___b_s_c.html#adedfced957026b096cdcbba7f81c77dd", null ]
+    ] ],
     [ "bsc_extended_cfg_t", "group___b_s_c.html#structbsc__extended__cfg__t", [
       [ "memory_type", "group___b_s_c.html#ac6c3b7ef2454f2fffe515b0b27753001", null ],
       [ "r_r_same_space_idle_cycle", "group___b_s_c.html#a6528387f4302aeecc04b440ef80eb866", null ],
@@ -10,9 +14,16 @@ var group___b_s_c =
       [ "read_access_wait_cycle", "group___b_s_c.html#ad00a209697f16265dadb20aa482c8b81", null ],
       [ "write_access_wait_cycle", "group___b_s_c.html#a33da24ce7bcafd99dce0216afaf872f5", null ],
       [ "cs_pullup_lag", "group___b_s_c.html#a83918c02fb0e7d59f9ffa788aea703b4", null ],
-      [ "cs_pulldown_lead", "group___b_s_c.html#aa9990a99b05b23f8ca1f9fe3ffca3ae2", null ]
+      [ "cs_pulldown_lead", "group___b_s_c.html#aa9990a99b05b23f8ca1f9fe3ffca3ae2", null ],
+      [ "external_wait_timeout_enable", "group___b_s_c.html#a5590c228da11a549e5f35eb20b7e0b53", null ],
+      [ "external_wait_timeout_counts", "group___b_s_c.html#a498c769dee3fd189237a3cc07b069d49", null ],
+      [ "p_callback", "group___b_s_c.html#aece4ea5c25f6b78fdde0a0398f013b74", null ],
+      [ "p_context", "group___b_s_c.html#a6934fe8a4726c5997d097de935140768", null ]
     ] ],
     [ "bsc_instance_ctrl_t", "group___b_s_c.html#structbsc__instance__ctrl__t", null ],
+    [ "bsc_event_t", "group___b_s_c.html#ga197dcd591c2ff38ca1f2f62b5c3dd368", [
+      [ "BSC_EVENT_EXTERNAL_WAIT_TIMEOUT", "group___b_s_c.html#gga197dcd591c2ff38ca1f2f62b5c3dd368adb8b081c5880a29dd3219089c1fffdba", null ]
+    ] ],
     [ "bsc_memory_type_t", "group___b_s_c.html#ga4dcab475b25b2abe8b33dccee9434155", [
       [ "BSC_MEMORY_TYPE_SRAM", "group___b_s_c.html#gga4dcab475b25b2abe8b33dccee9434155a95cd471f97e2b07016226356efc47e63", null ]
     ] ],
@@ -48,6 +59,11 @@ var group___b_s_c =
       [ "BSC_CS_WAIT_CYCLE_2_5", "group___b_s_c.html#gga7f6ba9334628f6ef35eeb76632140ba7a4eae53c0d7c2a614e7d67d260686b345", null ],
       [ "BSC_CS_WAIT_CYCLE_3_5", "group___b_s_c.html#gga7f6ba9334628f6ef35eeb76632140ba7a96eea6e766ff8351f2a112850b35fb78", null ]
     ] ],
+    [ "bsc_external_wait_timeout_t", "group___b_s_c.html#ga79afabce0217028b1179700fb474be63", [
+      [ "BSC_EXTERNAL_WAIT_TIMEOUT_DISABLE", "group___b_s_c.html#gga79afabce0217028b1179700fb474be63adefca16995da407e87571ea8bc8b6296", null ],
+      [ "BSC_EXTERNAL_WAIT_TIMEOUT_ENABLE", "group___b_s_c.html#gga79afabce0217028b1179700fb474be63a59e2e92bdc3142579be95868e178b94e", null ]
+    ] ],
     [ "R_BSC_Open", "group___b_s_c.html#ga7c3d30081be56f6d48df4ec233d65560", null ],
-    [ "R_BSC_Close", "group___b_s_c.html#ga2c9708fc8de8351718a51b21e6373fa6", null ]
+    [ "R_BSC_Close", "group___b_s_c.html#ga2c9708fc8de8351718a51b21e6373fa6", null ],
+    [ "R_BSC_CallbackSet", "group___b_s_c.html#ga7f1d9adf203eb85be6a9892463a07eea", null ]
 ];
