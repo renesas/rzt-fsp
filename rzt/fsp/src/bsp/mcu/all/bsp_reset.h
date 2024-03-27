@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -21,6 +21,10 @@
 #ifndef BSP_RESET_H
 #define BSP_RESET_H
 
+/***********************************************************************************************************************
+ * Includes   <System Includes> , "Project Includes"
+ **********************************************************************************************************************/
+
 /** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
 
@@ -36,7 +40,7 @@ FSP_HEADER
  * Bit 24 indicates whether MRCTLn register is in the safety region. */
 #define BSP_RESET_MRCTLA_SELECT        (0x00000000U)
 #define BSP_RESET_MRCTLE_SELECT        (0x00040000U)
-#define BSP_RESET_MRCTLI_SELECT        (0x01080000U)
+#define BSP_RESET_MRCTLI_SELECT        (0x00480000U)
 #define BSP_RESET_MRCTLJ_SELECT        (0x00090000U)
 #define BSP_RESET_MRCTLK_SELECT        (0x000A0000U)
 
@@ -86,8 +90,8 @@ FSP_HEADER
 /** CPU to be reset target.*/
 typedef enum e_bsp_reset
 {
-    BSP_RESET_CPU0 = 0,                ///< Software reset for CPU0
-    BSP_RESET_CPU1 = 1,                ///< Software reset for CPU1
+    BSP_RESET_CR52_0 = 0,              ///< Software reset for CR52_0
+    BSP_RESET_CR52_1 = 1,              ///< Software reset for CR52_1
 } bsp_reset_t;
 
 /** The different types of registers that can control the reset of peripheral modules related to Ethernet. */
@@ -100,22 +104,22 @@ typedef enum e_bsp_module_reset
     BSP_MODULE_RESET_XSPI1 = (BSP_RESET_MRCTLA_SELECT | BSP_RESET_MRCTL_BIT5_SHIFT),
 
     /** Enables writing to the registers related to GMAC (PCLKH clock domain) reset control. */
-    BSP_MODULE_RESET_GMAC_ACLK = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT0_SHIFT),
+    BSP_MODULE_RESET_GMAC0_PCLKH = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT0_SHIFT),
 
     /** Enables writing to the registers related to GMAC (PCLKM clock domain) reset control. */
-    BSP_MODULE_RESET_GMAC_HCLK = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT1_SHIFT),
+    BSP_MODULE_RESET_GMAC0_PCLKM = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT1_SHIFT),
 
     /** Enables writing to the registers related to ETHSW reset control. */
     BSP_MODULE_RESET_ETHSW = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT2_SHIFT),
 
     /** Enables writing to the registers related to ESC (Bus clock domain) reset control. */
-    BSP_MODULE_RESET_ESC_HCLK = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT3_SHIFT),
+    BSP_MODULE_RESET_ESC_BUS = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT3_SHIFT),
 
     /** Enables writing to the registers related to ESC (IP clock domain) reset control. */
-    BSP_MODULE_RESET_ESC_ESCCLK = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT4_SHIFT),
+    BSP_MODULE_RESET_ESC_IP = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT4_SHIFT),
 
     /** Enables writing to the registers related to Ethernet subsystem register reset control. */
-    BSP_MODULE_RESET_ESC_ETH_ACCESSARY = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT5_SHIFT),
+    BSP_MODULE_RESET_ESC_ETH_SUBSYSTEM = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT5_SHIFT),
 
     /** Enables writing to the registers related to MII converter reset control. */
     BSP_MODULE_RESET_MII = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT6_SHIFT),

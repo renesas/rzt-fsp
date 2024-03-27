@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -69,6 +69,10 @@
  #endif                                /* !defined(BSP_MCU_GROUP_RZT2M) */
 #endif
 
+#if (BSP_CFG_RTOS == 2)
+ #include "src/driver/inc/r_usb_cstd_rtos.h"
+#endif
+
 /******************************************************************************
  * Macro definitions
  ******************************************************************************/
@@ -83,7 +87,6 @@
 usb_event_t g_usb_cstd_event;
 uint16_t    g_usb_change_device_state[USB_NUM_USBIP];
 #else                                  /*(BSP_CFG_RTOS == 0)*/
- #include "src/driver/inc/r_usb_cstd_rtos.h"
 usb_instance_ctrl_t g_usb_cstd_event[USB_EVENT_MAX];
 usb_callback_t    * g_usb_apl_callback[USB_NUM_USBIP];
 
@@ -145,14 +148,6 @@ uint8_t g_usb_resume_ing[USB_NUM_USBIP] =
 const char g_module_name[] = "r_usb";
 #endif
 
-const fsp_version_t g_usb_version =
-{
-    .api_version_minor  = USB_API_VERSION_MINOR,
-    .api_version_major  = USB_API_VERSION_MAJOR,
-    .code_version_major = USB_CODE_VERSION_MAJOR,
-    .code_version_minor = USB_CODE_VERSION_MINOR
-};
-
 /***********************************************************************************************************************
  * Global variables
  **********************************************************************************************************************/
@@ -173,7 +168,6 @@ const usb_api_t g_usb_on_usb =
     .pipeStop             = R_USB_PipeStop,
     .usedPipesGet         = R_USB_UsedPipesGet,
     .pipeInfoGet          = R_USB_PipeInfoGet,
-    .versionGet           = R_USB_VersionGet,
     .eventGet             = R_USB_EventGet,
     .callback             = R_USB_Callback,
     .pullUp               = R_USB_PullUp,
@@ -200,27 +194,6 @@ const usb_api_t g_usb_on_usb =
  * @{
  **********************************************************************************************************************/
 
-/*************************************************************************//**
- * @brief Returns the version of this module.
- *
- * The version number is encoded such
- * that the top two bytes are the major version number and the bottom
- * two bytes are the minor version number.
- *
- * @retval FSP_SUCCESS        Success.
- * @retval FSP_ERR_ASSERTION  Failed in acquiring version information.
- ******************************************************************************/
-fsp_err_t R_USB_VersionGet (fsp_version_t * const p_version)
-{
-#if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_version);
-#endif
-
-    p_version->version_id = g_usb_version.version_id;
-
-    return FSP_SUCCESS;
-}
-
 /**************************************************************************//**
  * @brief Obtains completed USB related events. (OS-less Only)
  *
@@ -236,18 +209,18 @@ fsp_err_t R_USB_VersionGet (fsp_version_t * const p_version)
  * @note Do not use the same variable as the first argument of R_USB_Open for the first argument.
  * @note Do not call this API in the interrupt function.
  ******************************************************************************/
-fsp_err_t R_USB_EventGet (usb_ctrl_t * const p_api_ctrl, usb_status_t * event)
+fsp_err_t R_USB_EventGet (usb_ctrl_t * const p_ctrl, usb_status_t * event)
 {
     fsp_err_t result;
 #if (BSP_CFG_RTOS == 0)
     result   = FSP_SUCCESS;
     (*event) = USB_STATUS_NONE;
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
     usb_cstd_usb_task();
     if (g_usb_cstd_event.write_pointer != g_usb_cstd_event.read_pointer)
     {
-        *p_ctrl  = g_usb_cstd_event.ctrl[g_usb_cstd_event.read_pointer];
+        *p_instance_ctrl = g_usb_cstd_event.ctrl[g_usb_cstd_event.read_pointer];
         (*event) = g_usb_cstd_event.code[g_usb_cstd_event.read_pointer];
         g_usb_cstd_event.read_pointer++;
         if (g_usb_cstd_event.read_pointer >= USB_EVENT_MAX)
@@ -257,7 +230,7 @@ fsp_err_t R_USB_EventGet (usb_ctrl_t * const p_api_ctrl, usb_status_t * event)
     }
 
 #else                                  /* (BSP_CFG_RTOS == 0) */
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
+    FSP_PARAMETER_NOT_USED(p_ctrl);
     FSP_PARAMETER_NOT_USED(*event);
     result = FSP_ERR_USB_FAILED;
 #endif /* (BSP_CFG_RTOS == 0) */
@@ -304,7 +277,7 @@ fsp_err_t R_USB_Callback (usb_callback_t * p_callback)
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_cfg)
+fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
 {
     fsp_err_t err = FSP_SUCCESS;
 #if (BSP_CFG_RTOS == 2)
@@ -313,28 +286,29 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
     usb_utr_t utr;
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
     usb_utr_t hse_utr;
     memset((void *) &hse_utr, 0, sizeof(usb_utr_t));
 #endif                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
     FSP_ASSERT(p_cfg)
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    p_ctrl->module_number = p_cfg->module_number;
-    p_ctrl->type          = (usb_class_t) (p_cfg->type & USB_VALUE_7FH);
-    p_ctrl->p_context     = (void *) p_cfg->p_context;
+    p_instance_ctrl->module_number = p_cfg->module_number;
+    p_instance_ctrl->type          = (usb_class_t) (p_cfg->type & USB_VALUE_7FH);
+    p_instance_ctrl->p_context     = (void *) p_cfg->p_context;
 #if (BSP_CFG_RTOS == 2)
-    g_usb_apl_callback[p_ctrl->module_number] = p_cfg->p_usb_apl_callback;
+    g_usb_apl_callback[p_instance_ctrl->module_number] = p_cfg->p_usb_apl_callback;
 #endif
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
     FSP_ERROR_RETURN(!(((USB_SPEED_HS != p_cfg->usb_speed) && (USB_SPEED_FS != p_cfg->usb_speed)) &&
                        (USB_SPEED_LS != p_cfg->usb_speed) &&
@@ -342,10 +316,10 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
                      FSP_ERR_USB_PARAMETER)
 
  #if defined(BSP_MCU_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
  #endif                                /* defined(BSP_MCU_GROUP_RA2A1) */
 
-    switch ((usb_class_internal_t) p_ctrl->type)
+    switch ((usb_class_internal_t) p_instance_ctrl->type)
     {
         case USB_CLASS_INTERNAL_PCDC:
         case USB_CLASS_INTERNAL_PHID:
@@ -358,7 +332,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
                              FSP_ERR_USB_PARAMETER)
 
  #if defined(BSP_MCU_GROUP_RA6M3)
-            if (USB_IP0 == p_ctrl->module_number)
+            if (USB_IP0 == p_instance_ctrl->module_number)
             {
                 FSP_ERROR_RETURN(USB_SPEED_HS != p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
             }
@@ -382,7 +356,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
  #else                                 /* defined(BSP_MCU_GROUP_RA2A1) */
             FSP_ERROR_RETURN(USB_MODE_HOST == p_cfg->usb_mode, FSP_ERR_USB_PARAMETER)
   #if defined(BSP_MCU_GROUP_RA6M3)
-            FSP_ERROR_RETURN(!((USB_SPEED_HS == p_cfg->usb_speed) && (USB_IP1 != p_ctrl->module_number)),
+            FSP_ERROR_RETURN(!((USB_SPEED_HS == p_cfg->usb_speed) && (USB_IP1 != p_instance_ctrl->module_number)),
                              FSP_ERR_USB_PARAMETER)
   #elif defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
             FSP_ERROR_RETURN(USB_SPEED_HS == p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
@@ -402,15 +376,19 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
 #if (USB_CFG_DMA == USB_CFG_ENABLE)
-    p_ctrl->p_transfer_tx = p_cfg->p_transfer_tx;
-    p_ctrl->p_transfer_rx = p_cfg->p_transfer_rx;
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
+    p_instance_ctrl->p_transfer_tx = p_cfg->p_transfer_tx;
+    p_instance_ctrl->p_transfer_rx = p_cfg->p_transfer_rx;
+#endif
+#endif
  #if defined(USB_CFG_PMSC_USE)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
     extern usb_utr_t g_usb_pmsc_utr;
     g_usb_pmsc_utr.p_transfer_rx = p_cfg->p_transfer_rx;
     g_usb_pmsc_utr.p_transfer_tx = p_cfg->p_transfer_tx;
- #endif                                /* defined(USB_CFG_PMSC_USE) */
 #endif
-    if (USB_YES == is_init[p_ctrl->module_number])
+ #endif                                /* defined(USB_CFG_PMSC_USE) */
+    if (USB_YES == is_init[p_instance_ctrl->module_number])
     {
         return FSP_ERR_USB_BUSY;
     }
@@ -418,36 +396,32 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
 #if (USB_CFG_DMA == USB_CFG_ENABLE)
     if (USB_IP0 == p_cfg->module_number)
     {
-        if (0 != p_ctrl->p_transfer_tx)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
+        if (0 != p_instance_ctrl->p_transfer_tx)
         {
- #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
-            R_DMAC_Open(p_ctrl->p_transfer_tx->p_ctrl, p_ctrl->p_transfer_tx->p_cfg);
- #endif                                /* BSP_MCU_GROUP_RZT2M */
+            R_DMAC_Open(p_instance_ctrl->p_transfer_tx->p_instance_ctrl, p_instance_ctrl->p_transfer_tx->p_cfg);
         }
 
-        if (0 != p_ctrl->p_transfer_rx)
+        if (0 != p_instance_ctrl->p_transfer_rx)
         {
- #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
-            R_DMAC_Open(p_ctrl->p_transfer_rx->p_ctrl, p_ctrl->p_transfer_rx->p_cfg);
- #endif                                /* BSP_MCU_GROUP_RZT2M */
+            R_DMAC_Open(p_instance_ctrl->p_transfer_rx->p_instance_ctrl, p_instance_ctrl->p_transfer_rx->p_cfg);
         }
+#endif
     }
 
     if (USB_IP1 == p_cfg->module_number)
     {
-        if (0 != p_ctrl->p_transfer_tx)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
+        if (0 != p_instance_ctrl->p_transfer_tx)
         {
- #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
-            R_DMAC_Open(p_ctrl->p_transfer_tx->p_ctrl, p_ctrl->p_transfer_tx->p_cfg);
- #endif                                /* BSP_MCU_GROUP_RZT2M */
+            R_DMAC_Open(p_instance_ctrl->p_transfer_tx->p_instance_ctrl, p_instance_ctrl->p_transfer_tx->p_cfg);
         }
 
-        if (0 != p_ctrl->p_transfer_rx)
+        if (0 != p_instance_ctrl->p_transfer_rx)
         {
- #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
-            R_DMAC_Open(p_ctrl->p_transfer_rx->p_ctrl, p_ctrl->p_transfer_rx->p_cfg);
- #endif                                /* BSP_MCU_GROUP_RZT2M */
+            R_DMAC_Open(p_instance_ctrl->p_transfer_rx->p_instance_ctrl, p_instance_ctrl->p_transfer_rx->p_cfg);
         }
+#endif
     }
 #endif
 
@@ -470,17 +444,17 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
 }
 #endif                                 /* USB_NUM_USBIP == 2 */
 
-    is_init[p_ctrl->module_number] = USB_YES;
+    is_init[p_instance_ctrl->module_number] = USB_YES;
 
-    g_usb_open_class[p_ctrl->module_number] = 0;
+    g_usb_open_class[p_instance_ctrl->module_number] = 0;
 
 #if (BSP_CFG_RTOS == 0)
-    g_usb_change_device_state[p_ctrl->module_number] = 0;
+    g_usb_change_device_state[p_instance_ctrl->module_number] = 0;
 #endif                                 /* (BSP_CFG_RTOS == 0) */
 
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-    g_usb_hstd_use_pipe[p_ctrl->module_number] = 0;
-    memset((void *) &g_usb_hdata[p_ctrl->module_number], 0, sizeof(usb_utr_t));
+    g_usb_hstd_use_pipe[p_instance_ctrl->module_number] = 0;
+    memset((void *) &g_usb_hdata[p_instance_ctrl->module_number], 0, sizeof(usb_utr_t));
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
@@ -490,10 +464,10 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
     if (USB_MODE_HOST == p_cfg->usb_mode)
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        g_usb_usbmode[p_ctrl->module_number] = USB_MODE_HOST;
+        g_usb_usbmode[p_instance_ctrl->module_number] = USB_MODE_HOST;
 
-        utr.ip  = p_ctrl->module_number;
-        utr.ipp = usb_hstd_get_usb_ip_adr((uint16_t) p_ctrl->module_number); /* Get the USB IP base address. */
+        utr.ip  = p_instance_ctrl->module_number;
+        utr.ipp = usb_hstd_get_usb_ip_adr((uint16_t) p_instance_ctrl->module_number); /* Get the USB IP base address. */
 
         err = usb_module_start(utr.ip);
         if (FSP_SUCCESS == err)
@@ -514,19 +488,19 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
  #if USB_IP_EHCI_OHCI == 0
             if (USB_SPEED_HS == p_cfg->usb_speed)
             {
-                hse_utr.ip = p_ctrl->module_number;
+                hse_utr.ip = p_instance_ctrl->module_number;
                 hw_usb_set_hse(&hse_utr);
             }
 
             /* Setting USB relation register  */
-            hw_usb_hmodule_init(p_ctrl); /* MCU */
+            hw_usb_hmodule_init(p_instance_ctrl); /* MCU */
  #else
             FSP_PARAMETER_NOT_USED(hse_utr);
  #endif /* USB_IP_EHCI_OHCI == 0 */
 
  #if defined(USB_CFG_HHID_USE)
   #if USB_IP_EHCI_OHCI == 0
-            if (USB_CLASS_INTERNAL_HHID == (usb_class_internal_t) p_ctrl->type)
+            if (USB_CLASS_INTERNAL_HHID == (usb_class_internal_t) p_instance_ctrl->type)
             {
                 hw_usb_hset_trnensel(&utr);
             }
@@ -549,10 +523,10 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
     else
     {
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-        g_usb_usbmode[p_ctrl->module_number] = USB_MODE_PERI;
+        g_usb_usbmode[p_instance_ctrl->module_number] = USB_MODE_PERI;
 
  #if defined(USB_CFG_PMSC_USE)
-        g_usb_pmsc_usbip = p_ctrl->module_number;
+        g_usb_pmsc_usbip = p_instance_ctrl->module_number;
         err              = r_usb_pmsc_media_initialize(p_cfg->p_context); /* Register the media device driver. */
         if (FSP_SUCCESS != err)
         {
@@ -560,19 +534,19 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
         }
  #endif                                /* defined(USB_CFG_PMSC_USE) */
         /* USB module start setting */
-        err = usb_module_start(p_ctrl->module_number);
+        err = usb_module_start(p_instance_ctrl->module_number);
         if (FSP_SUCCESS == err)
         {
             /* USB driver initialization */
-            usb_pdriver_init(p_ctrl, p_cfg);
+            usb_pdriver_init(p_instance_ctrl, p_cfg);
 
             /* Setting MCU(USB interrupt init) register */
-            usb_cpu_usbint_init(p_ctrl->module_number, p_cfg);
+            usb_cpu_usbint_init(p_instance_ctrl->module_number, p_cfg);
 
  #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
             if (USB_SPEED_HS == p_cfg->usb_speed)
             {
-                hse_utr.ip = p_ctrl->module_number;
+                hse_utr.ip = p_instance_ctrl->module_number;
                 hw_usb_set_hse(&hse_utr);
             }
             else
@@ -581,15 +555,15 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
             }
  #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
             /* Setting USB relation register  */
-            hw_usb_pmodule_init(p_ctrl->module_number);
+            hw_usb_pmodule_init(p_instance_ctrl->module_number);
 
-            if (USB_ATTACH == usb_pstd_chk_vbsts(p_ctrl->module_number))
+            if (USB_ATTACH == usb_pstd_chk_vbsts(p_instance_ctrl->module_number))
             {
  #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
-                hw_usb_set_cnen(p_ctrl->module_number);
+                hw_usb_set_cnen(p_instance_ctrl->module_number);
  #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
                 usb_cpu_delay_xms((uint16_t) 10);
-                hw_usb_pset_dprpu(p_ctrl->module_number);
+                hw_usb_pset_dprpu(p_instance_ctrl->module_number);
             }
         }
 #endif                                 /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
@@ -599,25 +573,25 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
     {
         if (USB_MODE_HOST == p_cfg->usb_mode)
         {
-            g_usb_open_class[p_ctrl->module_number] |= (uint16_t) (1 << p_ctrl->type);      /* Set USB Open device class */
-            if (USB_CLASS_INTERNAL_HCDC == (usb_class_internal_t) p_ctrl->type)
+            g_usb_open_class[p_instance_ctrl->module_number] |= (uint16_t) (1 << p_instance_ctrl->type); /* Set USB Open device class */
+            if (USB_CLASS_INTERNAL_HCDC == (usb_class_internal_t) p_instance_ctrl->type)
             {
-                g_usb_open_class[p_ctrl->module_number] |= (1 << USB_CLASS_INTERNAL_HCDCC); /* Set USB Open device class */
+                g_usb_open_class[p_instance_ctrl->module_number] |= (1 << USB_CLASS_INTERNAL_HCDCC);     /* Set USB Open device class */
             }
         }
         else
         {
 #if defined(USB_CFG_PCDC_USE)
-            g_usb_open_class[p_ctrl->module_number] |= (uint16_t) (1 << USB_CLASS_INTERNAL_PCDC);
-            g_usb_open_class[p_ctrl->module_number] |= (uint16_t) (1 << USB_CLASS_INTERNAL_PCDCC);
+            g_usb_open_class[p_instance_ctrl->module_number] |= (uint16_t) (1 << USB_CLASS_INTERNAL_PCDC);
+            g_usb_open_class[p_instance_ctrl->module_number] |= (uint16_t) (1 << USB_CLASS_INTERNAL_PCDCC);
 #endif                                 /* defined(USB_CFG_PCDC_USE) */
 
 #if defined(USB_CFG_PHID_USE)
-            g_usb_open_class[p_ctrl->module_number] |= (uint16_t) (1 << USB_CLASS_INTERNAL_PHID);
+            g_usb_open_class[p_instance_ctrl->module_number] |= (uint16_t) (1 << USB_CLASS_INTERNAL_PHID);
 #endif                                 /* defined(USB_CFG_PHID_USE) */
 
 #if defined(USB_CFG_PMSC_USE)
-            g_usb_open_class[p_ctrl->module_number] |= (uint16_t) (1 << USB_CLASS_INTERNAL_PMSC);
+            g_usb_open_class[p_instance_ctrl->module_number] |= (uint16_t) (1 << USB_CLASS_INTERNAL_PMSC);
 #endif                                 /* defined(USB_CFG_PMSC_USE) */
         }
     }
@@ -639,11 +613,11 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_api_ctrl, usb_cfg_t const * const p_c
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_Close (usb_ctrl_t * const p_api_ctrl)
+fsp_err_t R_USB_Close (usb_ctrl_t * const p_ctrl)
 {
     fsp_err_t ret_code;
 
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
     usb_info_t          info;
@@ -658,19 +632,20 @@ fsp_err_t R_USB_Close (usb_ctrl_t * const p_api_ctrl)
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(USB_NULL != p_api_ctrl)
+    FSP_ASSERT(USB_NULL != p_ctrl)
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
  #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
  #endif                                /* #if defined(BSP_BOARD_GROUP_RA2A1) */
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        switch ((usb_class_internal_t) p_ctrl->type)
+        switch ((usb_class_internal_t) p_instance_ctrl->type)
         {
             case USB_CLASS_INTERNAL_HCDC:
             {
@@ -706,15 +681,15 @@ fsp_err_t R_USB_Close (usb_ctrl_t * const p_api_ctrl)
     }
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    ret_code = usb_module_stop(p_ctrl->module_number);
+    ret_code = usb_module_stop(p_instance_ctrl->module_number);
     if (FSP_SUCCESS == ret_code)
     {
-        is_init[p_ctrl->module_number] = USB_NO;
+        is_init[p_instance_ctrl->module_number] = USB_NO;
 
-        if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+        if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
         {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-            utr.ip  = p_ctrl->module_number;
+            utr.ip  = p_instance_ctrl->module_number;
             utr.ipp = usb_hstd_get_usb_ip_adr(utr.ip);
 
             usb_hstd_driver_release(&utr, class_code);
@@ -726,7 +701,7 @@ fsp_err_t R_USB_Close (usb_ctrl_t * const p_api_ctrl)
                 {
                     ctrl.module_number  = ip;
                     ctrl.device_address = dev_addr;
-                    ctrl.type           = p_ctrl->type;
+                    ctrl.type           = p_instance_ctrl->type;
                     R_USB_InfoGet(&ctrl, &info, ctrl.device_address);
                     if ((USB_NULL != info.speed) && (ctrl.type == info.class_type))
                     {
@@ -740,11 +715,11 @@ fsp_err_t R_USB_Close (usb_ctrl_t * const p_api_ctrl)
         {
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
             usb_pstd_driver_release(); /* Clear the information registered in the structure usb_pcdreg_t. */
-            usb_pstd_clr_pipe_table(p_ctrl->module_number);
+            usb_pstd_clr_pipe_table(p_instance_ctrl->module_number);
 #endif  /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
         }
 
-        g_usb_open_class[p_ctrl->module_number] = 0;
+        g_usb_open_class[p_instance_ctrl->module_number] = 0;
 
 #if defined(USB_CFG_PMSC_USE)
         ret_code = r_usb_pmsc_media_close();
@@ -794,18 +769,18 @@ fsp_err_t R_USB_Close (usb_ctrl_t * const p_api_ctrl)
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_Read (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t size, uint8_t destination)
+fsp_err_t R_USB_Read (usb_ctrl_t * const p_ctrl, uint8_t * p_buf, uint32_t size, uint8_t destination)
 {
     usb_info_t info;
     usb_er_t   err;
     fsp_err_t  result = FSP_ERR_USB_FAILED;
 
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(USB_NULL != p_api_ctrl)
+    FSP_ASSERT(USB_NULL != p_ctrl)
 
-    if (USB_MODE_PERI == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_PERI == g_usb_usbmode[p_instance_ctrl->module_number])
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
         FSP_ERROR_RETURN(((USB_CLASS_PCDC <= destination) && (destination < USB_CLASS_END)), FSP_ERR_USB_PARAMETER)
@@ -820,16 +795,16 @@ fsp_err_t R_USB_Read (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t s
     }
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    if (USB_MODE_PERI == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_PERI == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-        p_ctrl->type = (usb_class_t) (destination & USB_VALUE_7FH);
+        p_instance_ctrl->type = (usb_class_t) (destination & USB_VALUE_7FH);
 #endif                                 /* #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
     }
     else
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        p_ctrl->device_address = destination;
+        p_instance_ctrl->device_address = destination;
 #endif                                 /* #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST) */
     }
 
@@ -838,28 +813,29 @@ fsp_err_t R_USB_Read (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t s
     FSP_ERROR_RETURN((((uint32_t) p_buf & 0x03) == 0), FSP_ERR_USB_PARAMETER)
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
-
- #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
- #endif
-
-    FSP_ERROR_RETURN(!((USB_CLASS_INTERNAL_PCDCC == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_PVND == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_HVND == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_HMSC == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_PMSC == (usb_class_internal_t) p_ctrl->type)),
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
                      FSP_ERR_USB_PARAMETER)
 
-    FSP_ERROR_RETURN(USB_NULL != (g_usb_open_class[p_ctrl->module_number] &
-                                  (1 << p_ctrl->type)),
+ #if defined(BSP_BOARD_GROUP_RA2A1)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+ #endif
+
+    FSP_ERROR_RETURN(!((USB_CLASS_INTERNAL_PCDCC == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_PVND == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_HVND == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_HMSC == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_PMSC == (usb_class_internal_t) p_instance_ctrl->type)),
+                     FSP_ERR_USB_PARAMETER)
+
+    FSP_ERROR_RETURN(USB_NULL != (g_usb_open_class[p_instance_ctrl->module_number] &
+                                  (1 << p_instance_ctrl->type)),
                      FSP_ERR_USB_PARAMETER) /* Check USB Open device class */
 #endif  /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    (void) R_USB_InfoGet(p_ctrl, &info, p_ctrl->device_address);
+    (void) R_USB_InfoGet(p_instance_ctrl, &info, p_instance_ctrl->device_address);
     if (USB_STATUS_CONFIGURED == info.device_status)
     {
-        err = usb_data_read(p_ctrl, p_buf, size);
+        err = usb_data_read(p_instance_ctrl, p_buf, size);
 
         if (USB_OK == err)
         {
@@ -906,18 +882,18 @@ fsp_err_t R_USB_Read (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t s
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_Write (usb_ctrl_t * const p_api_ctrl, uint8_t const * const p_buf, uint32_t size, uint8_t destination)
+fsp_err_t R_USB_Write (usb_ctrl_t * const p_ctrl, uint8_t const * const p_buf, uint32_t size, uint8_t destination)
 {
     usb_info_t info;
     usb_er_t   err;
     fsp_err_t  result = FSP_ERR_USB_FAILED;
 
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(USB_NULL != p_api_ctrl)
+    FSP_ASSERT(USB_NULL != p_ctrl)
 
-    if (USB_MODE_PERI == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_PERI == g_usb_usbmode[p_instance_ctrl->module_number])
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
         FSP_ERROR_RETURN(((USB_CLASS_PCDC <= destination) && (destination < USB_CLASS_END)), FSP_ERR_USB_PARAMETER)
@@ -932,16 +908,16 @@ fsp_err_t R_USB_Write (usb_ctrl_t * const p_api_ctrl, uint8_t const * const p_bu
     }
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    if (USB_MODE_PERI == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_PERI == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-        p_ctrl->type = (usb_class_t) (destination & USB_VALUE_7FH);
+        p_instance_ctrl->type = (usb_class_t) (destination & USB_VALUE_7FH);
 #endif                                 /* USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
     }
     else
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        p_ctrl->device_address = destination;
+        p_instance_ctrl->device_address = destination;
 #endif                                 /* USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
     }
 
@@ -950,28 +926,29 @@ fsp_err_t R_USB_Write (usb_ctrl_t * const p_api_ctrl, uint8_t const * const p_bu
     FSP_ERROR_RETURN((((uint32_t) p_buf & 0x03) == 0), FSP_ERR_USB_PARAMETER)
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
-
- #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
- #endif
-
-    FSP_ERROR_RETURN(!((USB_CLASS_INTERNAL_HCDCC == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_PVND == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_HVND == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_HMSC == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_PMSC == (usb_class_internal_t) p_ctrl->type)),
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
                      FSP_ERR_USB_PARAMETER)
 
-    FSP_ERROR_RETURN(USB_NULL != (g_usb_open_class[p_ctrl->module_number] &
-                                  (1 << p_ctrl->type)),
+ #if defined(BSP_BOARD_GROUP_RA2A1)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+ #endif
+
+    FSP_ERROR_RETURN(!((USB_CLASS_INTERNAL_HCDCC == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_PVND == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_HVND == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_HMSC == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_PMSC == (usb_class_internal_t) p_instance_ctrl->type)),
+                     FSP_ERR_USB_PARAMETER)
+
+    FSP_ERROR_RETURN(USB_NULL != (g_usb_open_class[p_instance_ctrl->module_number] &
+                                  (1 << p_instance_ctrl->type)),
                      FSP_ERR_USB_PARAMETER) /* Check USB Open device class */
 #endif  /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    (void) R_USB_InfoGet(p_ctrl, &info, p_ctrl->device_address);
+    (void) R_USB_InfoGet(p_instance_ctrl, &info, p_instance_ctrl->device_address);
     if (USB_STATUS_CONFIGURED == info.device_status)
     {
-        err = usb_data_write(p_ctrl, p_buf, size);
+        err = usb_data_write(p_instance_ctrl, p_buf, size);
 
         if (USB_OK == err)
         {
@@ -1006,19 +983,19 @@ fsp_err_t R_USB_Write (usb_ctrl_t * const p_api_ctrl, uint8_t const * const p_bu
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_Stop (usb_ctrl_t * const p_api_ctrl, usb_transfer_t direction, uint8_t destination)
+fsp_err_t R_USB_Stop (usb_ctrl_t * const p_ctrl, usb_transfer_t direction, uint8_t destination)
 {
     usb_info_t info;
     usb_er_t   err;
     fsp_err_t  result = FSP_ERR_USB_FAILED;
     info.device_status = 0;
 
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(USB_NULL != p_api_ctrl)
+    FSP_ASSERT(USB_NULL != p_ctrl)
 
-    if (USB_MODE_PERI == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_PERI == g_usb_usbmode[p_instance_ctrl->module_number])
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
         FSP_ERROR_RETURN(USB_CLASS_END > destination, FSP_ERR_USB_PARAMETER)
@@ -1033,16 +1010,16 @@ fsp_err_t R_USB_Stop (usb_ctrl_t * const p_api_ctrl, usb_transfer_t direction, u
     }
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    if (USB_MODE_PERI == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_PERI == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-        p_ctrl->type = (usb_class_t) (destination & USB_VALUE_7FH);
+        p_instance_ctrl->type = (usb_class_t) (destination & USB_VALUE_7FH);
 #endif                                 /* USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
     }
     else
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        p_ctrl->device_address = destination;
+        p_instance_ctrl->device_address = destination;
 #endif                                 /* USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
     }
 
@@ -1050,29 +1027,30 @@ fsp_err_t R_USB_Stop (usb_ctrl_t * const p_api_ctrl, usb_transfer_t direction, u
     FSP_ERROR_RETURN(!((USB_TRANSFER_WRITE != direction) && (USB_TRANSFER_READ != direction)), FSP_ERR_USB_PARAMETER)
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
-
- #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
- #endif
-
-    FSP_ERROR_RETURN(!((USB_CLASS_INTERNAL_PVND == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_HVND == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_HMSC == (usb_class_internal_t) p_ctrl->type) ||
-                       (USB_CLASS_INTERNAL_PMSC == (usb_class_internal_t) p_ctrl->type)),
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
                      FSP_ERR_USB_PARAMETER)
 
-    FSP_ERROR_RETURN(!(((USB_CLASS_INTERNAL_HCDCC == (usb_class_internal_t) p_ctrl->type) &&
+ #if defined(BSP_BOARD_GROUP_RA2A1)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+ #endif
+
+    FSP_ERROR_RETURN(!((USB_CLASS_INTERNAL_PVND == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_HVND == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_HMSC == (usb_class_internal_t) p_instance_ctrl->type) ||
+                       (USB_CLASS_INTERNAL_PMSC == (usb_class_internal_t) p_instance_ctrl->type)),
+                     FSP_ERR_USB_PARAMETER)
+
+    FSP_ERROR_RETURN(!(((USB_CLASS_INTERNAL_HCDCC == (usb_class_internal_t) p_instance_ctrl->type) &&
                         (USB_TRANSFER_WRITE == direction)) ||
-                       ((USB_CLASS_INTERNAL_PCDCC == (usb_class_internal_t) p_ctrl->type) &&
+                       ((USB_CLASS_INTERNAL_PCDCC == (usb_class_internal_t) p_instance_ctrl->type) &&
                         (USB_TRANSFER_READ == direction))),
                      FSP_ERR_USB_PARAMETER)
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    (void) R_USB_InfoGet(p_ctrl, &info, p_ctrl->device_address);
+    (void) R_USB_InfoGet(p_instance_ctrl, &info, p_instance_ctrl->device_address);
     FSP_ERROR_RETURN(USB_STATUS_CONFIGURED == info.device_status, FSP_ERR_USB_FAILED)
 
-    err = usb_data_stop(p_ctrl, direction);
+    err = usb_data_stop(p_instance_ctrl, direction);
 
     if (USB_OK == err)
     {
@@ -1107,47 +1085,48 @@ fsp_err_t R_USB_Stop (usb_ctrl_t * const p_api_ctrl, usb_transfer_t direction, u
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_Suspend (usb_ctrl_t * const p_api_ctrl)
+fsp_err_t R_USB_Suspend (usb_ctrl_t * const p_ctrl)
 {
 #if USB_CFG_MODE == USB_CFG_PERI
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
+    FSP_PARAMETER_NOT_USED(p_ctrl);
 
     return FSP_ERR_USB_FAILED;         /* Support Host only. */
 #else /* USB_CFG_MODE == USB_CFG_PERI */
     fsp_err_t ret_code = FSP_SUCCESS;
 
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
-    FSP_PARAMETER_NOT_USED(*p_ctrl);
+    FSP_PARAMETER_NOT_USED(*p_instance_ctrl);
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
     usb_utr_t  utr;
     usb_info_t info;
     usb_er_t   err;
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
-    FSP_ERROR_RETURN(USB_MODE_PERI != g_usb_usbmode[p_ctrl->module_number], FSP_ERR_USB_FAILED)
+    FSP_ERROR_RETURN(USB_MODE_PERI != g_usb_usbmode[p_instance_ctrl->module_number], FSP_ERR_USB_FAILED)
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(USB_NULL != p_api_ctrl)
+    FSP_ASSERT(USB_NULL != p_ctrl)
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
   #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
   #endif
  #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
 
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-    p_ctrl->device_address = USB_DEVICEADDR;
+    p_instance_ctrl->device_address = USB_DEVICEADDR;
 
-    ret_code = R_USB_InfoGet(p_ctrl, &info, p_ctrl->device_address);
+    ret_code = R_USB_InfoGet(p_instance_ctrl, &info, p_instance_ctrl->device_address);
     FSP_ERROR_RETURN(USB_STATUS_CONFIGURED == info.device_status, FSP_ERR_USB_FAILED)
 
-    utr.ip  = p_ctrl->module_number;
+    utr.ip  = p_instance_ctrl->module_number;
     utr.ipp = usb_hstd_get_usb_ip_adr(utr.ip);
   #if (BSP_CFG_RTOS == 0)
-    if (USB_NULL != (g_usb_change_device_state[p_ctrl->module_number] & (1 << USB_STATUS_SUSPEND)))
+    if (USB_NULL != (g_usb_change_device_state[p_instance_ctrl->module_number] & (1 << USB_STATUS_SUSPEND)))
     {
         return FSP_ERR_USB_BUSY;
     }
@@ -1159,7 +1138,7 @@ fsp_err_t R_USB_Suspend (usb_ctrl_t * const p_api_ctrl)
 
     if (USB_OK == err)
     {
-        g_usb_change_device_state[p_ctrl->module_number] |= (1 << USB_STATUS_SUSPEND);
+        g_usb_change_device_state[p_instance_ctrl->module_number] |= (1 << USB_STATUS_SUSPEND);
     }
     else
     {
@@ -1167,13 +1146,13 @@ fsp_err_t R_USB_Suspend (usb_ctrl_t * const p_api_ctrl)
     }
 
   #else                                /* (BSP_CFG_RTOS == 0) */
-    if (USB_YES == gs_usb_suspend_ing[p_ctrl->module_number])
+    if (USB_YES == gs_usb_suspend_ing[p_instance_ctrl->module_number])
     {
         ret_code = FSP_ERR_USB_BUSY;
     }
     else
     {
-        gs_usb_suspend_ing[p_ctrl->module_number] = USB_YES;
+        gs_usb_suspend_ing[p_instance_ctrl->module_number] = USB_YES;
     }
 
     err = usb_hstd_change_device_state(&utr,
@@ -1185,7 +1164,7 @@ fsp_err_t R_USB_Suspend (usb_ctrl_t * const p_api_ctrl)
     {
         ret_code = FSP_ERR_USB_FAILED;
     }
-    gs_usb_suspend_ing[p_ctrl->module_number] = USB_NO;
+    gs_usb_suspend_ing[p_instance_ctrl->module_number] = USB_NO;
   #endif                               /* (BSP_CFG_RTOS == 0) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
@@ -1211,14 +1190,14 @@ fsp_err_t R_USB_Suspend (usb_ctrl_t * const p_api_ctrl)
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_Resume (usb_ctrl_t * const p_api_ctrl)
+fsp_err_t R_USB_Resume (usb_ctrl_t * const p_ctrl)
 {
 #if USB_CFG_MODE == USB_CFG_PERI
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
+    FSP_PARAMETER_NOT_USED(p_ctrl);
 
     return FSP_ERR_USB_FAILED;         /* Support Host only. */
 #else /* USB_CFG_MODE == USB_CFG_PERI */
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
     usb_utr_t utr;
     usb_er_t  err;
@@ -1228,27 +1207,28 @@ fsp_err_t R_USB_Resume (usb_ctrl_t * const p_api_ctrl)
     info.device_status = 0;
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(USB_NULL != p_api_ctrl)
+    FSP_ASSERT(USB_NULL != p_ctrl)
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
   #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
   #endif
 
-    FSP_ERROR_RETURN(USB_MODE_PERI != g_usb_usbmode[p_ctrl->module_number], FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_MODE_PERI != g_usb_usbmode[p_instance_ctrl->module_number], FSP_ERR_USB_PARAMETER)
  #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    ret_code = R_USB_InfoGet(p_ctrl, &info, p_ctrl->device_address);
+    ret_code = R_USB_InfoGet(p_instance_ctrl, &info, p_instance_ctrl->device_address);
     FSP_ERROR_RETURN(USB_STATUS_SUSPEND == info.device_status, FSP_ERR_USB_NOT_SUSPEND)
 
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-    utr.ip  = p_ctrl->module_number;
+    utr.ip  = p_instance_ctrl->module_number;
     utr.ipp = usb_hstd_get_usb_ip_adr(utr.ip);
 
   #if (BSP_CFG_RTOS == 0)
-    if (USB_NULL != (g_usb_change_device_state[p_ctrl->module_number] & (1 << USB_STATUS_RESUME)))
+    if (USB_NULL != (g_usb_change_device_state[p_instance_ctrl->module_number] & (1 << USB_STATUS_RESUME)))
     {
         return FSP_ERR_USB_BUSY;
     }
@@ -1256,10 +1236,10 @@ fsp_err_t R_USB_Resume (usb_ctrl_t * const p_api_ctrl)
     err = usb_hstd_change_device_state(&utr,
                                        (usb_cb_t) &usb_hstd_resume_complete,
                                        USB_DO_GLOBAL_RESUME,
-                                       p_ctrl->device_address);
+                                       p_instance_ctrl->device_address);
     if (USB_OK == err)
     {
-        g_usb_change_device_state[p_ctrl->module_number] |= (1 << USB_STATUS_RESUME);
+        g_usb_change_device_state[p_instance_ctrl->module_number] |= (1 << USB_STATUS_RESUME);
     }
     else
     {
@@ -1267,13 +1247,13 @@ fsp_err_t R_USB_Resume (usb_ctrl_t * const p_api_ctrl)
     }
 
   #else                                /* (BSP_CFG_RTOS == 0) */
-    if (USB_YES == g_usb_resume_ing[p_ctrl->module_number])
+    if (USB_YES == g_usb_resume_ing[p_instance_ctrl->module_number])
     {
         ret_code = FSP_ERR_USB_BUSY;
     }
     else
     {
-        g_usb_resume_ing[p_ctrl->module_number] = USB_YES;
+        g_usb_resume_ing[p_instance_ctrl->module_number] = USB_YES;
     }
 
     if (FSP_ERR_USB_BUSY == ret_code)
@@ -1284,12 +1264,12 @@ fsp_err_t R_USB_Resume (usb_ctrl_t * const p_api_ctrl)
     err = usb_hstd_change_device_state(&utr,
                                        (usb_cb_t) &usb_hstd_resume_complete,
                                        USB_DO_GLOBAL_RESUME,
-                                       p_ctrl->device_address);
+                                       p_instance_ctrl->device_address);
     if (USB_OK != err)
     {
         ret_code = FSP_ERR_USB_FAILED;
     }
-    g_usb_resume_ing[p_ctrl->module_number] = USB_NO;
+    g_usb_resume_ing[p_instance_ctrl->module_number] = USB_NO;
   #endif                               /* (BSP_CFG_RTOS == 0) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
     return ret_code;
@@ -1307,34 +1287,35 @@ fsp_err_t R_USB_Resume (usb_ctrl_t * const p_api_ctrl)
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_VbusSet (usb_ctrl_t * const p_api_ctrl, uint16_t state)
+fsp_err_t R_USB_VbusSet (usb_ctrl_t * const p_ctrl, uint16_t state)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if (USB_CFG_MODE == USB_CFG_PERI)
     FSP_PARAMETER_NOT_USED(state);
-    FSP_PARAMETER_NOT_USED(*p_ctrl);
+    FSP_PARAMETER_NOT_USED(*p_instance_ctrl);
 
     return FSP_ERR_USB_FAILED;
 #else
     usb_utr_t utr;
 
-    FSP_ERROR_RETURN(USB_MODE_PERI != g_usb_usbmode[p_ctrl->module_number], FSP_ERR_USB_FAILED)
+    FSP_ERROR_RETURN(USB_MODE_PERI != g_usb_usbmode[p_instance_ctrl->module_number], FSP_ERR_USB_FAILED)
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(USB_NULL != p_api_ctrl)
+    FSP_ASSERT(USB_NULL != p_ctrl)
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
   #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
   #endif                               /* defined(BSP_BOARD_GROUP_RA2A1)  */
 
     FSP_ERROR_RETURN(!((USB_ON != state) && (USB_OFF != state)), FSP_ERR_USB_PARAMETER)
  #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    utr.ip  = p_ctrl->module_number;
+    utr.ip  = p_instance_ctrl->module_number;
     utr.ipp = usb_hstd_get_usb_ip_adr(utr.ip);
 
     if (USB_ON == state)
@@ -1361,10 +1342,10 @@ fsp_err_t R_USB_VbusSet (usb_ctrl_t * const p_api_ctrl, uint16_t state)
  * @retval FSP_ERR_USB_FAILED       The function could not be completed successfully.
  * @retval FSP_ERR_USB_PARAMETER    Parameter error.
  ******************************************************************************/
-fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_api_ctrl, usb_info_t * p_info, uint8_t destination)
+fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_ctrl, usb_info_t * p_info, uint8_t destination)
 {
     fsp_err_t             ret_code = FSP_SUCCESS;
-    usb_instance_ctrl_t * p_ctrl   = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
     usb_utr_t             utr;
 
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
@@ -1373,10 +1354,10 @@ fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_api_ctrl, usb_info_t * p_info, uin
 #endif                                 /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
     FSP_ASSERT(p_info)
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
         FSP_ASSERT(destination)
@@ -1385,35 +1366,36 @@ fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_api_ctrl, usb_info_t * p_info, uin
     }
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
  #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
  #endif                                /* #if defined(BSP_BOARD_GROUP_RA2A1) */
 #else                                  /* USB_CFG_PARAM_CHECKING_ENABLE */
-    FSP_PARAMETER_NOT_USED(*p_ctrl);
+    FSP_PARAMETER_NOT_USED(*p_instance_ctrl);
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        p_ctrl->device_address = destination;
+        p_instance_ctrl->device_address = destination;
 #endif                                         /* #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST) */
     }
 
     p_info->device_status = USB_STATUS_DETACH; /* Initialized for warning measures. */
 
-    FSP_ERROR_RETURN(0 != g_usb_open_class[p_ctrl->module_number], FSP_ERR_USB_FAILED)
+    FSP_ERROR_RETURN(0 != g_usb_open_class[p_instance_ctrl->module_number], FSP_ERR_USB_FAILED)
 
-    utr.ip = p_ctrl->module_number;
+    utr.ip = p_instance_ctrl->module_number;
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
         utr.ipp = usb_hstd_get_usb_ip_adr(utr.ip);
 
         /* Set USB Device class */
-        switch (g_usb_hstd_device_info[utr.ip][p_ctrl->device_address][3])
+        switch (g_usb_hstd_device_info[utr.ip][p_instance_ctrl->device_address][3])
         {
             case USB_IFCLS_CDC:
             {
@@ -1447,7 +1429,7 @@ fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_api_ctrl, usb_info_t * p_info, uin
         }
 
         /* Set USB connect speed */
-        switch (g_usb_hstd_device_info[utr.ip][p_ctrl->device_address][4])
+        switch (g_usb_hstd_device_info[utr.ip][p_instance_ctrl->device_address][4])
         {
             case USB_NOCONNECT:
             {
@@ -1481,7 +1463,7 @@ fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_api_ctrl, usb_info_t * p_info, uin
         }
 
         /* Set USB device state */
-        switch (g_usb_hstd_device_info[utr.ip][p_ctrl->device_address][1])
+        switch (g_usb_hstd_device_info[utr.ip][p_instance_ctrl->device_address][1])
         {
             case USB_POWERED:          /* Power state  */
             {
@@ -1528,7 +1510,7 @@ fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_api_ctrl, usb_info_t * p_info, uin
 
         /* Set USB Peri BC port state */
  #if USB_CFG_BC == USB_CFG_ENABLE
-        if (USB_DEVICEADDR == p_ctrl->device_address) /* Check Root port address */
+        if (USB_DEVICEADDR == p_instance_ctrl->device_address) /* Check Root port address */
         {
             if (USB_BC_STATE_CDP == g_usb_hstd_bc[utr.ip].state)
             {
@@ -1586,7 +1568,7 @@ fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_api_ctrl, usb_info_t * p_info, uin
             }
         }
 
-        status = hw_usb_read_intsts(p_ctrl->module_number);
+        status = hw_usb_read_intsts(p_instance_ctrl->module_number);
         switch ((uint16_t) (status & USB_DVSQ))
         {
             case USB_DS_POWR:          /* Power state  */
@@ -1660,12 +1642,12 @@ fsp_err_t R_USB_InfoGet (usb_ctrl_t * const p_api_ctrl, usb_info_t * p_info, uin
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_PipeRead (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t size, uint8_t pipe_number)
+fsp_err_t R_USB_PipeRead (usb_ctrl_t * const p_ctrl, uint8_t * p_buf, uint32_t size, uint8_t pipe_number)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if !defined(USB_CFG_HVND_USE) && !defined(USB_CFG_PVND_USE)
-    FSP_PARAMETER_NOT_USED(*p_ctrl);
+    FSP_PARAMETER_NOT_USED(*p_instance_ctrl);
     FSP_PARAMETER_NOT_USED(*p_buf);
     FSP_PARAMETER_NOT_USED(size);
     FSP_PARAMETER_NOT_USED(pipe_number);
@@ -1682,50 +1664,51 @@ fsp_err_t R_USB_PipeRead (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32
     usb_info_t info;
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
  #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    p_ctrl->pipe = pipe_number;
+    p_instance_ctrl->pipe = pipe_number;
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ERROR_RETURN((((USB_PIPE0 != p_ctrl->pipe)) || (USB_MAXPIPE_NUM < p_ctrl->pipe)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN((((USB_PIPE0 != p_instance_ctrl->pipe)) || (USB_MAXPIPE_NUM < p_instance_ctrl->pipe)),
+                     FSP_ERR_USB_PARAMETER)
 
     FSP_ASSERT(!((USB_NULL == p_buf) || (USB_NULL == size)))
     FSP_ERROR_RETURN((((uint32_t) p_buf & 0x03) == 0), FSP_ERR_USB_PARAMETER)
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number) &&
-                       (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])),
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number) &&
+                       (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])),
                      FSP_ERR_USB_PARAMETER)
 
-    FSP_ERROR_RETURN(USB_NULL != (g_usb_open_class[p_ctrl->module_number] &
-                                  (1 << p_ctrl->type)),
+    FSP_ERROR_RETURN(USB_NULL != (g_usb_open_class[p_instance_ctrl->module_number] &
+                                  (1 << p_instance_ctrl->type)),
                      FSP_ERR_USB_PARAMETER) /* Check USB Open device class */
  #endif /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    ret_code = R_USB_InfoGet(p_ctrl, &info);
+    ret_code = R_USB_InfoGet(p_instance_ctrl, &info);
     if (USB_STATUS_CONFIGURED == info.device_status)
     {
         /* PIPE Transfer set */
-        if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+        if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
         {
  #if defined(USB_CFG_HVND_USE)
   #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
    #if (BSP_CFG_RTOS == 2)
             p_tran_data = (usb_utr_t *) &tran_data;
    #else                               /* (BSP_CFG_RTOS == 2) */
-            p_tran_data = (usb_utr_t *) &g_usb_hdata[p_ctrl->module][p_ctrl->pipe];
+            p_tran_data = (usb_utr_t *) &g_usb_hdata[p_instance_ctrl->module][p_instance_ctrl->pipe];
    #endif /* (BSP_CFG_RTOS == 2) */
 
-            p_tran_data->ip                       = p_ctrl->module;
+            p_tran_data->ip                       = p_instance_ctrl->module;
             p_tran_data->ipp                      = usb_hstd_get_usb_ip_adr(p_tran_data->ip);
-            p_tran_data->keyword                  = p_ctrl->pipe;           /* Pipe No */
+            p_tran_data->keyword                  = p_instance_ctrl->pipe;  /* Pipe No */
             p_tran_data->p_tranadr                = buf;                    /* Data address */
             p_tran_data->tranlen                  = size;                   /* Data Size */
             p_tran_data->p_setup                  = 0;
             p_tran_data->complete                 = usb_hvnd_read_complete; /* Callback function */
             p_tran_data->segment                  = USB_TRAN_END;
-            *(uint32_t *) p_tran_data->p_usr_data = p_ctrl->device_address;
+            *(uint32_t *) p_tran_data->p_usr_data = p_instance_ctrl->device_address;
             p_tran_data->read_req_len             = size;                   /* Data Size */
 
             err = usb_hstd_transfer_start(p_tran_data);                     /* USB Transfer Start */
@@ -1750,11 +1733,11 @@ fsp_err_t R_USB_PipeRead (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32
    #if (BSP_CFG_RTOS == 2)
             p_tran_data = (usb_utr_t *) &tran_data;
    #else                                                                    /* (BSP_CFG_RTOS == 2) */
-            p_tran_data = (usb_utr_t *) &g_usb_pdata[p_ctrl->pipe];
+            p_tran_data = (usb_utr_t *) &g_usb_pdata[p_instance_ctrl->pipe];
    #endif /* (BSP_CFG_RTOS == 2) */
 
-            p_tran_data->ip           = p_ctrl->module_number;              /* USB Module Number */
-            p_tran_data->keyword      = p_ctrl->pipe;                       /* Pipe No */
+            p_tran_data->ip           = p_instance_ctrl->module_number;     /* USB Module Number */
+            p_tran_data->keyword      = p_instance_ctrl->pipe;              /* Pipe No */
             p_tran_data->p_tranadr    = buf;                                /* Data address */
             p_tran_data->tranlen      = size;                               /* Data Size */
             p_tran_data->complete     = (usb_cb_t) &usb_pvnd_read_complete; /* Callback function */
@@ -1797,12 +1780,12 @@ fsp_err_t R_USB_PipeRead (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_PipeWrite (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t size, uint8_t pipe_number)
+fsp_err_t R_USB_PipeWrite (usb_ctrl_t * const p_ctrl, uint8_t * p_buf, uint32_t size, uint8_t pipe_number)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if !defined(USB_CFG_HVND_USE) && !defined(USB_CFG_PVND_USE)
-    FSP_PARAMETER_NOT_USED(*p_ctrl);
+    FSP_PARAMETER_NOT_USED(*p_instance_ctrl);
     FSP_PARAMETER_NOT_USED(*p_buf);
     FSP_PARAMETER_NOT_USED(size);
     FSP_PARAMETER_NOT_USED(pipe_number);
@@ -1818,46 +1801,49 @@ fsp_err_t R_USB_PipeWrite (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint3
  #endif                                /* (BSP_CFG_RTOS == 2) */
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
     FSP_ERROR_RETURN((((uint32_t) p_buf & 0x03) == 0), FSP_ERR_USB_PARAMETER)
  #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    p_ctrl->pipe = pipe_number;
+    p_instance_ctrl->pipe = pipe_number;
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
-
-    FSP_ERROR_RETURN((((USB_NULL != p_buf) || (USB_PIPE0 != p_ctrl->pipe)) || (USB_MAXPIPE_NUM > p_ctrl->pipe)),
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
                      FSP_ERR_USB_PARAMETER)
 
-    if (USB_MODE_PERI == g_usb_usbmode[p_ctrl->module_number])
+    FSP_ERROR_RETURN((((USB_NULL != p_buf) || (USB_PIPE0 != p_instance_ctrl->pipe)) ||
+                      (USB_MAXPIPE_NUM > p_instance_ctrl->pipe)),
+                     FSP_ERR_USB_PARAMETER)
+
+    if (USB_MODE_PERI == g_usb_usbmode[p_instance_ctrl->module_number])
     {
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
         FSP_ASSERT((USB_NULL != p_buf) && (USB_NULL == size))
   #endif                                                                                                                 /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
     }
-    FSP_ERROR_RETURN(USB_NULL == (g_usb_open_class[p_ctrl->module_number] & (1 << p_ctrl->type)), FSP_ERR_USB_PARAMETER) /* Check USB Open device class */
+    FSP_ERROR_RETURN(USB_NULL == (g_usb_open_class[p_instance_ctrl->module_number] & (1 << p_instance_ctrl->type)),
+                     FSP_ERR_USB_PARAMETER) /* Check USB Open device class */
  #endif                                                                                                                  /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    ret_code = R_USB_InfoGet(p_ctrl, &info);
+    ret_code = R_USB_InfoGet(p_instance_ctrl, &info);
     if (USB_STATUS_CONFIGURED == info.device_status)
     {
         /* PIPE Transfer set */
-        if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+        if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
         {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
   #if defined(USB_CFG_HVND_USE)
    #if (BSP_CFG_RTOS == 2)
             p_tran_data = (usb_utr_t *) &tran_data;
    #else                               /* (BSP_CFG_RTOS == 2) */
-            p_tran_data = (usb_utr_t *) &g_usb_hdata[p_ctrl->module_number][p_ctrl->pipe];
+            p_tran_data = (usb_utr_t *) &g_usb_hdata[p_instance_ctrl->module_number][p_instance_ctrl->pipe];
    #endif /* (BSP_CFG_RTOS == 2) */
 
-            p_tran_data->ip        = p_ctrl->module_number;
-            p_tran_data->ipp       = usb_hstd_get_usb_ip_adr((uint8_t) p_ctrl->module_number);
-            p_tran_data->keyword   = p_ctrl->pipe;            /* Pipe No */
+            p_tran_data->ip        = p_instance_ctrl->module_number;
+            p_tran_data->ipp       = usb_hstd_get_usb_ip_adr((uint8_t) p_instance_ctrl->module_number);
+            p_tran_data->keyword   = p_instance_ctrl->pipe;   /* Pipe No */
             p_tran_data->p_tranadr = buf;                     /* Data address */
             p_tran_data->tranlen   = size;                    /* Data Size */
             p_tran_data->complete  = usb_hvnd_write_complete; /* Callback function */
@@ -1884,11 +1870,11 @@ fsp_err_t R_USB_PipeWrite (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint3
    #if (BSP_CFG_RTOS == 2)
             p_tran_data = (usb_utr_t *) &tran_data;
    #else                                                      /* (BSP_CFG_RTOS == 2) */
-            p_tran_data = (usb_utr_t *) &g_usb_pdata[p_ctrl->pipe];
+            p_tran_data = (usb_utr_t *) &g_usb_pdata[p_instance_ctrl->pipe];
    #endif /* (BSP_CFG_RTOS == 2) */
 
-            p_tran_data->ip        = p_ctrl->module_number;   /* USB Module Number */
-            p_tran_data->keyword   = p_ctrl->pipe;            /* Pipe No */
+            p_tran_data->ip        = p_instance_ctrl->module_number; /* USB Module Number */
+            p_tran_data->keyword   = p_instance_ctrl->pipe;          /* Pipe No */
             p_tran_data->p_tranadr = buf;                     /* Data address */
             p_tran_data->tranlen   = size;                    /* Data Size */
             p_tran_data->complete  = usb_pvnd_write_complete; /* Callback function */
@@ -1924,12 +1910,12 @@ fsp_err_t R_USB_PipeWrite (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint3
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_PipeStop (usb_ctrl_t * const p_api_ctrl, uint8_t pipe_number)
+fsp_err_t R_USB_PipeStop (usb_ctrl_t * const p_ctrl, uint8_t pipe_number)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if !defined(USB_CFG_HVND_USE) && !defined(USB_CFG_PVND_USE)
-    FSP_PARAMETER_NOT_USED(*p_ctrl);
+    FSP_PARAMETER_NOT_USED(*p_instance_ctrl);
     FSP_PARAMETER_NOT_USED(pipe_number);
 
     return FSP_ERR_USB_FAILED;
@@ -1939,45 +1925,47 @@ fsp_err_t R_USB_PipeStop (usb_ctrl_t * const p_api_ctrl, uint8_t pipe_number)
     usb_info_t info;
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
  #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
 
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
     usb_utr_t utr;
-    utr.ip = p_ctrl->module_number;
+    utr.ip = p_instance_ctrl->module_number;
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
         utr.ipp = usb_hstd_get_usb_ip_adr(utr.ip);
     }
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
-    p_ctrl->pipe = pipe_number;
+    p_instance_ctrl->pipe = pipe_number;
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
-    FSP_ERROR_RETURN(USB_PIPE0 != p_ctrl->pipe, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_PIPE0 != p_instance_ctrl->pipe, FSP_ERR_USB_PARAMETER)
 
-    FSP_ERROR_RETURN(USB_MAXPIPE_NUM > p_ctrl->pipe, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_MAXPIPE_NUM > p_instance_ctrl->pipe, FSP_ERR_USB_PARAMETER)
 
-    FSP_ERROR_RETURN(USB_NULL != (g_usb_open_class[p_ctrl->module_number] & (1 << p_ctrl->type)), FSP_ERR_USB_PARAMETER) /* Check USB Open device class */
+    FSP_ERROR_RETURN(USB_NULL != (g_usb_open_class[p_instance_ctrl->module_number] & (1 << p_instance_ctrl->type)),
+                     FSP_ERR_USB_PARAMETER) /* Check USB Open device class */
  #endif /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    err = R_USB_InfoGet(p_ctrl, &info);
+    err = R_USB_InfoGet(p_instance_ctrl, &info);
     FSP_ERROR_RETURN(USB_STATUS_CONFIGURED == info.device_status, FSP_ERR_USB_FAILED)
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        err = usb_hstd_transfer_end(&utr, p_ctrl->pipe, (uint16_t) USB_DATA_STOP);
+        err = usb_hstd_transfer_end(&utr, p_instance_ctrl->pipe, (uint16_t) USB_DATA_STOP);
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
     }
     else
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-        err = usb_pstd_transfer_end(&utr, p_ctrl->pipe);
+        err = usb_pstd_transfer_end(&utr, p_instance_ctrl->pipe);
  #endif                                /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
     }
 
@@ -2001,24 +1989,24 @@ fsp_err_t R_USB_PipeStop (usb_ctrl_t * const p_api_ctrl, uint8_t pipe_number)
  * @retval FSP_ERR_ASSERTION        Parameter is NULL error.
  * @retval FSP_ERR_USB_PARAMETER    Parameter error.
  ******************************************************************************/
-fsp_err_t R_USB_UsedPipesGet (usb_ctrl_t * const p_api_ctrl, uint16_t * p_pipe, uint8_t destination)
+fsp_err_t R_USB_UsedPipesGet (usb_ctrl_t * const p_ctrl, uint16_t * p_pipe, uint8_t destination)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
     usb_info_t info;
     uint32_t   pipe_no;
 
     info.device_status = 0;
 
-    FSP_PARAMETER_NOT_USED(*p_ctrl);
+    FSP_PARAMETER_NOT_USED(*p_instance_ctrl);
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
     FSP_PARAMETER_NOT_USED(destination);
 #endif                                 /* ( (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST ) */
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(!((USB_NULL == p_ctrl) || (USB_NULL == p_pipe)))
+    FSP_ASSERT(!((USB_NULL == p_instance_ctrl) || (USB_NULL == p_pipe)))
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
         FSP_ASSERT(destination)
@@ -2027,34 +2015,35 @@ fsp_err_t R_USB_UsedPipesGet (usb_ctrl_t * const p_api_ctrl, uint16_t * p_pipe, 
     }
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
  #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(USB_IP1 != p_ctrl->module_number, FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(USB_IP1 != p_instance_ctrl->module_number, FSP_ERR_USB_PARAMETER)
  #endif                                /* defined(BSP_BOARD_GROUP_RA2A1)  */
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        p_ctrl->device_address = destination;
+        p_instance_ctrl->device_address = destination;
 #endif                                 /* ( (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST ) */
     }
 
-    R_USB_InfoGet(p_ctrl, &info, p_ctrl->device_address);
+    R_USB_InfoGet(p_instance_ctrl, &info, p_instance_ctrl->device_address);
     FSP_ERROR_RETURN(USB_STATUS_CONFIGURED == info.device_status, FSP_ERR_USB_FAILED)
 
     /* Get PIPE Number from Endpoint address */
     * p_pipe = ((uint16_t) 1 << USB_PIPE0);
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
         for (pipe_no = USB_MIN_PIPE_NO; pipe_no < (USB_MAX_PIPE_NO + 1); pipe_no++)
         {
-            if (USB_TRUE == g_usb_pipe_table[p_ctrl->module_number][pipe_no].use_flag)
+            if (USB_TRUE == g_usb_pipe_table[p_instance_ctrl->module_number][pipe_no].use_flag)
             {
-                if ((((uint16_t) p_ctrl->device_address) << USB_DEVADDRBIT) ==
-                    (uint16_t) (g_usb_pipe_table[p_ctrl->module_number][pipe_no].pipe_maxp & USB_DEVSEL))
+                if ((((uint16_t) p_instance_ctrl->device_address) << USB_DEVADDRBIT) ==
+                    (uint16_t) (g_usb_pipe_table[p_instance_ctrl->module_number][pipe_no].pipe_maxp & USB_DEVSEL))
                 {
                     (*p_pipe) = (uint16_t) ((*p_pipe) | (uint16_t) 1 << pipe_no);
                 }
@@ -2067,7 +2056,7 @@ fsp_err_t R_USB_UsedPipesGet (usb_ctrl_t * const p_api_ctrl, uint16_t * p_pipe, 
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
         for (pipe_no = USB_MIN_PIPE_NO; pipe_no < (USB_MAX_PIPE_NO + 1); pipe_no++)
         {
-            if (USB_TRUE == g_usb_pipe_table[p_ctrl->module_number][pipe_no].use_flag)
+            if (USB_TRUE == g_usb_pipe_table[p_instance_ctrl->module_number][pipe_no].use_flag)
             {
                 (*p_pipe) = (uint16_t) ((*p_pipe) | (uint16_t) (1 << pipe_no));
             }
@@ -2090,9 +2079,9 @@ fsp_err_t R_USB_UsedPipesGet (usb_ctrl_t * const p_api_ctrl, uint16_t * p_pipe, 
  * @retval FSP_ERR_ASSERTION        Parameter is NULL error.
  * @retval FSP_ERR_USB_PARAMETER    Parameter error.
  ******************************************************************************/
-fsp_err_t R_USB_PipeInfoGet (usb_ctrl_t * const p_api_ctrl, usb_pipe_t * p_info, uint8_t pipe_number)
+fsp_err_t R_USB_PipeInfoGet (usb_ctrl_t * const p_ctrl, usb_pipe_t * p_info, uint8_t pipe_number)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
     usb_info_t info;
     info.device_status = 0;
@@ -2101,42 +2090,44 @@ fsp_err_t R_USB_PipeInfoGet (usb_ctrl_t * const p_api_ctrl, usb_pipe_t * p_info,
     usb_utr_t utr;
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
     FSP_ASSERT(p_info)
     FSP_ASSERT(pipe_number)
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    p_ctrl->pipe = pipe_number;
+    p_instance_ctrl->pipe = pipe_number;
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
 
     /* Argument Checking */
-    FSP_ERROR_RETURN(!((USB_IP0 != p_ctrl->module_number) && (USB_IP1 != p_ctrl->module_number)), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!((USB_IP0 != p_instance_ctrl->module_number) && (USB_IP1 != p_instance_ctrl->module_number)),
+                     FSP_ERR_USB_PARAMETER)
 
-    FSP_ERROR_RETURN(!(USB_MAXPIPE_NUM < p_ctrl->pipe), FSP_ERR_USB_PARAMETER)
+    FSP_ERROR_RETURN(!(USB_MAXPIPE_NUM < p_instance_ctrl->pipe), FSP_ERR_USB_PARAMETER)
 
  #if defined(BSP_BOARD_GROUP_RA2A1)
-    FSP_ERROR_RETURN(!((USB_IP1 == p_ctrl->module_number) && (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])),
+    FSP_ERROR_RETURN(!((USB_IP1 == p_instance_ctrl->module_number) &&
+                       (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])),
                      FSP_ERR_USB_PARAMETER)
  #endif
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    utr.ip = p_ctrl->module_number;
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    utr.ip = p_instance_ctrl->module_number;
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
         utr.ipp = usb_hstd_get_usb_ip_adr(utr.ip);
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
     }
 
-    R_USB_InfoGet(p_ctrl, &info, p_ctrl->device_address);
+    R_USB_InfoGet(p_instance_ctrl, &info, p_instance_ctrl->device_address);
     FSP_ERROR_RETURN(USB_STATUS_CONFIGURED == info.device_status, FSP_ERR_USB_FAILED)
 
-    if (USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number])
+    if (USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number])
     {
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-        p_info->endpoint = usb_hstd_pipe_to_epadr(&utr, p_ctrl->pipe);
-        pipe_type        = usb_cstd_get_pipe_type(&utr, p_ctrl->pipe);
+        p_info->endpoint = usb_hstd_pipe_to_epadr(&utr, p_instance_ctrl->pipe);
+        pipe_type        = usb_cstd_get_pipe_type(&utr, p_instance_ctrl->pipe);
 
         switch (pipe_type)
         {
@@ -2167,7 +2158,7 @@ fsp_err_t R_USB_PipeInfoGet (usb_ctrl_t * const p_api_ctrl, usb_pipe_t * p_info,
 
         if (FSP_ERR_USB_FAILED != result)
         {
-            p_info->maxpacketsize = usb_cstd_get_maxpacket_size(&utr, p_ctrl->pipe); /* Set Max packet size */
+            p_info->maxpacketsize = usb_cstd_get_maxpacket_size(&utr, p_instance_ctrl->pipe); /* Set Max packet size */
             result                = FSP_SUCCESS;
         }
 #endif  /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
@@ -2177,13 +2168,16 @@ fsp_err_t R_USB_PipeInfoGet (usb_ctrl_t * const p_api_ctrl, usb_pipe_t * p_info,
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
 
         /* Get PIPE Number from Endpoint address */
-        p_info->endpoint = (uint8_t) (g_usb_pipe_table[p_ctrl->module_number][p_ctrl->pipe].pipe_cfg & USB_EPNUMFIELD); /* Set EP num. */
-        if (USB_DIR_P_IN == (g_usb_pipe_table[p_ctrl->module_number][p_ctrl->pipe].pipe_cfg & USB_DIRFIELD))            /* Check dir */
+        p_info->endpoint =
+            (uint8_t) (g_usb_pipe_table[p_instance_ctrl->module_number][p_instance_ctrl->pipe].pipe_cfg &
+                       USB_EPNUMFIELD);                                                                        /* Set EP num. */
+        if (USB_DIR_P_IN ==
+            (g_usb_pipe_table[p_instance_ctrl->module_number][p_instance_ctrl->pipe].pipe_cfg & USB_DIRFIELD)) /* Check dir */
         {
             p_info->endpoint |= USB_EP_DIR_IN;                                                                          /* Set DIR IN */
         }
 
-        pipe_type = usb_cstd_get_pipe_type(&utr, p_ctrl->pipe);
+        pipe_type = usb_cstd_get_pipe_type(&utr, p_instance_ctrl->pipe);
 
         switch (pipe_type)
         {
@@ -2214,7 +2208,7 @@ fsp_err_t R_USB_PipeInfoGet (usb_ctrl_t * const p_api_ctrl, usb_pipe_t * p_info,
 
         if (FSP_ERR_USB_FAILED != result)
         {
-            p_info->maxpacketsize = usb_cstd_get_maxpacket_size(&utr, p_ctrl->pipe); /* Set Max packet size */
+            p_info->maxpacketsize = usb_cstd_get_maxpacket_size(&utr, p_instance_ctrl->pipe); /* Set Max packet size */
             result                = FSP_SUCCESS;
         }
 #endif  /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
@@ -2234,26 +2228,26 @@ fsp_err_t R_USB_PipeInfoGet (usb_ctrl_t * const p_api_ctrl, usb_pipe_t * p_info,
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_PullUp (usb_ctrl_t * const p_api_ctrl, uint8_t state)
+fsp_err_t R_USB_PullUp (usb_ctrl_t * const p_ctrl, uint8_t state)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if (USB_CFG_MODE == USB_CFG_HOST)
-    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(p_instance_ctrl);
     FSP_PARAMETER_NOT_USED(state);
 
     return FSP_ERR_USB_FAILED;
 #else                                  /* USB_CFG_MODE == USB_CFG_HOST */
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
 
     /* Argument Checking */
     FSP_ERROR_RETURN(!((USB_ON != state) && (USB_OFF != state)), FSP_ERR_USB_PARAMETER)
  #endif                                                                                            /* #if USB_CFG_PARAM_CHECKING_ENABLE */
 
-    FSP_ERROR_RETURN(!(USB_MODE_HOST == g_usb_usbmode[p_ctrl->module_number]), FSP_ERR_USB_FAILED) /* Support Peri only. */
+    FSP_ERROR_RETURN(!(USB_MODE_HOST == g_usb_usbmode[p_instance_ctrl->module_number]), FSP_ERR_USB_FAILED) /* Support Peri only. */
 
-    hw_usb_pcontrol_dprpu(p_ctrl->module_number, state);
+    hw_usb_pcontrol_dprpu(p_instance_ctrl->module_number, state);
 
     return FSP_SUCCESS;
 #endif                                 /* USB_CFG_MODE == USB_CFG_HOST */
@@ -2272,18 +2266,18 @@ fsp_err_t R_USB_PullUp (usb_ctrl_t * const p_api_ctrl, uint8_t state)
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_HostControlTransfer (usb_ctrl_t * const p_api_ctrl,
+fsp_err_t R_USB_HostControlTransfer (usb_ctrl_t * const p_ctrl,
                                      usb_setup_t      * p_setup,
                                      uint8_t          * p_buf,
                                      uint8_t            device_address)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
     usb_er_t  err    = USB_ERROR;
     fsp_err_t result = FSP_ERR_USB_FAILED;
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
     FSP_ASSERT(p_setup)
     FSP_ASSERT(!((USB_NULL == p_buf) && (0 != p_setup->request_length)))
     FSP_ASSERT(device_address)
@@ -2292,19 +2286,19 @@ fsp_err_t R_USB_HostControlTransfer (usb_ctrl_t * const p_api_ctrl,
     FSP_ERROR_RETURN(USB_MAXDEVADDR >= device_address, FSP_ERR_USB_PARAMETER)
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    p_ctrl->device_address       = device_address;
-    p_ctrl->setup.request_type   = p_setup->request_type;
-    p_ctrl->setup.request_value  = p_setup->request_value;
-    p_ctrl->setup.request_index  = p_setup->request_index;
-    p_ctrl->setup.request_length = p_setup->request_length;
+    p_instance_ctrl->device_address       = device_address;
+    p_instance_ctrl->setup.request_type   = p_setup->request_type;
+    p_instance_ctrl->setup.request_value  = p_setup->request_value;
+    p_instance_ctrl->setup.request_index  = p_setup->request_index;
+    p_instance_ctrl->setup.request_length = p_setup->request_length;
 
-    if ((p_ctrl->setup.request_type & USB_HOST_TO_DEV) == USB_HOST_TO_DEV)
+    if ((p_instance_ctrl->setup.request_type & USB_HOST_TO_DEV) == USB_HOST_TO_DEV)
     {
-        err = usb_ctrl_read(p_ctrl, p_buf, p_ctrl->setup.request_length);  /* Request Control transfer */
+        err = usb_ctrl_read(p_instance_ctrl, p_buf, p_instance_ctrl->setup.request_length);  /* Request Control transfer */
     }
     else
     {
-        err = usb_ctrl_write(p_ctrl, p_buf, p_ctrl->setup.request_length); /* Request Control transfer */
+        err = usb_ctrl_write(p_instance_ctrl, p_buf, p_instance_ctrl->setup.request_length); /* Request Control transfer */
     }
 
     if (err == USB_QOVR)
@@ -2336,20 +2330,20 @@ fsp_err_t R_USB_HostControlTransfer (usb_ctrl_t * const p_api_ctrl,
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_PeriControlDataGet (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t size)
+fsp_err_t R_USB_PeriControlDataGet (usb_ctrl_t * const p_ctrl, uint8_t * p_buf, uint32_t size)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
     usb_er_t  err    = USB_ERROR;
     fsp_err_t result = FSP_ERR_USB_FAILED;
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
     FSP_ASSERT(p_buf)
     FSP_ERROR_RETURN((((uint32_t) p_buf & 0x03) == 0), FSP_ERR_USB_PARAMETER)
 #endif                                        /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    err = usb_ctrl_read(p_ctrl, p_buf, size); /* Request Control transfer */
+    err = usb_ctrl_read(p_instance_ctrl, p_buf, size); /* Request Control transfer */
     if (err == USB_QOVR)
     {
         result = FSP_ERR_USB_BUSY;
@@ -2379,20 +2373,20 @@ fsp_err_t R_USB_PeriControlDataGet (usb_ctrl_t * const p_api_ctrl, uint8_t * p_b
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_PeriControlDataSet (usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t size)
+fsp_err_t R_USB_PeriControlDataSet (usb_ctrl_t * const p_ctrl, uint8_t * p_buf, uint32_t size)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
     usb_er_t  err    = USB_ERROR;
     fsp_err_t result = FSP_ERR_USB_FAILED;
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
     FSP_ASSERT(p_buf)
     FSP_ERROR_RETURN((((uint32_t) p_buf & 0x03) == 0), FSP_ERR_USB_PARAMETER)
 #endif                                         /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    err = usb_ctrl_write(p_ctrl, p_buf, size); /* Request Control transfer */
+    err = usb_ctrl_write(p_instance_ctrl, p_buf, size); /* Request Control transfer */
     if (err == USB_QOVR)
     {
         result = FSP_ERR_USB_BUSY;
@@ -2419,23 +2413,23 @@ fsp_err_t R_USB_PeriControlDataSet (usb_ctrl_t * const p_api_ctrl, uint8_t * p_b
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_PeriControlStatusSet (usb_ctrl_t * const p_api_ctrl, usb_setup_status_t status)
+fsp_err_t R_USB_PeriControlStatusSet (usb_ctrl_t * const p_ctrl, usb_setup_status_t status)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
 #if (USB_CFG_MODE == USB_CFG_HOST)
-    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(p_instance_ctrl);
     FSP_PARAMETER_NOT_USED(status);
 
     return FSP_ERR_USB_FAILED;
 #else                                  /* USB_CFG_MODE == USB_CFG_HOST */
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
  #endif /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    p_ctrl->status = (uint16_t) status;
+    p_instance_ctrl->status = (uint16_t) status;
 
-    hw_usb_pcontrol_dcpctr_pid(p_ctrl->module_number, (uint16_t) status);
+    hw_usb_pcontrol_dcpctr_pid(p_instance_ctrl->module_number, (uint16_t) status);
 
     return FSP_SUCCESS;
 #endif                                 /* #if (USB_CFG_MODE == USB_CFG_HOST) */
@@ -2453,19 +2447,19 @@ fsp_err_t R_USB_PeriControlStatusSet (usb_ctrl_t * const p_api_ctrl, usb_setup_s
  * @note (1). Interrupt function.
  * @note (2). Callback function ( for RTOS ).
  ******************************************************************************/
-fsp_err_t R_USB_RemoteWakeup (usb_ctrl_t * const p_api_ctrl)
+fsp_err_t R_USB_RemoteWakeup (usb_ctrl_t * const p_ctrl)
 {
     fsp_err_t ret_code = FSP_ERR_USB_FAILED;
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
     usb_utr_t             utr;
     uint16_t              ret_val;
 
  #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_api_ctrl)
+    FSP_ASSERT(p_ctrl)
  #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
 
-    utr.ip = p_ctrl->module_number;
+    utr.ip = p_instance_ctrl->module_number;
 
  #if (BSP_CFG_RTOS == 0)
     ret_val = usb_cstd_remote_wakeup(&utr);
@@ -2492,13 +2486,13 @@ fsp_err_t R_USB_RemoteWakeup (usb_ctrl_t * const p_api_ctrl)
     }
 
  #else                                 /* (BSP_CFG_RTOS == 0) */
-    if (USB_YES == g_usb_resume_ing[p_ctrl->module_number])
+    if (USB_YES == g_usb_resume_ing[p_instance_ctrl->module_number])
     {
         ret_code = FSP_ERR_USB_BUSY;
     }
     else
     {
-        g_usb_resume_ing[p_ctrl->module_number] = USB_YES;
+        g_usb_resume_ing[p_instance_ctrl->module_number] = USB_YES;
     }
 
     if (FSP_ERR_USB_BUSY == ret_code)
@@ -2528,10 +2522,10 @@ fsp_err_t R_USB_RemoteWakeup (usb_ctrl_t * const p_api_ctrl)
             break;
         }
     }
-    g_usb_resume_ing[p_ctrl->module_number] = USB_NO;
+    g_usb_resume_ing[p_instance_ctrl->module_number] = USB_NO;
  #endif                                /* BSP_CFG_RTOS == 0 */
 #else /*((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)*/
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
+    FSP_PARAMETER_NOT_USED(p_ctrl);
 #endif /*((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)*/
 
     return ret_code;
@@ -2542,11 +2536,11 @@ fsp_err_t R_USB_RemoteWakeup (usb_ctrl_t * const p_api_ctrl)
  *
  * @retval FSP_SUCCESS              Successful completion.
  ******************************************************************************/
-fsp_err_t R_USB_ModuleNumberGet (usb_ctrl_t * const p_api_ctrl, uint8_t * module_number)
+fsp_err_t R_USB_ModuleNumberGet (usb_ctrl_t * const p_ctrl, uint8_t * module_number)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
-    *module_number = p_ctrl->module_number;
+    *module_number = p_instance_ctrl->module_number;
 
     return FSP_SUCCESS;
 }
@@ -2556,11 +2550,11 @@ fsp_err_t R_USB_ModuleNumberGet (usb_ctrl_t * const p_api_ctrl, uint8_t * module
  *
  * @retval FSP_SUCCESS              Successful completion.
  ******************************************************************************/
-fsp_err_t R_USB_ClassTypeGet (usb_ctrl_t * const p_api_ctrl, usb_class_t * class_type)
+fsp_err_t R_USB_ClassTypeGet (usb_ctrl_t * const p_ctrl, usb_class_t * class_type)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
-    *class_type = p_ctrl->type;
+    *class_type = p_instance_ctrl->type;
 
     return FSP_SUCCESS;
 }
@@ -2570,11 +2564,11 @@ fsp_err_t R_USB_ClassTypeGet (usb_ctrl_t * const p_api_ctrl, usb_class_t * class
  *
  * @retval FSP_SUCCESS              Successful completion.
  ******************************************************************************/
-fsp_err_t R_USB_DeviceAddressGet (usb_ctrl_t * const p_api_ctrl, uint8_t * device_address)
+fsp_err_t R_USB_DeviceAddressGet (usb_ctrl_t * const p_ctrl, uint8_t * device_address)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
-    *device_address = p_ctrl->device_address;
+    *device_address = p_instance_ctrl->device_address;
 
     return FSP_SUCCESS;
 }
@@ -2584,11 +2578,11 @@ fsp_err_t R_USB_DeviceAddressGet (usb_ctrl_t * const p_api_ctrl, uint8_t * devic
  *
  * @retval FSP_SUCCESS              Successful completion.
  ******************************************************************************/
-fsp_err_t R_USB_PipeNumberGet (usb_ctrl_t * const p_api_ctrl, uint8_t * pipe_number)
+fsp_err_t R_USB_PipeNumberGet (usb_ctrl_t * const p_ctrl, uint8_t * pipe_number)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
-    *pipe_number = p_ctrl->pipe;
+    *pipe_number = p_instance_ctrl->pipe;
 
     return FSP_SUCCESS;
 }
@@ -2598,11 +2592,11 @@ fsp_err_t R_USB_PipeNumberGet (usb_ctrl_t * const p_api_ctrl, uint8_t * pipe_num
  *
  * @retval FSP_SUCCESS              Successful completion.
  ******************************************************************************/
-fsp_err_t R_USB_DeviceStateGet (usb_ctrl_t * const p_api_ctrl, uint16_t * state)
+fsp_err_t R_USB_DeviceStateGet (usb_ctrl_t * const p_ctrl, uint16_t * state)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
-    *state = p_ctrl->status;
+    *state = p_instance_ctrl->status;
 
     return FSP_SUCCESS;
 }
@@ -2612,11 +2606,11 @@ fsp_err_t R_USB_DeviceStateGet (usb_ctrl_t * const p_api_ctrl, uint16_t * state)
  *
  * @retval FSP_SUCCESS              Successful completion.
  ******************************************************************************/
-fsp_err_t R_USB_DataSizeGet (usb_ctrl_t * const p_api_ctrl, uint32_t * data_size)
+fsp_err_t R_USB_DataSizeGet (usb_ctrl_t * const p_ctrl, uint32_t * data_size)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
-    *data_size = p_ctrl->data_size;
+    *data_size = p_instance_ctrl->data_size;
 
     return FSP_SUCCESS;
 }
@@ -2626,11 +2620,11 @@ fsp_err_t R_USB_DataSizeGet (usb_ctrl_t * const p_api_ctrl, uint32_t * data_size
  *
  * @retval FSP_SUCCESS              Successful completion.
  ******************************************************************************/
-fsp_err_t R_USB_SetupGet (usb_ctrl_t * const p_api_ctrl, usb_setup_t * setup)
+fsp_err_t R_USB_SetupGet (usb_ctrl_t * const p_ctrl, usb_setup_t * setup)
 {
-    usb_instance_ctrl_t * p_ctrl = (usb_instance_ctrl_t *) p_api_ctrl;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
 
-    *setup = p_ctrl->setup;
+    *setup = p_instance_ctrl->setup;
 
     return FSP_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -105,6 +105,8 @@ const rtc_api_t g_rtc_on_rtc =
     .infoGet            = R_RTC_InfoGet,
     .errorAdjustmentSet = R_RTC_ErrorAdjustmentSet,
     .callbackSet        = R_RTC_CallbackSet,
+    .timeCaptureSet     = R_RTC_TimeCaptureSet,
+    .timeCaptureGet     = R_RTC_TimeCaptureGet,
 };
 
 #if RTC_CFG_PARAM_CHECKING_ENABLE
@@ -117,11 +119,11 @@ static const uint8_t days_in_months[12] = {31U, 28U, 31U, 30U, 31U, 30U, 31U, 31
  * Functions
  **********************************************************************************************************************/
 
-static void r_rtc_set_clock_source(rtc_extended_cfg_t const * const p_extend);
+static void r_rtc_set_clock_source(rtc_cfg_t const * const p_cfg);
 
-static void r_rtc_config_rtc_interrupts(rtc_instance_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg);
+static void r_rtc_config_rtc_interrupts(rtc_instance_ctrl_t * const p_instance_ctrl, rtc_cfg_t const * const p_cfg);
 
-static void r_rtc_call_callback(rtc_instance_ctrl_t * p_ctrl, rtc_event_t event);
+static void r_rtc_call_callback(rtc_instance_ctrl_t * p_instance_ctrl, rtc_event_t event);
 
 #if RTC_CFG_PARAM_CHECKING_ENABLE
 static fsp_err_t r_rtc_time_and_date_validate(rtc_time_t * const p_time);
@@ -165,7 +167,6 @@ fsp_err_t R_RTC_Open (rtc_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg)
 #if RTC_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_cfg);
-    FSP_ASSERT(NULL != p_cfg->p_extend);
     FSP_ERROR_RETURN(RTC_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 #endif
 
@@ -176,18 +177,16 @@ fsp_err_t R_RTC_Open (rtc_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg)
     p_instance_ctrl->p_context         = p_cfg->p_context;
     p_instance_ctrl->p_callback_memory = NULL;
 
-    rtc_extended_cfg_t * p_extend = (rtc_extended_cfg_t *) p_cfg->p_extend;
-
 #if RTC_CFG_PARAM_CHECKING_ENABLE
 
     /* Verify the frequency comparison value for RTCA0SCMP */
-    FSP_ERROR_RETURN(R_RTC_RTCA0SCMP_RTCA0SCMP_Msk >= p_extend->freq_compare_value, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(R_RTC_RTCA0SCMP_RTCA0SCMP_Msk >= p_cfg->freq_compare_value, FSP_ERR_INVALID_ARGUMENT);
 #endif
 
     r_rtc_config_rtc_interrupts(p_instance_ctrl, p_cfg);
 
     /* Set the clock source for RTC. */
-    r_rtc_set_clock_source(p_extend);
+    r_rtc_set_clock_source(p_cfg);
 
     /** Mark driver as open by initializing it to "RTC" in its ASCII equivalent. */
     p_instance_ctrl->open = RTC_OPEN;
@@ -616,6 +615,34 @@ fsp_err_t R_RTC_CallbackSet (rtc_ctrl_t * const          p_ctrl,
 }
 
 /*******************************************************************************************************************//**
+ * @ref rtc_api_t::timeCaptureSet is not supported on the RTC.
+ *
+ * @retval FSP_ERR_UNSUPPORTED         Function not supported in this implementation.
+ **********************************************************************************************************************/
+fsp_err_t R_RTC_TimeCaptureSet (rtc_ctrl_t * const p_ctrl, rtc_time_capture_t * const p_time_capture)
+{
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(p_time_capture);
+
+    /* Return the unsupported error. */
+    return FSP_ERR_UNSUPPORTED;
+}
+
+/*******************************************************************************************************************//**
+ * @ref rtc_api_t::timeCaptureGet is not supported on the RTC.
+ *
+ * @retval FSP_ERR_UNSUPPORTED         Function not supported in this implementation.
+ **********************************************************************************************************************/
+fsp_err_t R_RTC_TimeCaptureGet (rtc_ctrl_t * const p_ctrl, rtc_time_capture_t * const p_time_capture)
+{
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(p_time_capture);
+
+    /* Return the unsupported error. */
+    return FSP_ERR_UNSUPPORTED;
+}
+
+/*******************************************************************************************************************//**
  * @} (end addtogroup RTC)
  **********************************************************************************************************************/
 
@@ -626,9 +653,9 @@ fsp_err_t R_RTC_CallbackSet (rtc_ctrl_t * const          p_ctrl,
 /*******************************************************************************************************************//**
  * Set the RTC clock source
  *
- * @param[in]  p_extend                   Pointer to RTC extended configuration.
+ * @param[in]  p_cfg                   Pointer to RTC configuration.
  **********************************************************************************************************************/
-static void r_rtc_set_clock_source (rtc_extended_cfg_t const * const p_extend)
+static void r_rtc_set_clock_source (rtc_cfg_t const * const p_cfg)
 {
     /* Enable clock to the RTC block */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
@@ -640,40 +667,40 @@ static void r_rtc_set_clock_source (rtc_extended_cfg_t const * const p_extend)
 
     /* The setting of the RTCA0SCMP resister is valid when RTCA0SLSB = 1 */
     R_RTC->RTCA0CTL0_b.RTCA0SLSB = 1U;
-    R_RTC->RTCA0SCMP_b.RTCA0SCMP = (p_extend->freq_compare_value) & R_RTC_RTCA0SCMP_RTCA0SCMP_Msk;
+    R_RTC->RTCA0SCMP_b.RTCA0SCMP = (p_cfg->freq_compare_value) & R_RTC_RTCA0SCMP_RTCA0SCMP_Msk;
 }
 
 /*******************************************************************************************************************//**
  * Set IRQ priority and control info for IRQ handler.
  *
- * @param[in]  p_ctrl                  Instance control block
+ * @param[in]  p_instance_ctrl         Instance control block
  * @param[in]  p_cfg                   Pointer to RTC configuration.
  **********************************************************************************************************************/
-static void r_rtc_config_rtc_interrupts (rtc_instance_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg)
+static void r_rtc_config_rtc_interrupts (rtc_instance_ctrl_t * const p_instance_ctrl, rtc_cfg_t const * const p_cfg)
 {
     if (p_cfg->periodic_irq >= 0)
     {
-        R_BSP_IrqCfg(p_cfg->periodic_irq, p_cfg->periodic_ipl, p_ctrl);
+        R_BSP_IrqCfg(p_cfg->periodic_irq, p_cfg->periodic_ipl, p_instance_ctrl);
     }
 
     if (p_cfg->alarm_irq >= 0)
     {
-        R_BSP_IrqCfg(p_cfg->alarm_irq, p_cfg->alarm_ipl, p_ctrl);
+        R_BSP_IrqCfg(p_cfg->alarm_irq, p_cfg->alarm_ipl, p_instance_ctrl);
     }
 }
 
 /*******************************************************************************************************************//**
  * Calls user callback.
  *
- * @param[in]     p_ctrl     Pointer to RTC instance control block
- * @param[in]     event      Event code
+ * @param[in]     p_instance_ctrl     Pointer to RTC instance control block
+ * @param[in]     event               Event code
  **********************************************************************************************************************/
-static void r_rtc_call_callback (rtc_instance_ctrl_t * p_ctrl, rtc_event_t event)
+static void r_rtc_call_callback (rtc_instance_ctrl_t * p_instance_ctrl, rtc_event_t event)
 {
     rtc_callback_args_t args;
 
     /* Store callback arguments in memory provided by user if available. */
-    rtc_callback_args_t * p_args = p_ctrl->p_callback_memory;
+    rtc_callback_args_t * p_args = p_instance_ctrl->p_callback_memory;
     if (NULL == p_args)
     {
         /* Store on stack */
@@ -686,14 +713,14 @@ static void r_rtc_call_callback (rtc_instance_ctrl_t * p_ctrl, rtc_event_t event
     }
 
     p_args->event     = event;
-    p_args->p_context = p_ctrl->p_context;
+    p_args->p_context = p_instance_ctrl->p_context;
 
-    p_ctrl->p_callback(p_args);
+    p_instance_ctrl->p_callback(p_args);
 
-    if (NULL != p_ctrl->p_callback_memory)
+    if (NULL != p_instance_ctrl->p_callback_memory)
     {
         /* Restore callback memory in case this is a nested interrupt. */
-        *p_ctrl->p_callback_memory = args;
+        *p_instance_ctrl->p_callback_memory = args;
     }
 }
 
@@ -923,18 +950,20 @@ static fsp_err_t r_rtc_periodic_irq_rate_validate (rtc_periodic_irq_select_t con
  **********************************************************************************************************************/
 void rtc_alarm_periodic_isr (void)
 {
+    RTC_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
 
-    IRQn_Type             irq    = R_FSP_CurrentIrqGet();
-    rtc_instance_ctrl_t * p_ctrl = (rtc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
+    IRQn_Type             irq             = R_FSP_CurrentIrqGet();
+    rtc_instance_ctrl_t * p_instance_ctrl = (rtc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
 
     /* Call the callback routine if one is available */
-    if (NULL != p_ctrl->p_callback)
+    if (NULL != p_instance_ctrl->p_callback)
     {
         /* Set data to identify callback to user, then call user callback. */
         rtc_event_t event;
-        if (irq == p_ctrl->p_cfg->alarm_irq)
+        if (irq == p_instance_ctrl->p_cfg->alarm_irq)
         {
             event = RTC_EVENT_ALARM_IRQ;
         }
@@ -944,11 +973,13 @@ void rtc_alarm_periodic_isr (void)
         }
 
         /* Call callback */
-        r_rtc_call_callback(p_ctrl, event);
+        r_rtc_call_callback(p_instance_ctrl, event);
     }
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+
+    RTC_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 /*******************************************************************************************************************//**

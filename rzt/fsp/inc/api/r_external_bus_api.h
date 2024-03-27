@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,15 +19,13 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_SYSTEM_INTERFACES
  * @defgroup EXTERNAL_BUS_API External Bus Interface
  * @brief Interface for external bus communication.
  *
  * @section EXTERNAL_BUS_API_SUMMARY Summary
  * The External bus interface provides APIs and definitions for external bus communication.
  *
- * Implemented by:
- * - @ref BSC
  * @{
  **********************************************************************************************************************/
 #ifndef R_EXTERNAL_BUS_API_H
@@ -42,9 +40,6 @@
 
 /* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
-
-#define EXTERNAL_BUS_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define EXTERNAL_BUS_API_VERSION_MINOR    (2U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -63,7 +58,7 @@ typedef enum e_external_bus_chip_select
     EXTERNAL_BUS_CHIP_SELECT_7,        ///< Device connected to Chip-Select 7
 } external_bus_chip_select_t;
 
-/** External bus data bus width. */
+/** External bus width. */
 typedef enum e_external_bus_data_bus_width
 {
     EXTERNAL_BUS_DATA_BUS_WIDTH_8BIT  = 0x01, ///< Data bus width 8bit
@@ -90,8 +85,6 @@ typedef struct st_external_bus_cfg
 } external_bus_cfg_t;
 
 /** External bus control block.  Allocate an instance specific control block to pass into the External bus API calls.
- * @par Implemented as
- * - bsc_instance_ctrl_t
  */
 typedef void external_bus_ctrl_t;
 
@@ -99,8 +92,6 @@ typedef void external_bus_ctrl_t;
 typedef struct st_external_bus_api
 {
     /** Open the External bus driver module.
-     * @par Implemented as
-     * - @ref R_BSC_Open()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      * @param[in] p_cfg                Pointer to a configuration structure
@@ -108,8 +99,6 @@ typedef struct st_external_bus_api
     fsp_err_t (* open)(external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * const p_cfg);
 
     /** Close the External bus driver module.
-     * @par Implemented as
-     * - @ref R_BSC_Close()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
@@ -129,5 +118,5 @@ FSP_FOOTER
 #endif
 
 /*******************************************************************************************************************//**
- * @} (end addtogroup EXTERNAL_BUS_API)
+ * @} (end defgroup EXTERNAL_BUS_API)
  **********************************************************************************************************************/

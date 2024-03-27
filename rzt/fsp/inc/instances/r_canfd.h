@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -345,15 +345,15 @@ extern const can_api_t g_canfd_on_canfd;
 /***********************************************************************************************************************
  * Public APIs
  **********************************************************************************************************************/
-fsp_err_t R_CANFD_Open(can_ctrl_t * const p_api_ctrl, can_cfg_t const * const p_cfg);
-fsp_err_t R_CANFD_Close(can_ctrl_t * const p_api_ctrl);
-fsp_err_t R_CANFD_Write(can_ctrl_t * const p_api_ctrl, uint32_t const buffer, can_frame_t * const p_frame);
-fsp_err_t R_CANFD_Read(can_ctrl_t * const p_api_ctrl, uint32_t const buffer, can_frame_t * const p_frame);
-fsp_err_t R_CANFD_ModeTransition(can_ctrl_t * const   p_api_ctrl,
+fsp_err_t R_CANFD_Open(can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg);
+fsp_err_t R_CANFD_Close(can_ctrl_t * const p_ctrl);
+fsp_err_t R_CANFD_Write(can_ctrl_t * const p_ctrl, uint32_t const buffer, can_frame_t * const p_frame);
+fsp_err_t R_CANFD_Read(can_ctrl_t * const p_ctrl, uint32_t const buffer, can_frame_t * const p_frame);
+fsp_err_t R_CANFD_ModeTransition(can_ctrl_t * const   p_ctrl,
                                  can_operation_mode_t operation_mode,
                                  can_test_mode_t      test_mode);
-fsp_err_t R_CANFD_InfoGet(can_ctrl_t * const p_api_ctrl, can_info_t * const p_info);
-fsp_err_t R_CANFD_CallbackSet(can_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_CANFD_InfoGet(can_ctrl_t * const p_ctrl, can_info_t * const p_info);
+fsp_err_t R_CANFD_CallbackSet(can_ctrl_t * const          p_ctrl,
                               void (                    * p_callback)(can_callback_args_t *),
                               void const * const          p_context,
                               can_callback_args_t * const p_callback_memory);

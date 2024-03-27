@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -38,8 +38,28 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define GPT_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define GPT_CODE_VERSION_MINOR    (3U) // DEPRECATED
+
+/* Values to assign to GTUPSR, GTDNSR registers to determine phase counting mode. */
+#define GPT_PHASE_COUNTING_MODE_1_UP      (0x00006900U)
+#define GPT_PHASE_COUNTING_MODE_1_DN      (0x00009600U)
+#define GPT_PHASE_COUNTING_MODE_200_UP    (0x00000800U)
+#define GPT_PHASE_COUNTING_MODE_200_DN    (0x00000400U)
+#define GPT_PHASE_COUNTING_MODE_201_UP    (0x00000200U)
+#define GPT_PHASE_COUNTING_MODE_201_DN    (0x00000100U)
+#define GPT_PHASE_COUNTING_MODE_210_UP    (0x00000A00U)
+#define GPT_PHASE_COUNTING_MODE_210_DN    (0x00000500U)
+#define GPT_PHASE_COUNTING_MODE_300_UP    (0x00000800U)
+#define GPT_PHASE_COUNTING_MODE_300_DN    (0x00008000U)
+#define GPT_PHASE_COUNTING_MODE_301_UP    (0x00000200U)
+#define GPT_PHASE_COUNTING_MODE_301_DN    (0x00002000U)
+#define GPT_PHASE_COUNTING_MODE_310_UP    (0x00000A00U)
+#define GPT_PHASE_COUNTING_MODE_310_DN    (0x0000A000U)
+#define GPT_PHASE_COUNTING_MODE_4_UP      (0x00006000U)
+#define GPT_PHASE_COUNTING_MODE_4_DN      (0x00009000U)
+#define GPT_PHASE_COUNTING_MODE_50_UP     (0x00000C00U)
+#define GPT_PHASE_COUNTING_MODE_50_DN     (0x00000000U)
+#define GPT_PHASE_COUNTING_MODE_51_UP     (0x0000C000U)
+#define GPT_PHASE_COUNTING_MODE_51_DN     (0x00000000U)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -349,23 +369,21 @@ typedef struct st_gpt_extended_cfg
      * and count_down_source, then the timer count source is PCLK.  */
     gpt_source_t count_down_source;
 
-    /* Debounce filter for GTIOCxA input signal pin. */
-    gpt_capture_filter_t capture_filter_gtioca;
+    gpt_capture_filter_t capture_filter_gtioca; ///< Debounce filter for GTIOCxA input signal pin.
 
-    /* Debounce filter for GTIOCxB input signal pin. */
-    gpt_capture_filter_t capture_filter_gtiocb;
+    gpt_capture_filter_t capture_filter_gtiocb; ///< Debounce filter for GTIOCxB input signal pin.
 
-    uint8_t capture_a_ipl;                    ///< Capture A interrupt priority
-    uint8_t capture_b_ipl;                    ///< Capture B interrupt priority
-    uint8_t dead_time_ipl;                    ///< Dead time error interrupt priority
+    uint8_t capture_a_ipl;                      ///< Capture A interrupt priority
+    uint8_t capture_b_ipl;                      ///< Capture B interrupt priority
+    uint8_t dead_time_ipl;                      ///< Dead time error interrupt priority
 
-    uint8_t icds;                             ///< Input Capture Operation Select at Count Stop
+    uint8_t icds;                               ///< Input Capture Operation Select at Count Stop
 
-    IRQn_Type capture_a_irq;                  ///< Capture A interrupt
-    IRQn_Type capture_b_irq;                  ///< Capture B interrupt
-    IRQn_Type dead_time_irq;                  ///< Dead time error interrupt
+    IRQn_Type capture_a_irq;                    ///< Capture A interrupt
+    IRQn_Type capture_b_irq;                    ///< Capture B interrupt
+    IRQn_Type dead_time_irq;                    ///< Dead time error interrupt
 
-    gpt_extended_pwm_cfg_t const * p_pwm_cfg; ///< Advanced PWM features, optional
+    gpt_extended_pwm_cfg_t const * p_pwm_cfg;   ///< Advanced PWM features, optional
 } gpt_extended_cfg_t;
 
 /**********************************************************************************************************************
@@ -397,12 +415,11 @@ fsp_err_t R_GPT_OutputDisable(timer_ctrl_t * const p_ctrl, gpt_io_pin_t pin);
 fsp_err_t R_GPT_AdcTriggerSet(timer_ctrl_t * const    p_ctrl,
                               gpt_adc_compare_match_t which_compare_match,
                               uint32_t                compare_match_value);
-fsp_err_t R_GPT_CallbackSet(timer_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_GPT_CallbackSet(timer_ctrl_t * const          p_ctrl,
                             void (                      * p_callback)(timer_callback_args_t *),
                             void const * const            p_context,
                             timer_callback_args_t * const p_callback_memory);
 fsp_err_t R_GPT_Close(timer_ctrl_t * const p_ctrl);
-fsp_err_t R_GPT_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup GPT)

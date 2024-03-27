@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -24,11 +24,14 @@
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
  **********************************************************************************************************************/
+#if defined(BSP_CFG_CORE_CR52)
+ #include "cr/bsp_delay_core.h"
+#endif
+
+#include "bsp_compiler_support.h"
 
 /** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
-
-#include "bsp_compiler_support.h"
 
 /*******************************************************************************************************************//**
  * @addtogroup BSP_MCU
@@ -39,16 +42,9 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 
-/* The number of cycles required per software delay loop. */
-#ifndef BSP_DELAY_LOOP_CYCLES
- #define BSP_DELAY_LOOP_CYCLES    (4)
-#endif
-
-/* Calculates the number of delay loops to pass to bsp_prv_software_delay_loop to achieve at least the requested cycle
- * count delay. This is 1 loop longer than optimal if cycles is a multiple of BSP_DELAY_LOOP_CYCLES, but it ensures
- * the requested number of loops is at least 1 since bsp_prv_software_delay_loop cannot be called with a loop count
- * of 0. */
-#define BSP_DELAY_LOOPS_CALCULATE(cycles)    (((cycles) / BSP_DELAY_LOOP_CYCLES) + 1U)
+/***********************************************************************************************************************
+ * Typedef definitions
+ **********************************************************************************************************************/
 
 /** Available delay units for R_BSP_SoftwareDelay(). These are ultimately used to calculate a total # of microseconds */
 typedef enum
@@ -67,7 +63,8 @@ typedef enum
 /***********************************************************************************************************************
  * Exported global functions (to be accessed by other files)
  **********************************************************************************************************************/
-BSP_ATTRIBUTE_STACKLESS void bsp_prv_software_delay_loop(uint32_t loop_cnt);
+
+void bsp_prv_software_delay_loop(uint32_t loop_cnt);
 
 /** Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

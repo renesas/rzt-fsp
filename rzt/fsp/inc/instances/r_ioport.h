@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,17 +40,14 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define IOPORT_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define IOPORT_CODE_VERSION_MINOR    (3U) // DEPRECATED
-
-#define IOPORT_SINGLE_PORT_NUM       (4)
-#define IOPORT_PORT_GROUP_NUM        (2)
-#define IOPORT_PORT_GROUP_1          (0)
-#define IOPORT_PORT_GROUP_2          (1)
-#define IOPORT_SINGLE_PORT_0         (0)
-#define IOPORT_SINGLE_PORT_1         (1)
-#define IOPORT_SINGLE_PORT_2         (2)
-#define IOPORT_SINGLE_PORT_3         (3)
+#define IOPORT_SINGLE_PORT_NUM    (4)
+#define IOPORT_PORT_GROUP_NUM     (2)
+#define IOPORT_PORT_GROUP_1       (0)
+#define IOPORT_PORT_GROUP_2       (1)
+#define IOPORT_SINGLE_PORT_0      (0)
+#define IOPORT_SINGLE_PORT_1      (1)
+#define IOPORT_SINGLE_PORT_2      (2)
+#define IOPORT_SINGLE_PORT_3      (3)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -197,14 +194,13 @@ fsp_err_t R_IOPORT_PortDirectionSet(ioport_ctrl_t * const p_ctrl,
                                     bsp_io_port_t         port,
                                     ioport_size_t         direction_values,
                                     ioport_size_t         mask);
-fsp_err_t R_IOPORT_PortEventInputRead(ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, ioport_size_t * event_data);
+fsp_err_t R_IOPORT_PortEventInputRead(ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, ioport_size_t * p_event_data);
 fsp_err_t R_IOPORT_PortEventOutputWrite(ioport_ctrl_t * const p_ctrl,
                                         bsp_io_port_t         port,
                                         ioport_size_t         event_data,
                                         ioport_size_t         mask_value);
 fsp_err_t R_IOPORT_PortRead(ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, ioport_size_t * p_port_value);
 fsp_err_t R_IOPORT_PortWrite(ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, ioport_size_t value, ioport_size_t mask);
-fsp_err_t R_IOPORT_VersionGet(fsp_version_t * p_data);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup IOPORT)

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -24,12 +24,12 @@
 #include <r_usb_basic.h>
 #include <r_usb_basic_api.h>
 
-#include "inc/r_usb_typedef.h"
-#include "inc/r_usb_extern.h"
+#include "../driver/inc/r_usb_typedef.h"
+#include "../driver/inc/r_usb_extern.h"
 #include "inc/r_usb_basic_define.h"
 #include "../hw/inc/r_usb_bitdefine.h"
 #include "../hw/inc/r_usb_reg_access.h"
-#include "r_usb_basic_local.h"
+#include "inc/r_usb_basic_local.h"
 
 #if defined(USB_CFG_HCDC_USE)
  #include "r_usb_hcdc_api.h"

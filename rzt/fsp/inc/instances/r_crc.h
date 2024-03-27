@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -43,15 +43,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
-
-/** CRC extended configuration */
-typedef struct st_crc_extended_cfg
-{
-    /** DEPRECATED - channel will be moved to CRC API in the major release
-     *
-     * Channel number. */
-    uint8_t channel;
-} crc_extended_cfg_t;
 
 /** Driver instance control structure. */
 typedef struct st_crc_instance_ctrl

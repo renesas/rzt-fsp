@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -27,7 +27,6 @@
 #include "renesashw.h"
 #include "rm_ethercat_ssc_port.h"
 
-extern const ioport_instance_t              g_ioport;
 extern ethercat_ssc_port_instance_t const * gp_ethercat_ssc_port;
 
 /***********************************************************************************************************************
@@ -47,7 +46,7 @@ extern ethercat_ssc_port_instance_t const * gp_ethercat_ssc_port;
 #define ETHERCAT_SSC_PORT_EEPROM_ERROR_I2CBUS      (0x2800) /* rising edge-triggerd */
 
 /* ESC_RESETOUT# PFC setting */
-#define ETHERCAT_SSC_PORT_PFC_ESC_RESETOUT         (0x01U << 4U)
+#define ETHERCAT_SSC_PORT_PFC_ESC_RESETOUT         (0x01U << IOPORT_PFC_OFFSET)
 
 /* Key code for PRCMD register */
 #define ETHERCAT_SSC_PORT_PRCMD_UNLOCK1            (0x000000A5U)
@@ -63,6 +62,11 @@ extern ethercat_ssc_port_instance_t const * gp_ethercat_ssc_port;
 /* Set to 1 to support GMAC MDIO */
 #ifndef ETHERCAT_SSC_PORT_GMAC_MDIO_SUPPORT
  #define ETHERCAT_SSC_PORT_GMAC_MDIO_SUPPORT       (0U)
+#endif
+
+/* Set to 1 to support ETHSW MDIO */
+#ifndef ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT
+ #define ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT      (0U)
 #endif
 
 /***********************************************************************************************************************
@@ -106,22 +110,13 @@ __attribute__((weak)) void rm_ssc_port_timer_interrupt(timer_callback_args_t * p
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
-
-/** Version data structure */
-static const fsp_version_t module_version =
-{
-    .api_version_minor  = ETHERCAT_SSC_PORT_API_VERSION_MINOR,
-    .api_version_major  = ETHERCAT_SSC_PORT_API_VERSION_MAJOR,
-    .code_version_major = ETHERCAT_SSC_PORT_CODE_VERSION_MAJOR,
-    .code_version_minor = ETHERCAT_SSC_PORT_CODE_VERSION_MINOR
-};
+__attribute__((weak)) const ioport_instance_t g_ioport;
 
 /** ETHERCAT SSC PORT API mapping for ETHECAT SSC PORT interface */
 const ethercat_ssc_port_api_t g_ethercat_ssc_port_on_ethercat_ssc_port =
 {
-    .open       = RM_ETHERCAT_SSC_PORT_Open,
-    .close      = RM_ETHERCAT_SSC_PORT_Close,
-    .versionGet = RM_ETHERCAT_SSC_PORT_VersionGet
+    .open  = RM_ETHERCAT_SSC_PORT_Open,
+    .close = RM_ETHERCAT_SSC_PORT_Close,
 };
 
 static UINT16 BaseTime = 0;
@@ -168,6 +163,7 @@ fsp_err_t RM_ETHERCAT_SSC_PORT_Open (ethercat_ssc_port_ctrl_t * const      p_ctr
     uint8_t                opened_timer = 0;
     ether_phy_instance_t * p_ether_phy_instance;
     timer_instance_t     * p_timer_instance;
+    bsp_io_region_t        reset_port_region;
 
 #if (RM_ETHERCAT_SSC_PORT_CFG_PARAM_CHECKING_ENABLE)
 
@@ -193,22 +189,29 @@ fsp_err_t RM_ETHERCAT_SSC_PORT_Open (ethercat_ssc_port_ctrl_t * const      p_ctr
     R_BSP_MODULE_START(FSP_IP_ETHSS, 0);
 
     /* Release ETHSS module */
-    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ESC_ETH_ACCESSARY);
+    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ESC_ETH_SUBSYSTEM);
 
 #if (ETHERCAT_SSC_PORT_GMAC_MDIO_SUPPORT == 1)
 
     /* Power on GMAC for MDIO */
     R_BSP_MODULE_START(FSP_IP_GMAC, 0);
-    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC_ACLK);
-    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC_HCLK);
-#endif                                 // debug ssc_port
+    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC0_PCLKH);
+    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC0_PCLKM);
+#endif
+
+#if (ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT == 1)
+
+    /* Power on ETHSW for MDIO */
+    R_BSP_MODULE_START(FSP_IP_ETHSW, 0);
+    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ETHSW);
+#endif
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
     /* Unlock write access protection for Ethernet subsystem registers */
     ethercat_ssc_port_reg_protection_disable(p_reg_ethss);
 
     /* Set PHY address offset */
-    p_reg_ini->ECATOFFADR = p_instance_ctrl->p_cfg->offset_address;
+    p_reg_ini->ECATOFFADR = p_instance_ctrl->p_cfg->address_offset;
 
     /* Set EEPROM size */
     p_reg_ini->ECATOPMOD = (uint32_t) p_extend->eeprom_size;
@@ -222,23 +225,24 @@ fsp_err_t RM_ETHERCAT_SSC_PORT_Open (ethercat_ssc_port_ctrl_t * const      p_ctr
 
     /* ESC Reset */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
-    R_BSP_ModuleResetEnable(BSP_MODULE_RESET_ESC_HCLK);
-    R_BSP_ModuleResetEnable(BSP_MODULE_RESET_ESC_ESCCLK);
+    R_BSP_ModuleResetEnable(BSP_MODULE_RESET_ESC_BUS);
+    R_BSP_ModuleResetEnable(BSP_MODULE_RESET_ESC_IP);
 
     /* Write Low-output to ESC_RESETOUT# as PHY reset */
     R_BSP_PinAccessEnable();
-    R_BSP_PinWrite((bsp_io_port_pin_t) ETHERCAT_SSC_PORT_CFG_ESC_RESET_PORT, BSP_IO_LEVEL_LOW);
+    reset_port_region = R_BSP_IoRegionGet((bsp_io_port_pin_t) ETHERCAT_SSC_PORT_CFG_ESC_RESET_PORT);
+    R_BSP_PinClear(reset_port_region, (bsp_io_port_pin_t) ETHERCAT_SSC_PORT_CFG_ESC_RESET_PORT);
 
     /* Reset hold time */
     R_BSP_SoftwareDelay(p_instance_ctrl->p_cfg->reset_hold_time, BSP_DELAY_UNITS_MILLISECONDS);
 
     /* ESC Reset release*/
-    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ESC_HCLK);
-    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ESC_ESCCLK);
+    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ESC_BUS);
+    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ESC_IP);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
     /* Write High-output to ESC_RESETOUT# as release */
-    R_BSP_PinWrite((bsp_io_port_pin_t) ETHERCAT_SSC_PORT_CFG_ESC_RESET_PORT, BSP_IO_LEVEL_HIGH);
+    R_BSP_PinSet(reset_port_region, (bsp_io_port_pin_t) ETHERCAT_SSC_PORT_CFG_ESC_RESET_PORT);
     R_BSP_PinAccessDisable();
 
     /* Re-assign P20_7 to ESC_RESETOUT# */
@@ -374,23 +378,6 @@ fsp_err_t RM_ETHERCAT_SSC_PORT_Close (ethercat_ssc_port_ctrl_t * const p_ctrl)
     return err;
 }                                      /* End of function RM_ETHERCAT_SSC_PORT_Close() */
 
-/********************************************************************************************************************//**
- * Provides API and code version in the user provided pointer. Implements @ref ethercat_ssc_port_api_t::versionGet.
- *
- * @retval  FSP_SUCCESS                  Version information stored in provided p_version.
- * @retval  FSP_ERR_ASSERTION            p_version is NULL.
- ***********************************************************************************************************************/
-__INLINE fsp_err_t RM_ETHERCAT_SSC_PORT_VersionGet (fsp_version_t * const p_version)
-{
-#if (RM_ETHERCAT_SSC_PORT_CFG_PARAM_CHECKING_ENABLE)
-    FSP_ASSERT(p_version);
-#endif
-
-    *p_version = module_version;
-
-    return FSP_SUCCESS;
-}                                      /* End of function RM_ETHERCAT_SSC_PORT_VersionGet() */
-
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHERCAT_SSC_PORT)
  **********************************************************************************************************************/
@@ -423,9 +410,9 @@ static fsp_err_t ethercat_ssc_port_open_param_check (ethercat_ssc_port_instance_
     FSP_ASSERT(NULL != p_cfg->p_timer_instance);
 
     /* Check IRQ number */
-    FSP_ERROR_RETURN((0 <= p_cfg->esc_cat_irq), FSP_ERR_INVALID_ARGUMENT);
-    FSP_ERROR_RETURN((0 <= p_cfg->esc_sync0_irq), FSP_ERR_INVALID_ARGUMENT);
-    FSP_ERROR_RETURN((0 <= p_cfg->esc_sync1_irq), FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((0 <= p_cfg->common_irq), FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((0 <= p_cfg->sync0_irq), FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((0 <= p_cfg->sync1_irq), FSP_ERR_INVALID_ARGUMENT);
 
     FSP_ERROR_RETURN((ETHERCAT_SSC_PORT_OPEN != p_instance_ctrl->open), FSP_ERR_ALREADY_OPEN);
 
@@ -525,22 +512,22 @@ void ethercat_ssc_port_isr_esc_sync1 (void)
 static void ethercat_ssc_port_enable_icu (ethercat_ssc_port_instance_ctrl_t * const p_instance_ctrl)
 {
     /* Set Detect type */
-    R_BSP_IrqDetectTypeSet(p_instance_ctrl->p_cfg->esc_cat_irq, ETHERCAT_SSC_PORT_IRQ_TYPE_LEVEL);
+    R_BSP_IrqDetectTypeSet(p_instance_ctrl->p_cfg->common_irq, ETHERCAT_SSC_PORT_IRQ_TYPE_LEVEL);
 
     /* Configure the EtherCAT interrupt. */
-    R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->esc_cat_irq, p_instance_ctrl->p_cfg->esc_cat_ipl, p_instance_ctrl);
+    R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->common_irq, p_instance_ctrl->p_cfg->common_ipl, p_instance_ctrl);
 
     /* Set Detect type */
-    R_BSP_IrqDetectTypeSet(p_instance_ctrl->p_cfg->esc_sync0_irq, ETHERCAT_SSC_PORT_IRQ_TYPE_POSEDGE);
+    R_BSP_IrqDetectTypeSet(p_instance_ctrl->p_cfg->sync0_irq, ETHERCAT_SSC_PORT_IRQ_TYPE_POSEDGE);
 
     /* Configure the EtherCAT SYNC0 interrupt. */
-    R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->esc_sync0_irq, p_instance_ctrl->p_cfg->esc_sync0_ipl, p_instance_ctrl);
+    R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->sync0_irq, p_instance_ctrl->p_cfg->sync0_ipl, p_instance_ctrl);
 
     /* Set Detect type */
-    R_BSP_IrqDetectTypeSet(p_instance_ctrl->p_cfg->esc_sync1_irq, ETHERCAT_SSC_PORT_IRQ_TYPE_POSEDGE);
+    R_BSP_IrqDetectTypeSet(p_instance_ctrl->p_cfg->sync1_irq, ETHERCAT_SSC_PORT_IRQ_TYPE_POSEDGE);
 
     /* Configure the EtherCAT SYNC1 interrupt. */
-    R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->esc_sync1_irq, p_instance_ctrl->p_cfg->esc_sync1_ipl, p_instance_ctrl);
+    R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->sync1_irq, p_instance_ctrl->p_cfg->sync1_ipl, p_instance_ctrl);
 }                                      /* End of function ethercat_ssc_port_enable_icu() */
 
 /*******************************************************************************************************************//**
@@ -552,14 +539,14 @@ static void ethercat_ssc_port_enable_icu (ethercat_ssc_port_instance_ctrl_t * co
  **********************************************************************************************************************/
 static void ethercat_ssc_port_disable_icu (ethercat_ssc_port_instance_ctrl_t * const p_instance_ctrl)
 {
-    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->esc_cat_irq);
-    R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->esc_cat_irq, NULL);
+    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->common_irq);
+    R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->common_irq, NULL);
 
-    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->esc_sync0_irq);
-    R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->esc_sync0_irq, NULL);
+    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->sync0_irq);
+    R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->sync0_irq, NULL);
 
-    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->esc_sync1_irq);
-    R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->esc_sync1_irq, NULL);
+    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->sync1_irq);
+    R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->sync1_irq, NULL);
 }                                      /* End of function ethercat_ssc_port_disable_icu() */
 
 /*******************************************************************************************************************//**
@@ -779,9 +766,9 @@ void DISABLE_ESC_INT ()
 {
     ethercat_ssc_port_instance_ctrl_t * p_instance_ctrl = gp_ethercat_ssc_port->p_ctrl;
 
-    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->esc_sync0_irq);
-    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->esc_sync1_irq);
-    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->esc_cat_irq);
+    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->sync0_irq);
+    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->sync1_irq);
+    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->common_irq);
 }
 
 /*******************************************************************************************************************//**
@@ -793,7 +780,7 @@ void ENABLE_ESC_INT ()
 {
     ethercat_ssc_port_instance_ctrl_t * p_instance_ctrl = gp_ethercat_ssc_port->p_ctrl;
 
-    R_BSP_IrqEnableNoClear(p_instance_ctrl->p_cfg->esc_sync0_irq);
-    R_BSP_IrqEnableNoClear(p_instance_ctrl->p_cfg->esc_sync1_irq);
-    R_BSP_IrqEnableNoClear(p_instance_ctrl->p_cfg->esc_cat_irq);
+    R_BSP_IrqEnableNoClear(p_instance_ctrl->p_cfg->sync0_irq);
+    R_BSP_IrqEnableNoClear(p_instance_ctrl->p_cfg->sync1_irq);
+    R_BSP_IrqEnableNoClear(p_instance_ctrl->p_cfg->common_irq);
 }

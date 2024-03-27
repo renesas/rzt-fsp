@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,8 +19,7 @@
  **********************************************************************************************************************/
 
 /***********************************************************************************************************************
- *
- * Includes
+ * Includes   <System Includes> , "Project Includes"
  **********************************************************************************************************************/
 #include "bsp_api.h"
 
@@ -46,27 +45,8 @@
  **********************************************************************************************************************/
 
 /***********************************************************************************************************************
- * Private function prototypes
+ * Exported global variables (to be accessed by other files)
  **********************************************************************************************************************/
-
-/** Prototype of initialization function called before main.  This prototype sets the weak association of this
- * function to an internal example implementation. If this function is defined in the application code, the
- * application code version is used. */
-
-void bsp_init(void * p_args) WEAK_INIT_ATTRIBUTE;
-
-void bsp_init_internal(void * p_args); /// Default initialization function
-
-#if ((1 == BSP_CFG_ERROR_LOG) || (1 == BSP_CFG_ASSERT))
-
-/** Prototype of function called before errors are returned in FSP code if BSP_CFG_ERROR_LOG is set to 1.  This
- * prototype sets the weak association of this function to an internal example implementation. */
-
-void fsp_error_log(fsp_err_t err, const char * file, int32_t line) WEAK_ERROR_ATTRIBUTE;
-
-void fsp_error_log_internal(fsp_err_t err, const char * file, int32_t line); /// Default error logger function
-
-#endif
 
 /* System clock frequency information */
 const uint32_t g_bsp_system_clock_select[][2] =
@@ -119,25 +99,19 @@ const uint32_t g_bsp_system_clock_select_xspi_clk[][2] =
 };
 
 /***********************************************************************************************************************
- * Exported global variables (to be accessed by other files)
+ * Private global variables and functions
  **********************************************************************************************************************/
-
-/* BSP version structure. */
-const fsp_version_t g_bsp_version =
-{
-    .api_version_minor  = BSP_API_VERSION_MINOR,
-    .api_version_major  = BSP_API_VERSION_MAJOR,
-    .code_version_major = BSP_CODE_VERSION_MAJOR,
-    .code_version_minor = BSP_CODE_VERSION_MINOR
-};
 
 /* FSP pack version structure. */
 static BSP_DONT_REMOVE const fsp_pack_version_t g_fsp_version BSP_PLACE_IN_SECTION (FSP_SECTION_VERSION) =
 {
-    .minor = FSP_VERSION_MINOR,
-    .major = FSP_VERSION_MAJOR,
-    .build = FSP_VERSION_BUILD,
-    .patch = FSP_VERSION_PATCH
+    .version_id_b =
+    {
+        .minor = FSP_VERSION_MINOR,
+        .major = FSP_VERSION_MAJOR,
+        .build = FSP_VERSION_BUILD,
+        .patch = FSP_VERSION_PATCH
+    }
 };
 
 /* Public FSP version name. */
@@ -148,38 +122,33 @@ static BSP_DONT_REMOVE const uint8_t g_fsp_version_string[] BSP_PLACE_IN_SECTION
 static BSP_DONT_REMOVE const uint8_t g_fsp_version_build_string[] BSP_PLACE_IN_SECTION(FSP_SECTION_VERSION) =
     FSP_VERSION_BUILD_STRING;
 
+/***********************************************************************************************************************
+ * Private function prototypes
+ **********************************************************************************************************************/
+
+/** Prototype of initialization function called before main.  This prototype sets the weak association of this
+ * function to an internal example implementation. If this function is defined in the application code, the
+ * application code version is used. */
+
+void bsp_init(void * p_args) WEAK_INIT_ATTRIBUTE;
+
+void bsp_init_internal(void * p_args); /// Default initialization function
+
+#if ((1 == BSP_CFG_ERROR_LOG) || (1 == BSP_CFG_ASSERT))
+
+/** Prototype of function called before errors are returned in FSP code if BSP_CFG_ERROR_LOG is set to 1.  This
+ * prototype sets the weak association of this function to an internal example implementation. */
+
+void fsp_error_log(fsp_err_t err, const char * file, int32_t line) WEAK_ERROR_ATTRIBUTE;
+
+void fsp_error_log_internal(fsp_err_t err, const char * file, int32_t line); /// Default error logger function
+
+#endif
+
 /*******************************************************************************************************************//**
  * @addtogroup BSP_MCU
  * @{
  **********************************************************************************************************************/
-
-/***********************************************************************************************************************
- * Private global variables and functions
- **********************************************************************************************************************/
-
-/*******************************************************************************************************************//**
- * Get the BSP version based on compile time macros.
- *
- * @param[out] p_version        Memory address to return version information to.
- *
- * @retval FSP_SUCCESS          Version information stored.
- * @retval FSP_ERR_ASSERTION    The parameter p_version is NULL.
- **********************************************************************************************************************/
-fsp_err_t R_BSP_VersionGet (fsp_version_t * p_version)
-{
-#if BSP_CFG_PARAM_CHECKING_ENABLE
-
-    /** Verify parameters are valid */
-    FSP_ASSERT(NULL != p_version);
-#endif
-
-    p_version->api_version_major  = BSP_API_VERSION_MAJOR;
-    p_version->api_version_minor  = BSP_API_VERSION_MINOR;
-    p_version->code_version_major = BSP_CODE_VERSION_MAJOR;
-    p_version->code_version_minor = BSP_CODE_VERSION_MINOR;
-
-    return FSP_SUCCESS;
-}
 
 /*******************************************************************************************************************//**
  * Get the FSP version based on compile time macros.
@@ -200,17 +169,6 @@ fsp_err_t R_FSP_VersionGet (fsp_pack_version_t * const p_version)
     *p_version = g_fsp_version;
 
     return FSP_SUCCESS;
-}
-
-/*******************************************************************************************************************//**
- * Invalidates instruction and data caches of arm core processor.
- * Use the MRC or MCR instructions to access coprocessor registers. If you access the coprocessor with a C compiler,
- * use inline assembly language.
- * The cache invalidation process is defined in bsp_cache.c for each device.
- **********************************************************************************************************************/
-__WEAK void R_BSP_CacheInvalidate (void)
-{
-    /* The cache invalidation process is defined in bsp_cache.c for each device. */
 }
 
 #if ((1 == BSP_CFG_ERROR_LOG) || (1 == BSP_CFG_ASSERT))

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -82,15 +82,6 @@ static void r_ioport_event_config(const ioport_extend_cfg_t * p_extend_cfg_data)
  * Private global variables
  **********************************************************************************************************************/
 
-/* Version data structure used by error logger macro. */
-static const fsp_version_t g_ioport_version =
-{
-    .api_version_minor  = IOPORT_API_VERSION_MINOR,
-    .api_version_major  = IOPORT_API_VERSION_MAJOR,
-    .code_version_major = IOPORT_CODE_VERSION_MAJOR,
-    .code_version_minor = IOPORT_CODE_VERSION_MINOR
-};
-
 /***********************************************************************************************************************
  * Global Variables
  **********************************************************************************************************************/
@@ -111,7 +102,6 @@ const ioport_api_t g_ioport_on_ioport =
     .portEventOutputWrite = R_IOPORT_PortEventOutputWrite,
     .portRead             = R_IOPORT_PortRead,
     .portWrite            = R_IOPORT_PortWrite,
-    .versionGet           = R_IOPORT_VersionGet,
 };
 
 /*******************************************************************************************************************//**
@@ -260,7 +250,7 @@ fsp_err_t R_IOPORT_PinRead (ioport_ctrl_t * const p_ctrl, bsp_io_port_pin_t pin,
     FSP_PARAMETER_NOT_USED(p_ctrl);
 #endif
 
-    *p_pin_value = (bsp_io_level_t) R_BSP_PinRead(pin);
+    *p_pin_value = (bsp_io_level_t) R_BSP_FastPinRead(R_BSP_IoRegionGet(pin), pin);
 
     return FSP_SUCCESS;
 }
@@ -730,27 +720,6 @@ fsp_err_t R_IOPORT_PinEventOutputWrite (ioport_ctrl_t * const p_ctrl, bsp_io_por
     }
 
     R_BSP_PinAccessDisable();          // Lock Register Write Protection
-
-    return FSP_SUCCESS;
-}
-
-/*******************************************************************************************************************//**
- * DEPRECATED Returns IOPort HAL driver version. Implements @ref ioport_api_t::versionGet.
- *
- * @retval FSP_SUCCESS        Version information read
- * @retval FSP_ERR_ASSERTION  The parameter p_data is NULL
- *
- * @note This function is reentrant.
- **********************************************************************************************************************/
-fsp_err_t R_IOPORT_VersionGet (fsp_version_t * p_data)
-{
-#if (1 == IOPORT_CFG_PARAM_CHECKING_ENABLE)
-
-    /* Verify parameters are valid */
-    FSP_ASSERT(NULL != p_data);
-#endif
-
-    *p_data = g_ioport_version;
 
     return FSP_SUCCESS;
 }

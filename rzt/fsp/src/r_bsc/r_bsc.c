@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -309,6 +309,8 @@ static void r_bsc_call_callback (bsc_instance_ctrl_t * p_ctrl, bsc_event_t event
  **********************************************************************************************************************/
 void bsc_wto_int_isr (uint32_t id)
 {
+    BSC_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     FSP_PARAMETER_NOT_USED(id);
 
     uint32_t tostr    = R_BSC->TOSTR;
@@ -337,4 +339,6 @@ void bsc_wto_int_isr (uint32_t id)
         /* Clear the scanned flags one by one */
         tostr &= ~(1UL);
     }
+
+    BSC_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }

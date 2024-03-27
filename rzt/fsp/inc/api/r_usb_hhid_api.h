@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,15 +19,13 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_CONNECTIVITY_INTERFACES
  * @defgroup USB_HHID_API USB HHID Interface
  * @brief Interface for USB HHID functions.
  *
  * @section USB_HHID_API_Summary Summary
  * The USB HHID interface provides USB HHID functionality.
  *
- * The USB HHID interface can be implemented by:
- * - @ref USB_HHID
  *
  * @{
  **********************************************************************************************************************/
@@ -40,6 +38,9 @@
  ******************************************************************************/
 #include "r_usb_hhid_cfg.h"
 #include "r_usb_basic_api.h"
+
+/* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
+FSP_HEADER
 
 /******************************************************************************
  * Macro definitions
@@ -76,27 +77,23 @@
 typedef struct st_usb_hhid_api
 {
     /** Get HID protocol.(USB Mouse/USB Keyboard/Other Type.)
-     * @par Implemented as
-     * - @ref R_USB_HHID_TypeGet()
      *
-     * @param[in]  p_api_ctrl      Pointer to control structure.
+     * @param[in]  p_ctrl      Pointer to control structure.
      * @param[in]  p_type          Pointer to store HID protocol value.
      * @param[in]  device_address  Device Address.
      */
-    fsp_err_t (* typeGet)(usb_ctrl_t * const p_api_ctrl, uint8_t * p_type, uint8_t device_address);
+    fsp_err_t (* typeGet)(usb_ctrl_t * const p_ctrl, uint8_t * p_type, uint8_t device_address);
 
     /** Obtains max packet size for the connected HID device.
      *  The max packet size is set to the area.
      *  Set the direction (USB_HID_IN/USB_HID_OUT).
-     * @par Implemented as
-     * - @ref R_USB_HHID_MaxPacketSizeGet()
      *
-     * @param[in]  p_api_ctrl      Pointer to control structure.
+     * @param[in]  p_ctrl      Pointer to control structure.
      * @param[in]  p_size          Pointer to the area to store the max package size.
      * @param[in]  direction       Transfer direction.
      * @param[in]  device_address  Device Address.
      */
-    fsp_err_t (* maxPacketSizeGet)(usb_ctrl_t * const p_api_ctrl, uint16_t * p_size, uint8_t direction,
+    fsp_err_t (* maxPacketSizeGet)(usb_ctrl_t * const p_ctrl, uint16_t * p_size, uint8_t direction,
                                    uint8_t device_address);
 } usb_hhid_api_t;
 
@@ -107,8 +104,12 @@ typedef struct st_usb_hhid_instance
     usb_cfg_t const      * p_cfg;      ///< Pointer to the configuration structure for this instance
     usb_hhid_api_t const * p_api;      ///< Pointer to the API structure for this instance
 } usb_hhid_instance_t;
+
+/** Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
+FSP_FOOTER
+
 #endif                                 /* USB_HHID_API_H */
 
 /*******************************************************************************************************************//**
- * @} (end addtogroup USB_HHID_API)
+ * @} (end defgroup USB_HHID_API)
  **********************************************************************************************************************/

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -48,14 +48,14 @@
  **********************************************************************************************************************/
 
 /** Array of LED IOPORT pins. */
-static const uint16_t g_bsp_prv_leds[] =
+static const uint32_t g_bsp_prv_leds[][2] =
 {
-    (uint16_t) BSP_IO_PORT_21_PIN_3,   ///< LED0_ESC_RUN(Green)
-    (uint16_t) BSP_IO_PORT_17_PIN_6,   ///< LED1(Yellow)
-    (uint16_t) BSP_IO_PORT_20_PIN_3,   ///< LED2_ESC_ERR(Red)
-    (uint16_t) BSP_IO_PORT_18_PIN_1,   ///< LED3(Red)
-    (uint16_t) BSP_IO_PORT_21_PIN_6,   ///< LED4_ESC_IN(Green)
-    (uint16_t) BSP_IO_PORT_20_PIN_4,   ///< LED5_ESC_OUT(Green)
+    {(uint32_t) BSP_IO_PORT_21_PIN_3, (uint32_t) BSP_IO_REGION_SAFE}, ///< LED0_ESC_RUN(Green)
+    {(uint32_t) BSP_IO_PORT_17_PIN_6, (uint32_t) BSP_IO_REGION_SAFE}, ///< LED1(Yellow)
+    {(uint32_t) BSP_IO_PORT_20_PIN_3, (uint32_t) BSP_IO_REGION_SAFE}, ///< LED2_ESC_ERR(Red)
+    {(uint32_t) BSP_IO_PORT_18_PIN_1, (uint32_t) BSP_IO_REGION_SAFE}, ///< LED3(Red)
+    {(uint32_t) BSP_IO_PORT_21_PIN_6, (uint32_t) BSP_IO_REGION_SAFE}, ///< LED4_ESC_IN(Green)
+    {(uint32_t) BSP_IO_PORT_20_PIN_4, (uint32_t) BSP_IO_REGION_SAFE}  ///< LED5_ESC_OUT(Green)
 };
 
 /***********************************************************************************************************************
@@ -66,8 +66,8 @@ static const uint16_t g_bsp_prv_leds[] =
 
 const bsp_leds_t g_bsp_leds =
 {
-    .led_count = (uint16_t) ((sizeof(g_bsp_prv_leds) / sizeof(g_bsp_prv_leds[0]))),
-    .p_leds    = &g_bsp_prv_leds[0]
+    .led_count = (uint16_t) (sizeof(g_bsp_prv_leds) / sizeof(g_bsp_prv_leds[0])),
+    .p_leds    = g_bsp_prv_leds
 };
 
 /***********************************************************************************************************************

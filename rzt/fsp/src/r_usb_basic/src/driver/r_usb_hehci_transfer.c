@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -28,6 +28,7 @@
  *         : 31.08.2015 1.00    First Release
  ***********************************************************************************************************************/
 
+
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
  ***********************************************************************************************************************/
@@ -43,6 +44,7 @@
 #define USB_VAL_XFE0        (0xFFFFFFE0U)
 #define USB_VAL_FFF         (0x00000FFFU)
 
+#if  USB_IP_EHCI_OHCI == 1
 /***********************************************************************************************************************
  * External variables and functions
  ***********************************************************************************************************************/
@@ -50,7 +52,7 @@
 /***********************************************************************************************************************
  * Private global variables and functions
  ***********************************************************************************************************************/
-#if  USB_IP_EHCI_OHCI == 1
+
 
  #ifdef USB_HOST_COMPLIANCE_MODE
 extern uint8_t g_usb_hstd_test_packet_parameter_flag;

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -45,6 +45,12 @@ typedef struct st_bsc_sdram_callback_args_t
     void const * p_context;            ///< Placeholder for user data.
 } bsc_sdram_callback_args_t;
 
+/** SDRAM chip select. */
+typedef enum e_bsc_sdram_chip_select
+{
+    BSC_SDRAM_CHIP_SELECT_3 = 3,       ///< Device connected to Chip-Select 3
+} bsc_sdram_chip_select_t;
+
 /** Number of insertion idle cycle between access cycles */
 typedef enum e_bsc_sdram_idle_cycle
 {
@@ -68,6 +74,8 @@ typedef enum e_bsc_sdram_command
 /** Extended configuration. */
 typedef struct st_bsc_sdram_extended_cfg
 {
+    bsc_sdram_chip_select_t chip_select; ///< Select which device to use
+
     /** Idle cycle between Read-Read cycles in the same CS space */
     bsc_sdram_idle_cycle_t r_r_same_space_idle_cycle;
 

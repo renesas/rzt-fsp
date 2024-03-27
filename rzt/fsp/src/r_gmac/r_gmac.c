@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -61,7 +61,7 @@
 #define GMAC_TDES0_TTSE                                (1UL << 25)      /* Transmit Timestamp Enable */
 #define GMAC_TDES0_CIC_MASK                            (3UL << 22)      /* Checksum Insertion Control */
 #define GMAC_TDES0_TER                                 (1UL << 21)      /* Transmit End of Ring */
-#define GMAC_TDES0_TCH                                 (1UL << 21)      /* Second Address Chained */
+#define GMAC_TDES0_TCH                                 (1UL << 20)      /* Second Address Chained */
 #define GMAC_TDES0_TTSS                                (1UL << 17)      /* Transmit Timestamp Status */
 #define GMAC_TDES0_IHE                                 (1UL << 16)      /* IP Header Error */
 #define GMAC_TDES0_ES                                  (1UL << 15)      /* Error Summary */
@@ -268,11 +268,12 @@ static void               gmac_magic_packet_detection(gmac_instance_ctrl_t * con
 static fsp_err_t gmac_link_status_check(gmac_instance_ctrl_t const * const p_instance_ctrl, uint32_t port);
 static uint8_t   gmac_check_magic_packet_detection_bit(gmac_instance_ctrl_t const * const p_instance_ctrl);
 
-void gmac_isr_sbd(void);
-void gmac_isr_pmt(void);
+static void gmac_call_callback(gmac_instance_ctrl_t * p_instance_ctrl, ether_callback_args_t * p_callback_args);
+void        gmac_isr_sbd(void);
+void        gmac_isr_pmt(void);
 
 #ifdef GMAC_IMPLEMENT_ETHSW
-void gmac_callback_ethsw(ethsw_callback_args_t * const p_arg);
+void gmac_callback_ethsw(ether_switch_callback_args_t * const p_arg);
 
 #endif                                 // GMAC_IMPLEMENT_ETHSW
 
@@ -294,15 +295,6 @@ static const char g_module_name[] = "ether";
  #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
 #endif
 
-/** ETHER HAL module version data structure */
-static const fsp_version_t module_version =
-{
-    .api_version_minor  = ETHER_API_VERSION_MINOR,
-    .api_version_major  = ETHER_API_VERSION_MAJOR,
-    .code_version_major = GMAC_CODE_VERSION_MAJOR,
-    .code_version_minor = GMAC_CODE_VERSION_MINOR
-};
-
 /** ETHER HAL API mapping for Ethernet Controller interface */
 /*LDRA_INSPECTED 27 D This structure must be accessible in user code. It cannot be static. */
 const ether_api_t g_ether_on_gmac =
@@ -314,10 +306,9 @@ const ether_api_t g_ether_on_gmac =
     .rxBufferUpdate  = R_GMAC_RxBufferUpdate,
     .write           = R_GMAC_Write,
     .linkProcess     = R_GMAC_LinkProcess,
-    .getLinkStatus   = R_GMAC_GetLinkStatus,
     .wakeOnLANEnable = R_GMAC_WakeOnLANEnable,
     .txStatusGet     = R_GMAC_TxStatusGet,
-    .versionGet      = R_GMAC_VersionGet
+    .callbackSet     = R_GMAC_CallbackSet,
 };
 
 /*
@@ -414,11 +405,16 @@ fsp_err_t R_GMAC_Open (ether_ctrl_t * const p_ctrl, ether_cfg_t const * const p_
         memset(p_instance_ctrl->p_gmac_cfg->pp_ether_buffers[i], 0x00, p_instance_ctrl->p_gmac_cfg->ether_buffer_size);
     }
 
+    /* Set callback and context pointers, if configured */
+    p_instance_ctrl->p_callback        = p_cfg->p_callback;
+    p_instance_ctrl->p_context         = p_cfg->p_context;
+    p_instance_ctrl->p_callback_memory = NULL;
+
     /* Module start */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_START(FSP_IP_GMAC, p_cfg->channel);
-    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC_ACLK);
-    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC_HCLK);
+    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC0_PCLKH);
+    R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC0_PCLKM);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
 #ifdef GMAC_IMPLEMENT_ETHSW
@@ -741,8 +737,17 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
     {
         if (0 == p_instance_ctrl->previous_link_status)
         {
-            /* Disable receive and transmit. */
-            gmac_disable(p_instance_ctrl);
+            // Reset GMAC to force "MTL RX FIFO Read Controller State" to idle.
+            // This is a countermeasure because the register Debug.RRCSTS does not become 0 (IDLE state).
+
+            volatile R_GMAC_Type * p_reg_gmac = (R_GMAC_Type *) p_instance_ctrl->p_reg_gmac;
+
+            /* Reset GMAC. */
+            gmac_reset_mac(p_instance_ctrl->p_reg_gmac);
+
+            p_reg_gmac->Interrupt_Mask_b.LPIIM = 1; /* LPI Interrupt Disable */
+            p_reg_gmac->Interrupt_Mask_b.TSIM  = 1; /* Timestamo Interrupt Disable */
+            p_reg_gmac->Interrupt_Mask_b.PMTIM = 1; /* PMT Interrupt Disable */
         }
     }
 
@@ -751,7 +756,6 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
 
 /********************************************************************************************************************//**
  * Get link status of specificed port.
- * Implements @ref ether_api_t::getLinkStatus.
  *
  * @retval  FSP_SUCCESS                                 Processing completed successfully.
  * @retval  FSP_ERR_ASSERTION                           Pointer to ETHER control block is NULL.
@@ -759,7 +763,7 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
  * @retval  FSP_ERR_INVALID_POINTER                     Value of the pointer is NULL.
  * @retval  FSP_ERR_INVALID_ARGUMENT                    When reopening the PHY interface the interrupt was not enabled.
  ***********************************************************************************************************************/
-fsp_err_t R_GMAC_GetLinkStatus (ether_ctrl_t * const p_ctrl, uint8_t port, ether_link_status_t * p_status)
+fsp_err_t R_GMAC_GetLinkStatus (ether_ctrl_t * const p_ctrl, uint8_t port, gmac_link_status_t * p_status)
 {
     gmac_port_mask_t port_status;
     fsp_err_t        err = FSP_SUCCESS;
@@ -773,7 +777,7 @@ fsp_err_t R_GMAC_GetLinkStatus (ether_ctrl_t * const p_ctrl, uint8_t port, ether
     GMAC_ERROR_RETURN(NULL != p_status, FSP_ERR_INVALID_POINTER);
     GMAC_ERROR_RETURN(BSP_FEATURE_GMAC_MAX_PORTS > port, FSP_ERR_INVALID_ARGUMENT);
 
-    GMAC_ERROR_RETURN(0 != ((gmac_extend_cfg_t *) p_instance_ctrl->p_gmac_cfg->p_extend)->pp_phy_instance[port],
+    GMAC_ERROR_RETURN(0 != (*((gmac_extend_cfg_t *) p_instance_ctrl->p_gmac_cfg->p_extend)->pp_phy_instance)[port],
                       FSP_ERR_INVALID_ARGUMENT);
 #endif
 
@@ -783,16 +787,16 @@ fsp_err_t R_GMAC_GetLinkStatus (ether_ctrl_t * const p_ctrl, uint8_t port, ether
     {
         if (port_status == (p_instance_ctrl->link_establish_status & port_status))
         {
-            *p_status = ETHER_LINK_STATUS_READY;
+            *p_status = GMAC_LINK_STATUS_READY;
         }
         else
         {
-            *p_status = ETHER_LINK_STATUS_UP;
+            *p_status = GMAC_LINK_STATUS_UP;
         }
     }
     else
     {
-        *p_status = ETHER_LINK_STATUS_DOWN;
+        *p_status = GMAC_LINK_STATUS_DOWN;
     }
 
     return err;
@@ -1106,22 +1110,34 @@ fsp_err_t R_GMAC_TxStatusGet (ether_ctrl_t * const p_ctrl, void * const p_buffer
     return err;
 }                                      /* End of function R_GMAC_TxStatusGet() */
 
-/********************************************************************************************************************//**
- * DEPRECATED Provides API and code version in the user provided pointer. Implements @ref ether_api_t::versionGet.
+/*******************************************************************************************************************//**
+ * Updates the user callback with the option to provide memory for the callback argument structure.
+ * Implements @ref ether_api_t::callbackSet.
  *
- * @retval  FSP_SUCCESS                  Version information stored in provided p_version.
- * @retval  FSP_ERR_ASSERTION            p_version is NULL.
- ***********************************************************************************************************************/
-__INLINE fsp_err_t R_GMAC_VersionGet (fsp_version_t * const p_version)
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
+ **********************************************************************************************************************/
+fsp_err_t R_GMAC_CallbackSet (ether_ctrl_t * const          p_ctrl,
+                              void (                      * p_callback)(ether_callback_args_t *),
+                              void const * const            p_context,
+                              ether_callback_args_t * const p_callback_memory)
 {
-#if (GMAC_CFG_PARAM_CHECKING_ENABLE)
-    FSP_ASSERT(p_version);
+    gmac_instance_ctrl_t * p_instance_ctrl = (gmac_instance_ctrl_t *) p_ctrl;
+
+#if ETHER_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_instance_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(GMAC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    *p_version = module_version;
+    /* Store callback and context */
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
-}                                      /* End of function R_GMAC_VersionGet() */
+}                                      /* End of function R_GMAC_CallbackSet() */
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHER)
@@ -1290,8 +1306,8 @@ static void gmac_reset_mac (volatile R_GMAC_Type * const p_reg)
  **********************************************************************************************************************/
 fsp_err_t gmac_open_ethsw (gmac_instance_ctrl_t * p_instance_ctrl)
 {
-    ethsw_instance_t const * p_ethsw_instance; ///< Pointer to ETHER_SWITCH instance
-    fsp_err_t                err;
+    ether_switch_instance_t const * p_ethsw_instance; ///< Pointer to ETHER_SWITCH instance
+    fsp_err_t err;
 
     p_ethsw_instance = ((gmac_extend_cfg_t *) p_instance_ctrl->p_gmac_cfg->p_extend)->p_ethsw_instance;
 
@@ -1660,20 +1676,8 @@ static void gmac_disable (gmac_instance_ctrl_t * const p_instance_ctrl)
 
     p_reg_gmac = (R_GMAC_Type *) p_instance_ctrl->p_reg_gmac;
 
-    p_reg_gmac->Operation_Mode_b.ST = 0;
-    while (p_reg_gmac->Debug_b.TRCSTS != 0)
-    {
-        ;
-    }
-
     p_reg_gmac->MAC_Configuration_b.TE = 0;
     p_reg_gmac->MAC_Configuration_b.RE = 0;
-    while (p_reg_gmac->Debug_b.RRCSTS != 0)
-    {
-        ;
-    }
-
-    p_reg_gmac->Operation_Mode_b.SR = 0;
 }                                      /* End of function gmac_disable() */
 
 /*******************************************************************************************************************//**
@@ -1690,13 +1694,15 @@ void gmac_call_user_callback (gmac_instance_ctrl_t * p_instance_ctrl, ether_even
     ether_cfg_t const   * p_gmac_cfg = p_instance_ctrl->p_gmac_cfg;
     ether_callback_args_t callback_arg;
 
-    if (NULL != p_gmac_cfg->p_callback)
+    if (NULL != p_instance_ctrl->p_callback)
     {
         callback_arg.channel      = p_gmac_cfg->channel;
         callback_arg.event        = event;
         callback_arg.status_ether = 0;
         callback_arg.status_link  = link_status;
-        (*p_gmac_cfg->p_callback)((void *) &callback_arg);
+        callback_arg.p_context    = p_gmac_cfg->p_context;
+
+        gmac_call_callback(p_instance_ctrl, &callback_arg);
     }
 }                                      /* End of function gmac_call_user_callback() */
 
@@ -1934,11 +1940,12 @@ static fsp_err_t gmac_do_link (gmac_instance_ctrl_t * const p_instance_ctrl, con
     if (FSP_SUCCESS == err)
     {
 #ifdef GMAC_IMPLEMENT_ETHSW
-        ethsw_instance_t const * p_ethsw_instance = ///< Pointer to ETHER_SWITCH instance
-                                                    ((gmac_extend_cfg_t *) p_instance_ctrl->p_gmac_cfg->p_extend)->
-                                                    p_ethsw_instance;
+        ether_switch_instance_t const * p_ethsw_instance = ///< Pointer to ETHER_SWITCH instance
+                                                           ((gmac_extend_cfg_t *) p_instance_ctrl->p_gmac_cfg->p_extend)
+                                                           ->
+                                                           p_ethsw_instance;
 
-        err = p_ethsw_instance->p_api->speedCfg(p_ethsw_instance->p_ctrl, (uint8_t) port, speed);
+        err = R_ETHSW_SpeedCfg(p_ethsw_instance->p_ctrl, port, speed);
 #endif                                 // GMAC_IMPLEMENT_ETHSW
     }
     else
@@ -2098,6 +2105,9 @@ void gmac_configure_operation (gmac_instance_ctrl_t * const p_instance_ctrl)
     /* CRC Stripping for Type Frames */
     p_reg_gmac->MAC_Configuration_b.CST = 1;
 
+    /* Automatic Pad or CRC Stripping */
+    p_reg_gmac->MAC_Configuration_b.ACS = 1;
+
     /* Enable receive and transmit. */
     p_reg_gmac->MAC_Configuration_b.RE = 1;
     p_reg_gmac->MAC_Configuration_b.TE = 1;
@@ -2170,7 +2180,7 @@ static fsp_err_t gmac_link_status_check (gmac_instance_ctrl_t const * const p_in
 
     pp_phy_instance = ((gmac_extend_cfg_t *) p_instance_ctrl->p_gmac_cfg->p_extend)->pp_phy_instance;
 
-    if (NULL == pp_phy_instance[port])
+    if (NULL == (*pp_phy_instance)[port])
     {
         return FSP_ERR_INVALID_ARGUMENT;
     }
@@ -2200,7 +2210,7 @@ static fsp_err_t gmac_link_status_check (gmac_instance_ctrl_t const * const p_in
  *
  * @retval  non
  **********************************************************************************************************************/
-void gmac_callback_ethsw (ethsw_callback_args_t * const p_arg)
+void gmac_callback_ethsw (ether_switch_callback_args_t * const p_arg)
 {
     gmac_instance_ctrl_t * p_instance_ctrl = (gmac_instance_ctrl_t *) p_arg->p_context;
 
@@ -2211,6 +2221,46 @@ void gmac_callback_ethsw (ethsw_callback_args_t * const p_arg)
 }                                      /* End of function gmac_callback_ethsw() */
 
 #endif // GMAC_IMPLEMENT_ETHSW
+
+/*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_instance_ctrl      Pointer to ether instance control block
+ * @param[in]     p_callback_args      Pointer to callback args
+ **********************************************************************************************************************/
+static void gmac_call_callback (gmac_instance_ctrl_t * p_instance_ctrl, ether_callback_args_t * p_callback_args)
+{
+    ether_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available.  This allows callback arguments to be
+     * stored in non-secure memory so they can be accessed by a non-secure callback function. */
+    ether_callback_args_t * p_args = p_instance_ctrl->p_callback_memory;
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
+
+    p_args->channel      = p_instance_ctrl->p_gmac_cfg->channel;
+    p_args->event        = p_callback_args->event;
+    p_args->status_ether = p_callback_args->status_ether;
+    p_args->status_link  = p_callback_args->status_link;
+    p_args->p_context    = p_instance_ctrl->p_context;
+
+    /* If the project is not Trustzone Secure, then it will never need to change security state in order to call the callback. */
+    p_instance_ctrl->p_callback(p_args);
+
+    if (NULL != p_instance_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_instance_ctrl->p_callback_memory = args;
+    }
+}                                      /* End of function gmac_call_callback() */
 
 /*******************************************************************************************************************//**
  * Interrupt handler for SBD interrupts.
@@ -2237,7 +2287,7 @@ void gmac_isr_sbd (void)
     dammy_read = dammy_read;
 
     /* Callback : Interrupt handler */
-    if (NULL != p_instance_ctrl->p_gmac_cfg->p_callback)
+    if (NULL != p_instance_ctrl->p_callback)
     {
         callback_arg.channel      = p_instance_ctrl->p_gmac_cfg->channel;
         callback_arg.event        = ETHER_EVENT_SBD_INTERRUPT;
@@ -2245,7 +2295,7 @@ void gmac_isr_sbd (void)
         callback_arg.status_link  = 0;
         callback_arg.p_context    = p_instance_ctrl->p_gmac_cfg->p_context;
 
-        (*p_instance_ctrl->p_gmac_cfg->p_callback)((void *) &callback_arg);
+        gmac_call_callback(p_instance_ctrl, &callback_arg);
     }
 }                                      /* End of function gmac_isr_sbd() */
 
@@ -2268,7 +2318,7 @@ void gmac_isr_pmt (void)
     pmt_control_status = p_reg_gmac->PMT_Control_Status;
 
     /* Callback : Interrupt handler */
-    if (NULL != p_instance_ctrl->p_gmac_cfg->p_callback)
+    if (NULL != p_instance_ctrl->p_callback)
     {
         callback_arg.channel      = p_instance_ctrl->p_gmac_cfg->channel;
         callback_arg.event        = ETHER_EVENT_PMT_INTERRUPT;
@@ -2276,7 +2326,7 @@ void gmac_isr_pmt (void)
         callback_arg.status_link  = 0;
         callback_arg.p_context    = p_instance_ctrl->p_gmac_cfg->p_context;
 
-        (*p_instance_ctrl->p_gmac_cfg->p_callback)((void *) &callback_arg);
+        gmac_call_callback(p_instance_ctrl, &callback_arg);
     }
 
     if ((GMAC_PMT_CONTROL_STATUS_MGKPRCVD == (GMAC_PMT_CONTROL_STATUS_MGKPRCVD & pmt_control_status)) ||

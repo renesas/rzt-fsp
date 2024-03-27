@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -39,8 +39,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHERCAT_SSC_PORT_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHERCAT_SSC_PORT_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -107,8 +105,6 @@ fsp_err_t RM_ETHERCAT_SSC_PORT_Open(ethercat_ssc_port_ctrl_t * const      p_ctrl
                                     ethercat_ssc_port_cfg_t const * const p_cfg);
 
 fsp_err_t RM_ETHERCAT_SSC_PORT_Close(ethercat_ssc_port_ctrl_t * const p_ctrl);
-
-fsp_err_t RM_ETHERCAT_SSC_PORT_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHERCAT_SSC_PORT)

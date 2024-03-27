@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -21,8 +21,16 @@
 #ifndef BSP_MODULE_H
 #define BSP_MODULE_H
 
+/***********************************************************************************************************************
+ * Includes   <System Includes> , "Project Includes"
+ **********************************************************************************************************************/
+
 /** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
+
+/***********************************************************************************************************************
+ * Macro definitions
+ **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
  * @addtogroup BSP_MCU
@@ -199,25 +207,25 @@ FSP_HEADER
  #define BSP_MSTP_DMY_FSP_IP_SHOSTIF(channel)      R_SHOSTIF->CTRLR0;
 #endif
 
-#if BSP_FEATURE_BSP_AFMT_SUPPORTED
+#if (2 == BSP_FEATURE_BSP_AFMT_UNIT)
  #define BSP_MSTP_REG_FSP_IP_AFMT(channel)         *((0U == channel) ? &R_SYSC_NS->MSTPCRJ : &R_SYSC_NS->MSTPCRK)
  #define BSP_MSTP_BIT_FSP_IP_AFMT(channel)         (1U << (0U));
  #define BSP_MSTP_DMY_FSP_IP_AFMT(channel)         (0 == channel) ? R_AFMT0->COMMAND : R_AFMT1->COMMAND;
 #endif
 
-#if BSP_FEATURE_BSP_HDSL_SUPPORTED
+#if (2 == BSP_FEATURE_BSP_HDSL_UNIT)
  #define BSP_MSTP_REG_FSP_IP_HDSL(channel)         *((0U == channel) ? &R_SYSC_NS->MSTPCRJ : &R_SYSC_NS->MSTPCRK)
  #define BSP_MSTP_BIT_FSP_IP_HDSL(channel)         (1U << (1U));
  #define BSP_MSTP_DMY_FSP_IP_HDSL(channel)         (0 == channel) ? R_HDSLD0->SYS_CTRL : R_HDSLD1->SYS_CTRL;
 #endif
 
-#if BSP_FEATURE_BSP_BISS_SUPPORTED
+#if (2 == BSP_FEATURE_BSP_BISS_UNIT)
  #define BSP_MSTP_REG_FSP_IP_BISS(channel)         *((0U == channel) ? &R_SYSC_NS->MSTPCRJ : &R_SYSC_NS->MSTPCRK)
  #define BSP_MSTP_BIT_FSP_IP_BISS(channel)         (1U << (2U));
  #define BSP_MSTP_DMY_FSP_IP_BISS(channel)         (0 == channel) ? R_BISS0->SCDATA[0].L : R_BISS1->SCDATA[0].L;
 #endif
 
-#if BSP_FEATURE_BSP_ENDAT_SUPPORTED
+#if (2 == BSP_FEATURE_BSP_ENDAT_UNIT)
  #define BSP_MSTP_REG_FSP_IP_ENDAT(channel)        *((0U == channel) ? &R_SYSC_NS->MSTPCRJ : &R_SYSC_NS->MSTPCRK)
  #define BSP_MSTP_BIT_FSP_IP_ENDAT(channel)        (1U << (3U));
  #define BSP_MSTP_DMY_FSP_IP_ENDAT(channel)        (0 == channel) ? R_ENDAT0->SEND : R_ENDAT1->SEND;
@@ -229,11 +237,23 @@ FSP_HEADER
  #define BSP_MSTP_DMY_FSP_IP_ENCOUT(channel)       R_ENCOUT->CTL;
 #endif
 
-#if BSP_FEATURE_BSP_CPU1_SUPPORTED
+#if BSP_FEATURE_BSP_MSTP_CR52_CPU1_HAS_MSTPCRH
  #define BSP_MSTP_REG_FSP_IP_CPU1(channel)         R_SYSC_S->MSTPCRH
  #define BSP_MSTP_BIT_FSP_IP_CPU1(channel)         (1U << (1U));
  #define BSP_MSTP_DMY_FSP_IP_CPU1(channel)         ;
 #endif
+
+/***********************************************************************************************************************
+ * Typedef definitions
+ **********************************************************************************************************************/
+
+/***********************************************************************************************************************
+ * Exported global variables
+ **********************************************************************************************************************/
+
+/***********************************************************************************************************************
+ * Exported global functions (to be accessed by other files)
+ **********************************************************************************************************************/
 
 /** Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

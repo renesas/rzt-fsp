@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -77,24 +77,24 @@ const doc_api_t g_doc_on_doc =
  *                                      is invalid.
  *
  ***********************************************************************************************************************/
-fsp_err_t R_DOC_Open (doc_ctrl_t * const p_api_ctrl, doc_cfg_t const * const p_cfg)
+fsp_err_t R_DOC_Open (doc_ctrl_t * const p_ctrl, doc_cfg_t const * const p_cfg)
 {
-    doc_instance_ctrl_t * p_ctrl = (doc_instance_ctrl_t *) p_api_ctrl;
+    doc_instance_ctrl_t * p_instance_ctrl = (doc_instance_ctrl_t *) p_ctrl;
 
     /* Validate the parameters and check if the module is initialized */
 #if DOC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
+    FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_cfg);
     FSP_ASSERT(p_cfg->p_callback != NULL);
-    FSP_ERROR_RETURN(DOC_OPEN != p_ctrl->open, FSP_ERR_ALREADY_OPEN);
+    FSP_ERROR_RETURN(DOC_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 #endif
 
     /* save pointers for later use */
-    p_ctrl->p_cfg = p_cfg;
+    p_instance_ctrl->p_cfg = p_cfg;
 
-    p_ctrl->p_callback        = p_cfg->p_callback;
-    p_ctrl->p_context         = p_cfg->p_context;
-    p_ctrl->p_callback_memory = NULL;
+    p_instance_ctrl->p_callback        = p_cfg->p_callback;
+    p_instance_ctrl->p_context         = p_cfg->p_context;
+    p_instance_ctrl->p_callback_memory = NULL;
 
     /* Power on the DOC module. */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
@@ -106,12 +106,12 @@ fsp_err_t R_DOC_Open (doc_ctrl_t * const p_api_ctrl, doc_cfg_t const * const p_c
     R_DOC->DOCR = (uint8_t) (R_DOC_DOCR_DOPCFCL_Msk | R_DOC_DOCR_DOPCIE_Msk | p_cfg->event);
 
     /* write initial data for comparison/ addition/subtraction to DODSR register */
-    R_DOC->DODSR = (uint16_t) (p_ctrl->p_cfg->doc_data & UINT16_MAX);
+    R_DOC->DODSR = (uint16_t) (p_instance_ctrl->p_cfg->doc_data & UINT16_MAX);
 
-    gp_ctrl = p_ctrl;
+    gp_ctrl = p_instance_ctrl;
 
     /* Mark driver as open by initializing it to "DOCO" in its ASCII equivalent. */
-    p_ctrl->open = DOC_OPEN;
+    p_instance_ctrl->open = DOC_OPEN;
 
     return FSP_SUCCESS;
 }
@@ -125,14 +125,14 @@ fsp_err_t R_DOC_Open (doc_ctrl_t * const p_api_ctrl, doc_cfg_t const * const p_c
  *
  * @note This function will disable the DOC interrupt in the GIC.
  **********************************************************************************************************************/
-fsp_err_t R_DOC_Close (doc_ctrl_t * const p_api_ctrl)
+fsp_err_t R_DOC_Close (doc_ctrl_t * const p_ctrl)
 {
-    doc_instance_ctrl_t * p_ctrl = (doc_instance_ctrl_t *) p_api_ctrl;
+    doc_instance_ctrl_t * p_instance_ctrl = (doc_instance_ctrl_t *) p_ctrl;
 
     /* Validate the parameter and check if the module is initialized */
 #if DOC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
-    FSP_ERROR_RETURN(DOC_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ERROR_RETURN(DOC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
     /* DOC Interrupt disable. */
@@ -143,7 +143,7 @@ fsp_err_t R_DOC_Close (doc_ctrl_t * const p_api_ctrl)
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
     /* Mark driver as closed.  */
-    p_ctrl->open = 0U;
+    p_instance_ctrl->open = 0U;
 
     return FSP_SUCCESS;
 }
@@ -156,17 +156,17 @@ fsp_err_t R_DOC_Close (doc_ctrl_t * const p_api_ctrl)
  * @retval FSP_ERR_ASSERTION    One or more pointers point to NULL.
  *
  **********************************************************************************************************************/
-fsp_err_t R_DOC_Read (doc_ctrl_t * const p_api_ctrl, uint32_t * p_result)
+fsp_err_t R_DOC_Read (doc_ctrl_t * const p_ctrl, uint32_t * p_result)
 {
-    doc_instance_ctrl_t * p_ctrl = (doc_instance_ctrl_t *) p_api_ctrl;
+    doc_instance_ctrl_t * p_instance_ctrl = (doc_instance_ctrl_t *) p_ctrl;
 
-    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(p_instance_ctrl);
 
     /* Validate the parameters and check if the module is intialized */
 #if DOC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
+    FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_result);
-    FSP_ERROR_RETURN(DOC_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(DOC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
     /* Read the result of addition or subtraction operation from the register and store in the user supplied location */
@@ -183,16 +183,16 @@ fsp_err_t R_DOC_Read (doc_ctrl_t * const p_api_ctrl, uint32_t * p_result)
  * @retval FSP_ERR_ASSERTION    One or more pointers point to NULL.
  *
  **********************************************************************************************************************/
-fsp_err_t R_DOC_Write (doc_ctrl_t * const p_api_ctrl, uint32_t data)
+fsp_err_t R_DOC_Write (doc_ctrl_t * const p_ctrl, uint32_t data)
 {
-    doc_instance_ctrl_t * p_ctrl = (doc_instance_ctrl_t *) p_api_ctrl;
+    doc_instance_ctrl_t * p_instance_ctrl = (doc_instance_ctrl_t *) p_ctrl;
 
-    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(p_instance_ctrl);
 
     /* Validate the parameters and check if the module is initialized */
 #if DOC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
-    FSP_ERROR_RETURN(DOC_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ERROR_RETURN(DOC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
     /* Writes the user supplied data to the DODIR register for data operation in Comparison, Addition and subtraction modes */
@@ -209,23 +209,23 @@ fsp_err_t R_DOC_Write (doc_ctrl_t * const p_api_ctrl, uint32_t data)
  * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
  * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
-fsp_err_t R_DOC_CallbackSet (doc_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_DOC_CallbackSet (doc_ctrl_t * const          p_ctrl,
                              void (                    * p_callback)(doc_callback_args_t *),
                              void const * const          p_context,
                              doc_callback_args_t * const p_callback_memory)
 {
-    doc_instance_ctrl_t * p_ctrl = (doc_instance_ctrl_t *) p_api_ctrl;
+    doc_instance_ctrl_t * p_instance_ctrl = (doc_instance_ctrl_t *) p_ctrl;
 
 #if (DOC_CFG_PARAM_CHECKING_ENABLE)
-    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_callback);
-    FSP_ERROR_RETURN(DOC_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(DOC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
     /* Store callback and context */
-    p_ctrl->p_callback        = p_callback;
-    p_ctrl->p_context         = p_context;
-    p_ctrl->p_callback_memory = p_callback_memory;
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
 }
@@ -243,6 +243,8 @@ fsp_err_t R_DOC_CallbackSet (doc_ctrl_t * const          p_api_ctrl,
  **********************************************************************************************************************/
 void doc_int_isr (uint32_t id)
 {
+    DOC_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     FSP_PARAMETER_NOT_USED(id);
 
     doc_instance_ctrl_t * p_ctrl = (doc_instance_ctrl_t *) gp_ctrl;
@@ -275,4 +277,6 @@ void doc_int_isr (uint32_t id)
 
     /* clear DOPCF flag */
     R_DOC->DOCR = (uint8_t) (R_DOC_DOCR_DOPCFCL_Msk | R_DOC_DOCR_DOPCIE_Msk | (p_ctrl->p_cfg->event));
+
+    DOC_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }

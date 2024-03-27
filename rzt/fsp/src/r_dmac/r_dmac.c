@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -47,67 +47,60 @@
 #define DMAC_PRV_CHANNEL(channel)         (channel % 8)
 #define DMAC_PRV_GROUP(channel)           (channel / 8)
 
-#define DMAC_PRV_ATCM_END_ADDRESS                (0x0007FFFF)
-#define DMAC_PRV_BTCM_START_ADDRESS              (0x00100000)
-#define DMAC_PRV_BTCM_END_ADDRESS                (0x0010FFFF)
-#define DMAC_PRV_CPUTCM_BASE_ADDRESS             (0x20000000)
+#define DMAC_PRV_ATCM_END_ADDRESS          (0x0007FFFF)
+#define DMAC_PRV_BTCM_START_ADDRESS        (0x00100000)
+#define DMAC_PRV_BTCM_END_ADDRESS          (0x0010FFFF)
+#define DMAC_PRV_CPUTCM_BASE_ADDRESS       (0x20000000)
 
-#define DMAC_PRV_DCTRL_DEFAULT_VALUE             (0x00000000U)
-#define DMAC_PRV_CHCFG_DEFAULT_VALUE             (0x00000000U)
+#define DMAC_PRV_DCTRL_DEFAULT_VALUE       (0x00000000U)
+#define DMAC_PRV_CHCFG_DEFAULT_VALUE       (0x00000000U)
 
 /* Channel Extension Register Bit Field Definitions */
-#define DMAC_PRV_CHEXT_SCA_OFFSET                (4U)
-#define DMAC_PRV_CHEXT_DCA_OFFSET                (12U)
+#define DMAC_PRV_CHEXT_SCA_OFFSET          (4U)
+#define DMAC_PRV_CHEXT_DCA_OFFSET          (12U)
 
 /* Channel Control Register Bit Field Definitions */
-#define DMAC_PRV_CHCTRL_SETEN_OFFSET             (0U)
-#define DMAC_PRV_CHCTRL_SETEN_MASK               (1U << DMAC_PRV_CHCTRL_SETEN_OFFSET)
-#define DMAC_PRV_CHCTRL_CLREN_OFFSET             (1U)
-#define DMAC_PRV_CHCTRL_CLREN_MASK               (1U << DMAC_PRV_CHCTRL_CLREN_OFFSET)
-#define DMAC_PRV_CHCTRL_STG_OFFSET               (2U)
-#define DMAC_PRV_CHCTRL_STG_MASK                 (1U << DMAC_PRV_CHCTRL_STG_OFFSET)
-#define DMAC_PRV_CHCTRL_SWRST_OFFSET             (3U)
-#define DMAC_PRV_CHCTRL_SWRST_MASK               (1U << DMAC_PRV_CHCTRL_SWRST_OFFSET)
-#define DMAC_PRV_CHCTRL_CLREND_OFFSET            (5U)
-#define DMAC_PRV_CHCTRL_CLREND_MASK              (1U << DMAC_PRV_CHCTRL_CLREND_OFFSET)
-#define DMAC_PRV_CHCTRL_SETSUS_OFFSET            (8U)
-#define DMAC_PRV_CHCTRL_SETSUS_MASK              (1U << DMAC_PRV_CHCTRL_SETSUS_OFFSET)
+#define DMAC_PRV_CHCTRL_SETEN_OFFSET       (0U)
+#define DMAC_PRV_CHCTRL_SETEN_MASK         (1U << DMAC_PRV_CHCTRL_SETEN_OFFSET)
+#define DMAC_PRV_CHCTRL_CLREN_OFFSET       (1U)
+#define DMAC_PRV_CHCTRL_CLREN_MASK         (1U << DMAC_PRV_CHCTRL_CLREN_OFFSET)
+#define DMAC_PRV_CHCTRL_STG_OFFSET         (2U)
+#define DMAC_PRV_CHCTRL_STG_MASK           (1U << DMAC_PRV_CHCTRL_STG_OFFSET)
+#define DMAC_PRV_CHCTRL_SWRST_OFFSET       (3U)
+#define DMAC_PRV_CHCTRL_SWRST_MASK         (1U << DMAC_PRV_CHCTRL_SWRST_OFFSET)
+#define DMAC_PRV_CHCTRL_CLREND_OFFSET      (5U)
+#define DMAC_PRV_CHCTRL_CLREND_MASK        (1U << DMAC_PRV_CHCTRL_CLREND_OFFSET)
+#define DMAC_PRV_CHCTRL_SETSUS_OFFSET      (8U)
+#define DMAC_PRV_CHCTRL_SETSUS_MASK        (1U << DMAC_PRV_CHCTRL_SETSUS_OFFSET)
 
 /* Channel Configuration Register Bit Field Definitions */
-#define DMAC_PRV_CHCFG_SEL_OFFSET                (0U)
-#define DMAC_PRV_CHCFG_SEL_VALUE_MASK            (0x07U)
-#define DMAC_PRV_CHCFG_REQD_OFFSET               (3U)
-#define DMAC_PRV_CHCFG_REQD_VALUE_MASK           (0x01U)
-#define DMAC_PRV_CHCFG_LOEN_OFFSET               (4U)
-#define DMAC_PRV_CHCFG_DETECT_MODE_VALUE_MASK    (0x07U)
-#define DMAC_PRV_CHCFG_AM_OFFSET                 (8U)
-#define DMAC_PRV_CHCFG_AM_VALUE_MASK             (0x07U)
-#define DMAC_PRV_CHCFG_SDS_OFFSET                (12U)
-#define DMAC_PRV_CHCFG_SDS_VALUE_MASK            (0x0FU)
-#define DMAC_PRV_CHCFG_DDS_OFFSET                (16U)
-#define DMAC_PRV_CHCFG_DDS_VALUE_MASK            (0x0FU)
-#define DMAC_PRV_CHCFG_SAD_OFFSET                (20U)
-#define DMAC_PRV_CHCFG_SAD_VALUE_MASK            (0x01U)
-#define DMAC_PRV_CHCFG_DAD_OFFSET                (21U)
-#define DMAC_PRV_CHCFG_DAD_VALUE_MASK            (0x01U)
-#define DMAC_PRV_CHCFG_TM_OFFSET                 (22U)
-#define DMAC_PRV_CHCFG_TM_VALUE_MASK             (0x01U)
-#define DMAC_PRV_CHCFG_DEM_OFFSET                (24U)
-#define DMAC_PRV_CHCFG_DEM_MASK                  (1U << DMAC_PRV_CHCFG_DEM_OFFSET)
-#define DMAC_PRV_CHCFG_DEM_VALUE_MASK            (0x01U)
-#define DMAC_PRV_CHCFG_RSW_OFFSET                (29U)
-#define DMAC_PRV_CHCFG_RSW_MASK                  (1U << DMAC_PRV_CHCFG_RSW_OFFSET)
-#define DMAC_PRV_NEXT_REG_VALUE_MASK             (0x03U)
+#define DMAC_PRV_CHCFG_SEL_OFFSET          (0U)
+#define DMAC_PRV_CHCFG_REQD_OFFSET         (3U)
+#define DMAC_PRV_CHCFG_LOEN_OFFSET         (4U)
+#define DMAC_PRV_CHCFG_AM_OFFSET           (8U)
+#define DMAC_PRV_CHCFG_SDS_OFFSET          (12U)
+#define DMAC_PRV_CHCFG_SDS_VALUE_MASK      (0x0FU)
+#define DMAC_PRV_CHCFG_DDS_OFFSET          (16U)
+#define DMAC_PRV_CHCFG_DDS_VALUE_MASK      (0x0FU)
+#define DMAC_PRV_CHCFG_SAD_OFFSET          (20U)
+#define DMAC_PRV_CHCFG_SAD_VALUE_MASK      (0x01U)
+#define DMAC_PRV_CHCFG_DAD_OFFSET          (21U)
+#define DMAC_PRV_CHCFG_DAD_VALUE_MASK      (0x01U)
+#define DMAC_PRV_CHCFG_TM_OFFSET           (22U)
+#define DMAC_PRV_CHCFG_DEM_OFFSET          (24U)
+#define DMAC_PRV_CHCFG_DEM_MASK            (1U << DMAC_PRV_CHCFG_DEM_OFFSET)
+#define DMAC_PRV_CHCFG_RSW_OFFSET          (29U)
+#define DMAC_PRV_NEXT_REG_VALUE_MASK       (0x03U)
 
 /* DMA Control Register Bit Field Definitions */
-#define DMAC_PRV_DCTRL_PR_OFFSET                 (0U)
-#define DMAC_PRV_DCTRL_PR_VALUE_MASK             (0x01U)
-#define DMAC_PRV_DCTRL_LVINT_OFFSET              (1U)
-#define DMAC_PRV_DCTRL_LVINT_VALUE_MASK          (0x01U)
+#define DMAC_PRV_DCTRL_PR_OFFSET           (0U)
+#define DMAC_PRV_DCTRL_PR_VALUE_MASK       (0x01U)
+#define DMAC_PRV_DCTRL_LVINT_OFFSET        (1U)
+#define DMAC_PRV_DCTRL_LVINT_VALUE_MASK    (0x01U)
 
 /* DMAC Resource Select Register Bit Field Definitions */
-#define DMAC_PRV_RSSEL_REQ_SEL_OFFSET            (10U)
-#define DMAC_PRV_RSSEL_REQ_SEL_MASK              (0x3FFU)
+#define DMAC_PRV_RSSEL_REQ_SEL_OFFSET      (10U)
+#define DMAC_PRV_RSSEL_REQ_SEL_MASK        (0x3FFU)
 
 /***********************************************************************************************************************
  * Private function prototypes
@@ -115,20 +108,22 @@
 void dmac_int_isr(void);
 void dmac_err_int_isr(uint32_t id);
 
-static fsp_err_t r_dmac_prv_enable(dmac_instance_ctrl_t * p_ctrl);
-static void      r_dmac_prv_disable(dmac_instance_ctrl_t * p_ctrl);
-static void      r_dmac_config_transfer_info_register_mode(dmac_instance_ctrl_t * p_ctrl, transfer_info_t * p_info);
-static void      r_dmac_config_transfer_info_link_mode(dmac_instance_ctrl_t * p_ctrl);
-static uint32_t  r_dmac_config_chext(uint32_t src_address, uint32_t dest_address);
-static bool      r_dmac_address_tcm_check(uint32_t address);
+static fsp_err_t r_dmac_prv_enable(dmac_instance_ctrl_t * p_instance_ctrl);
+static void      r_dmac_prv_disable(dmac_instance_ctrl_t * p_instance_ctrl);
+static void      r_dmac_config_transfer_info_register_mode(dmac_instance_ctrl_t * p_instance_ctrl,
+                                                           transfer_info_t      * p_info);
+static void     r_dmac_config_transfer_info_link_mode(dmac_instance_ctrl_t * p_instance_ctrl);
+static uint32_t r_dmac_config_chext(uint32_t src_address, uint32_t dest_address);
+static bool     r_dmac_address_tcm_check(uint32_t address);
 
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-static fsp_err_t r_dma_open_parameter_checking(dmac_instance_ctrl_t * const p_ctrl, transfer_cfg_t const * const p_cfg);
+static fsp_err_t r_dma_open_parameter_checking(dmac_instance_ctrl_t * const p_instance_ctrl,
+                                               transfer_cfg_t const * const p_cfg);
 static fsp_err_t r_dmac_info_paramter_checking(transfer_info_t const * const p_info);
 static fsp_err_t r_dmac_link_descriptor_paramter_checking(dmac_link_cfg_t const * p_descriptor);
-static fsp_err_t r_dmac_enable_parameter_checking(dmac_instance_ctrl_t * const p_ctrl);
-static fsp_err_t r_dmac_enable_parameter_checking_register_mode(dmac_instance_ctrl_t * const p_ctrl);
-static fsp_err_t r_dmac_enable_parameter_checking_link_mode(dmac_instance_ctrl_t * const p_ctrl);
+static fsp_err_t r_dmac_enable_parameter_checking(dmac_instance_ctrl_t * const p_instance_ctrl);
+static fsp_err_t r_dmac_enable_parameter_checking_register_mode(dmac_instance_ctrl_t * const p_instance_ctrl);
+static fsp_err_t r_dmac_enable_parameter_checking_link_mode(dmac_instance_ctrl_t * const p_instance_ctrl);
 
 static bool r_dmac_address_tcm_via_axis_check(uint32_t address);
 
@@ -137,39 +132,6 @@ static bool r_dmac_address_tcm_via_axis_check(uint32_t address);
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
-
-/** Version data structure used by error logger macro. */
-static const fsp_version_t g_dmac_version =
-{
-    .api_version_minor  = TRANSFER_API_VERSION_MINOR,
-    .api_version_major  = TRANSFER_API_VERSION_MAJOR,
-    .code_version_major = DMAC_CODE_VERSION_MAJOR,
-    .code_version_minor = DMAC_CODE_VERSION_MINOR
-};
-
-/* Convert api defined value to CHCFG.TM bit setting value. */
-static const uint8_t g_dmac_transfer_mode_to_reg_value[] =
-{
-    [TRANSFER_MODE_NORMAL] = 0x0U,
-    [TRANSFER_MODE_BLOCK]  = 0x1U,
-};
-
-/* Convert api defined value to CHCFG.SAD/DAD bit setting value. */
-static const uint8_t g_dmac_addr_mode_to_reg_value[] =
-{
-    [TRANSFER_ADDR_MODE_FIXED]       = 0x1U,
-    [TRANSFER_ADDR_MODE_INCREMENTED] = 0x0U,
-};
-
-#if DMAC_CFG_PARAM_CHECKING_ENABLE
-
-/* Convert CHCFG.SAD/DAD bit setting value to api defined value. */
-static const transfer_addr_mode_t g_dmac_addr_mode_to_api_value[] =
-{
-    [0] = TRANSFER_ADDR_MODE_INCREMENTED,
-    [1] = TRANSFER_ADDR_MODE_FIXED,
-};
-#endif
 
 /***********************************************************************************************************************
  * Exported global variables
@@ -189,8 +151,9 @@ const transfer_api_t g_transfer_on_dmac =
     .softwareStop  = R_DMAC_SoftwareStop,
     .enable        = R_DMAC_Enable,
     .disable       = R_DMAC_Disable,
+    .reload        = R_DMAC_Reload,
+    .callbackSet   = R_DMAC_CallbackSet,
     .close         = R_DMAC_Close,
-    .versionGet    = R_DMAC_VersionGet,
 };
 
 /*******************************************************************************************************************//**
@@ -211,41 +174,46 @@ const transfer_api_t g_transfer_on_dmac =
  * @retval FSP_ERR_IRQ_BSP_DISABLED       The IRQ associated with the activation source is not enabled in the BSP.
  * @retval FSP_ERR_ALREADY_OPEN           The control structure is already opened.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_Open (transfer_ctrl_t * const p_api_ctrl, transfer_cfg_t const * const p_cfg)
+fsp_err_t R_DMAC_Open (transfer_ctrl_t * const p_ctrl, transfer_cfg_t const * const p_cfg)
 {
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
     fsp_err_t err = FSP_SUCCESS;
-    err = r_dma_open_parameter_checking(p_api_ctrl, p_cfg);
+    err = r_dma_open_parameter_checking(p_ctrl, p_cfg);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 #endif
 
-    dmac_instance_ctrl_t * p_ctrl   = (dmac_instance_ctrl_t *) p_api_ctrl;
-    dmac_extended_cfg_t  * p_extend = (dmac_extended_cfg_t *) p_cfg->p_extend;
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
+    dmac_extended_cfg_t  * p_extend        = (dmac_extended_cfg_t *) p_cfg->p_extend;
 
-    p_ctrl->p_cfg = p_cfg;
-    p_ctrl->p_reg = DMAC_PRV_REG(p_extend->unit);
+    p_instance_ctrl->p_cfg = p_cfg;
+    p_instance_ctrl->p_reg = DMAC_PRV_REG(p_extend->unit);
 
     /* Configure the transfer settings. */
     if (DMAC_MODE_SELECT_REGISTER == p_extend->dmac_mode)
     {
-        p_ctrl->dmac_mode = DMAC_MODE_SELECT_REGISTER;
-        r_dmac_config_transfer_info_register_mode(p_ctrl, p_cfg->p_info);
+        p_instance_ctrl->dmac_mode = DMAC_MODE_SELECT_REGISTER;
+        r_dmac_config_transfer_info_register_mode(p_instance_ctrl, p_cfg->p_info);
     }
     else if (DMAC_MODE_SELECT_LINK == p_extend->dmac_mode)
     {
-        p_ctrl->dmac_mode = DMAC_MODE_SELECT_LINK;
-        r_dmac_config_transfer_info_link_mode(p_ctrl);
+        p_instance_ctrl->dmac_mode = DMAC_MODE_SELECT_LINK;
+        r_dmac_config_transfer_info_link_mode(p_instance_ctrl);
     }
     else
     {
         /* Do nothing. */
     }
 
+    /* Set callback and context pointers, if configured */
+    p_instance_ctrl->p_callback        = p_extend->p_callback;
+    p_instance_ctrl->p_context         = p_extend->p_context;
+    p_instance_ctrl->p_callback_memory = NULL;
+
     /* Mark driver as open by initializing "DMAC" in its ASCII equivalent.*/
-    p_ctrl->open = DMAC_ID;
+    p_instance_ctrl->open = DMAC_ID;
 
     /* Track ctrl struct */
-    gp_ctrl[(p_extend->unit) * BSP_FEATURE_DMAC_MAX_CHANNEL + (p_extend->channel)] = p_ctrl;
+    gp_ctrl[(p_extend->unit) * BSP_FEATURE_DMAC_MAX_CHANNEL + (p_extend->channel)] = p_instance_ctrl;
 
     return FSP_SUCCESS;
 }
@@ -259,40 +227,40 @@ fsp_err_t R_DMAC_Open (transfer_ctrl_t * const p_api_ctrl, transfer_cfg_t const 
  * @retval FSP_ERR_INVALID_MODE     DMA mode is register mode. This function can only be used when the DMA mode is link mode.
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_api_ctrl, dmac_link_cfg_t * p_descriptor)
+fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_ctrl, dmac_link_cfg_t * p_descriptor)
 {
-    dmac_instance_ctrl_t * p_ctrl = (dmac_instance_ctrl_t *) p_api_ctrl;
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
 
     fsp_err_t err = FSP_SUCCESS;
 
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_ctrl != NULL);
-    FSP_ERROR_RETURN(p_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(p_instance_ctrl != NULL);
+    FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
     FSP_ASSERT(p_descriptor != NULL);
     err = r_dmac_link_descriptor_paramter_checking(p_descriptor);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 #endif
 
-    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ERROR_RETURN(p_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DMS == 1U, FSP_ERR_INVALID_MODE);
+    FSP_ERROR_RETURN(p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DMS == 1U, FSP_ERR_INVALID_MODE);
 #endif
 
     /* Store current descriptor */
-    p_ctrl->p_descriptor = p_descriptor;
+    p_instance_ctrl->p_descriptor = p_descriptor;
 
     /* Set address of the link destination */
-    p_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) p_descriptor;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) p_descriptor;
 
-    err = r_dmac_prv_enable(p_ctrl);
+    err = r_dmac_prv_enable(p_instance_ctrl);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_NOT_ENABLED);
 
     /* Wait descriptor load */
-    FSP_HARDWARE_REGISTER_WAIT(p_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.DL, 0);
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.DL, 0);
 
     return err;
 }
@@ -306,35 +274,29 @@ fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_api_ctrl, dmac_lin
  * @retval FSP_ERR_INVALID_MODE     DMA mode is link mode. This function can only be used when the DMA mode is register mode.
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_Reconfigure (transfer_ctrl_t * const p_api_ctrl, transfer_info_t * p_info)
+fsp_err_t R_DMAC_Reconfigure (transfer_ctrl_t * const p_ctrl, transfer_info_t * p_info)
 {
-    dmac_instance_ctrl_t * p_ctrl = (dmac_instance_ctrl_t *) p_api_ctrl;
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
 
     fsp_err_t err = FSP_SUCCESS;
 
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_ctrl != NULL);
-    FSP_ERROR_RETURN(p_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(p_instance_ctrl != NULL);
+    FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
     err = r_dmac_info_paramter_checking(p_info);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
-    FSP_ASSERT(p_info->p_extend != NULL);
-    dmac_extended_info_t * p_extend_info = (dmac_extended_info_t *) p_info->p_extend;
-    dmac_extended_cfg_t  * p_extend      = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
-    if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operaion)
-    {
-        FSP_ASSERT(NULL != p_extend_info->p_next1_register_setting);
-    }
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
-    FSP_ERROR_RETURN(p_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DMS == 0U, FSP_ERR_INVALID_MODE);
+    FSP_ERROR_RETURN(p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DMS == 0U, FSP_ERR_INVALID_MODE);
 #endif
 
     /* Reconfigure the transfer settings. */
-    r_dmac_config_transfer_info_register_mode(p_ctrl, p_info);
+    r_dmac_config_transfer_info_register_mode(p_instance_ctrl, p_info);
 
-    err = r_dmac_prv_enable(p_api_ctrl);
+    err = r_dmac_prv_enable(p_ctrl);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_NOT_ENABLED);
 
     return FSP_SUCCESS;
@@ -345,12 +307,12 @@ fsp_err_t R_DMAC_Reconfigure (transfer_ctrl_t * const p_api_ctrl, transfer_info_
  *
  * @retval FSP_ERR_UNSUPPORTED              API not supported.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_Reset (transfer_ctrl_t * const p_api_ctrl,
+fsp_err_t R_DMAC_Reset (transfer_ctrl_t * const p_ctrl,
                         void const * volatile   p_src,
                         void * volatile         p_dest,
                         uint16_t const          num_transfers)
 {
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
+    FSP_PARAMETER_NOT_USED(p_ctrl);
     FSP_PARAMETER_NOT_USED(p_src);
     FSP_PARAMETER_NOT_USED(p_dest);
     FSP_PARAMETER_NOT_USED(num_transfers);
@@ -365,26 +327,26 @@ fsp_err_t R_DMAC_Reset (transfer_ctrl_t * const p_api_ctrl,
  * @retval FSP_ERR_ASSERTION        An input parameter is invalid.
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_SoftwareStart (transfer_ctrl_t * const p_api_ctrl, transfer_start_mode_t mode)
+fsp_err_t R_DMAC_SoftwareStart (transfer_ctrl_t * const p_ctrl, transfer_start_mode_t mode)
 {
-    dmac_instance_ctrl_t * p_ctrl = (dmac_instance_ctrl_t *) p_api_ctrl;
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
 
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
-    FSP_ASSERT(NULL != p_ctrl->p_cfg);
-    FSP_ASSERT(NULL != p_ctrl->p_cfg->p_extend);
-    FSP_ERROR_RETURN(p_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ASSERT(NULL != p_instance_ctrl->p_cfg);
+    FSP_ASSERT(NULL != p_instance_ctrl->p_cfg->p_extend);
+    FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
 #endif
 
     FSP_PARAMETER_NOT_USED(mode);
 
-    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
     /* Set auto clear bit and software start bit. */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_STG_MASK;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_STG_MASK;
 
     return FSP_SUCCESS;
 }
@@ -394,9 +356,9 @@ fsp_err_t R_DMAC_SoftwareStart (transfer_ctrl_t * const p_api_ctrl, transfer_sta
  *
  * @retval FSP_ERR_UNSUPPORTED              API not supported.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_SoftwareStop (transfer_ctrl_t * const p_api_ctrl)
+fsp_err_t R_DMAC_SoftwareStop (transfer_ctrl_t * const p_ctrl)
 {
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
+    FSP_PARAMETER_NOT_USED(p_ctrl);
 
     return FSP_ERR_UNSUPPORTED;
 }
@@ -408,15 +370,15 @@ fsp_err_t R_DMAC_SoftwareStop (transfer_ctrl_t * const p_api_ctrl)
  * @retval FSP_ERR_ASSERTION        An input parameter is invalid.
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_Enable (transfer_ctrl_t * const p_api_ctrl)
+fsp_err_t R_DMAC_Enable (transfer_ctrl_t * const p_ctrl)
 {
-    dmac_instance_ctrl_t * p_ctrl = (dmac_instance_ctrl_t *) p_api_ctrl;
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
-    FSP_ERROR_RETURN(p_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
 #endif
 
-    return r_dmac_prv_enable(p_ctrl);
+    return r_dmac_prv_enable(p_instance_ctrl);
 }
 
 /*******************************************************************************************************************//**
@@ -426,15 +388,15 @@ fsp_err_t R_DMAC_Enable (transfer_ctrl_t * const p_api_ctrl)
  * @retval FSP_ERR_ASSERTION        An input parameter is invalid.
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_Disable (transfer_ctrl_t * const p_api_ctrl)
+fsp_err_t R_DMAC_Disable (transfer_ctrl_t * const p_ctrl)
 {
-    dmac_instance_ctrl_t * p_ctrl = (dmac_instance_ctrl_t *) p_api_ctrl;
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
-    FSP_ERROR_RETURN(p_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
 #endif
 
-    r_dmac_prv_disable(p_ctrl);
+    r_dmac_prv_disable(p_instance_ctrl);
 
     return FSP_SUCCESS;
 }
@@ -446,17 +408,17 @@ fsp_err_t R_DMAC_Disable (transfer_ctrl_t * const p_api_ctrl)
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
  * @retval FSP_ERR_ASSERTION        An input parameter is invalid.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_InfoGet (transfer_ctrl_t * const p_api_ctrl, transfer_properties_t * const p_info)
+fsp_err_t R_DMAC_InfoGet (transfer_ctrl_t * const p_ctrl, transfer_properties_t * const p_info)
 {
-    dmac_instance_ctrl_t * p_ctrl = (dmac_instance_ctrl_t *) p_api_ctrl;
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
 
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
-    FSP_ERROR_RETURN(p_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
     FSP_ASSERT(NULL != p_info);
 #endif
 
-    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     p_info->transfer_length_max = DMAC_MAX_NORMAL_TRANSFER_LENGTH;
     p_info->block_count_max     = DMAC_BLOCK_COUNT_MAX_LENGTH;
@@ -465,7 +427,116 @@ fsp_err_t R_DMAC_InfoGet (transfer_ctrl_t * const p_api_ctrl, transfer_propertie
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
     p_info->block_count_remaining     = DMAC_MAX_BLOCK_TRANSFER_LENGTH;
-    p_info->transfer_length_remaining = (p_ctrl->p_reg->GRP[group].CH[channel].CRTB);
+    p_info->transfer_length_remaining = (p_instance_ctrl->p_reg->GRP[group].CH[channel].CRTB);
+
+    return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
+ * Make the following transfer settings to continue the transfer.
+ *
+ * @retval FSP_SUCCESS           Successful continuous transfer settings.
+ * @retval FSP_ERR_ASSERTION     An input parameter is invalid.
+ * @retval FSP_ERR_NOT_OPEN      Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
+ * @retval FSP_ERR_INVALID_MODE  This API cannot be called during link mode operation or setting not to use the Next1 register.
+ * @retval FSP_ERR_INVALID_CALL  Invalid call. The series of transfer processing has finished.
+ **********************************************************************************************************************/
+fsp_err_t R_DMAC_Reload (transfer_ctrl_t * const p_ctrl,
+                         void const * volatile   p_src,
+                         void * volatile         p_dest,
+                         uint32_t const          num_transfers)
+{
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
+
+#if DMAC_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(p_instance_ctrl->dmac_mode == DMAC_MODE_SELECT_REGISTER, FSP_ERR_INVALID_MODE);
+#endif
+
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+
+    uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
+    uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
+
+#if DMAC_CFG_PARAM_CHECKING_ENABLE
+
+    /* Reload API is only available when using both Next0/1 register sets. */
+    FSP_ERROR_RETURN(p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.RSW == 1, FSP_ERR_INVALID_MODE);
+#endif
+
+    fsp_err_t err = FSP_SUCCESS;
+
+    /* Confirm that DMA transaction is in progress and one of the register set transfers has completed.
+     * Every time a DMA transfer of a register set completes, the REN bit in the CHCFG_n register is cleared to 0 automatically. */
+    if ((1 == p_instance_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.EN) &&
+        (0 == p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.REN))
+    {
+        /* Obtain register set currently in use */
+        if (1 == p_instance_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.SR)
+        {
+            /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
+                (true == r_dmac_address_tcm_check((uint32_t) p_src)) ?
+                ((uint32_t) p_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_src);
+
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
+                (true == r_dmac_address_tcm_check((uint32_t) p_dest)) ?
+                ((uint32_t) p_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_dest);
+
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].TB = num_transfers;
+        }
+        else
+        {
+            /* Register set currently in use is the Next0 register. Set the Next1 register for the next transfer. */
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
+                (true == r_dmac_address_tcm_check((uint32_t) p_src)) ?
+                ((uint32_t) p_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_src);
+
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
+                (true == r_dmac_address_tcm_check((uint32_t) p_dest)) ?
+                ((uint32_t) p_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_dest);
+
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].TB = num_transfers;
+        }
+
+        /* To perform transfers in series, write 1 to the REN bit in the CHCFG_n register.*/
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.REN = 1;
+    }
+    else
+    {
+        /* When reloading has been behind return error. */
+        err = FSP_ERR_INVALID_CALL;
+    }
+
+    return err;
+}
+
+/*******************************************************************************************************************//**
+ * Updates the user callback with the option to provide memory for the callback argument structure.
+ * Implements @ref transfer_api_t::callbackSet.
+ *
+ * @retval  FSP_SUCCESS                  Callback updated successfully.
+ * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
+ **********************************************************************************************************************/
+fsp_err_t R_DMAC_CallbackSet (transfer_ctrl_t * const          p_ctrl,
+                              void (                         * p_callback)(transfer_callback_args_t *),
+                              void const * const               p_context,
+                              transfer_callback_args_t * const p_callback_memory)
+{
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
+
+#if DMAC_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_instance_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(DMAC_ID == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    /* Store callback, context and callback memory */
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
 }
@@ -477,15 +548,15 @@ fsp_err_t R_DMAC_InfoGet (transfer_ctrl_t * const p_api_ctrl, transfer_propertie
  * @retval FSP_ERR_ASSERTION     An input parameter is invalid.
  * @retval FSP_ERR_NOT_OPEN      Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_Close (transfer_ctrl_t * const p_api_ctrl)
+fsp_err_t R_DMAC_Close (transfer_ctrl_t * const p_ctrl)
 {
-    dmac_instance_ctrl_t * p_ctrl = (dmac_instance_ctrl_t *) p_api_ctrl;
+    dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_ctrl);
-    FSP_ERROR_RETURN(p_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
 #endif
 
-    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
@@ -505,41 +576,22 @@ fsp_err_t R_DMAC_Close (transfer_ctrl_t * const p_api_ctrl)
     }
 
     /* Disable DMA transfer */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_CLREN_MASK;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_CLREN_MASK;
 
     /* Wait DMA stop */
-    FSP_HARDWARE_REGISTER_WAIT(p_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.TACT, 0);
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.TACT, 0);
 
     /* DMA Software Reset. */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SWRST_MASK;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SWRST_MASK;
 
-    if ((NULL != p_extend->p_callback) || (NULL != p_extend->p_peripheral_module_handler))
+    if (NULL != p_extend->p_callback)
     {
         R_BSP_IrqDisable(p_extend->dmac_int_irq);
         R_FSP_IsrContextSet(p_extend->dmac_int_irq, NULL);
     }
 
     /* Clear ID so control block can be reused. */
-    p_ctrl->open = 0U;
-
-    return FSP_SUCCESS;
-}
-
-/*******************************************************************************************************************//**
- * DEPRECATED Set driver version based on compile time macros.
- *
- * @retval FSP_SUCCESS              Successful close.
- * @retval FSP_ERR_ASSERTION        An input parameter is invalid.
- **********************************************************************************************************************/
-fsp_err_t R_DMAC_VersionGet (fsp_version_t * const p_version)
-{
-#if DMAC_CFG_PARAM_CHECKING_ENABLE
-
-    /* Verify parameters are valid */
-    FSP_ASSERT(NULL != p_version);
-#endif
-
-    p_version->version_id = g_dmac_version.version_id;
+    p_instance_ctrl->open = 0U;
 
     return FSP_SUCCESS;
 }
@@ -555,16 +607,16 @@ fsp_err_t R_DMAC_VersionGet (fsp_version_t * const p_version)
 /*******************************************************************************************************************//**
  * Enable transfers for the channel.
  *
- * @param[in]  p_ctrl             Pointer to control structure.
+ * @param[in]  p_instance_ctrl             Pointer to control structure.
  *
  * @retval     FSP_SUCCESS          Successful close.
  * @retval     FSP_ERR_ASSERTION    An input parameter is invalid.
  **********************************************************************************************************************/
-static fsp_err_t r_dmac_prv_enable (dmac_instance_ctrl_t * p_ctrl)
+static fsp_err_t r_dmac_prv_enable (dmac_instance_ctrl_t * p_instance_ctrl)
 {
-    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
-    fsp_err_t err = r_dmac_enable_parameter_checking(p_ctrl);
+    fsp_err_t err = r_dmac_enable_parameter_checking(p_instance_ctrl);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 #endif
 
@@ -572,16 +624,16 @@ static fsp_err_t r_dmac_prv_enable (dmac_instance_ctrl_t * p_ctrl)
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
     /* DMA Software Reset. */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SWRST_MASK;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SWRST_MASK;
 
-    if (DMAC_MODE_SELECT_REGISTER == p_ctrl->dmac_mode)
+    if (DMAC_MODE_SELECT_REGISTER == p_instance_ctrl->dmac_mode)
     {
         /* Does not mask DMA transfer end interrupt */
-        p_ctrl->p_reg->GRP[group].CH[channel].CHCFG &= (~((uint32_t) DMAC_PRV_CHCFG_DEM_MASK));
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG &= (~((uint32_t) DMAC_PRV_CHCFG_DEM_MASK));
     }
 
     /* Enable transfer. */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SETEN_MASK;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SETEN_MASK;
 
     return FSP_SUCCESS;
 }
@@ -589,43 +641,42 @@ static fsp_err_t r_dmac_prv_enable (dmac_instance_ctrl_t * p_ctrl)
 /*******************************************************************************************************************//**
  * Disable transfers for the channel.
  *
- * @param      p_ctrl          Pointer to the control structure
+ * @param      p_instance_ctrl          Pointer to the control structure
  **********************************************************************************************************************/
-static void r_dmac_prv_disable (dmac_instance_ctrl_t * p_ctrl)
+static void r_dmac_prv_disable (dmac_instance_ctrl_t * p_instance_ctrl)
 {
-    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
     /* Disable DMA transfer */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_CLREN_MASK;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_CLREN_MASK;
 
     /* Wait DMA stop */
-    FSP_HARDWARE_REGISTER_WAIT(p_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.TACT, 0);
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.TACT, 0);
 
     /* DMA Software Reset */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SWRST_MASK;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SWRST_MASK;
 
-    if (DMAC_MODE_SELECT_REGISTER == p_ctrl->dmac_mode)
+    if (DMAC_MODE_SELECT_REGISTER == p_instance_ctrl->dmac_mode)
     {
         /* Set DMA transfer end interrupt mask */
-        p_ctrl->p_reg->GRP[group].CH[channel].CHCFG |= DMAC_PRV_CHCFG_DEM_MASK;
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG |= DMAC_PRV_CHCFG_DEM_MASK;
     }
 }
 
 /*******************************************************************************************************************//**
  * Write the transfer info to the hardware registers for register mode operation.
  *
- * @param[in]   p_ctrl         Pointer to control structure.
+ * @param[in]   p_instance_ctrl         Pointer to control structure.
  * @param       p_info         Pointer to transfer info.
  *                             The structure of this argument will be changed in next major release to reflect the transfer
  *                             API replace.
  **********************************************************************************************************************/
-static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_ctrl, transfer_info_t * p_info)
+static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_instance_ctrl, transfer_info_t * p_info)
 {
-    dmac_extended_cfg_t  * p_extend      = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
-    dmac_extended_info_t * p_extend_info = (dmac_extended_info_t *) p_info->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
@@ -634,27 +685,29 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
     uint32_t chcfg = DMAC_PRV_CHCFG_DEFAULT_VALUE;
 
     /* Disable transfers if they are currently enabled. */
-    r_dmac_prv_disable(p_ctrl);
+    r_dmac_prv_disable(p_instance_ctrl);
 
     /* Priority control select */
     dctrl |= ((p_extend->channel_scheduling) & DMAC_PRV_DCTRL_PR_VALUE_MASK) << DMAC_PRV_DCTRL_PR_OFFSET;
 
     /* Configure channel */
-    chcfg = ((p_extend->channel % 8 & DMAC_PRV_CHCFG_SEL_VALUE_MASK) << DMAC_PRV_CHCFG_SEL_OFFSET) |
-            ((p_extend->activation_request_source_select & DMAC_PRV_CHCFG_REQD_VALUE_MASK) <<
-             DMAC_PRV_CHCFG_REQD_OFFSET) |
-            ((p_extend->detection_mode & DMAC_PRV_CHCFG_DETECT_MODE_VALUE_MASK) << DMAC_PRV_CHCFG_LOEN_OFFSET) |
-            ((p_extend->ack_mode & DMAC_PRV_CHCFG_AM_VALUE_MASK) << DMAC_PRV_CHCFG_AM_OFFSET) |
-            ((p_extend_info->src_size & DMAC_PRV_CHCFG_SDS_VALUE_MASK) << DMAC_PRV_CHCFG_SDS_OFFSET) |
-            ((p_extend_info->dest_size & DMAC_PRV_CHCFG_DDS_VALUE_MASK) << DMAC_PRV_CHCFG_DDS_OFFSET) |
-            ((g_dmac_addr_mode_to_reg_value[p_info->transfer_settings_word_b.src_addr_mode] &
-              DMAC_PRV_CHCFG_SAD_VALUE_MASK) << DMAC_PRV_CHCFG_SAD_OFFSET) |
-            ((g_dmac_addr_mode_to_reg_value[p_info->transfer_settings_word_b.dest_addr_mode] &
-              DMAC_PRV_CHCFG_DAD_VALUE_MASK) << DMAC_PRV_CHCFG_DAD_OFFSET) |
-            ((g_dmac_transfer_mode_to_reg_value[p_info->transfer_settings_word_b.mode] &
-              DMAC_PRV_CHCFG_TM_VALUE_MASK) << DMAC_PRV_CHCFG_TM_OFFSET);
+    /* Set source and destination size. */
+    chcfg |= (uint32_t) p_info->src_size << DMAC_PRV_CHCFG_SDS_OFFSET;
+    chcfg |= (uint32_t) p_info->dest_size << DMAC_PRV_CHCFG_DDS_OFFSET;
 
-    if ((NULL != p_extend->p_callback) || (NULL != p_extend->p_peripheral_module_handler))
+    /* Set source and destination address mode. */
+    chcfg |= (uint32_t) p_info->src_addr_mode << DMAC_PRV_CHCFG_SAD_OFFSET;
+    chcfg |= (uint32_t) p_info->dest_addr_mode << DMAC_PRV_CHCFG_DAD_OFFSET;
+
+    /* Set transfer mode/ */
+    chcfg |= (uint32_t) p_info->mode << DMAC_PRV_CHCFG_TM_OFFSET;
+
+    chcfg |= (uint32_t) channel << DMAC_PRV_CHCFG_SEL_OFFSET;
+    chcfg |= (uint32_t) p_extend->activation_request_source_select << DMAC_PRV_CHCFG_REQD_OFFSET;
+    chcfg |= (uint32_t) p_extend->detection_mode << DMAC_PRV_CHCFG_LOEN_OFFSET;
+    chcfg |= (uint32_t) p_extend->ack_mode << DMAC_PRV_CHCFG_AM_OFFSET;
+
+    if (NULL != p_extend->p_callback)
     {
         /* Enable transfer end interrupt requests. */
         chcfg &= ~((uint32_t) DMAC_PRV_CHCFG_DEM_MASK);
@@ -664,7 +717,7 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
 
         /* Enable the IRQ in the GIC. */
         R_BSP_IrqDetectTypeSet(p_extend->dmac_int_irq, p_extend->dmac_int_irq_detect_type);
-        R_BSP_IrqCfgEnable(p_extend->dmac_int_irq, p_extend->dmac_int_ipl, p_ctrl);
+        R_BSP_IrqCfgEnable(p_extend->dmac_int_irq, p_extend->dmac_int_ipl, p_instance_ctrl);
     }
     else
     {
@@ -710,20 +763,23 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
         R_DMA->DMAC1_RSSEL[rssel_register_num] = rssel;
     }
 
-    p_ctrl->p_reg->GRP[group].DCTRL = dctrl;
+    /* Get the current value of DCTRL.LVINT to avoid overwriting setting of another channel and OR it. */
+    dctrl |= (uint32_t) (p_instance_ctrl->p_reg->GRP[group].DCTRL_b.LVINT << DMAC_PRV_DCTRL_LVINT_OFFSET);
+
+    p_instance_ctrl->p_reg->GRP[group].DCTRL = dctrl;
 
     /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
-    p_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
         (true == r_dmac_address_tcm_check((uint32_t) p_info->p_src)) ?
         ((uint32_t) p_info->p_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_info->p_src);
 
-    p_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
         (true == r_dmac_address_tcm_check((uint32_t) p_info->p_dest)) ?
         ((uint32_t) p_info->p_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_info->p_dest);
 
-    p_ctrl->p_reg->GRP[group].CH[channel].N[0].TB       = p_info->length;
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCFG         = chcfg;
-    p_ctrl->p_reg->GRP[group].CH[channel].CHITVL_b.ITVL = p_extend->transfer_interval;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].TB       = p_info->length;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG         = chcfg;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHITVL_b.ITVL = p_extend->transfer_interval;
 
     uint32_t src_address  = (uint32_t) p_info->p_src;
     uint32_t dest_address = (uint32_t) p_info->p_dest;
@@ -731,38 +787,36 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
 
     if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operaion)
     {
-        dmac_register_set_setting_t * p_next1_register = p_extend_info->p_next1_register_setting;
-
         /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
-        p_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
-            (true == r_dmac_address_tcm_check((uint32_t) p_next1_register->p_src)) ?
-            ((uint32_t) p_next1_register->p_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) :
-            ((uint32_t) p_next1_register->p_src);
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
+            (true == r_dmac_address_tcm_check((uint32_t) p_info->p_next1_src)) ?
+            ((uint32_t) p_info->p_next1_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) :
+            ((uint32_t) p_info->p_next1_src);
 
-        p_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
-            (true == r_dmac_address_tcm_check((uint32_t) p_next1_register->p_dest)) ?
-            ((uint32_t) p_next1_register->p_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) :
-            ((uint32_t) p_next1_register->p_dest);
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
+            (true == r_dmac_address_tcm_check((uint32_t) p_info->p_next1_dest)) ?
+            ((uint32_t) p_info->p_next1_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) :
+            ((uint32_t) p_info->p_next1_dest);
 
-        p_ctrl->p_reg->GRP[group].CH[channel].N[1].TB = p_next1_register->length;
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].TB = p_info->next1_length;
 
-        src_address  = (uint32_t) p_next1_register->p_src;
-        dest_address = (uint32_t) p_next1_register->p_dest;
+        src_address  = (uint32_t) p_info->p_next1_src;
+        dest_address = (uint32_t) p_info->p_next1_dest;
 
         chext |= r_dmac_config_chext(src_address, dest_address);
     }
 
-    p_ctrl->p_reg->GRP[group].CH[channel].CHEXT = chext;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHEXT = chext;
 }
 
 /*******************************************************************************************************************//**
  * Set the hardware registers for link mode operation.
  *
- * @param[in]   p_ctrl         Pointer to control structure.
+ * @param[in]   p_instance_ctrl         Pointer to control structure.
  **********************************************************************************************************************/
-static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_ctrl)
+static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_instance_ctrl)
 {
-    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
@@ -770,16 +824,19 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_ctrl
     uint32_t dctrl = DMAC_PRV_DCTRL_DEFAULT_VALUE;
 
     /* Disable transfers if they are currently enabled. */
-    r_dmac_prv_disable(p_ctrl);
+    r_dmac_prv_disable(p_instance_ctrl);
 
     /* Priority control select */
     dctrl |= ((p_extend->channel_scheduling) & DMAC_PRV_DCTRL_PR_VALUE_MASK) << DMAC_PRV_DCTRL_PR_OFFSET;
 
-    if ((NULL != p_extend->p_callback) || (NULL != p_extend->p_peripheral_module_handler))
+    if (NULL != p_extend->p_callback)
     {
+        /* Set Level Output when the DMA interrupt is enabled. */
+        dctrl |= (1U & DMAC_PRV_DCTRL_LVINT_VALUE_MASK) << DMAC_PRV_DCTRL_LVINT_OFFSET;
+
         /* Enable the IRQ in the GIC. */
         R_BSP_IrqDetectTypeSet(p_extend->dmac_int_irq, p_extend->dmac_int_irq_detect_type);
-        R_BSP_IrqCfgEnable(p_extend->dmac_int_irq, p_extend->dmac_int_ipl, p_ctrl);
+        R_BSP_IrqCfgEnable(p_extend->dmac_int_irq, p_extend->dmac_int_ipl, p_instance_ctrl);
     }
 
     uint32_t rssel_register_num = p_extend->channel / 3;
@@ -811,16 +868,16 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_ctrl
         R_DMA->DMAC1_RSSEL[rssel_register_num] = rssel;
     }
 
-    p_ctrl->p_reg->GRP[group].DCTRL = dctrl;
+    p_instance_ctrl->p_reg->GRP[group].DCTRL = dctrl;
 
     /* Set address of the link destination */
-    p_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) (p_extend->p_descriptor);
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) (p_extend->p_descriptor);
 
     /* Store current descriptor. */
-    p_ctrl->p_descriptor = p_extend->p_descriptor;
+    p_instance_ctrl->p_descriptor = p_extend->p_descriptor;
 
     /* Set link mode */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DMS = 1U;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DMS = 1U;
 }
 
 /*******************************************************************************************************************//**
@@ -872,7 +929,7 @@ static bool r_dmac_address_tcm_check (uint32_t address)
 /*******************************************************************************************************************//**
  * Parameter checking of R_DMAC_Open.
  *
- * @param[in]   p_ctrl                    Pointer to control structure.
+ * @param[in]   p_instance_ctrl                    Pointer to control structure.
  * @param[in]   p_cfg                     Pointer to configuration structure. All elements of the structure must be
  *                                        set by user.
  *
@@ -882,22 +939,17 @@ static bool r_dmac_address_tcm_check (uint32_t address)
  * @retval FSP_ERR_IRQ_BSP_DISABLED       Callback is NULL and the DMAC IRQ is not enabled.
  * @retval FSP_ERR_ALREADY_OPEN           The control structure is already opened.
  **********************************************************************************************************************/
-static fsp_err_t r_dma_open_parameter_checking (dmac_instance_ctrl_t * const p_ctrl, transfer_cfg_t const * const p_cfg)
+static fsp_err_t r_dma_open_parameter_checking (dmac_instance_ctrl_t * const p_instance_ctrl,
+                                                transfer_cfg_t const * const p_cfg)
 {
-    FSP_ASSERT(NULL != p_ctrl);
-    FSP_ERROR_RETURN(p_ctrl->open != DMAC_ID, FSP_ERR_ALREADY_OPEN);
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ERROR_RETURN(p_instance_ctrl->open != DMAC_ID, FSP_ERR_ALREADY_OPEN);
     FSP_ASSERT(NULL != p_cfg);
     dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_cfg->p_extend;
     FSP_ASSERT(NULL != p_cfg->p_extend);
     FSP_ERROR_RETURN(p_extend->channel < BSP_FEATURE_DMAC_MAX_CHANNEL, FSP_ERR_IP_CHANNEL_NOT_PRESENT);
 
-    if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operaion)
-    {
-        transfer_info_t * p_info = p_cfg->p_info;
-        FSP_ASSERT(NULL != ((dmac_extended_info_t *) p_info->p_extend)->p_next1_register_setting);
-    }
-
-    if ((NULL != p_extend->p_callback) || (NULL != p_extend->p_peripheral_module_handler))
+    if (NULL != p_extend->p_callback)
     {
         FSP_ERROR_RETURN(p_extend->dmac_int_irq >= 0, FSP_ERR_IRQ_BSP_DISABLED);
     }
@@ -956,8 +1008,13 @@ static fsp_err_t r_dmac_link_descriptor_paramter_checking (dmac_link_cfg_t const
         FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uint32_t) p_current_descriptor),
                          FSP_ERR_ASSERTION);
 
+        if (DMAC_LINK_END_ENABLE == p_current_descriptor->header.link_end)
+        {
+            break;
+        }
+
         p_current_descriptor = (dmac_link_cfg_t *) (p_current_descriptor->p_next_link_addr);
-    } while ((NULL != p_current_descriptor) && (DMAC_LINK_END_ENABLE == p_current_descriptor->header.link_end));
+    } while (NULL != p_current_descriptor);
 
     return FSP_SUCCESS;
 }
@@ -965,21 +1022,21 @@ static fsp_err_t r_dmac_link_descriptor_paramter_checking (dmac_link_cfg_t const
 /*******************************************************************************************************************//**
  * Parameter checking for r_dmac_prv_enable.
  *
- * @param[in]   p_ctrl                 Pointer to control structure.
+ * @param[in]   p_instance_ctrl                 Pointer to control structure.
  *
  * @retval      FSP_SUCCESS            Alignment on source and destination pointers is valid.
  * @retval      FSP_ERR_ASSERTION      The current configuration is invalid.
  **********************************************************************************************************************/
-static fsp_err_t r_dmac_enable_parameter_checking (dmac_instance_ctrl_t * const p_ctrl)
+static fsp_err_t r_dmac_enable_parameter_checking (dmac_instance_ctrl_t * const p_instance_ctrl)
 {
     fsp_err_t err = FSP_SUCCESS;
-    if (DMAC_MODE_SELECT_REGISTER == p_ctrl->dmac_mode)
+    if (DMAC_MODE_SELECT_REGISTER == p_instance_ctrl->dmac_mode)
     {
-        err = r_dmac_enable_parameter_checking_register_mode(p_ctrl);
+        err = r_dmac_enable_parameter_checking_register_mode(p_instance_ctrl);
     }
-    else if (DMAC_MODE_SELECT_LINK == p_ctrl->dmac_mode)
+    else if (DMAC_MODE_SELECT_LINK == p_instance_ctrl->dmac_mode)
     {
-        err = r_dmac_enable_parameter_checking_link_mode(p_ctrl);
+        err = r_dmac_enable_parameter_checking_link_mode(p_instance_ctrl);
     }
     else
     {
@@ -992,28 +1049,28 @@ static fsp_err_t r_dmac_enable_parameter_checking (dmac_instance_ctrl_t * const 
 /*******************************************************************************************************************//**
  * Parameter checking for r_dmac_prv_enable at register mode operation.
  *
- * @param[in]   p_ctrl                 Pointer to control structure.
+ * @param[in]   p_instance_ctrl                 Pointer to control structure.
  *
  * @retval      FSP_SUCCESS            Alignment on source and destination pointers is valid.
  * @retval      FSP_ERR_ASSERTION      The current configuration is invalid.
  **********************************************************************************************************************/
-static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_ctrl_t * const p_ctrl)
+static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_ctrl_t * const p_instance_ctrl)
 {
-    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
-    void const * p_src  = (void const *) p_ctrl->p_reg->GRP[group].CH[channel].N[0].SA;
-    void const * p_dest = (void const *) p_ctrl->p_reg->GRP[group].CH[channel].N[0].DA;
+    void const * p_src  = (void const *) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA;
+    void const * p_dest = (void const *) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA;
 
-    dmac_transfer_size_t src_size  = (dmac_transfer_size_t) p_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.SDS;
-    dmac_transfer_size_t dest_size = (dmac_transfer_size_t) p_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DDS;
+    transfer_size_t src_size  = (transfer_size_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.SDS;
+    transfer_size_t dest_size = (transfer_size_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DDS;
 
     transfer_addr_mode_t src_addr_mode =
-        g_dmac_addr_mode_to_api_value[p_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.SAD];
+        (transfer_addr_mode_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.SAD;
     transfer_addr_mode_t dest_addr_mode =
-        g_dmac_addr_mode_to_api_value[p_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DAD];
+        (transfer_addr_mode_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DAD;
 
     /* When the transfer source address is beat-aligned, specify SAD = 0 (increment).
      * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
@@ -1029,10 +1086,10 @@ static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_c
         FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == dest_addr_mode);
     }
 
-    if (1 == p_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.RSW)
+    if (1 == p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.RSW)
     {
-        void const * p_src_next1  = (void const *) p_ctrl->p_reg->GRP[group].CH[channel].N[1].SA;
-        void const * p_dest_next1 = (void const *) p_ctrl->p_reg->GRP[group].CH[channel].N[1].DA;
+        void const * p_src_next1  = (void const *) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA;
+        void const * p_dest_next1 = (void const *) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA;
 
         /* The next1 register set source and destination pointers cannot be NULL. */
         FSP_ASSERT(NULL != p_src_next1);
@@ -1059,17 +1116,17 @@ static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_c
 /*******************************************************************************************************************//**
  * Parameter checking for r_dmac_prv_enable at link mode operation.
  *
- * @param[in]   p_ctrl                 Pointer to control structure.
+ * @param[in]   p_instance_ctrl                 Pointer to control structure.
  *
  * @retval      FSP_SUCCESS            Alignment on source and destination pointers is valid.
  * @retval      FSP_ERR_ASSERTION      The current configuration is invalid.
  **********************************************************************************************************************/
-static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_t * const p_ctrl)
+static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_t * const p_instance_ctrl)
 {
-    FSP_PARAMETER_NOT_USED(p_ctrl);
-    FSP_ASSERT(NULL != p_ctrl->p_descriptor);
+    FSP_PARAMETER_NOT_USED(p_instance_ctrl);
+    FSP_ASSERT(NULL != p_instance_ctrl->p_descriptor);
 
-    dmac_link_cfg_t const * p_current_descriptor = p_ctrl->p_descriptor;
+    dmac_link_cfg_t const * p_current_descriptor = p_instance_ctrl->p_descriptor;
     do
     {
         void const * p_src  = p_current_descriptor->p_src;
@@ -1077,15 +1134,15 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
 
         uint32_t channel_cfg = p_current_descriptor->channel_cfg;
 
-        dmac_transfer_size_t src_size =
-            (dmac_transfer_size_t) ((channel_cfg >> DMAC_PRV_CHCFG_SDS_OFFSET) & DMAC_PRV_CHCFG_SDS_VALUE_MASK);
-        dmac_transfer_size_t dest_size =
-            (dmac_transfer_size_t) ((channel_cfg >> DMAC_PRV_CHCFG_DDS_OFFSET) & DMAC_PRV_CHCFG_DDS_VALUE_MASK);
+        transfer_size_t src_size =
+            (transfer_size_t) ((channel_cfg >> DMAC_PRV_CHCFG_SDS_OFFSET) & DMAC_PRV_CHCFG_SDS_VALUE_MASK);
+        transfer_size_t dest_size =
+            (transfer_size_t) ((channel_cfg >> DMAC_PRV_CHCFG_DDS_OFFSET) & DMAC_PRV_CHCFG_DDS_VALUE_MASK);
 
         transfer_addr_mode_t src_addr_mode =
-            g_dmac_addr_mode_to_api_value[(channel_cfg >> DMAC_PRV_CHCFG_SAD_OFFSET) & DMAC_PRV_CHCFG_SAD_VALUE_MASK];
+            (transfer_addr_mode_t) ((channel_cfg >> DMAC_PRV_CHCFG_SAD_OFFSET) & DMAC_PRV_CHCFG_SAD_VALUE_MASK);
         transfer_addr_mode_t dest_addr_mode =
-            g_dmac_addr_mode_to_api_value[(channel_cfg >> DMAC_PRV_CHCFG_DAD_OFFSET) & DMAC_PRV_CHCFG_DAD_VALUE_MASK];
+            (transfer_addr_mode_t) ((channel_cfg >> DMAC_PRV_CHCFG_DAD_OFFSET) & DMAC_PRV_CHCFG_DAD_VALUE_MASK);
 
         /* When the transfer source address is beat-aligned, specify SAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
@@ -1101,8 +1158,13 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
             FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == dest_addr_mode);
         }
 
+        if (DMAC_LINK_END_ENABLE == p_current_descriptor->header.link_end)
+        {
+            break;
+        }
+
         p_current_descriptor = (dmac_link_cfg_t *) (p_current_descriptor->p_next_link_addr);
-    } while ((NULL != p_current_descriptor) && (DMAC_LINK_END_ENABLE == p_current_descriptor->header.link_end));
+    } while (NULL != p_current_descriptor);
 
     return FSP_SUCCESS;
 }
@@ -1125,45 +1187,75 @@ static bool r_dmac_address_tcm_via_axis_check (uint32_t address)
 #endif
 
 /*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_instance_ctrl     Pointer to DMAC instance control block
+ * @param[in]     event      Event code
+ **********************************************************************************************************************/
+static void r_dmac_call_callback (dmac_instance_ctrl_t * p_instance_ctrl, transfer_event_t event)
+{
+    transfer_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available. */
+    transfer_callback_args_t * p_args = p_instance_ctrl->p_callback_memory;
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
+
+    p_args->event     = event;
+    p_args->p_context = p_instance_ctrl->p_context;
+
+    p_instance_ctrl->p_callback(p_args);
+
+    if (NULL != p_instance_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_instance_ctrl->p_callback_memory = args;
+    }
+}
+
+/*******************************************************************************************************************//**
  * DMAC ISR
  **********************************************************************************************************************/
 void dmac_int_isr (void)
 {
+    DMAC_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
-    FSP_CONTEXT_SAVE
+    FSP_CONTEXT_SAVE;
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
-    dmac_instance_ctrl_t * p_ctrl   = R_FSP_IsrContextGet(irq);
-    dmac_extended_cfg_t  * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
+    dmac_instance_ctrl_t * p_instance_ctrl = R_FSP_IsrContextGet(irq);
+    dmac_extended_cfg_t  * p_extend        = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
     /* Clear interrupt condition. */
-    p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_CLREND_MASK;
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_CLREND_MASK;
 
     /* Dummy read to ensure that interrupt event is cleared. */
-    volatile uint32_t dummy = p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL;
+    volatile uint32_t dummy = p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL;
     FSP_PARAMETER_NOT_USED(dummy);
 
-    if (NULL != p_extend->p_peripheral_module_handler)
+    /* Invoke the callback function if it is set. */
+    if (NULL != p_instance_ctrl->p_callback)
     {
-        /* Call peripheral module handler */
-        p_extend->p_peripheral_module_handler((IRQn_Type) p_extend->activation_source);
-    }
-
-    if (NULL != p_extend->p_callback)
-    {
-        /* Call user callback */
-        dmac_callback_args_t args;
-        args.p_context = p_extend->p_context;
-        args.event     = DMAC_EVENT_TRANSFER_END;
-        p_extend->p_callback(&args);
+        r_dmac_call_callback(p_instance_ctrl, TRANSFER_EVENT_TRANSFER_END);
     }
 
     /* Restore context if RTOS is used */
-    FSP_CONTEXT_RESTORE
+    FSP_CONTEXT_RESTORE;
+
+    DMAC_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 /*******************************************************************************************************************//**
@@ -1171,6 +1263,8 @@ void dmac_int_isr (void)
  **********************************************************************************************************************/
 void dmac_err_int_isr (uint32_t id)
 {
+    DMAC_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Get the DMAC unit where the error occurred from the argument id. */
     uint8_t unit = (uint8_t) (id - BSP_FEATURE_DMAC_UNIT0_ERROR_NUM);
 
@@ -1193,32 +1287,29 @@ void dmac_err_int_isr (uint32_t id)
         uint8_t group   = (uint8_t) DMAC_PRV_GROUP(dmac_error_channel);
         uint8_t channel = (uint8_t) DMAC_PRV_CHANNEL(dmac_error_channel);
 
-        dmac_instance_ctrl_t * p_ctrl = gp_ctrl[unit * BSP_FEATURE_DMAC_MAX_CHANNEL + dmac_error_channel];
+        dmac_instance_ctrl_t * p_instance_ctrl = gp_ctrl[unit * BSP_FEATURE_DMAC_MAX_CHANNEL + dmac_error_channel];
 
         /* Call user registered callback */
-        if (NULL != p_ctrl)
+        if (NULL != p_instance_ctrl)
         {
-            dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_ctrl->p_cfg->p_extend;
-
             /* When DMA transfer error occurred, after set the SWRST bit in the CHCTRL_n register to 1,
              * need to set transfer information again.
              * (See section 'DMA Error Interrupt' of the RZ microprocessor manual)
              *
              * Call the callback function after DMAC software reset.
              * This allows to reset the transfer information in user callback function.*/
-            p_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SWRST_MASK;
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCTRL = DMAC_PRV_CHCTRL_SWRST_MASK;
 
-            if (NULL != p_extend->p_callback)
+            /* Invoke the callback function if it is set. */
+            if (NULL != p_instance_ctrl->p_callback)
             {
-                /* Call the callback. */
-                dmac_callback_args_t args;
-                args.p_context = p_extend->p_context;
-                args.event     = DMAC_EVENT_TRANSFER_ERROR;
-                p_extend->p_callback(&args);
+                r_dmac_call_callback(p_instance_ctrl, TRANSFER_EVENT_TRANSFER_ERROR);
             }
         }
 
         /* Clear the scanned flags one by one */
         dstat_err_mask &= ~(1UL);
     }
+
+    DMAC_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }

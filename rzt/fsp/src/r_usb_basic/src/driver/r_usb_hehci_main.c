@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -27,6 +27,7 @@
  * History : DD.MM.YYYY Version Description
  *         : 31.08.2015 1.00    First Release
  ***********************************************************************************************************************/
+
 
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
@@ -70,7 +71,6 @@
 #define USB_VAL_ASUNSE    (0x00000020U)
 
 #if USB_IP_EHCI_OHCI == 1
-
 /***********************************************************************************************************************
  * External variables and functions
  ***********************************************************************************************************************/
@@ -328,7 +328,7 @@ uint32_t usb_hstd_ehci_port_reset (uint32_t portnum)
 
 // r_usb_hstd_hci_wait_time(10);
  #ifdef USB_CFG_HMSC_USE
-        R_BSP_SoftwareDelay(100, BSP_DELAY_UNITS_MILLISECONDS);
+        R_BSP_SoftwareDelay(USB_VAL_100, BSP_DELAY_UNITS_MILLISECONDS);
  #else
         R_BSP_SoftwareDelay(10, BSP_DELAY_UNITS_MILLISECONDS);
  #endif

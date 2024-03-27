@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -38,22 +38,22 @@
  **********************************************************************************************************************/
 
 /** FSP pack major version. */
-#define FSP_VERSION_MAJOR           (1U)
+#define FSP_VERSION_MAJOR           (2U)
 
 /** FSP pack minor version. */
-#define FSP_VERSION_MINOR           (2U)
+#define FSP_VERSION_MINOR (0U)
 
 /** FSP pack patch version. */
-#define FSP_VERSION_PATCH           (0U)
+#define FSP_VERSION_PATCH (0U)
 
 /** FSP pack version build number (currently unused). */
 #define FSP_VERSION_BUILD           (0U)
 
 /** Public FSP version name. */
-#define FSP_VERSION_STRING          ("##FSP_VERSION##")
+#define FSP_VERSION_STRING          ("2.0.0")
 
 /** Unique FSP version ID. */
-#define FSP_VERSION_BUILD_STRING    ("##FSP_VERSION_BUILD_STRING##")
+#define FSP_VERSION_BUILD_STRING    ("Built with RZ/T Flexible Software Package version 2.0.0")
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -66,13 +66,13 @@ typedef union st_fsp_pack_version
     uint32_t version_id;
 
     /** Code version parameters, little endian order. */
-    struct
+    struct version_id_b_s
     {
         uint8_t build;                 ///< Build version of FSP Pack
         uint8_t patch;                 ///< Patch version of FSP Pack
         uint8_t minor;                 ///< Minor version of FSP Pack
         uint8_t major;                 ///< Major version of FSP Pack
-    };
+    } version_id_b;
 } fsp_pack_version_t;
 
 /** @} */

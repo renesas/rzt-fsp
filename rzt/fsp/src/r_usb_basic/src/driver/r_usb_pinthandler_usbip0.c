@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -68,8 +68,10 @@ void usb_pstd_usb_handler (void)
  #if (BSP_CFG_RTOS == 2)
     p->msginfo       = USB_MSG_PCD_INT;
     p->ip            = p_cfg->module_number;
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
     p->p_transfer_rx = p_cfg->p_transfer_rx;
     p->p_transfer_tx = p_cfg->p_transfer_tx;
+#endif /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) */
     usb_pstd_interrupt_handler(&p->keyword, &p->status, p->ip);
 
     USB_ISND_MSG(USB_PCD_MBX, (usb_msg_t *) p);

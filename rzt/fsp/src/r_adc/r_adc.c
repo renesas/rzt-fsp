@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -95,15 +95,6 @@ void           adc_scan_end_isr(void);
 static int32_t r_adc_lowest_channel_get(uint32_t adc_mask);
 static void    r_adc_scan_end_common_isr(adc_event_t event);
 
-/** Version data structure used by error logger macro. */
-static const fsp_version_t g_adc_version =
-{
-    .api_version_minor  = ADC_API_VERSION_MINOR,
-    .api_version_major  = ADC_API_VERSION_MAJOR,
-    .code_version_major = ADC_CODE_VERSION_MAJOR,
-    .code_version_minor = ADC_CODE_VERSION_MINOR
-};
-
 #if ADC_CFG_PARAM_CHECKING_ENABLE
 
 /** Mask of valid channels on this MCU. */
@@ -123,19 +114,19 @@ static const uint32_t g_adc_valid_channels[] =
 /** ADC Implementation of ADC. */
 const adc_api_t g_adc_on_adc =
 {
-    .open          = R_ADC_Open,
-    .scanCfg       = R_ADC_ScanCfg,
-    .infoGet       = R_ADC_InfoGet,
-    .scanStart     = R_ADC_ScanStart,
-    .scanStop      = R_ADC_ScanStop,
-    .scanStatusGet = R_ADC_StatusGet,
-    .read          = R_ADC_Read,
-    .read32        = R_ADC_Read32,
-    .close         = R_ADC_Close,
-    .versionGet    = R_ADC_VersionGet,
-    .calibrate     = R_ADC_Calibrate,
-    .offsetSet     = R_ADC_OffsetSet,
-    .callbackSet   = R_ADC_CallbackSet,
+    .open           = R_ADC_Open,
+    .scanCfg        = R_ADC_ScanCfg,
+    .infoGet        = R_ADC_InfoGet,
+    .scanStart      = R_ADC_ScanStart,
+    .scanGroupStart = R_ADC_ScanGroupStart,
+    .scanStop       = R_ADC_ScanStop,
+    .scanStatusGet  = R_ADC_StatusGet,
+    .read           = R_ADC_Read,
+    .read32         = R_ADC_Read32,
+    .close          = R_ADC_Close,
+    .calibrate      = R_ADC_Calibrate,
+    .offsetSet      = R_ADC_OffsetSet,
+    .callbackSet    = R_ADC_CallbackSet,
 };
 
 /*******************************************************************************************************************//**
@@ -286,23 +277,23 @@ fsp_err_t R_ADC_ScanCfg (adc_ctrl_t * p_ctrl, void const * const p_channel_cfg)
  * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
  * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
-fsp_err_t R_ADC_CallbackSet (adc_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_ADC_CallbackSet (adc_ctrl_t * const          p_ctrl,
                              void (                    * p_callback)(adc_callback_args_t *),
                              void const * const          p_context,
                              adc_callback_args_t * const p_callback_memory)
 {
-    adc_instance_ctrl_t * p_ctrl = (adc_instance_ctrl_t *) p_api_ctrl;
+    adc_instance_ctrl_t * p_instance_ctrl = (adc_instance_ctrl_t *) p_ctrl;
 
 #if (ADC_CFG_PARAM_CHECKING_ENABLE)
-    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_callback);
-    FSP_ERROR_RETURN(ADC_OPEN == p_ctrl->opened, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->opened, FSP_ERR_NOT_OPEN);
 #endif
 
     /* Store callback and context */
-    p_ctrl->p_callback        = p_callback;
-    p_ctrl->p_context         = p_context;
-    p_ctrl->p_callback_memory = p_callback_memory;
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
 }
@@ -340,6 +331,20 @@ fsp_err_t R_ADC_ScanStart (adc_ctrl_t * p_ctrl)
     p_instance_ctrl->p_reg->ADCSR = p_instance_ctrl->scan_start_adcsr;
 
     return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
+ * @ref adc_api_t::scanGroupStart is not supported on the ADC. Use scanStart instead.
+ *
+ * @retval FSP_ERR_UNSUPPORTED         Function not supported in this implementation.
+ **********************************************************************************************************************/
+fsp_err_t R_ADC_ScanGroupStart (adc_ctrl_t * p_ctrl, adc_group_mask_t group_mask)
+{
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(group_mask);
+
+    /* Return the unsupported error. */
+    return FSP_ERR_UNSUPPORTED;
 }
 
 /*******************************************************************************************************************//**
@@ -621,31 +626,11 @@ fsp_err_t R_ADC_Close (adc_ctrl_t * p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * DEPRECATED Retrieve the API version number.
- *
- * @retval FSP_SUCCESS                 Version stored in the provided p_version.
- * @retval FSP_ERR_ASSERTION           An input argument is invalid.
- **********************************************************************************************************************/
-fsp_err_t R_ADC_VersionGet (fsp_version_t * const p_version)
-{
-#if ADC_CFG_PARAM_CHECKING_ENABLE
-
-    /* Verify parameters are valid */
-    FSP_ASSERT(NULL != p_version);
-#endif
-
-    /* Return the version number */
-    p_version->version_id = g_adc_version.version_id;
-
-    return FSP_SUCCESS;
-}
-
-/*******************************************************************************************************************//**
  * @ref adc_api_t::R_ADC_Calibrate is not supported on the ADC.
  *
  * @retval FSP_ERR_UNSUPPORTED         Function not supported in this implementation.
  **********************************************************************************************************************/
-fsp_err_t R_ADC_Calibrate (adc_ctrl_t * const p_ctrl, void * const p_extend)
+fsp_err_t R_ADC_Calibrate (adc_ctrl_t * const p_ctrl, void const * p_extend)
 {
     FSP_PARAMETER_NOT_USED(p_ctrl);
     FSP_PARAMETER_NOT_USED(p_extend);
@@ -739,6 +724,10 @@ static fsp_err_t r_adc_open_cfg_check (adc_cfg_t const * const p_cfg)
     if (ADC_ADD_OFF != p_cfg_extend->add_average_count)
     {
  #if BSP_FEATURE_ADC_ADDITION_SUPPORTED
+
+        /* 3-time conversion and 16-time conversion in average mode are prohibited. */
+        FSP_ASSERT(ADC_ADD_AVERAGE_THREE != p_cfg_extend->add_average_count);
+        FSP_ASSERT(ADC_ADD_AVERAGE_SIXTEEN != p_cfg_extend->add_average_count);
  #else
 
         /* The ADC16 supports averaging only, it does not support addition. */
@@ -1095,6 +1084,8 @@ static int32_t r_adc_lowest_channel_get (uint32_t adc_mask)
  **********************************************************************************************************************/
 static void r_adc_scan_end_common_isr (adc_event_t event)
 {
+    ADC_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
 
@@ -1141,6 +1132,8 @@ static void r_adc_scan_end_common_isr (adc_event_t event)
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+
+    ADC_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 /*******************************************************************************************************************//**

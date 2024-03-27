@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,45 +19,48 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_CONNECTIVITY_INTERFACES
  * @defgroup USB_HCDC_API USB HCDC Interface
  * @brief Interface for USB HCDC functions.
  *
  * @section USB_HCDC_API_Summary Summary
  * The USB HCDC interface provides USB HCDC functionality.
  *
- * The USB HCDC interface can be implemented by:
- * - @ref USB_HCDC
  *
  * @{
  **********************************************************************************************************************/
 
 #ifndef R_USB_HCDC_API_H
-#define R_USB_HCDC_API_H
+ #define R_USB_HCDC_API_H
 
 /******************************************************************************
  * Includes   <System Includes> , "Project Includes"
  ******************************************************************************/
+/* Register definitions, common services and error codes. */
+#include "bsp_api.h" 
 #include "r_usb_hcdc_cfg.h"
+
+/* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
+FSP_HEADER
 
 /******************************************************************************
  * Macro definitions
  ******************************************************************************/
 
 /* Serial State message Length */
-#define     USB_HCDC_SERIAL_STATE_MSG_LEN         (10)
+ #define     USB_HCDC_SERIAL_STATE_MSG_LEN         (10)
 
 /* CDC Class Requests IDs*/
-#define     USB_CDC_SEND_ENCAPSULATED_COMMAND     (0x0000)
-#define     USB_CDC_GET_ENACAPSULATED_RESPONSE    (0x0100)
-#define     USB_CDC_SET_COMM_FEATURE              (0x0200)
-#define     USB_CDC_GET_COMM_FEATURE              (0x0300)
-#define     USB_CDC_CLR_COMM_FEATURE              (0x0400)
-#define     USB_CDC_SET_LINE_CODING               (0x2000)
-#define     USB_CDC_GET_LINE_CODING               (0x2100)
-#define     USB_CDC_SET_CONTROL_LINE_STATE        (0x2200)
-#define     USB_CDC_SEND_BREAK                    (0x2300)
-#define     USB_CDC_REQUEST_NONE                  (0xffff)
+ #define     USB_CDC_SEND_ENCAPSULATED_COMMAND     (0x0000)
+ #define     USB_CDC_GET_ENACAPSULATED_RESPONSE    (0x0100)
+ #define     USB_CDC_SET_COMM_FEATURE              (0x0200)
+ #define     USB_CDC_GET_COMM_FEATURE              (0x0300)
+ #define     USB_CDC_CLR_COMM_FEATURE              (0x0400)
+ #define     USB_CDC_SET_LINE_CODING               (0x2000)
+ #define     USB_CDC_GET_LINE_CODING               (0x2100)
+ #define     USB_CDC_SET_CONTROL_LINE_STATE        (0x2200)
+ #define     USB_CDC_SEND_BREAK                    (0x2300)
+ #define     USB_CDC_REQUEST_NONE                  (0xffff)
 
 /*****************************************************************************
  * Enumerated Types
@@ -89,7 +92,7 @@ typedef enum
 /** Virtual UART bitrate */
 typedef enum
 {
-#if USB_CFG_ENDIAN == USB_CFG_BIG
+ #if USB_CFG_ENDIAN == USB_CFG_BIG
     USB_HCDC_SPEED_1200   = 0xb0040000U,
     USB_HCDC_SPEED_2400   = 0x60090000U,
     USB_HCDC_SPEED_4800   = 0xc0120000U,
@@ -99,7 +102,7 @@ typedef enum
     USB_HCDC_SPEED_38400  = 0x00960000U,
     USB_HCDC_SPEED_57600  = 0x00e10000U,
     USB_HCDC_SPEED_115200 = 0x00c20100U
-#else
+ #else
     USB_HCDC_SPEED_1200   = 1200U,     ///< 1200bps
     USB_HCDC_SPEED_2400   = 2400U,     ///< 2400bps
     USB_HCDC_SPEED_4800   = 4800U,     ///< 4800bps
@@ -109,7 +112,7 @@ typedef enum
     USB_HCDC_SPEED_38400  = 38400U,    ///< 38400bps
     USB_HCDC_SPEED_57600  = 57600U,    ///< 57600bps
     USB_HCDC_SPEED_115200 = 115200U    ///< 115200bps
-#endif
+ #endif
 } usb_hcdc_line_speed_t;
 
 /** Feature Selector */
@@ -185,20 +188,62 @@ typedef struct
 /** Break duration data */
 typedef struct
 {
-    uint16_t wtime_ms;                                                                                           ///< Duration of Break
+    uint16_t wtime_ms;                 ///< Duration of Break
 } usb_hcdc_breakduration_t;
 
-void usb_hcdc_set_control_line_state(usb_instance_ctrl_t * p_ctrl, uint8_t device_address, usb_setup_t * setup); /* DEPRECATED */
-void usb_hcdc_set_line_coding(usb_instance_ctrl_t   * p_ctrl,
-                              uint8_t                 device_address,
-                              usb_hcdc_linecoding_t * g_com_parm,
-                              usb_setup_t           * setup);                                                    /* DEPRECATED */
-void usb_hcdc_get_line_coding(usb_instance_ctrl_t   * p_ctrl,
-                              uint8_t                 device_address,
-                              usb_hcdc_linecoding_t * g_com_parm,
-                              usb_setup_t           * setup);                                                    /* DEPRECATED */
+/** Break duration data */
+typedef struct
+{
+    uint16_t vendor_id;                ///< Vendor ID
+    uint16_t product_id;               ///< Product ID
+    uint8_t  subclass;                 ///< Subclass code
+} usb_hcdc_device_info_t;
 
-#endif                                                                                                           /* R_USB_HCDC_API_H */
+/*****************************************************************************
+ * Typedef definitions
+ ******************************************************************************/
+
+/** USB HCDC functions implemented at the HAL layer will follow this API. */
+typedef struct st_usb_hcdc_api
+{
+    /** Read Control Data (CDC Interrupt IN data)
+     *
+     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_buf            Pointer to area that stores read data.
+     * @param[in]  size             Read request size.
+     * @param[in]  device_address   Device address.
+     */
+    fsp_err_t (* controlDataRead)(usb_ctrl_t * const p_api_ctrl, uint8_t * p_buf, uint32_t size, uint8_t device_address);
+
+    /** Register the specified vendor class device in the device table.
+     *
+     * @param[in]  p_api_ctrl      Pointer to control structure.
+     * @param[in]  vendor_id       Vendor ID.
+     * @param[in]  product_id      Product ID.
+     */
+    fsp_err_t (* deviceRegister)(usb_ctrl_t * const p_api_ctrl, uint16_t vendor_id, uint16_t product_id);
+
+    /** Get connected device information.
+     *
+     * @param[in]  p_api_ctrl      Pointer to control structure.
+     * @param[in]  p_info          Pointer to store CDC device information.
+     * @param[in]  device_address  Device address.
+     */
+    fsp_err_t (* infoGet)(usb_ctrl_t * const p_api_ctrl, usb_hcdc_device_info_t * p_info, uint8_t device_address);
+} usb_hcdc_api_t;
+
+/** This structure encompasses everything that is needed to use an instance of this interface. */
+typedef struct st_usb_hcdc_instance
+{
+    usb_ctrl_t           * p_ctrl;     ///< Pointer to the control structure for this instance
+    usb_cfg_t const      * p_cfg;      ///< Pointer to the configuration structure for this instance
+    usb_hcdc_api_t const * p_api;      ///< Pointer to the API structure for this instance
+} usb_hcdc_instance_t;
+
+/* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
+FSP_FOOTER
+
+#endif                                 /* R_USB_HCDC_API_H */
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup USB_HCDC_API)

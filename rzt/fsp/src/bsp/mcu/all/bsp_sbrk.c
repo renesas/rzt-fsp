@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -22,9 +22,9 @@
  * Includes   <System Includes> , "Project Includes"
  **********************************************************************************************************************/
 #if defined(__GNUC__) && !defined(__ARMCC_VERSION)
-#include "bsp_api.h"
 #include <sys/types.h>
 #include <errno.h>
+#include "bsp_api.h"
 
 /***********************************************************************************************************************
  * Macro definitions
@@ -41,11 +41,15 @@
 /***********************************************************************************************************************
  * Exported global variables (to be accessed by other files)
  **********************************************************************************************************************/
-caddr_t _sbrk(int incr);
+
+/***********************************************************************************************************************
+ * Exported global functions (to be accessed by other files)
+ **********************************************************************************************************************/
 
 /***********************************************************************************************************************
  * Private global variables and functions
  **********************************************************************************************************************/
+caddr_t _sbrk(int incr);
 
 /*******************************************************************************************************************//**
  * @addtogroup BSP_MCU
@@ -63,7 +67,6 @@ caddr_t _sbrk(int incr);
  *       malloc() to be 4096. That requires that we have a HEAP of at least 4096 if we are to support malloc().
  * @retval        Address of allocated area if successful, -1 otherwise.
  **********************************************************************************************************************/
-
 caddr_t _sbrk (int incr)
 {
     extern char _Heap_Begin __asm("__HeapBase");  ///< Defined by the linker.

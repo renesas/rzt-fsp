@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -37,8 +37,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define SCI_SPI_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define SCI_SPI_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -105,26 +103,25 @@ extern const spi_api_t g_spi_on_sci;
 /**********************************************************************************************************************
  * Public Function Prototypes
  **********************************************************************************************************************/
-fsp_err_t R_SCI_SPI_Open(spi_ctrl_t * p_api_ctrl, spi_cfg_t const * const p_cfg);
-fsp_err_t R_SCI_SPI_Read(spi_ctrl_t * const    p_api_ctrl,
+fsp_err_t R_SCI_SPI_Open(spi_ctrl_t * p_ctrl, spi_cfg_t const * const p_cfg);
+fsp_err_t R_SCI_SPI_Read(spi_ctrl_t * const    p_ctrl,
                          void                * p_dest,
                          uint32_t const        length,
                          spi_bit_width_t const bit_width);
-fsp_err_t R_SCI_SPI_Write(spi_ctrl_t * const    p_api_ctrl,
+fsp_err_t R_SCI_SPI_Write(spi_ctrl_t * const    p_ctrl,
                           void const          * p_src,
                           uint32_t const        length,
                           spi_bit_width_t const bit_width);
-fsp_err_t R_SCI_SPI_WriteRead(spi_ctrl_t * const    p_api_ctrl,
+fsp_err_t R_SCI_SPI_WriteRead(spi_ctrl_t * const    p_ctrl,
                               void const          * p_src,
                               void                * p_dest,
                               uint32_t const        length,
                               spi_bit_width_t const bit_width);
-fsp_err_t R_SCI_SPI_Close(spi_ctrl_t * const p_api_ctrl);
-fsp_err_t R_SCI_SPI_VersionGet(fsp_version_t * p_version);
+fsp_err_t R_SCI_SPI_Close(spi_ctrl_t * const p_ctrl);
 fsp_err_t R_SCI_SPI_CalculateBitrate(uint32_t                bitrate,
                                      sci_spi_clock_source_t  clock_source,
                                      sci_spi_div_setting_t * sclk_div);
-fsp_err_t R_SCI_SPI_CallbackSet(spi_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_SCI_SPI_CallbackSet(spi_ctrl_t * const          p_ctrl,
                                 void (                    * p_callback)(spi_callback_args_t *),
                                 void const * const          p_context,
                                 spi_callback_args_t * const p_callback_memory);

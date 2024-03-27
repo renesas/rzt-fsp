@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -28,6 +28,7 @@
  *         : 31.08.2015 1.00    First Release
  ***********************************************************************************************************************/
 
+
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
  ***********************************************************************************************************************/
@@ -42,8 +43,8 @@
 /***********************************************************************************************************************
  * External variables and functions
  ***********************************************************************************************************************/
-#if USB_IP_EHCI_OHCI == 1
 
+#if USB_IP_EHCI_OHCI == 1
  #define USB_DATA_DIR_IN     (0x80U)
  #define USB_DATA_DIR_OUT    (0x00U)
 

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -37,8 +37,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  ***********************************************************************************************************************/
-#define SHARED_MEMORY_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define SHARED_MEMORY_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -78,22 +76,22 @@ extern shared_memory_api_t const g_shared_memory_on_shared_memory;
  * Public APIs
  **********************************************************************************************************************/
 
-fsp_err_t R_SHARED_MEMORY_Open(shared_memory_ctrl_t * const p_api_ctrl, shared_memory_cfg_t const * const p_cfg);
-fsp_err_t R_SHARED_MEMORY_Read(shared_memory_ctrl_t * const p_api_ctrl,
+fsp_err_t R_SHARED_MEMORY_Open(shared_memory_ctrl_t * const p_ctrl, shared_memory_cfg_t const * const p_cfg);
+fsp_err_t R_SHARED_MEMORY_Read(shared_memory_ctrl_t * const p_ctrl,
                                uint8_t * const              p_dest,
                                uint32_t const               offset,
                                uint32_t const               bytes);
-fsp_err_t R_SHARED_MEMORY_Write(shared_memory_ctrl_t * const p_api_ctrl,
+fsp_err_t R_SHARED_MEMORY_Write(shared_memory_ctrl_t * const p_ctrl,
                                 uint8_t * const              p_src,
                                 uint32_t const               offset,
                                 uint32_t const               bytes);
-fsp_err_t R_SHARED_MEMORY_StatusGet(shared_memory_ctrl_t * const p_api_ctrl, shared_memory_status_t * p_status);
-fsp_err_t R_SHARED_MEMORY_CallbackSet(shared_memory_ctrl_t * const p_api_ctrl,
+fsp_err_t R_SHARED_MEMORY_StatusGet(shared_memory_ctrl_t * const p_ctrl, shared_memory_status_t * p_status);
+fsp_err_t R_SHARED_MEMORY_CallbackSet(shared_memory_ctrl_t * const p_ctrl,
                                       void (                     * p_callback)(
                                           shared_memory_callback_args_t *),
                                       void const * const                    p_context,
                                       shared_memory_callback_args_t * const p_callback_memory);
-fsp_err_t R_SHARED_MEMORY_Close(shared_memory_ctrl_t * const p_api_ctrl);
+fsp_err_t R_SHARED_MEMORY_Close(shared_memory_ctrl_t * const p_ctrl);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup SHARED_MEMORY)

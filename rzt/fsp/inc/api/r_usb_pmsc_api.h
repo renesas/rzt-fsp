@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,15 +19,13 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_CONNECTIVITY_INTERFACES
  * @defgroup USB_PMSC_API USB PMSC Interface
  * @brief Interface for USB PMSC functions.
  *
  * @section USB_PMSC_API_Summary Summary
  * The USB PMSC interface provides USB PMSC functionality.
  *
- * The USB PMSC interface can be implemented by:
- * - @ref USB_PMSC
  *
  * @{
  **********************************************************************************************************************/
@@ -44,7 +42,11 @@ FSP_HEADER
 
 /* User specific options for USB PMSC API */
 #include "r_usb_basic_cfg.h"
-#include "r_usb_pmsc_cfg.h"
+#if defined(USB_CFG_OTG_USE)
+ #include "r_usb_otg_msc_cfg.h"
+#else                                  /* defined(USB_CFG_OTG_USE) */
+ #include "r_usb_pmsc_cfg.h"
+#endif  /* defined(USB_CFG_OTG_USE) */
 
 /***********************************************************************************************************************
  * Macro definitions

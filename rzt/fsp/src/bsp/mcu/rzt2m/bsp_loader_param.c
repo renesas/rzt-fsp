@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -24,11 +24,12 @@
 #include "bsp_api.h"
 
 #if !(BSP_CFG_RAM_EXECUTION)
+ #if (1 == _RZT_ORDINAL)
 
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
- #define BSP_LOADER_PARAM_MAX    (19)
+  #define BSP_LOADER_PARAM_MAX    (19)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -36,10 +37,6 @@
 
 /***********************************************************************************************************************
  * Exported global variables (to be accessed by other files)
- **********************************************************************************************************************/
-
-/***********************************************************************************************************************
- * Private global variables and functions
  **********************************************************************************************************************/
 
 /* Parameter Information for the Loader. */
@@ -53,17 +50,22 @@ BSP_DONT_REMOVE const uint32_t g_bsp_loader_param[BSP_LOADER_PARAM_MAX] BSP_PLAC
     BSP_CFG_LDR_ADDR_NML,
     BSP_CFG_LDR_SIZE_NML,
     BSP_CFG_DEST_ADDR_NML,
-    BSP_CFG_DNUMMY1,
-    BSP_CFG_DNUMMY2,
-    BSP_CFG_DNUMMY3_CSSCTL_V,
-    BSP_CFG_DNUMMY4_LIOCFGCS0_V,
-    BSP_CFG_DNUMMY5,
-    BSP_CFG_DNUMMY6,
-    BSP_CFG_DNUMMY7,
-    BSP_CFG_DNUMMY8,
-    BSP_CFG_DNUMMY9,
-    BSP_CFG_DNUMMY10_ACCESS_SPEED,
+    BSP_CFG_DUMMY1,
+    BSP_CFG_DUMMY2,
+    BSP_CFG_DUMMY3_CSSCTL_V,
+    BSP_CFG_DUMMY4_LIOCFGCS0_V,
+    BSP_CFG_DUMMY5,
+    BSP_CFG_DUMMY6,
+    BSP_CFG_DUMMY7,
+    BSP_CFG_DUMMY8,
+    BSP_CFG_DUMMY9,
+    BSP_CFG_DUMMY10_ACCESS_SPEED,
     BSP_CFG_CHECK_SUM
 };
 
+/***********************************************************************************************************************
+ * Private global variables and functions
+ **********************************************************************************************************************/
+
+ #endif
 #endif

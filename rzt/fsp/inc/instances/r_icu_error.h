@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -41,21 +41,6 @@ FSP_HEADER
  **********************************************************************************************************************/
 typedef void (* error_table_t)(uint32_t id);
 
-/** ICU_ERROR Error event source */
-typedef enum e_icu_error_event_source
-{
-    ICU_ERROR_EVENT_SOURCE_CPU0,
-#if BSP_FEATURE_ICU_ERROR_CPU1_SUPPORTED
-    ICU_ERROR_EVENT_SOURCE_CPU1,
-#endif
-    ICU_ERROR_EVENT_SOURCE_PERIPHERAL_0,
-    ICU_ERROR_EVENT_SOURCE_PERIPHERAL_1,
-#if BSP_FEATURE_ICU_ERROR_PERI_ERR_REG_NUM == 4
-    ICU_ERROR_EVENT_SOURCE_PERIPHERAL_2,
-    ICU_ERROR_EVENT_SOURCE_PERIPHERAL_3,
-#endif
-} icu_error_event_source_t;
-
 /** ICU_ERROR CPU0 Error Code */
 typedef enum e_icu_error_cpu0_error
 {
@@ -87,7 +72,7 @@ typedef enum e_icu_error_cpu0_error
     ICU_ERROR_CPU0_ERROR_EVENT25 = (1UL << 25)
 } icu_error_cpu0_error_t;
 
-#if BSP_FEATURE_ICU_ERROR_CPU1_SUPPORTED
+#if BSP_FEATURE_ICU_ERROR_CR52_CPU1_SUPPORTED
 
 /** ICU_ERROR CPU1 Error Code */
 typedef enum e_icu_error_cpu1_error
@@ -363,7 +348,7 @@ typedef struct st_icu_error_extended_cfg
     uint32_t cpu0_err_reset_mask;                ///< Cortex-R52 CPU0 error reset mask
     uint32_t cpu0_err0_event_mask;               ///< Cortex-R52 CPU0 error 0 event mask
     uint32_t cpu0_err1_event_mask;               ///< Cortex-R52 CPU0 error 1 event mask
-#if BSP_FEATURE_ICU_ERROR_CPU1_SUPPORTED
+#if BSP_FEATURE_ICU_ERROR_CR52_CPU1_SUPPORTED
     uint32_t cpu1_err_reset_mask;                ///< Cortex-R52 CPU1 error reset mask
     uint32_t cpu1_err0_event_mask;               ///< Cortex-R52 CPU1 error 0 event mask
     uint32_t cpu1_err1_event_mask;               ///< Cortex-R52 CPU1 error 1 event mask
@@ -399,11 +384,11 @@ extern const error_api_t g_error_on_icu_error;
 /***********************************************************************************************************************
  * Public APIs
  **********************************************************************************************************************/
-fsp_err_t R_ICU_ERROR_Open(error_ctrl_t * const p_api_ctrl, error_cfg_t const * const p_cfg);
-fsp_err_t R_ICU_ERROR_Close(error_ctrl_t * const p_api_ctrl);
-fsp_err_t R_ICU_ERROR_StatusGet(error_ctrl_t * const p_api_ctrl, uint32_t source, uint32_t * p_status);
-fsp_err_t R_ICU_ERROR_StatusClear(error_ctrl_t * const p_api_ctrl, uint32_t source, uint32_t event);
-fsp_err_t R_ICU_ERROR_CallbackSet(error_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_ICU_ERROR_Open(error_ctrl_t * const p_ctrl, error_cfg_t const * const p_cfg);
+fsp_err_t R_ICU_ERROR_Close(error_ctrl_t * const p_ctrl);
+fsp_err_t R_ICU_ERROR_StatusGet(error_ctrl_t * const p_ctrl, uint32_t source, uint32_t * p_status);
+fsp_err_t R_ICU_ERROR_StatusClear(error_ctrl_t * const p_ctrl, uint32_t source, uint32_t event);
+fsp_err_t R_ICU_ERROR_CallbackSet(error_ctrl_t * const          p_ctrl,
                                   void (                      * p_callback)(error_callback_args_t *),
                                   void const * const            p_context,
                                   error_callback_args_t * const p_callback_memory);

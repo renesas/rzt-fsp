@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,8 +40,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHER_SELECTOR_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHER_SELECTOR_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -83,8 +81,6 @@ fsp_err_t R_ETHER_SELECTOR_Close(ether_selector_ctrl_t * const p_ctrl);
 fsp_err_t R_ETHER_SELECTOR_ConverterSet(ether_selector_ctrl_t * const p_ctrl,
                                         ether_selector_speed_t        speed,
                                         ether_selector_duplex_t       duplex);
-
-fsp_err_t R_ETHER_SELECTOR_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHER_SELECTOR)

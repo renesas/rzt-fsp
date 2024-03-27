@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -23,16 +23,13 @@
 
 /*******************************************************************************************************************//**
  * @defgroup RM_BLOCK_MEDIA_API Block Media Interface
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_STORAGE_INTERFACES
  * @brief Interface for block media memory access
  *
  * @section RM_BLOCK_MEDIA_API_SUMMARY Summary
  * The block media interface supports reading, writing, and erasing media devices. All functions are non-blocking if
  * possible. The callback is used to determine when an operation completes.
  *
- * Implemented by:
- * - @ref RM_BLOCK_MEDIA_SDMMC
- * - @ref RM_BLOCK_MEDIA_USB
  *
  * @{
  **********************************************************************************************************************/
@@ -50,8 +47,6 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define RM_BLOCK_MEDIA_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define RM_BLOCK_MEDIA_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -63,7 +58,7 @@ typedef enum e_rm_block_media_event
     RM_BLOCK_MEDIA_EVENT_MEDIA_REMOVED      = 1U << 0, ///< Media removed event
     RM_BLOCK_MEDIA_EVENT_MEDIA_INSERTED     = 1U << 1, ///< Media inserted event
     RM_BLOCK_MEDIA_EVENT_OPERATION_COMPLETE = 1U << 2, ///< Read, write, or erase completed
-    RM_BLOCK_MEDIA_EVENT_ERROR              = 1U << 3, ///< Media inserted event
+    RM_BLOCK_MEDIA_EVENT_ERROR              = 1U << 3, ///< Error on media operation
     RM_BLOCK_MEDIA_EVENT_POLL_STATUS        = 1U << 4, ///< Poll @ref rm_block_media_api_t::statusGet for write/erase completion
     RM_BLOCK_MEDIA_EVENT_MEDIA_SUSPEND      = 1U << 5, ///< Media suspended event
     RM_BLOCK_MEDIA_EVENT_MEDIA_RESUME       = 1U << 6, ///< Media resumed event
@@ -90,7 +85,6 @@ typedef struct st_rm_block_media_callback_args
 /** User configuration structure, used in open function */
 typedef struct st_rm_block_media_cfg
 {
-    uint32_t block_size;                                          ///< Block size, must be a power of 2 multiple of sector_size_bytes
     void (* p_callback)(rm_block_media_callback_args_t * p_args); ///< Pointer to callback function
     void const * p_context;                                       ///< User defined context passed into callback function
     void const * p_extend;                                        ///< Extension parameter for hardware specific settings
@@ -113,7 +107,7 @@ typedef void rm_block_media_ctrl_t;
 typedef struct st_rm_block_media_api
 {
     /** Initialize block media device. @ref rm_block_media_api_t::mediaInit must be called to complete the
-     * intitialization procedure.
+     * initialization procedure.
      *
      * @param[in]   p_ctrl              Pointer to control block. Must be declared by user. Elements set here.
      * @param[in]   p_cfg               Pointer to configuration structure. All elements of this structure must be set by user.

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,15 +19,12 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_SYSTEM_INTERFACES
  * @defgroup ICU_INTER_CPU_IRQ_API Inter CPU IRQ Interface
  * @brief Interface for INTCPU interrupt.
  *
  * @section ICU_INTER_CPU_IRQ_API_Summary Summary
  * The ICU_INTER_CPU_IRQ Interface is for configuring and firing INTCPU interrupts.
- *
- * The ICU_INTER_CPU_IRQ Interface can be implemented by:
- * - @ref ICU_INTER_CPU_IRQ
  *
  * @{
  **********************************************************************************************************************/
@@ -48,8 +45,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  ***********************************************************************************************************************/
-#define ICU_INTER_CPU_IRQ_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define ICU_INTER_CPU_IRQ_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -67,7 +62,7 @@ typedef struct st_icu_inter_cpu_irq_cfg
 {
     uint8_t   channel;                 ///< Hardware channel used.
     uint8_t   ipl;                     ///< Interrupt priority
-    IRQn_Type irq;                     ///< GIC interrupt number assigned to this instance
+    IRQn_Type irq;                     ///< Interrupt number assigned to this instance
 
     /** Callback provided INTCPU occurs. */
     void (* p_callback)(icu_inter_cpu_irq_callback_args_t * p_args);
@@ -78,8 +73,6 @@ typedef struct st_icu_inter_cpu_irq_cfg
 } icu_inter_cpu_irq_cfg_t;
 
 /** ICU_INTER_CPU_IRQ control block.  Allocate an instance specific control block to pass into the ICU_INTER_CPU_IRQ API calls.
- * @par Implemented as
- * - icu_inter_cpu_irq_instance_ctrl_t
  */
 typedef void icu_inter_cpu_irq_ctrl_t;
 
@@ -87,8 +80,6 @@ typedef void icu_inter_cpu_irq_ctrl_t;
 typedef struct st_icu_inter_cpu_irq_api
 {
     /** Opens the core to core driver and initializes the hardware.
-     * @par Implemented as
-     * - @ref R_ICU_INTER_CPU_IRQ_Open()
      *
      * @param[in] p_ctrl    Pointer to control block. Must be declared by user. Elements are set here.
      * @param[in] p_cfg     Pointer to configuration structure.
@@ -96,8 +87,6 @@ typedef struct st_icu_inter_cpu_irq_api
     fsp_err_t (* open)(icu_inter_cpu_irq_ctrl_t * const p_ctrl, icu_inter_cpu_irq_cfg_t const * const p_cfg);
 
     /** Generates INTCPU interrupt.
-     * @par Implemented as
-     * - @ref R_ICU_INTER_CPU_IRQ_Generate()
      *
      * @param[in] p_ctrl     Control block set for this INTCPU interrupt.
      */
@@ -105,8 +94,6 @@ typedef struct st_icu_inter_cpu_irq_api
 
     /**
      * Specify callback function and optional context pointer and working memory pointer.
-     * @par Implemented as
-     * - R_ICU_INTER_CPU_IRQ_CallbackSet()
      *
      * @param[in]   p_ctrl                   Pointer to the ICU_INTER_CPU_IRQ control block.
      * @param[in]   p_callback               Callback function
@@ -114,13 +101,11 @@ typedef struct st_icu_inter_cpu_irq_api
      * @param[in]   p_working_memory         Pointer to volatile memory where callback structure can be allocated.
      *                                       Callback arguments allocated here are only valid during the callback.
      */
-    fsp_err_t (* callbackSet)(icu_inter_cpu_irq_ctrl_t * const p_api_ctrl,
+    fsp_err_t (* callbackSet)(icu_inter_cpu_irq_ctrl_t * const p_ctrl,
                               void (* p_callback)(icu_inter_cpu_irq_callback_args_t *), void const * const p_context,
                               icu_inter_cpu_irq_callback_args_t * const p_callback_memory);
 
     /** Closes the driver and releases the device.
-     * @par Implemented as
-     * - @ref R_ICU_INTER_CPU_IRQ_Close()
      *
      * @param[in] p_ctrl    Pointer to control block set in @ref icu_inter_cpu_irq_api_t::open call.
      */

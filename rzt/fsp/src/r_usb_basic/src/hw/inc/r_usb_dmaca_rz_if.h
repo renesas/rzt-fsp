@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,11 +40,11 @@
  *******************************************************************************/
 
 /* Includes board and MCU related header files. */
-#include "r_usb_typedef.h"
+#include "../../driver/inc/r_usb_typedef.h"
 
 /* Configuration for this package. */
-#include "r_usb_dmaca_rz_config.h"
-#include "r_usb_dmac.h"
+#include "../../hw/inc/r_usb_dmaca_rz_config.h"
+#include "../../hw/inc/r_usb_dmac.h"
 #include <stdbool.h>
 
 #if USB_CFG_DMA == USB_CFG_ENABLE

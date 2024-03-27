@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,15 +19,13 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_STORAGE_INTERFACES
  * @defgroup NOR_FLASH_API NOR Flash Interface
  * @brief Interface for external nor flash communication.
  *
  * @section NOR_FLASH_API_SUMMARY Summary
  * The NOR Flash interface provides APIs and definitions for NOR Flash communication.
  *
- * Implemented by:
- * - @ref BSC_NOR
  * @{
  **********************************************************************************************************************/
 #ifndef R_NOR_FLASH_API_H
@@ -78,7 +76,7 @@ typedef struct st_nor_flash_cfg
 {
     nor_flash_chip_select_t    chip_select; ///< Select which device to use
     nor_flash_data_bus_width_t data_width;  ///< Select data bus width
-    void const               * p_extend;    ///< External bus hardware dependent configuration
+    void const               * p_extend;    ///< NOR Flash hardware dependent configuration
 } nor_flash_cfg_t;
 
 /** Status. */
@@ -88,18 +86,14 @@ typedef struct st_nor_flash_status
     bool write_in_progress;
 } nor_flash_status_t;
 
-/** External bus control block.  Allocate an instance specific control block to pass into the External bus API calls.
- * @par Implemented as
- * - bsc_instance_ctrl_t
+/** NOR Flash control block.  Allocate an instance specific control block to pass into the NOR Flash API calls.
  */
 typedef void nor_flash_ctrl_t;
 
-/** External bus implementations follow this API. */
+/** NOR Flash implementations follow this API. */
 typedef struct st_nor_flash_api
 {
-    /** Open the BSC NOR driver module.
-     * @par Implemented as
-     * - @ref R_BSC_NOR_Open()
+    /** Open the NOR Flash driver module.
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      * @param[in] p_cfg                Pointer to a configuration structure
@@ -107,8 +101,6 @@ typedef struct st_nor_flash_api
     fsp_err_t (* open)(nor_flash_ctrl_t * p_ctrl, nor_flash_cfg_t const * const p_cfg);
 
     /** Program data to the flash.
-     * @par Implemented as
-     * - @ref R_BSC_NOR_Write()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      * @param[in] p_src                The memory address of the data to write to the flash device
@@ -119,8 +111,6 @@ typedef struct st_nor_flash_api
                         uint32_t byte_count);
 
     /** Erase a certain number of bytes of the flash.
-     * @par Implemented as
-     * - @ref R_BSC_NOR_Erase()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      * @param[in] p_device_address     The location in the flash device address space to start the erase from
@@ -130,8 +120,6 @@ typedef struct st_nor_flash_api
     fsp_err_t (* erase)(nor_flash_ctrl_t * p_ctrl, uint8_t * const p_device_address, uint32_t byte_count);
 
     /** Get the write or erase status of the flash.
-     * @par Implemented as
-     * - @ref R_BSC_NOR_StatusGet()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      * @param[in] p_device_address     The location in the flash device address space to get status
@@ -140,9 +128,7 @@ typedef struct st_nor_flash_api
     fsp_err_t (* statusGet)(nor_flash_ctrl_t * p_ctrl, uint8_t * const p_device_address,
                             nor_flash_status_t * const p_status);
 
-    /** Close the BSC_NOR driver module.
-     * @par Implemented as
-     * - @ref R_BSC_NOR_Close()
+    /** Close the NOR Flash driver module.
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
@@ -162,5 +148,5 @@ FSP_FOOTER
 #endif
 
 /*******************************************************************************************************************//**
- * @} (end addtogroup NOR_FLASH_API)
+ * @} (end defgroup NOR_FLASH_API)
  **********************************************************************************************************************/

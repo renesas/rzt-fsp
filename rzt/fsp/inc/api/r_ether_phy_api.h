@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,7 +19,7 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_NETWORKING_INTERFACES
  * @defgroup ETHER_PHY_API Ethernet PHY Interface
  * @brief Interface for Ethernet PHY functions.
  *
@@ -32,8 +32,6 @@
  * - Flow control support
  * - Link status check support
  *
- * Implemented by:
- * - @ref ETHER_PHY
  *
  * @{
  **********************************************************************************************************************/
@@ -54,12 +52,24 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHER_PHY_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHER_PHY_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
+
+#ifndef BSP_OVERRIDE_ETHER_PHY_LSI_TYPE_T
+
+/** Phy LSI */
+typedef enum e_ether_phy_lsi_type
+{
+    ETHER_PHY_LSI_TYPE_DEFAULT    = 0,     ///< Select default configuration. This type dose not change Phy LSI default setting by strapping option.
+    ETHER_PHY_LSI_TYPE_KSZ8091RNB = 1,     ///< Select configuration for KSZ8091RNB.
+    ETHER_PHY_LSI_TYPE_KSZ8041    = 2,     ///< Select configuration for KSZ8041.
+    ETHER_PHY_LSI_TYPE_DP83620    = 3,     ///< Select configuration for DP83620.
+    ETHER_PHY_LSI_TYPE_ICS1894    = 4,     ///< Select configuration for ICS1894.
+    ETHER_PHY_LSI_TYPE_CUSTOM     = 0xFFU, ///< Select configuration for User custom.
+} ether_phy_lsi_type_t;
+#endif
 
 /** Flow control functionality  */
 typedef enum e_ether_phy_flow_control
@@ -83,90 +93,94 @@ typedef enum e_ether_phy_link_speed
 /** Media-independent interface */
 typedef enum e_ether_phy_mii_type
 {
-    ETHER_PHY_MII_TYPE_MII   = 0,      ///< MII type
-    ETHER_PHY_MII_TYPE_RMII  = 1,      ///< RMII type
-    ETHER_PHY_MII_TYPE_GMII  = 2,      ///< GMII type
-    ETHER_PHY_MII_TYPE_RGMII = 3       ///< RGMII type
+    ETHER_PHY_MII_TYPE_MII   = 0,      ///< MII
+    ETHER_PHY_MII_TYPE_RMII  = 1,      ///< RMII
+    ETHER_PHY_MII_TYPE_GMII  = 2,      ///< GMII
+    ETHER_PHY_MII_TYPE_RGMII = 3       ///< RGMII
 } ether_phy_mii_type_t;
 
 /** Control block.  Allocate an instance specific control block to pass into the API calls.
- * @par Implemented as
- * - ether_phy_instance_ctrl_t
  */
 typedef void ether_phy_ctrl_t;
 
 /** Configuration parameters. */
 typedef struct st_ether_phy_cfg
 {
-    uint8_t channel;                       ///< Channel
-    uint8_t phy_lsi_address;               ///< Address of PHY-LSI
+    uint8_t channel;                               ///< Channel
+    uint8_t phy_lsi_address;                       ///< Address of PHY-LSI
 
-    uint32_t phy_reset_wait_time;          ///< Wait time for PHY-LSI reboot
-    int32_t  mii_bit_access_wait_time;     ///< Wait time for MII/RMII access
+    uint32_t             phy_reset_wait_time;      ///< Wait time for PHY-LSI reboot
+    int32_t              mii_bit_access_wait_time; ///< Wait time for MII/RMII access
+    ether_phy_lsi_type_t phy_lsi_type;             ///< Phy LSI type
 
-    ether_phy_flow_control_t flow_control; ///< Flow control functionally enable or disable
-    ether_phy_mii_type_t     mii_type;     ///< Interface type is MII or RMII
+    ether_phy_flow_control_t flow_control;         ///< Flow control functionally enable or disable
+    ether_phy_mii_type_t     mii_type;             ///< Interface type is MII or RMII
 
     /** Placeholder for user data.  Passed to the user callback in ether_phy_callback_args_t. */
     void const * p_context;
-    void const * p_extend;                 ///< Extended configuration.
+    void const * p_extend;                         ///< Placeholder for user extension.
 } ether_phy_cfg_t;
 
 /** Functions implemented at the HAL layer will follow this API. */
 typedef struct st_ether_phy_api
 {
     /** Open driver.
-     * @par Implemented as
-     * - @ref R_ETHER_PHY_Open()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
-     * @param[in]  p_cfg            Pointer to pin configuration structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
+     * @param[in]  p_cfg        Pointer to pin configuration structure.
      */
-    fsp_err_t (* open)(ether_phy_ctrl_t * const p_api_ctrl, ether_phy_cfg_t const * const p_cfg);
+    fsp_err_t (* open)(ether_phy_ctrl_t * const p_ctrl, ether_phy_cfg_t const * const p_cfg);
 
     /** Close driver.
-     * @par Implemented as
-     * - @ref R_ETHER_PHY_Close()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
      */
-    fsp_err_t (* close)(ether_phy_ctrl_t * const p_api_ctrl);
+    fsp_err_t (* close)(ether_phy_ctrl_t * const p_ctrl);
+
+    /** Initialize PHY-LSI.
+     *
+     * @param[in]  p_ctrl       Pointer to control structure.
+     * @param[in]  p_cfg        Pointer to pin configuration structure.
+     */
+    fsp_err_t (* chipInit)(ether_phy_ctrl_t * const p_ctrl, ether_phy_cfg_t const * const p_cfg);
+
+    /** Read register value of PHY-LSI.
+     *
+     * @param[in]  p_ctrl       Pointer to control structure.
+     * @param[in]  reg_addr     Register address.
+     * @param[out] p_data       Pointer to the location to store read data.
+     */
+    fsp_err_t (* read)(ether_phy_ctrl_t * const p_ctrl, uint32_t reg_addr, uint32_t * const p_data);
+
+    /** Write data to register of PHY-LSI.
+     *
+     * @param[in]  p_ctrl       Pointer to control structure.
+     * @param[in]  reg_addr     Register address.
+     * @param[in]  data         Data written to register.
+     */
+    fsp_err_t (* write)(ether_phy_ctrl_t * const p_ctrl, uint32_t reg_addr, uint32_t data);
 
     /** Start auto negotiation.
-     * @par Implemented as
-     * - @ref R_ETHER_PHY_StartAutoNegotiate()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
      */
-    fsp_err_t (* startAutoNegotiate)(ether_phy_ctrl_t * const p_api_ctrl);
+    fsp_err_t (* startAutoNegotiate)(ether_phy_ctrl_t * const p_ctrl);
 
     /** Get the partner ability.
-     * @par Implemented as
-     * - @ref R_ETHER_PHY_LinkPartnerAbilityGet()
      *
-     * @param[in]  p_api_ctrl           Pointer to control structure.
-     * @param[out] p_line_speed_duplex  Pointer to the location of both the line speed and the duplex.
-     * @param[out] p_local_pause        Pointer to the location to store the local pause bits.
-     * @param[out] p_partner_pause      Pointer to the location to store the partner pause bits.
+     * @param[in]  p_ctrl                     Pointer to control structure.
+     * @param[out] p_line_speed_duplex        Pointer to the location of both the line speed and the duplex.
+     * @param[out] p_local_pause              Pointer to the location to store the local pause bits.
+     * @param[out] p_partner_pause            Pointer to the location to store the partner pause bits.
      */
-    fsp_err_t (* linkPartnerAbilityGet)(ether_phy_ctrl_t * const p_api_ctrl, uint32_t * const p_line_speed_duplex,
+    fsp_err_t (* linkPartnerAbilityGet)(ether_phy_ctrl_t * const p_ctrl, uint32_t * const p_line_speed_duplex,
                                         uint32_t * const p_local_pause, uint32_t * const p_partner_pause);
 
     /** Get Link status from PHY-LSI interface.
-     * @par Implemented as
-     * - @ref R_ETHER_PHY_LinkStatusGet()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
      */
-    fsp_err_t (* linkStatusGet)(ether_phy_ctrl_t * const p_api_ctrl);
-
-    /** DEPRECATED Return the version of the driver.
-     * @par Implemented as
-     * - @ref R_ETHER_PHY_VersionGet()
-     *
-     * @param[out] p_data           Memory address to return version information to.
-     */
-    fsp_err_t (* versionGet)(fsp_version_t * const p_data);
+    fsp_err_t (* linkStatusGet)(ether_phy_ctrl_t * const p_ctrl);
 } ether_phy_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */
@@ -178,7 +192,7 @@ typedef struct st_ether_phy_instance
 } ether_phy_instance_t;
 
 /*******************************************************************************************************************//**
- * @} (end addtogroup ETHER_PHY_API)
+ * @} (end defgroup ETHER_PHY_API)
  **********************************************************************************************************************/
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */

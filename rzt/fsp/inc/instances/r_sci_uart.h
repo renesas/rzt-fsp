@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -39,34 +39,28 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define SCI_UART_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define SCI_UART_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
 
-/** Enumeration for SCI clock source.
- * This enumeration name will be changed in the major release. */
-typedef enum e_sci_clk_src
+/** Enumeration for SCI clock source */
+typedef enum e_sci_uart_clock
 {
     SCI_UART_CLOCK_INT,                      ///< Use internal clock for baud generation
     SCI_UART_CLOCK_INT_WITH_BAUDRATE_OUTPUT, ///< Use internal clock for baud generation and output on SCK
     SCI_UART_CLOCK_EXT8X,                    ///< Use external clock 8x baud rate
     SCI_UART_CLOCK_EXT16X                    ///< Use external clock 16x baud rate
-} sci_clk_src_t;
+} sci_uart_clock_t;
 
-/** UART communication mode definition.
- * This enumeration name will be changed in the major release. */
-typedef enum e_uart_mode
+/** UART flow control mode definition */
+typedef enum e_sci_uart_flow_control
 {
-    UART_MODE_RS232        = 0U,       ///< Deprecated - Enables RS232 communication mode
-    UART_MODE_RS485_HD     = 1U,       ///< Deprecated - Enables RS485 half duplex communication mode
-    UART_MODE_RS485_FD     = 2U,       ///< Deprecated - Enables RS485 full duplex communication mode
-    SCI_UART_MODE_RS232    = 0U,       ///< Enables RS232 communication mode
-    SCI_UART_MODE_RS485_HD = 1U,       ///< Enables RS485 half duplex communication mode
-    SCI_UART_MODE_RS485_FD = 2U,       ///< Enables RS485 full duplex communication mode
-} uart_mode_t;
+    SCI_UART_FLOW_CONTROL_RTS             = 0U, ///< Use CTSn_RTSn pin for RTS
+    SCI_UART_FLOW_CONTROL_CTS             = 1U, ///< Use CTSn_RTSn pin for CTS
+    SCI_UART_FLOW_CONTROL_HARDWARE_CTSRTS = 3U, ///< Use CTSn pin for CTS, CTSn_RTSn pin for RTS
+    SCI_UART_FLOW_CONTROL_CTSRTS          = 5U, ///< Use SCI pin for CTS, external pin for RTS
+} sci_uart_flow_control_t;
 
 /** UART instance control block. */
 typedef struct st_sci_uart_instance_ctrl
@@ -130,45 +124,46 @@ typedef enum e_sci_uart_noise_cancellation
     SCI_UART_NOISE_CANCELLATION_ENABLE_FILTER_CKS_DIV_8 = 0x5, ///< Enable noise cancellation, The on-chip baud rate generator source clock divided by 8
 } sci_uart_noise_cancellation_t;
 
-/** CTS/RTS function of the SSn pin. */
-typedef enum e_sci_uart_ctsrts_config
+/** RS-485 Enable/Disable. */
+typedef enum e_sci_uart_rs485_enable
 {
-    SCI_UART_CTSRTS_RTS_OUTPUT = 0x0,  ///< Disable CTS function (RTS output function is enabled)
-    SCI_UART_CTSRTS_CTS_INPUT  = 0x1,  ///< Enable CTS function
-} sci_uart_ctsrts_config_t;
+    SCI_UART_RS485_DISABLE = 0,        ///< RS-485 disabled.
+    SCI_UART_RS485_ENABLE  = 1,        ///< RS-485 enabled.
+} sci_uart_rs485_enable_t;
 
-/** Synchronizer circuit configuration. */
-typedef enum e_sci_uart_synchronizer
+/** The polarity of the RS-485 DE signal. */
+typedef enum e_sci_uart_rs485_de_polarity
 {
-    SCI_UART_SYNCHRONIZER_NOT_BYPASS = 0x0, ///< Synchronizer bypass disable
-    SCI_UART_SYNCHRONIZER_BYPASS     = 0x1  ///< Synchronizer bypass enable
-} sci_uart_synchronizer_t;
+    SCI_UART_RS485_DE_POLARITY_HIGH = 0, ///< The DE signal is high when a write transfer is in progress.
+    SCI_UART_RS485_DE_POLARITY_LOW  = 1, ///< The DE signal is low when a write transfer is in progress.
+} sci_uart_rs485_de_polarity_t;
+
+/** Source clock selection options for SCI. */
+typedef enum e_sci_uart_clock_source
+{
+    SCI_UART_CLOCK_SOURCE_SCI0ASYNCCLK = 0,
+    SCI_UART_CLOCK_SOURCE_SCI1ASYNCCLK = 1,
+    SCI_UART_CLOCK_SOURCE_SCI2ASYNCCLK = 2,
+    SCI_UART_CLOCK_SOURCE_SCI3ASYNCCLK = 3,
+    SCI_UART_CLOCK_SOURCE_SCI4ASYNCCLK = 4,
+    SCI_UART_CLOCK_SOURCE_SCI5ASYNCCLK = 5,
+    SCI_UART_CLOCK_SOURCE_PCLKM        = 6,
+} sci_uart_clock_source_t;
+
+/** Baudrate calculation configuration. */
+typedef struct st_sci_uart_baud_calculation
+{
+    uint32_t baudrate;                 ///< Target baudrate
+    bool     bitrate_modulation;       ///< Whether bitrate modulation use or not
+    uint32_t baud_rate_error_x_1000;   ///< Max baudrate percent error
+} sci_uart_baud_calculation_t;
 
 /** Register settings to achieve a desired baud rate and modulation duty. */
-typedef struct st_baud_setting_t
+typedef struct st_sci_baud_setting_t
 {
     union
     {
-        /* DEPRECATED */
-        uint32_t ccr2_baudrate_bits;
-
         uint32_t baudrate_bits;
-
-        /* DEPRECATED */
-        struct
-        {
-            uint8_t       : 4;
-            uint8_t bgdm  : 1;         ///< Baud Rate Generator Double-Speed Mode Select
-            uint8_t abcs  : 1;         ///< Asynchronous Mode Base Clock Select
-            uint8_t abcse : 1;         ///< Asynchronous Mode Extended Base Clock Select 1
-            uint8_t       : 1;
-            uint8_t brr   : 8;         ///< Bit Rate Register setting
-            uint8_t brme  : 1;         ///< Bit Rate Modulation Enable
-            uint8_t       : 3;
-            uint8_t cks   : 2;         ///< CKS  value to get divisor (CKS = N)
-            uint8_t       : 2;
-            uint8_t mddr  : 8;         ///< Modulation Duty Register setting
-        };
 
         struct
         {
@@ -185,23 +180,34 @@ typedef struct st_baud_setting_t
             uint32_t mddr  : 8;        ///< Modulation Duty Register setting
         } baudrate_bits_b;
     };
-} baud_setting_t;
+} sci_baud_setting_t;
+
+/** Configuration settings for controlling the DE signal for RS-485. */
+typedef struct st_sci_uart_rs485_setting
+{
+    sci_uart_rs485_enable_t      enable;   ///< Enable the DE signal.
+    sci_uart_rs485_de_polarity_t polarity; ///< DE signal polarity.
+    uint8_t assertion_time : 5;            ///< Time in baseclock units after assertion of the DE signal and before the start of the write transfer.
+    uint8_t negation_time  : 5;            ///< Time in baseclock units after the end of a write transfer and before the DE signal is negated.
+} sci_uart_rs485_setting_t;
 
 /** UART on SCI device Configuration */
 typedef struct st_sci_uart_extended_cfg
 {
-    sci_clk_src_t                 clock;         ///< The source clock for the baud-rate generator. If internal optionally output baud rate on SCK
+    sci_uart_clock_t              clock;         ///< The source clock for the baud-rate generator. If internal optionally output baud rate on SCK
     sci_uart_start_bit_t          rx_edge_start; ///< Start reception on falling edge
     sci_uart_noise_cancellation_t noise_cancel;  ///< Noise cancellation setting
 
-    baud_setting_t * p_baud_setting;             ///< Register settings for a desired baud rate.
+    sci_baud_setting_t * p_baud_setting;         ///< Register settings for a desired baud rate.
 
     sci_uart_rx_fifo_trigger_t rx_fifo_trigger;  ///< Receive FIFO trigger level, unused if channel has no FIFO or if DMAC is used.
 
-    uart_mode_t              uart_mode;          ///< UART communication mode selection
     bsp_io_port_pin_t        flow_control_pin;   ///< UART Driver Enable pin
-    sci_uart_ctsrts_config_t ctsrts_en;          ///< CTS/RTS function of the SSn pin
-    sci_uart_synchronizer_t  sync_bypass;        ///< DEPRECATED - Clock synchronizer selection
+    sci_uart_flow_control_t  flow_control;       ///< CTS/RTS function
+    sci_uart_rs485_setting_t rs485_setting;      ///< RS-485 settings.
+
+    /** Clock source to generate SCK can either be selected as PCLKM or SCInASYNCCLK. */
+    sci_uart_clock_source_t clock_source;
 } sci_uart_extended_cfg_t;
 
 /**********************************************************************************************************************
@@ -214,23 +220,21 @@ extern const uart_api_t g_uart_on_sci;
 
 /** @endcond */
 
-fsp_err_t R_SCI_UART_Open(uart_ctrl_t * const p_api_ctrl, uart_cfg_t const * const p_cfg);
-fsp_err_t R_SCI_UART_Read(uart_ctrl_t * const p_api_ctrl, uint8_t * const p_dest, uint32_t const bytes);
-fsp_err_t R_SCI_UART_Write(uart_ctrl_t * const p_api_ctrl, uint8_t const * const p_src, uint32_t const bytes);
-fsp_err_t R_SCI_UART_BaudSet(uart_ctrl_t * const p_api_ctrl, void const * const p_baud_setting);
-fsp_err_t R_SCI_UART_InfoGet(uart_ctrl_t * const p_api_ctrl, uart_info_t * const p_info);
-fsp_err_t R_SCI_UART_Close(uart_ctrl_t * const p_api_ctrl);
-fsp_err_t R_SCI_UART_VersionGet(fsp_version_t * p_version);
-fsp_err_t R_SCI_UART_Abort(uart_ctrl_t * const p_api_ctrl, uart_dir_t communication_to_abort);
-fsp_err_t R_SCI_UART_BaudCalculate(uint32_t               baudrate,
-                                   bool                   bitrate_modulation,
-                                   uint32_t               baud_rate_error_x_1000,
-                                   baud_setting_t * const p_baud_setting);
-fsp_err_t R_SCI_UART_CallbackSet(uart_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_SCI_UART_Open(uart_ctrl_t * const p_ctrl, uart_cfg_t const * const p_cfg);
+fsp_err_t R_SCI_UART_Read(uart_ctrl_t * const p_ctrl, uint8_t * const p_dest, uint32_t const bytes);
+fsp_err_t R_SCI_UART_Write(uart_ctrl_t * const p_ctrl, uint8_t const * const p_src, uint32_t const bytes);
+fsp_err_t R_SCI_UART_BaudSet(uart_ctrl_t * const p_ctrl, void const * const p_baud_setting);
+fsp_err_t R_SCI_UART_InfoGet(uart_ctrl_t * const p_ctrl, uart_info_t * const p_info);
+fsp_err_t R_SCI_UART_Close(uart_ctrl_t * const p_ctrl);
+fsp_err_t R_SCI_UART_Abort(uart_ctrl_t * const p_ctrl, uart_dir_t communication_to_abort);
+fsp_err_t R_SCI_UART_BaudCalculate(sci_uart_baud_calculation_t const * const p_baud_target,
+                                   sci_uart_clock_source_t                   clock_source,
+                                   sci_baud_setting_t * const                p_baud_setting);
+fsp_err_t R_SCI_UART_CallbackSet(uart_ctrl_t * const          p_ctrl,
                                  void (                     * p_callback)(uart_callback_args_t *),
                                  void const * const           p_context,
                                  uart_callback_args_t * const p_callback_memory);
-fsp_err_t R_SCI_UART_ReadStop(uart_ctrl_t * const p_api_ctrl, uint32_t * remaining_bytes);
+fsp_err_t R_SCI_UART_ReadStop(uart_ctrl_t * const p_ctrl, uint32_t * remaining_bytes);
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup SCI_UART)

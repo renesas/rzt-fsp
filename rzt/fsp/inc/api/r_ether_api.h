@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,7 +19,7 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_NETWORKING_INTERFACES
  * @defgroup ETHER_API Ethernet Interface
  * @brief Interface for Ethernet functions.
  *
@@ -33,8 +33,6 @@
  * - Flow control support
  * - Multicast filtering support
  *
- * Implemented by:
- * - @ref ETHER
  *
  * @{
  **********************************************************************************************************************/
@@ -56,8 +54,6 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHER_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHER_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -106,13 +102,7 @@ typedef enum e_ether_padding
     ETHER_PADDING_3BYTE   = 3,
 } ether_padding_t;
 
-/** Link status of each port */
-typedef enum e_ether_link_status
-{
-    ETHER_LINK_STATUS_DOWN  = 0,       ///< Link down
-    ETHER_LINK_STATUS_UP    = 1,       ///< Link up
-    ETHER_LINK_STATUS_READY = 2,       ///< Link establishment
-} ether_link_status_t;
+#ifndef BSP_OVERRIDE_ETHER_EVENT_T
 
 /** Event code of callback function */
 typedef enum e_ether_event
@@ -120,9 +110,11 @@ typedef enum e_ether_event
     ETHER_EVENT_WAKEON_LAN,            ///< Magic packet detection event
     ETHER_EVENT_LINK_ON,               ///< Link up detection event
     ETHER_EVENT_LINK_OFF,              ///< Link down detection event
-    ETHER_EVENT_SBD_INTERRUPT,         ///< SBD Interrupt event
-    ETHER_EVENT_PMT_INTERRUPT          ///< PMT Interrupt event
+    ETHER_EVENT_INTERRUPT,             ///< Interrupt event
 } ether_event_t;
+#endif
+
+#ifndef BSP_OVERRIDE_ETHER_CALLBACK_ARGS_T
 
 /** Callback function parameter data */
 typedef struct st_ether_callback_args
@@ -131,14 +123,12 @@ typedef struct st_ether_callback_args
     ether_event_t event;               ///< Event code
     uint32_t      status_ecsr;         ///< ETHERC status register for interrupt handler
     uint32_t      status_eesr;         ///< ETHERC/EDMAC status register for interrupt handler
-    uint32_t      status_ether;        ///< Interrupt status of SDB or PMT
-    uint32_t      status_link;         ///< Link status
-    void const  * p_context;           ///< Placeholder for user data.  Set in @ref ether_api_t::open function in @ref ether_cfg_t.
+
+    void const * p_context;            ///< Placeholder for user data.  Set in @ref ether_api_t::open function in @ref ether_cfg_t.
 } ether_callback_args_t;
+#endif
 
 /** Control block.  Allocate an instance specific control block to pass into the API calls.
- * @par Implemented as
- * - gmac_instance_ctrl_t
  */
 typedef void ether_ctrl_t;
 
@@ -147,12 +137,12 @@ typedef struct st_ether_cfg
 {
     uint8_t              channel;                        ///< Channel
     ether_zerocopy_t     zerocopy;                       ///< Zero copy enable or disable in Read/Write function
-    ether_multicast_t    multicast;                      ///< not use: Multicast enable or disable
+    ether_multicast_t    multicast;                      ///< Multicast enable or disable
     ether_promiscuous_t  promiscuous;                    ///< Promiscuous mode enable or disable
     ether_flow_control_t flow_control;                   ///< Flow control functionally enable or disable
-    ether_padding_t      padding;                        ///< not use: Padding length inserted into the received Ethernet frame.
-    uint32_t             padding_offset;                 ///< not use: Offset of the padding inserted into the received Ethernet frame.
-    uint32_t             broadcast_filter;               ///< not use: Limit of the number of broadcast frames received continuously
+    ether_padding_t      padding;                        ///< Padding length inserted into the received Ethernet frame.
+    uint32_t             padding_offset;                 ///< Offset of the padding inserted into the received Ethernet frame.
+    uint32_t             broadcast_filter;               ///< Limit of the number of broadcast frames received continuously
     uint8_t            * p_mac_address;                  ///< Pointer of MAC address
 
     uint8_t num_tx_descriptors;                          ///< Number of transmission descriptor
@@ -162,11 +152,12 @@ typedef struct st_ether_cfg
 
     uint32_t ether_buffer_size;                          ///< Size of transmit and receive buffer
 
-    IRQn_Type irq;                                       ///< SBD interrupt number
-    uint32_t  interrupt_priority;                        ///< SBD interrupt priority
+    IRQn_Type irq;                                       ///< Interrupt number
+    uint32_t  interrupt_priority;                        ///< Interrupt priority
 
     void (* p_callback)(ether_callback_args_t * p_args); ///< Callback provided when an ISR occurs.
-    ether_phy_instance_t const * p_ether_phy_instance;   ///< not use: Pointer to ETHER_PHY instance
+
+    ether_phy_instance_t const * p_ether_phy_instance;   ///< Pointer to ETHER_PHY instance
 
     /** Placeholder for user data.  Passed to the user callback in ether_callback_args_t. */
     void const * p_context;                              ///< Placeholder for user data.
@@ -177,100 +168,77 @@ typedef struct st_ether_cfg
 typedef struct st_ether_api
 {
     /** Open driver.
-     * @par Implemented as
-     * - @ref R_GMAC_Open()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
-     * @param[in]  p_cfg            Pointer to pin configuration structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
+     * @param[in]  p_cfg        Pointer to pin configuration structure.
      */
-    fsp_err_t (* open)(ether_ctrl_t * const p_api_ctrl, ether_cfg_t const * const p_cfg);
+    fsp_err_t (* open)(ether_ctrl_t * const p_ctrl, ether_cfg_t const * const p_cfg);
 
     /** Close driver.
-     * @par Implemented as
-     * - @ref R_GMAC_Close()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
      */
-    fsp_err_t (* close)(ether_ctrl_t * const p_api_ctrl);
+    fsp_err_t (* close)(ether_ctrl_t * const p_ctrl);
 
     /** Read packet if data is available.
-     * @par Implemented as
-     * - @ref R_GMAC_Read()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
-     * @param[in]  p_buffer         Pointer to where to store read data.
-     * @param[in]  length_bytes     Number of bytes in buffer
+     * @param[in]  p_ctrl       Pointer to control structure.
+     * @param[in]  p_buffer     Pointer to where to store read data.
+     * @param[in]  length_bytes Number of bytes in buffer
      */
-    fsp_err_t (* read)(ether_ctrl_t * const p_api_ctrl, void * const p_buffer, uint32_t * const length_bytes);
+    fsp_err_t (* read)(ether_ctrl_t * const p_ctrl, void * const p_buffer, uint32_t * const length_bytes);
 
     /** Release rx buffer from buffer pool process in zero-copy read operation.
-     * @par Implemented as
-     * - @ref R_GMAC_BufferRelease()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
      */
-    fsp_err_t (* bufferRelease)(ether_ctrl_t * const p_api_ctrl);
+    fsp_err_t (* bufferRelease)(ether_ctrl_t * const p_ctrl);
 
     /** Update the buffer pointer in the current receive descriptor.
-     * @par Implemented as
-     * - @ref R_GMAC_RxBufferUpdate()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_ctrl           Pointer to control structure.
      * @param[in]  p_buffer         New address to write into the rx buffer descriptor.
      */
-    fsp_err_t (* rxBufferUpdate)(ether_ctrl_t * const p_api_ctrl, void * const p_buffer);
+    fsp_err_t (* rxBufferUpdate)(ether_ctrl_t * const p_ctrl, void * const p_buffer);
 
     /** Write packet.
-     * @par Implemented as
-     * - @ref R_GMAC_Write()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
-     * @param[in]  p_buffer         Pointer to data to write.
-     * @param[in]  frame_length     Send ethernet frame size (without 4 bytes of CRC data size).
+     * @param[in]  p_ctrl       Pointer to control structure.
+     * @param[in]  p_buffer     Pointer to data to write.
+     * @param[in]  frame_length Send ethernet frame size (without 4 bytes of CRC data size).
      */
-    fsp_err_t (* write)(ether_ctrl_t * const p_api_ctrl, void * const p_buffer, uint32_t const frame_length);
+    fsp_err_t (* write)(ether_ctrl_t * const p_ctrl, void * const p_buffer, uint32_t const frame_length);
 
     /** Process link.
-     * @par Implemented as
-     * - @ref R_GMAC_LinkProcess()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
      */
-    fsp_err_t (* linkProcess)(ether_ctrl_t * const p_api_ctrl);
-
-    /** Get link status.
-     * @par Implemented as
-     * - @ref R_GMAC_GetLinkStatus()
-     *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
-     * @param[out] p_status         Link status.
-     */
-    fsp_err_t (* getLinkStatus)(ether_ctrl_t * const p_api_ctrl, uint8_t port, ether_link_status_t * p_status);
+    fsp_err_t (* linkProcess)(ether_ctrl_t * const p_ctrl);
 
     /** Enable magic packet detection.
-     * @par Implemented as
-     * - @ref R_GMAC_WakeOnLANEnable()
      *
-     * @param[in]  p_api_ctrl       Pointer to control structure.
+     * @param[in]  p_ctrl       Pointer to control structure.
      */
-    fsp_err_t (* wakeOnLANEnable)(ether_ctrl_t * const p_api_ctrl);
+    fsp_err_t (* wakeOnLANEnable)(ether_ctrl_t * const p_ctrl);
 
     /** Get the address of the most recently sent buffer.
-     * @par Implemented as
-     * - @ref R_GMAC_TxStatusGet()
      *
-     * @param[in]   p_api_ctrl     Pointer to control structure.
+     * @param[in]   p_ctrl             Pointer to control structure.
      * @param[out]  p_buffer_address   Pointer to the address of the most recently sent buffer.
      */
-    fsp_err_t (* txStatusGet)(ether_ctrl_t * const p_api_ctrl, void * const p_buffer_address);
+    fsp_err_t (* txStatusGet)(ether_ctrl_t * const p_ctrl, void * const p_buffer_address);
 
-    /** DEPRECATED Return the version of the driver.
-     * @par Implemented as
-     * - @ref R_GMAC_VersionGet()
+    /**
+     * Specify callback function and optional context pointer and working memory pointer.
      *
-     * @param[out] p_data           Memory address to return version information to.
+     * @param[in]   p_ctrl                   Pointer to the ETHER control block.
+     * @param[in]   p_callback               Callback function
+     * @param[in]   p_context                Pointer to send to callback function
+     * @param[in]   p_working_memory         Pointer to volatile memory where callback structure can be allocated.
+     *                                       Callback arguments allocated here are only valid during the callback.
      */
-    fsp_err_t (* versionGet)(fsp_version_t * const p_data);
+    fsp_err_t (* callbackSet)(ether_ctrl_t * const p_ctrl, void (* p_callback)(ether_callback_args_t *),
+                              void const * const p_context, ether_callback_args_t * const p_callback_memory);
 } ether_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */
@@ -282,7 +250,7 @@ typedef struct st_ether_instance
 } ether_instance_t;
 
 /*******************************************************************************************************************//**
- * @} (end addtogroup ETHER_API)
+ * @} (end defgroup ETHER_API)
  **********************************************************************************************************************/
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */

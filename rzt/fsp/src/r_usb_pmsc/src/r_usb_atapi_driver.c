@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -69,295 +69,295 @@ extern usb_utr_t g_usb_pmsc_utr;
 
 /* Inquiry data */
 static uint8_t g_usb_atapi_inquiry_tbl[USB_ATAPI_INQUIRY_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-// 0x00,                              /* [0]b7-b5:Reserved, b4-b0:Peripheral Device Type */
-// USB_VALUE_RMB,                     /* [1]b7:RMB(ARemovable Medium Bit), b6-b0:Reserved */
-// 0x00,                              /* [2]b7-b6:ISO Version, b5-b3:ECMA Version, b2-b0:ANSI Version(00h) */
-// 0x01,                              /* [3]b7-b4:Reserved, b3-b0:Response Data Format */
-// USB_VALUE_ADDITIONAL_LEN_20H,      /* [4]Additional Length(Number of bytes follwing this one) */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-// 0x00,                              /* [8]Vendor Information1 */
-// 0x00,                              /* [9]Vendor Information2 */
-// 0x00,                              /* [10]Vendor Information3 */
-// 0x00,                              /* [11]Vendor Information4 */
-// 0x00,                              /* [12]Vendor Information5 */
-// 0x00,                              /* [13]Vendor Information6 */
-// 0x00,                              /* [14]Vendor Information7 */
-// 0x00,                              /* [15]Vendor Information8 */
-// 0x00,                              /* [16]Product Identification1 */
-// 0x00,                              /* [17]Product Identification2 */
-// 0x00,                              /* [18]Product Identification3 */
-// 0x00,                              /* [19]Product Identification4 */
-// 0x00,                              /* [20]Product Identification5 */
-// 0x00,                              /* [21]Product Identification6 */
-// 0x00,                              /* [22]Product Identification7 */
-// 0x00,                              /* [23]Product Identification8 */
-// 0x00,                              /* [24]Product Identification9 */
-// 0x00,                              /* [25]Product Identification10 */
-// 0x00,                              /* [26]Product Identification11 */
-// 0x00,                              /* [27]Product Identification12 */
-// 0x00,                              /* [28]Product Identification13 */
-// 0x00,                              /* [29]Product Identification14 */
-// 0x00,                              /* [30]Product Identification15 */
-// 0x00,                              /* [31]Product Identification16 */
-// 0x00,                              /* [32]Product Revision Level1 */
-// 0x00,                              /* [33]Product Revision Level2 */
-// 0x00,                              /* [34]Product Revision Level3 */
-// 0x00                               /* [35]Product Revision Level4 */
-// };
-
+#if 0
+ {
+ 0x00,                              /* [0]b7-b5:Reserved, b4-b0:Peripheral Device Type */
+ USB_VALUE_RMB,                     /* [1]b7:RMB(ARemovable Medium Bit), b6-b0:Reserved */
+ 0x00,                              /* [2]b7-b6:ISO Version, b5-b3:ECMA Version, b2-b0:ANSI Version(00h) */
+ 0x01,                              /* [3]b7-b4:Reserved, b3-b0:Response Data Format */
+ USB_VALUE_ADDITIONAL_LEN_20H,      /* [4]Additional Length(Number of bytes follwing this one) */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+ 0x00,                              /* [8]Vendor Information1 */
+ 0x00,                              /* [9]Vendor Information2 */
+ 0x00,                              /* [10]Vendor Information3 */
+ 0x00,                              /* [11]Vendor Information4 */
+ 0x00,                              /* [12]Vendor Information5 */
+ 0x00,                              /* [13]Vendor Information6 */
+ 0x00,                              /* [14]Vendor Information7 */
+ 0x00,                              /* [15]Vendor Information8 */
+ 0x00,                              /* [16]Product Identification1 */
+ 0x00,                              /* [17]Product Identification2 */
+ 0x00,                              /* [18]Product Identification3 */
+ 0x00,                              /* [19]Product Identification4 */
+ 0x00,                              /* [20]Product Identification5 */
+ 0x00,                              /* [21]Product Identification6 */
+ 0x00,                              /* [22]Product Identification7 */
+ 0x00,                              /* [23]Product Identification8 */
+ 0x00,                              /* [24]Product Identification9 */
+ 0x00,                              /* [25]Product Identification10 */
+ 0x00,                              /* [26]Product Identification11 */
+ 0x00,                              /* [27]Product Identification12 */
+ 0x00,                              /* [28]Product Identification13 */
+ 0x00,                              /* [29]Product Identification14 */
+ 0x00,                              /* [30]Product Identification15 */
+ 0x00,                              /* [31]Product Identification16 */
+ 0x00,                              /* [32]Product Revision Level1 */
+ 0x00,                              /* [33]Product Revision Level2 */
+ 0x00,                              /* [34]Product Revision Level3 */
+ 0x00                               /* [35]Product Revision Level4 */
+ };
+#endif
 /* Read Format Capacity data */
 static uint8_t g_usb_atapi_read_f_capa_tbl[USB_ATAPI_READ_FORMAT_CAPACITY_SIZE] USB_BUFFER_PLACE_IN_SECTION;
+#if 0
+ {
+/ * Capacity List Header Length */
+ 0x00, 0x00, 0x00, 0x10,
 
-// {
-/// * Capacity List Header Length */
-// 0x00, 0x00, 0x00, 0x10,
-//
-/// * Current/Maximum Capacity Descriptor */
-// 0x00, 0x00, 0x00, 0x00,            /* Number of Blocks. */
-// 0x02, 0x00, 0x02, 0x00,            /* Block Length in Bytes */
-/// * Formattable Capacity Descriptor */
-// 0x00, 0x00, 0x00, 0x00,            /* Number of Blocks. */
-// 0x00, 0x00, 0x02, 0x00             /* Block Length in Bytes */
-// };
-
+/ * Current/Maximum Capacity Descriptor */
+ 0x00, 0x00, 0x00, 0x00,            /* Number of Blocks. */
+ 0x02, 0x00, 0x02, 0x00,            /* Block Length in Bytes */
+/ * Formattable Capacity Descriptor */
+ 0x00, 0x00, 0x00, 0x00,            /* Number of Blocks. */
+ 0x00, 0x00, 0x02, 0x00             /* Block Length in Bytes */
+ };
+#endif
 /* Read Capacity data */
 static uint8_t g_usb_atapi_read_capa_tbl[USB_ATAPI_READ_CAPACITY_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-// 0x00, 0x00, 0x00, 0x00,            /* Last Logical Block Address (default) */
-// 0x00, 0x00, 0x00, 0x00             /* Default Block Length in Bytes */
-// };
-
+#if 0
+ {
+ 0x00, 0x00, 0x00, 0x00,            /* Last Logical Block Address (default) */
+ 0x00, 0x00, 0x00, 0x00             /* Default Block Length in Bytes */
+ };
+#endif
 /* Request Sense data */
 static uint8_t g_usb_atapi_rs_tbl[USB_ATAPI_REQUEST_SENSE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-// 0x70,                              /* [0]b7:Valid, b6-b0:Error Code(70h) */
-// 0x00,                              /* [1]Reserved */
-// 0x05,                              /* [2]b7-b5:Vendor Specific, b4:reserved, B3-b0: Sense Key */
-// 0x00,                              /* [3]Information(Vendor Specific) */
-// 0x00,                              /* [4]Information(Vendor Specific) */
-// 0x00,                              /* [5]Information(Vendor Specific) */
-// 0x00,                              /* [6]Information(Vendor Specific) */
-// 0x0A,                              /* [7]Additional Sense Length */
-// 0x00,                              /* [8]Vendor Specific */
-// 0x00,                              /* [9]Vendor Specific */
-// 0x00,                              /* [10]Vendor Specific */
-// 0x00,                              /* [11]Vendor Specific */
-// 0x24,                              /* [12]ASC(Additonal Sense Code(Mandatory)) */
-// 0x00,                              /* [13]ASCQ(Additonal Sense Code Qualifier(Mandatory)) */
-// 0x00,                              /* [14]Field Replaceable Unit Code(Optional) */
-// 0x00,                              /* [15]b7:SKSV(Sense-Key Specific Valid),b6-b0:Sense-Key Specific */
-// 0x00,                              /* [16]Sense-Key Specific */
-// 0x00                               /* [17]Sense-Key Specific */
-// };
-
+#if 0
+ {
+ 0x70,                              /* [0]b7:Valid, b6-b0:Error Code(70h) */
+ 0x00,                              /* [1]Reserved */
+ 0x05,                              /* [2]b7-b5:Vendor Specific, b4:reserved, B3-b0: Sense Key */
+ 0x00,                              /* [3]Information(Vendor Specific) */
+ 0x00,                              /* [4]Information(Vendor Specific) */
+ 0x00,                              /* [5]Information(Vendor Specific) */
+ 0x00,                              /* [6]Information(Vendor Specific) */
+ 0x0A,                              /* [7]Additional Sense Length */
+ 0x00,                              /* [8]Vendor Specific */
+ 0x00,                              /* [9]Vendor Specific */
+ 0x00,                              /* [10]Vendor Specific */
+ 0x00,                              /* [11]Vendor Specific */
+ 0x24,                              /* [12]ASC(Additonal Sense Code(Mandatory)) */
+ 0x00,                              /* [13]ASCQ(Additonal Sense Code Qualifier(Mandatory)) */
+ 0x00,                              /* [14]Field Replaceable Unit Code(Optional) */
+ 0x00,                              /* [15]b7:SKSV(Sense-Key Specific Valid),b6-b0:Sense-Key Specific */
+ 0x00,                              /* [16]Sense-Key Specific */
+ 0x00                               /* [17]Sense-Key Specific */
+ };
+#endif
 /* Mode Sense data (Mode Parameter) */
 static uint8_t g_usb_atapi_ms_mp_tbl[USB_ATAPI_MODE_SENSE10_MODE_PARAM_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-// 0x00,                              /* [0]Mode Data Length */
-// 0x00,                              /* [1]Mode Data Length */
-// 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
-// 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00                               /* [7]Reserved */
-// };
-
+#if 0
+ {
+ 0x00,                              /* [0]Mode Data Length */
+ 0x00,                              /* [1]Mode Data Length */
+ 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
+ 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00                               /* [7]Reserved */
+ };
+#endif
 /* Mode Sense data (ReadWrite Error Recovery Page 12byte) */
 static uint8_t g_usb_atapi_ms_rcvr_tbl[USB_ATAPI_MODE_SENSE10_ERR_RCVR_P_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-/// * Mode Parameter List */
-// 0x00,                              /* [0]Mode Data Length */
-// 0x0C,                              /* [1]Mode Data Length */
-// 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
-// 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-/// * Page(ReadWrite Error Recovery Page 12byte) */
-// 0x01,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(01h) */
-// 0x0A,                              /* [1]Page Length(0Ah) */
-// 0x00,                              /* [2]Error Recovery Parameters */
-/// *    b7:AWRE, b6:Reserved, b5:TB, b4:RC, b3:Reserved, b2:PER, b1:Reserved, b0:DCR*/
-// 0x00,                              /* [3]Read Retry Count */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-// 0x00,                              /* [8]Write Retry Count */
-// 0x00,                              /* [9]Reserved */
-// 0x00,                              /* [10]Reserved */
-// 0x00                               /* [11]Reserved */
-// };
-
+#if 0
+ {
+/ * Mode Parameter List */
+ 0x00,                              /* [0]Mode Data Length */
+ 0x0C,                              /* [1]Mode Data Length */
+ 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
+ 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+/ * Page(ReadWrite Error Recovery Page 12byte) */
+ 0x01,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(01h) */
+ 0x0A,                              /* [1]Page Length(0Ah) */
+ 0x00,                              /* [2]Error Recovery Parameters */
+/ *    b7:AWRE, b6:Reserved, b5:TB, b4:RC, b3:Reserved, b2:PER, b1:Reserved, b0:DCR*/
+ 0x00,                              /* [3]Read Retry Count */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+ 0x00,                              /* [8]Write Retry Count */
+ 0x00,                              /* [9]Reserved */
+ 0x00,                              /* [10]Reserved */
+ 0x00                               /* [11]Reserved */
+ };
+#endif
 /* Mode Sense data (Cashing Page 12byte) */
 static uint8_t g_usb_atapi_ms_cash_tbl[USB_ATAPI_MODE_SENSE10_CASHING_P_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-/// * Mode Parameter List */
-// 0x00,                              /* [0]Mode Data Length */
-// 0x0C,                              /* [1]Mode Data Length */
-// 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
-// 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-/// * Page(Cashing Page 12byte) */
-// 0x08,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(08h) */
-// 0x0A,                              /* [1]Page Length(0Ah) */
-// 0x00,                              /* [2]b7-b3:Reserved, b2:WCE, b1:Reserved, b0:RCD */
-// 0x00,                              /* [3]Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-// 0x00,                              /* [8]Reserved */
-// 0x00,                              /* [9]Reserved */
-// 0x00,                              /* [10]Reserved */
-// 0x00                               /* [11]Reserved */
-// };
-
+#if 0
+ {
+/ * Mode Parameter List */
+ 0x00,                              /* [0]Mode Data Length */
+ 0x0C,                              /* [1]Mode Data Length */
+ 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
+ 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+/ * Page(Cashing Page 12byte) */
+ 0x08,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(08h) */
+ 0x0A,                              /* [1]Page Length(0Ah) */
+ 0x00,                              /* [2]b7-b3:Reserved, b2:WCE, b1:Reserved, b0:RCD */
+ 0x00,                              /* [3]Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+ 0x00,                              /* [8]Reserved */
+ 0x00,                              /* [9]Reserved */
+ 0x00,                              /* [10]Reserved */
+ 0x00                               /* [11]Reserved */
+ };
+#endif
 /* Mode Sense data (Removable Block Access Capacities Page 12byte) */
 static uint8_t g_usb_atapi_ms_capa_tbl[USB_ATAPI_MODE_SENSE10_CAP_P_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-/// * Mode Parameter List */
-// 0x00,                              /* [0]Mode Data Length */
-// 0x0C,                              /* [1]Mode Data Length */
-// 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
-// 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-/// * Page(Removable Block Access Capacities Page 12byte) */
-// 0x1B,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(1Bh) */
-// 0x0A,                              /* [1]Page Length(0Ah) */
-// 0x00,                              /* [2]b7:Reserved, b6:SRFP, b5-b0:Reserved */
-// 0x00,                              /* [3]b7:NCD, b6:SML, b5-b3:Reserved, b2-b0:TLUN */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-// 0x00,                              /* [8]Reserved */
-// 0x00,                              /* [9]Reserved */
-// 0x00,                              /* [10]Reserved */
-// 0x00                               /* [11]Reserved */
-// };
-
+#if 0
+ {
+/ * Mode Parameter List */
+ 0x00,                              /* [0]Mode Data Length */
+ 0x0C,                              /* [1]Mode Data Length */
+ 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
+ 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+/ * Page(Removable Block Access Capacities Page 12byte) */
+ 0x1B,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(1Bh) */
+ 0x0A,                              /* [1]Page Length(0Ah) */
+ 0x00,                              /* [2]b7:Reserved, b6:SRFP, b5-b0:Reserved */
+ 0x00,                              /* [3]b7:NCD, b6:SML, b5-b3:Reserved, b2-b0:TLUN */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+ 0x00,                              /* [8]Reserved */
+ 0x00,                              /* [9]Reserved */
+ 0x00,                              /* [10]Reserved */
+ 0x00                               /* [11]Reserved */
+ };
+#endif
 /* Mode Sense data (Timer & Protect Page 8byte) */
 static uint8_t g_usb_atapi_ms_op_cmd_tbl[USB_ATAPI_MODE_SENSE10_OP_CMD_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-/// * Mode Parameter List */
-// 0x00,                              /* [0]Mode Data Length */
-// 0x08,                              /* [1]Mode Data Length */
-// 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
-// 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-/// * Page(Timer & Protect Page 8byte) */
-// 0x1C,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(1Ch) */
-// 0x0A,                              /* [1]Page Length(06h) */
-// 0x00,                              /* [2]Reserved */
-// 0x00,                              /* [3]b7-b4:Reserved, b3-b0:Inactivity Time Multiplier */
-// 0x00,                              /* [4]b7-b2:Reserved, b2:WCE, b1:DISP, b0:SWPP */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-// 0x00,                              /* [4]b7-b2:Reserved, b2:WCE, b1:DISP, b0:SWPP */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00                               /* [7]Reserved */
-// };
-
+#if 0
+ {
+/ * Mode Parameter List */
+ 0x00,                              /* [0]Mode Data Length */
+ 0x08,                              /* [1]Mode Data Length */
+ 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
+ 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+/ * Page(Timer & Protect Page 8byte) */
+ 0x1C,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(1Ch) */
+ 0x0A,                              /* [1]Page Length(06h) */
+ 0x00,                              /* [2]Reserved */
+ 0x00,                              /* [3]b7-b4:Reserved, b3-b0:Inactivity Time Multiplier */
+ 0x00,                              /* [4]b7-b2:Reserved, b2:WCE, b1:DISP, b0:SWPP */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+ 0x00,                              /* [4]b7-b2:Reserved, b2:WCE, b1:DISP, b0:SWPP */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00                               /* [7]Reserved */
+ };
+#endif
 /* Mode Sense data (All Page) */
 static uint8_t g_usb_atapi_ms_all_tbl[USB_ATAPI_MODE_SENSE10_ALL_P_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-/// * Mode Parameter List */
-// 0x00,                              /* [0]Mode Data Length */
-// USB_VALUE_ALL_PAGE_LENGTH,         /* [1]Mode Data Length */
-// 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
-// 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-/// * Page(ReadWrite Error Recovery Page 12byte) */
-// 0x01,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(01h) */
-// 0x0A,                              /* [1]Page Length(0Ah) */
-// 0x00,                              /* [2]Error Recovery Parameters */
-/// *    b7:AWRE, b6:Reserved, b5:TB, b4:RC, b3:Reserved, b2:PER, b1:Reserved, b0:DCR*/
-// 0x00,                              /* [3]Read Retry Count */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-// 0x00,                              /* [8]Write Retry Count */
-// 0x00,                              /* [9]Reserved */
-// 0x00,                              /* [10]Reserved */
-// 0x00,                              /* [11]Reserved */
-/// * Page(Cashing Page 12byte) */
-// 0x08,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(08h) */
-// 0x0A,                              /* [1]Page Length(0Ah) */
-// 0x00,                              /* [2]b7-b3:Reserved, b2:WCE, b1:Reserved, b0:RCD */
-// 0x00,                              /* [3]Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-// 0x00,                              /* [8]Reserved */
-// 0x00,                              /* [9]Reserved */
-// 0x00,                              /* [10]Reserved */
-// 0x00,                              /* [11]Reserved */
-/// * Page(Removable Block Access Capacities Page 12byte) */
-// 0x1B,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(1Bh) */
-// 0x0A,                              /* [1]Page Length(0Ah) */
-// 0x00,                              /* [2]b7:Reserved, b6:SRFP, b5-b0:Reserved */
-// 0x00,                              /* [3]b7:NCD, b6:SML, b5-b3:Reserved, b2-b0:TLUN */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00,                              /* [7]Reserved */
-// 0x00,                              /* [8]Reserved */
-// 0x00,                              /* [9]Reserved */
-// 0x00,                              /* [10]Reserved */
-// 0x00                               /* [11]Reserved */
-// };
-
+#if 0
+ {
+/ * Mode Parameter List */
+ 0x00,                              /* [0]Mode Data Length */
+ USB_VALUE_ALL_PAGE_LENGTH,         /* [1]Mode Data Length */
+ 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
+ 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+/ * Page(ReadWrite Error Recovery Page 12byte) */
+ 0x01,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(01h) */
+ 0x0A,                              /* [1]Page Length(0Ah) */
+ 0x00,                              /* [2]Error Recovery Parameters */
+/ *    b7:AWRE, b6:Reserved, b5:TB, b4:RC, b3:Reserved, b2:PER, b1:Reserved, b0:DCR*/
+ 0x00,                              /* [3]Read Retry Count */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+ 0x00,                              /* [8]Write Retry Count */
+ 0x00,                              /* [9]Reserved */
+ 0x00,                              /* [10]Reserved */
+ 0x00,                              /* [11]Reserved */
+/ * Page(Cashing Page 12byte) */
+ 0x08,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(08h) */
+ 0x0A,                              /* [1]Page Length(0Ah) */
+ 0x00,                              /* [2]b7-b3:Reserved, b2:WCE, b1:Reserved, b0:RCD */
+ 0x00,                              /* [3]Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+ 0x00,                              /* [8]Reserved */
+ 0x00,                              /* [9]Reserved */
+ 0x00,                              /* [10]Reserved */
+ 0x00,                              /* [11]Reserved */
+/ * Page(Removable Block Access Capacities Page 12byte) */
+ 0x1B,                              /* [0]b7:PS, b6:Reserved, b5-b0:Page Code(1Bh) */
+ 0x0A,                              /* [1]Page Length(0Ah) */
+ 0x00,                              /* [2]b7:Reserved, b6:SRFP, b5-b0:Reserved */
+ 0x00,                              /* [3]b7:NCD, b6:SML, b5-b3:Reserved, b2-b0:TLUN */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00,                              /* [7]Reserved */
+ 0x00,                              /* [8]Reserved */
+ 0x00,                              /* [9]Reserved */
+ 0x00,                              /* [10]Reserved */
+ 0x00                               /* [11]Reserved */
+ };
+#endif
 /* Mode Sense data (Page code error) */
 static uint8_t g_usb_atapi_ms_err_tbl[USB_ATAPI_MODE_SENSE10_P_CODE_ERR_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-// 0x00,                              /* [0]Mode Data Length */
-// 0x00,                              /* [1]Mode Data Length */
-// 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
-// 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
-// 0x00,                              /* [4]Reserved */
-// 0x00,                              /* [5]Reserved */
-// 0x00,                              /* [6]Reserved */
-// 0x00                               /* [7]Reserved */
-// };
-
+#if 0
+ {
+ 0x00,                              /* [0]Mode Data Length */
+ 0x00,                              /* [1]Mode Data Length */
+ 0x00,                              /* [2]Medium Type Code(00h-FFh Vendor Specific) */
+ 0x00,                              /* [3]b7:WP(Write Protect), b6-b0:Reserved */
+ 0x00,                              /* [4]Reserved */
+ 0x00,                              /* [5]Reserved */
+ 0x00,                              /* [6]Reserved */
+ 0x00                               /* [7]Reserved */
+ };
+#endif
 static uint8_t g_usb_atapi_dummy_tbl[USB_ATAPI_DUMMY_TABLE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-
-// {
-// 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
-// };
-
+#if 0
+ {
+ 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
+ };
+#endif
 static usb_utr_t atapi_mess        USB_BUFFER_PLACE_IN_SECTION;
 static void * p_atapi_rw_buff      USB_BUFFER_PLACE_IN_SECTION; /* Transfer Address */
 static uint32_t this_transfer_size USB_BUFFER_PLACE_IN_SECTION; /* Transfer Size */
@@ -912,8 +912,10 @@ void pmsc_atapi_command_processing (uint8_t * cbw, uint16_t usb_result, usb_cb_t
     atapi_mess.tranlen       = this_transfer_size;
     atapi_mess.status        = status;
     atapi_mess.ip            = module_number;
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
     atapi_mess.p_transfer_rx = g_usb_pmsc_utr.p_transfer_rx;
     atapi_mess.p_transfer_tx = g_usb_pmsc_utr.p_transfer_tx;
+#endif /*!defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)*/
 
     complete(&atapi_mess, USB_NULL, USB_NULL);
 }                                      /* End of function pmsc_atapi_command_processing() */

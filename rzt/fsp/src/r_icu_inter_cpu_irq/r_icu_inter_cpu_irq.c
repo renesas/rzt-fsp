@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -98,29 +98,29 @@ const icu_inter_cpu_irq_api_t g_icu_inter_cpu_irq_on_icu =
  *                                            r_bsp_cfg.h.
  * @retval  FSP_ERR_ALREADY_OPEN              Module is already open.
  * @retval  FSP_ERR_ASSERTION                 Parameter check failure due to one or more reasons below:
- *                                            1. p_api_ctrl or p_cfg is NULL.
+ *                                            1. p_ctrl or p_cfg is NULL.
  *                                            2. Callback parameter is NULL.
  *********************************************************************************************************************/
-fsp_err_t R_ICU_INTER_CPU_IRQ_Open (icu_inter_cpu_irq_ctrl_t * const      p_api_ctrl,
+fsp_err_t R_ICU_INTER_CPU_IRQ_Open (icu_inter_cpu_irq_ctrl_t * const      p_ctrl,
                                     icu_inter_cpu_irq_cfg_t const * const p_cfg)
 {
-    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_api_ctrl;
+    icu_inter_cpu_irq_instance_ctrl_t * p_instance_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_ctrl;
 
 #if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_ctrl != NULL);
+    FSP_ASSERT(p_instance_ctrl != NULL);
     FSP_ASSERT(p_cfg != NULL);
     FSP_ASSERT(p_cfg->p_callback != NULL);
     FSP_ERROR_RETURN(0 != ((1U << p_cfg->channel) & BSP_FEATURE_ICU_INTER_CPU_IRQ_CHANNELS_MASK),
                      FSP_ERR_IP_CHANNEL_NOT_PRESENT);
 
-    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN != p_ctrl->open, FSP_ERR_ALREADY_OPEN);
+    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 #endif
 
     /* Initialize control block. */
-    p_ctrl->p_cfg             = p_cfg;
-    p_ctrl->p_callback        = p_cfg->p_callback;
-    p_ctrl->p_context         = p_cfg->p_context;
-    p_ctrl->p_callback_memory = NULL;
+    p_instance_ctrl->p_cfg             = p_cfg;
+    p_instance_ctrl->p_callback        = p_cfg->p_callback;
+    p_instance_ctrl->p_context         = p_cfg->p_context;
+    p_instance_ctrl->p_callback_memory = NULL;
 
     /* NOTE: User can have the driver opened when the IRQ is not in the vector table. This is for use cases
      * that use INTCPU interrupts and do not notify themselves of the interrupts.
@@ -128,11 +128,11 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Open (icu_inter_cpu_irq_ctrl_t * const      p_api_
      */
     if (BSP_IRQ_DISABLED != p_cfg->ipl)
     {
-        R_BSP_IrqCfgEnable(p_ctrl->p_cfg->irq, p_cfg->ipl, p_ctrl);
+        R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->irq, p_cfg->ipl, p_ctrl);
     }
 
     /* Mark the control block as open */
-    p_ctrl->open = ICU_INTER_CPU_IRQ_OPEN;
+    p_instance_ctrl->open = ICU_INTER_CPU_IRQ_OPEN;
 
     return FSP_SUCCESS;
 }
@@ -142,21 +142,21 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Open (icu_inter_cpu_irq_ctrl_t * const      p_api_
  *
  *
  * @retval  FSP_SUCCESS        Function executed without issue.
- * @retval  FSP_ERR_ASSERTION  p_api_ctrl or p_src is NULL.
+ * @retval  FSP_ERR_ASSERTION  p_ctrl or p_src is NULL.
  * @retval  FSP_ERR_NOT_OPEN   Device is not open.
  *********************************************************************************************************************/
-fsp_err_t R_ICU_INTER_CPU_IRQ_Generate (icu_inter_cpu_irq_ctrl_t * const p_api_ctrl)
+fsp_err_t R_ICU_INTER_CPU_IRQ_Generate (icu_inter_cpu_irq_ctrl_t * const p_ctrl)
 {
-    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_api_ctrl;
+    icu_inter_cpu_irq_instance_ctrl_t * p_instance_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_ctrl;
 
 #if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_ctrl != NULL);
+    FSP_ASSERT(p_instance_ctrl != NULL);
 
     /* Check if the device is even open, return an error if not */
-    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    uint32_t swint = (uint32_t) (1U << p_ctrl->p_cfg->channel);
+    uint32_t swint = (uint32_t) (1U << p_instance_ctrl->p_cfg->channel);
 
     if (BSP_FEATURE_ICU_INTER_CPU_IRQ_NS_SWINT_MASK & swint)
     {
@@ -182,24 +182,24 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Generate (icu_inter_cpu_irq_ctrl_t * const p_api_c
  * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
  * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
-fsp_err_t R_ICU_INTER_CPU_IRQ_CallbackSet (icu_inter_cpu_irq_ctrl_t * const p_api_ctrl,
+fsp_err_t R_ICU_INTER_CPU_IRQ_CallbackSet (icu_inter_cpu_irq_ctrl_t * const p_ctrl,
                                            void (                         * p_callback)(
                                                icu_inter_cpu_irq_callback_args_t *),
                                            void const * const                        p_context,
                                            icu_inter_cpu_irq_callback_args_t * const p_callback_memory)
 {
-    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_api_ctrl;
+    icu_inter_cpu_irq_instance_ctrl_t * p_instance_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_ctrl;
 
 #if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_callback);
-    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
     /* Store callback and context */
-    p_ctrl->p_callback        = p_callback;
-    p_ctrl->p_context         = p_context;
-    p_ctrl->p_callback_memory = p_callback_memory;
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
 }
@@ -209,27 +209,27 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_CallbackSet (icu_inter_cpu_irq_ctrl_t * const p_ap
  *
  * @retval  FSP_SUCCESS         Device closed successfully.
  * @retval  FSP_ERR_NOT_OPEN    Device not opened.
- * @retval  FSP_ERR_ASSERTION   p_api_ctrl is NULL.
+ * @retval  FSP_ERR_ASSERTION   p_ctrl is NULL.
  *********************************************************************************************************************/
-fsp_err_t R_ICU_INTER_CPU_IRQ_Close (icu_inter_cpu_irq_ctrl_t * const p_api_ctrl)
+fsp_err_t R_ICU_INTER_CPU_IRQ_Close (icu_inter_cpu_irq_ctrl_t * const p_ctrl)
 {
-    icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_api_ctrl;
+    icu_inter_cpu_irq_instance_ctrl_t * p_instance_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) p_ctrl;
 
 #if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_ctrl != NULL);
+    FSP_ASSERT(p_instance_ctrl != NULL);
 
     /* Check if the device is even open, return an error if not */
-    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(ICU_INTER_CPU_IRQ_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
     /* Cleanup. Disable interrupt */
 
-    /* Disable the interrupt, and then clear the interrupt pending bits and interrupt status. */
-    R_BSP_IrqDisable(p_ctrl->p_cfg->irq);
-    R_FSP_IsrContextSet(p_ctrl->p_cfg->irq, NULL);
+    /* Disable the interrupt, and then clear the interrupt pending bits and inter   rupt status. */
+    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->irq);
+    R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->irq, NULL);
 
     /* The device is now considered closed */
-    p_ctrl->open = 0U;
+    p_instance_ctrl->open = 0U;
 
     return FSP_SUCCESS;
 }
@@ -243,8 +243,10 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Close (icu_inter_cpu_irq_ctrl_t * const p_api_ctrl
  *********************************************************************************************************************/
 void r_icu_inter_cpu_irq_isr (void)
 {
+    ICU_INTER_CPU_IRQ_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
-    FSP_CONTEXT_SAVE
+    FSP_CONTEXT_SAVE;
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
     icu_inter_cpu_irq_instance_ctrl_t * p_ctrl = (icu_inter_cpu_irq_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
@@ -258,7 +260,9 @@ void r_icu_inter_cpu_irq_isr (void)
     }
 
     /* Restore context if RTOS is used */
-    FSP_CONTEXT_RESTORE
+    FSP_CONTEXT_RESTORE;
+
+    ICU_INTER_CPU_IRQ_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 /*******************************************************************************************************************//**

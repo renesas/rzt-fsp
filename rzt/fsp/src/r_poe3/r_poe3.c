@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -54,15 +54,6 @@ void poe3_event_isr(void);
  * Private global variables
  **********************************************************************************************************************/
 
-/* Version data structure used by error logger macro. */
-static const fsp_version_t g_poe30_version =
-{
-    .api_version_minor  = POE3_API_VERSION_MINOR,
-    .api_version_major  = POE3_API_VERSION_MAJOR,
-    .code_version_major = POE3_CODE_VERSION_MAJOR,
-    .code_version_minor = POE3_CODE_VERSION_MINOR
-};
-
 /***********************************************************************************************************************
  * Global Variables
  **********************************************************************************************************************/
@@ -75,7 +66,7 @@ const poe3_api_t g_poe30_on_poe3 =
     .outputDisable = R_POE3_OutputDisable,
     .statusGet     = R_POE3_StatusGet,
     .close         = R_POE3_Close,
-    .versionGet    = R_POE3_VersionGet
+    .callbackSet   = R_POE3_CallbackSet
 };
 
 /*******************************************************************************************************************//**
@@ -93,9 +84,6 @@ const poe3_api_t g_poe30_on_poe3 =
  * @note POE0, POE4 and POE8 Mode Select setting can only be configured once after reset.
  * Reopening with a different mode configuration is not possible.
  *
- * Example:
- * @snippet r_poe3_example.c R_POE3_Open
- *
  * @retval FSP_SUCCESS                    Initialization was successful.
  * @retval FSP_ERR_ASSERTION              A required input pointer is NULL.
  * @retval FSP_ERR_ALREADY_OPEN           Module is already open.
@@ -106,6 +94,7 @@ fsp_err_t R_POE3_Open (poe3_ctrl_t * const p_ctrl, poe3_cfg_t const * const p_cf
 
 #if POE3_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_cfg);
+    FSP_ASSERT(NULL != p_cfg->p_extend);
     FSP_ASSERT(NULL != p_ctrl);
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(POE3_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
@@ -116,37 +105,41 @@ fsp_err_t R_POE3_Open (poe3_ctrl_t * const p_ctrl, poe3_cfg_t const * const p_cf
     p_instance_ctrl->p_reg = (R_POE3_Type *) base_address;
     p_instance_ctrl->p_cfg = p_cfg;
 
+    poe3_extended_cfg_t * p_extend = (poe3_extended_cfg_t *) p_cfg->p_extend;
+
     /* POE3 Setting Procedure */
     /* Set the M3SELR.M3BSEL[3:0] bits to 0x0 and M3SELR.M3DSEL[3:0] bits to 0x0. */
 
-    p_instance_ctrl->p_reg->ICSR1 = (uint16_t) ((p_cfg->poe0.interrupt << 8) | p_cfg->poe0.mode);
-    p_instance_ctrl->p_reg->ICSR2 = (uint16_t) ((p_cfg->poe4.interrupt << 8) | p_cfg->poe4.mode);
-    p_instance_ctrl->p_reg->ICSR3 = (uint16_t) ((p_cfg->poe8.interrupt << 8) | p_cfg->poe8.mode);
-    p_instance_ctrl->p_reg->ICSR4 = (uint16_t) ((p_cfg->poe10.interrupt << 8) | p_cfg->poe10.mode);
-    p_instance_ctrl->p_reg->ICSR5 = (uint16_t) ((p_cfg->poe11.interrupt << 8) | p_cfg->poe11.mode);
+    p_instance_ctrl->p_reg->ICSR1 = (uint16_t) ((p_extend->poe0.interrupt_enable << 8) | p_extend->poe0.mode);
+    p_instance_ctrl->p_reg->ICSR2 = (uint16_t) ((p_extend->poe4.interrupt_enable << 8) | p_extend->poe4.mode);
+    p_instance_ctrl->p_reg->ICSR3 = (uint16_t) ((p_extend->poe8.interrupt_enable << 8) | p_extend->poe8.mode);
+    p_instance_ctrl->p_reg->ICSR4 = (uint16_t) ((p_extend->poe10.interrupt_enable << 8) | p_extend->poe10.mode);
+    p_instance_ctrl->p_reg->ICSR5 = (uint16_t) ((p_extend->poe11.interrupt_enable << 8) | p_extend->poe11.mode);
 
-    p_instance_ctrl->p_reg->ICSR6 = (uint16_t) (p_cfg->oscillation_stop << 9);
+    p_instance_ctrl->p_reg->ICSR6 = (uint16_t) (p_cfg->oscillation_stop_hiz_output_enable << 9);
 
 #if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 1
-    p_instance_ctrl->p_reg->ICSR7 = (uint16_t) ((p_cfg->dsmif1_error << 7) | (p_cfg->dsmif0_error << 6));
+    p_instance_ctrl->p_reg->ICSR7 = (uint16_t) ((p_extend->dsmif1_error << 7) | (p_extend->dsmif0_error << 6));
 #elif BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
-    p_instance_ctrl->p_reg->ICSR7 = (uint16_t) ((p_cfg->dsmif1_error << 7) | (p_cfg->dsmif0_error << 6) | \
-                                                (p_cfg->dsmif1_error_1 << 5) | (p_cfg->dsmif0_error_1 << 4));
+    p_instance_ctrl->p_reg->ICSR7 = (uint16_t) ((p_extend->dsmif1_error << 7) | (p_extend->dsmif0_error << 6) | \
+                                                (p_extend->dsmif1_error_1 << 5) | (p_extend->dsmif0_error_1 << 4));
 #endif
 
     p_instance_ctrl->p_reg->OCSR1 =
-        (uint16_t) ((p_cfg->short_circuit1.hiz_output << 9) | (p_cfg->short_circuit1.interrupt << 8));
+        (uint16_t) ((p_cfg->p_short_circuit_setting[0].hiz_output_enable << 9) |
+                    (p_cfg->p_short_circuit_setting[0].interrupt_enable << 8));
     p_instance_ctrl->p_reg->OCSR2 =
-        (uint16_t) ((p_cfg->short_circuit2.hiz_output << 9) | (p_cfg->short_circuit2.interrupt << 8));
+        (uint16_t) ((p_cfg->p_short_circuit_setting[1].hiz_output_enable << 9) |
+                    (p_cfg->p_short_circuit_setting[1].interrupt_enable << 8));
 
     /* Set the ALR1.OLSG0A and OLSG0B bits to 0 and the OLSEN bit to 1 to set MTIOC3B and MTIOC3D as active-low. */
     uint16_t temp_value = (uint16_t) (
-        (p_cfg->poe0.mtioc4b_mtioc4d.mtioc4d_active_level << 5) |
-        (p_cfg->poe0.mtioc4b_mtioc4d.mtioc4b_active_level << 4) |
-        (p_cfg->poe0.mtioc4a_mtioc4c.mtioc4c_active_level << 3) |
-        (p_cfg->poe0.mtioc4a_mtioc4c.mtioc4a_active_level << 2) |
-        (p_cfg->poe0.mtioc3b_mtioc3d.mtioc3d_active_level << 1) |
-        p_cfg->poe0.mtioc3b_mtioc3d.mtioc3b_active_level);
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[2].negative_pwm_pin_active_level) << 5) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[2].positive_pwm_pin_active_level) << 4) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[1].negative_pwm_pin_active_level) << 3) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[1].positive_pwm_pin_active_level) << 2) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[0].negative_pwm_pin_active_level) << 1) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[0].positive_pwm_pin_active_level)));
     if (temp_value != 0)
     {
         temp_value |= R_POE3_ALR1_OLSEN_Msk;
@@ -154,42 +147,41 @@ fsp_err_t R_POE3_Open (poe3_ctrl_t * const p_ctrl, poe3_cfg_t const * const p_cf
 
     p_instance_ctrl->p_reg->ALR1 = temp_value;
 
-    /* Set the POECR2.MTU3BDZE bit to 1 to enable high-impedance control on the MTIOC3B and MTIOC3D pins. */
-    p_instance_ctrl->p_reg->POECR1 =
-        (uint8_t) (((p_cfg->poe8.mtioc0d.hiz_output) << 3) | ((p_cfg->poe8.mtioc0c.hiz_output) << 2) |
-                   ((p_cfg->poe8.mtioc0b.hiz_output) << 1) |
-                   p_cfg->poe8.mtioc0a.hiz_output);
-    p_instance_ctrl->p_reg->POECR2 =
-        (uint16_t) (((p_cfg->poe0.mtioc3b_mtioc3d.hiz_output) << 10) |
-                    ((p_cfg->poe0.mtioc4b_mtioc4d.hiz_output) << 9) |
-                    ((p_cfg->poe0.mtioc4a_mtioc4c.hiz_output) << 8) |
-                    ((p_cfg->poe4.mtioc6b_mtioc6d.hiz_output) << 2) |
-                    ((p_cfg->poe4.mtioc7b_mtioc7d.hiz_output) << 1) |
-                    p_cfg->poe4.mtioc7a_mtioc7c.hiz_output);
+    p_instance_ctrl->p_reg->POECR2 = (uint16_t) (
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[0].hiz_output_enable) << 10) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[1].hiz_output_enable) << 9) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[2].hiz_output_enable) << 8) |
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[0].hiz_output_enable) << 2) |
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[1].hiz_output_enable) << 1) |
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[2].hiz_output_enable)));
 
-    /* Specify the setting to operate MTU3. */
-    p_instance_ctrl->p_reg->M0SELR1 =
-        (uint8_t) (((p_cfg->poe8.mtioc0b.pin_select) << 4) | p_cfg->poe8.mtioc0a.pin_select);
-    p_instance_ctrl->p_reg->M0SELR2 =
-        (uint8_t) (((p_cfg->poe8.mtioc0d.pin_select) << 4) | p_cfg->poe8.mtioc0c.pin_select);
-    p_instance_ctrl->p_reg->M3SELR =
-        (uint8_t) (((p_cfg->poe0.mtioc3b_mtioc3d.mtioc3d_pin_select) << 4) |
-                   p_cfg->poe0.mtioc3b_mtioc3d.mtioc3b_pin_select);
-    p_instance_ctrl->p_reg->M4SELR1 =
-        (uint8_t) (((p_cfg->poe0.mtioc4a_mtioc4c.mtioc4c_pin_select) << 4) |
-                   p_cfg->poe0.mtioc4a_mtioc4c.mtioc4a_pin_select);
-    p_instance_ctrl->p_reg->M4SELR2 =
-        (uint8_t) (((p_cfg->poe0.mtioc4b_mtioc4d.mtioc4d_pin_select) << 4) |
-                   p_cfg->poe0.mtioc4b_mtioc4d.mtioc4b_pin_select);
-    p_instance_ctrl->p_reg->M6SELR =
-        (uint8_t) (((p_cfg->poe4.mtioc6b_mtioc6d.mtioc6d_pin_select) << 4) |
-                   p_cfg->poe4.mtioc6b_mtioc6d.mtioc6b_pin_select);
-    p_instance_ctrl->p_reg->M7SELR1 =
-        (uint8_t) (((p_cfg->poe4.mtioc7a_mtioc7c.mtioc7c_pin_select) << 4) |
-                   p_cfg->poe4.mtioc7a_mtioc7c.mtioc7a_pin_select);
-    p_instance_ctrl->p_reg->M7SELR2 =
-        (uint8_t) (((p_cfg->poe4.mtioc7b_mtioc7d.mtioc7d_pin_select) << 4) |
-                   p_cfg->poe4.mtioc7b_mtioc7d.mtioc7b_pin_select);
+    p_instance_ctrl->p_reg->M3SELR = (uint8_t) (
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[0].negative_pwm_pin_select) << 4) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[0].positive_pwm_pin_select)));
+
+    p_instance_ctrl->p_reg->M4SELR1 = (uint8_t) (
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[1].negative_pwm_pin_select) << 4) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[1].positive_pwm_pin_select)));
+
+    p_instance_ctrl->p_reg->M4SELR2 = (uint8_t) (
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[2].negative_pwm_pin_select) << 4) |
+        ((p_cfg->p_complementary_pwm_pin_setting[0].pin_setting[2].positive_pwm_pin_select)));
+
+    p_instance_ctrl->p_reg->M6SELR = (uint8_t) (
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[0].negative_pwm_pin_select) << 4) |
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[0].positive_pwm_pin_select)));
+
+    p_instance_ctrl->p_reg->M7SELR1 = (uint8_t) (
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[1].negative_pwm_pin_select) << 4) |
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[1].positive_pwm_pin_select)));
+
+    p_instance_ctrl->p_reg->M7SELR2 = (uint8_t) (
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[2].negative_pwm_pin_select) << 4) |
+        ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[2].positive_pwm_pin_select)));
+
+    p_instance_ctrl->p_reg->POECR5 = (uint16_t) (p_extend->mtu0_control_channel_mask);
+    p_instance_ctrl->p_reg->POECR4 = (uint16_t) (p_extend->mtu3_4_control_channel_mask) |
+                                     (uint16_t) (p_extend->mtu6_7_control_channel_mask);
 
     /* Make sure the module is marked open before enabling the interrupt since the interrupt could fire immediately. */
     p_instance_ctrl->open = POE3_OPEN;
@@ -200,6 +192,32 @@ fsp_err_t R_POE3_Open (poe3_ctrl_t * const p_ctrl, poe3_cfg_t const * const p_cf
     p_instance_ctrl->p_reg->ICSR6 &= (uint16_t) ~POE3_PRV_STATUS_FLAGS;
     p_instance_ctrl->p_reg->OCSR1 &= (uint16_t) ~R_POE3_OCSR1_OSF1_Msk;
     p_instance_ctrl->p_reg->OCSR2 &= (uint16_t) ~R_POE3_OCSR2_OSF2_Msk;
+
+    /* Set callback and context pointers, if configured */
+    p_instance_ctrl->p_callback        = p_cfg->p_callback;
+    p_instance_ctrl->p_context         = p_cfg->p_context;
+    p_instance_ctrl->p_callback_memory = NULL;
+
+    /* Configure interrupt. */
+    if (p_extend->oei1_irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(p_extend->oei1_irq, p_extend->oei1_ipl, p_instance_ctrl);
+    }
+
+    if (p_extend->oei2_irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(p_extend->oei2_irq, p_extend->oei2_ipl, p_instance_ctrl);
+    }
+
+    if (p_extend->oei3_irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(p_extend->oei3_irq, p_extend->oei3_ipl, p_instance_ctrl);
+    }
+
+    if (p_extend->oei4_irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(p_extend->oei4_irq, p_extend->oei4_ipl, p_instance_ctrl);
+    }
 
     return FSP_SUCCESS;
 }
@@ -231,9 +249,6 @@ fsp_err_t R_POE3_OutputDisable (poe3_ctrl_t * const p_ctrl)
  * @note Status flags are only reset if the original POE3 trigger is resolved. Check the status using
  * @ref R_POE3_StatusGet after calling this function to verify the status is cleared.
  *
- * Example:
- * @snippet r_poe3_example.c R_POE3_Reset
- *
  * @retval FSP_SUCCESS                 Function attempted to clear status flags.
  * @retval FSP_ERR_ASSERTION           p_ctrl was NULL.
  * @retval FSP_ERR_NOT_OPEN            The instance is not opened.
@@ -262,9 +277,6 @@ fsp_err_t R_POE3_Reset (poe3_ctrl_t * const p_ctrl)
 
 /*******************************************************************************************************************//**
  * Get current POE3 status and store it in provided pointer p_status. Implements @ref poe3_api_t::statusGet.
- *
- * Example:
- * @snippet r_poe3_example.c R_POE3_StatusGet
  *
  * @retval FSP_SUCCESS                 Current POE3 state stored successfully.
  * @retval FSP_ERR_ASSERTION           p_ctrl or p_status was NULL.
@@ -358,18 +370,30 @@ fsp_err_t R_POE3_Close (poe3_ctrl_t * const p_ctrl)
 }
 
 /*******************************************************************************************************************//**
- * DEPRECATED Sets driver version based on compile time macros. Implements @ref poe3_api_t::versionGet.
+ * Updates the user callback with the option to provide memory for the callback argument structure.
+ * Implements @ref poe3_api_t::callbackSet.
  *
- * @retval FSP_SUCCESS                 Version stored in p_version.
- * @retval FSP_ERR_ASSERTION           p_version was NULL.
+ * @retval FSP_SUCCESS                  Callback updated successfully.
+ * @retval FSP_ERR_ASSERTION            A required pointer is NULL.
+ * @retval FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
-fsp_err_t R_POE3_VersionGet (fsp_version_t * const p_version)
+fsp_err_t R_POE3_CallbackSet (poe3_ctrl_t * const          p_ctrl,
+                              void (                     * p_callback)(poe3_callback_args_t *),
+                              void const * const           p_context,
+                              poe3_callback_args_t * const p_callback_memory)
 {
+    poe3_instance_ctrl_t * p_instance_ctrl = (poe3_instance_ctrl_t *) p_ctrl;
+
 #if POE3_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_version);
+    FSP_ASSERT(p_instance_ctrl);
+    FSP_ASSERT(p_callback);
+    FSP_ERROR_RETURN(POE3_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    p_version->version_id = g_poe30_version.version_id;
+    /* Store callback and context */
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
 }
@@ -385,6 +409,8 @@ fsp_err_t R_POE3_VersionGet (fsp_version_t * const p_version)
  **********************************************************************************************************************/
 void poe3_event_isr (void)
 {
+    POE3_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
 
@@ -422,4 +448,6 @@ void poe3_event_isr (void)
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+
+    POE3_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }

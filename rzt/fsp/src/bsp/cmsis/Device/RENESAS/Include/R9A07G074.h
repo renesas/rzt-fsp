@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -3850,7 +3850,6 @@ typedef struct                         /*!< (@ 0x80004000) R_CRC0 Structure     
     union
     {
         __IOM uint32_t CRCDIR;         /*!< (@ 0x00000004) CRC Data Input Register                                    */
-        __IOM uint16_t CRCDIR_HA;      /*!< (@ 0x00000004) CRC Data Input Register                                    */
         __IOM uint8_t  CRCDIR_BY;      /*!< (@ 0x00000004) CRC Data Input Register                                    */
     };
 
@@ -22498,7 +22497,6 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
  #define R_CRC0_CRCCR0_DORCLR_Pos    (7UL)    /*!< DORCLR (Bit 7)                                        */
  #define R_CRC0_CRCCR0_DORCLR_Msk    (0x80UL) /*!< DORCLR (Bitfield-Mask: 0x01)                          */
 /* ========================================================  CRCDIR  ========================================================= */
-/* =======================================================  CRCDIR_HA  ======================================================= */
 /* =======================================================  CRCDIR_BY  ======================================================= */
 /* ========================================================  CRCDOR  ========================================================= */
 /* =======================================================  CRCDOR_HA  ======================================================= */

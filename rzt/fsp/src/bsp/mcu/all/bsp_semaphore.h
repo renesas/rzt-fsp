@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -20,6 +20,10 @@
 
 #ifndef BSP_SEMAPHORE_H
 #define BSP_SEMAPHORE_H
+
+/***********************************************************************************************************************
+ * Includes   <System Includes> , "Project Includes"
+ **********************************************************************************************************************/
 
 /** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
@@ -57,8 +61,6 @@ typedef enum e_bsp_resource_num
     BSP_RESOURCE_NUM_7 = 7,            ///< Semaphore resource number 7
 } bsp_resource_num_t;
 
-/** @} (end addtogroup BSP_MCU) */
-
 #if BSP_FEATURE_SEM_SUPPORTED
 
 /***********************************************************************************************************************
@@ -67,6 +69,10 @@ typedef enum e_bsp_resource_num
 
 /***********************************************************************************************************************
  * Exported global functions (to be accessed by other files)
+ **********************************************************************************************************************/
+
+/***********************************************************************************************************************
+ * Inline Functions
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
@@ -82,6 +88,8 @@ __STATIC_INLINE uint32_t R_BSP_SemaphoreStateRead (bsp_resource_num_t sem_num)
 }
 
 #endif
+
+/** @} (end addtogroup BSP_MCU) */
 
 /* Public functions defined in bsp.h */
 void bsp_semaphore_init(void);         // Used internally by BSP

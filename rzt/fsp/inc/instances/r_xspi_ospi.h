@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,8 +40,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define XSPI_OSPI_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define XSPI_OSPI_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -185,7 +183,6 @@ fsp_err_t R_XSPI_OSPI_Write(spi_flash_ctrl_t    * p_ctrl,
 fsp_err_t R_XSPI_OSPI_Erase(spi_flash_ctrl_t * p_ctrl, uint8_t * const p_device_address, uint32_t byte_count);
 fsp_err_t R_XSPI_OSPI_StatusGet(spi_flash_ctrl_t * p_ctrl, spi_flash_status_t * const p_status);
 fsp_err_t R_XSPI_OSPI_BankSet(spi_flash_ctrl_t * p_ctrl, uint32_t bank);
-fsp_err_t R_XSPI_OSPI_VersionGet(fsp_version_t * const p_version);
 fsp_err_t R_XSPI_OSPI_DirectTransfer(spi_flash_ctrl_t                  * p_ctrl,
                                      spi_flash_direct_transfer_t * const p_transfer,
                                      spi_flash_direct_transfer_dir_t     direction);

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -89,15 +89,6 @@ static void r_ether_selector_state_initialize(void);
  * Private global variables
  **********************************************************************************************************************/
 
-/** Version data structure. */
-static const fsp_version_t s_ether_selector_version =
-{
-    .api_version_minor  = ETHER_SELECTOR_API_VERSION_MINOR,
-    .api_version_major  = ETHER_SELECTOR_API_VERSION_MAJOR,
-    .code_version_minor = ETHER_SELECTOR_CODE_VERSION_MINOR,
-    .code_version_major = ETHER_SELECTOR_CODE_VERSION_MAJOR,
-};
-
 /***********************************************************************************************************************
  * Global Variables
  **********************************************************************************************************************/
@@ -108,7 +99,6 @@ const ether_selector_api_t g_ether_selector_on_ether_selector =
     .open         = R_ETHER_SELECTOR_Open,
     .converterSet = R_ETHER_SELECTOR_ConverterSet,
     .close        = R_ETHER_SELECTOR_Close,
-    .versionGet   = R_ETHER_SELECTOR_VersionGet
 };
 
 /*******************************************************************************************************************//**
@@ -142,13 +132,13 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     uint32_t            convrst;
     uint8_t             port;
 
-    port = p_cfg->port;
+    port = p_cfg->channel;
 
 #if ETHER_SELECTOR_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_cfg);
     FSP_ERROR_RETURN((BSP_FEATURE_ETHSS_MAX_PORTS > port), FSP_ERR_INVALID_CHANNEL);
-    if (ETHER_SELECTOR_SPEED_1000MBPS == p_instance_ctrl->p_cfg->speed)
+    if (ETHER_SELECTOR_SPEED_1000_MBPS == p_instance_ctrl->p_cfg->speed)
     {
         FSP_ERROR_RETURN((ETHER_SELECTOR_INTERFACE_RGMII == p_instance_ctrl->p_cfg->interface),
                          FSP_ERR_INVALID_ARGUMENT);
@@ -211,7 +201,7 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     }
     else if (ETHER_SELECTOR_INTERFACE_RMII == p_instance_ctrl->p_cfg->interface)
     {
-        if (ETHER_SELECTOR_SPEED_10MBPS == p_instance_ctrl->p_cfg->speed)
+        if (ETHER_SELECTOR_SPEED_10_MBPS == p_instance_ctrl->p_cfg->speed)
         {
             convctrl |= ETHER_SELECTOR_CONV_MODE_RMII_10M_IN;
         }
@@ -227,11 +217,11 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     }
     else if (ETHER_SELECTOR_INTERFACE_RGMII == p_instance_ctrl->p_cfg->interface)
     {
-        if (ETHER_SELECTOR_SPEED_10MBPS == p_instance_ctrl->p_cfg->speed)
+        if (ETHER_SELECTOR_SPEED_10_MBPS == p_instance_ctrl->p_cfg->speed)
         {
             convctrl |= ETHER_SELECTOR_CONV_MODE_RGMII_10M;
         }
-        else if (ETHER_SELECTOR_SPEED_100MBPS == p_instance_ctrl->p_cfg->speed)
+        else if (ETHER_SELECTOR_SPEED_100_MBPS == p_instance_ctrl->p_cfg->speed)
         {
             convctrl |= ETHER_SELECTOR_CONV_MODE_RGMII_100M;
         }
@@ -315,14 +305,14 @@ fsp_err_t R_ETHER_SELECTOR_ConverterSet (ether_selector_ctrl_t * const p_ctrl,
 #if ETHER_SELECTOR_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(ETHER_SELECTOR_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
-    if (ETHER_SELECTOR_SPEED_1000MBPS == speed)
+    if (ETHER_SELECTOR_SPEED_1000_MBPS == speed)
     {
         FSP_ERROR_RETURN((ETHER_SELECTOR_INTERFACE_RGMII == p_instance_ctrl->p_cfg->interface),
                          FSP_ERR_INVALID_ARGUMENT);
     }
 #endif
 
-    port        = p_instance_ctrl->p_cfg->port;
+    port        = p_instance_ctrl->p_cfg->channel;
     p_reg_ethss = p_instance_ctrl->p_reg;
 
     /* Unlock write access protection for Ethernet subsystem registers */
@@ -355,15 +345,15 @@ fsp_err_t R_ETHER_SELECTOR_ConverterSet (ether_selector_ctrl_t * const p_ctrl,
 
     if (ETHER_SELECTOR_INTERFACE_MII != p_instance_ctrl->p_cfg->interface)
     {
-        if (ETHER_SELECTOR_SPEED_10MBPS == speed)
+        if (ETHER_SELECTOR_SPEED_10_MBPS == speed)
         {
             convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_10M;
         }
-        else if (ETHER_SELECTOR_SPEED_100MBPS == speed)
+        else if (ETHER_SELECTOR_SPEED_100_MBPS == speed)
         {
             convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_100M;
         }
-        else if (ETHER_SELECTOR_SPEED_1000MBPS == speed)
+        else if (ETHER_SELECTOR_SPEED_1000_MBPS == speed)
         {
             convctrl |= ETHER_SELECTOR_CONV_BIT_SPEED_1000M;
         }
@@ -408,25 +398,6 @@ fsp_err_t R_ETHER_SELECTOR_Close (ether_selector_ctrl_t * const p_ctrl)
 
     /* Mark instance as closed. */
     p_instance_ctrl->open = 0U;
-
-    return FSP_SUCCESS;
-}
-
-/*******************************************************************************************************************//**
- * Sets driver version based on compile time macros.  Implements @ref ether_selector_api_t::versionGet.
- *
- * @retval     FSP_SUCCESS          Version in p_version.
- * @retval     FSP_ERR_ASSERTION    The parameter p_version is NULL.
- **********************************************************************************************************************/
-fsp_err_t R_ETHER_SELECTOR_VersionGet (fsp_version_t * const p_version)
-{
-#if ETHER_SELECTOR_CFG_PARAM_CHECKING_ENABLE
-
-    /* Verify parameters are valid */
-    FSP_ASSERT(NULL != p_version);
-#endif
-
-    p_version->version_id = s_ether_selector_version.version_id;
 
     return FSP_SUCCESS;
 }
@@ -486,7 +457,7 @@ static void r_ether_selector_state_initialize (void)
         R_BSP_MODULE_START(FSP_IP_ETHSS, 0);
 
         /* Release modules */
-        R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ESC_ETH_ACCESSARY);
+        R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ESC_ETH_SUBSYSTEM);
         R_BSP_ModuleResetDisable(BSP_MODULE_RESET_MII);
         R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
     }

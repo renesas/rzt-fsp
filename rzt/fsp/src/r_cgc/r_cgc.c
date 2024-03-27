@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -29,21 +29,8 @@
  **********************************************************************************************************************/
 
 /* "CGC" in ASCII, used to determine if the module is open. */
-#define CGC_OPEN                                        (0x00434743U)
-#define CGC_PRV_NUM_CLOCKS                              ((uint8_t) CGC_CLOCK_PLL1 + 1U)
-
-#define CGC_PRV_SCKCR_FSELXSPI_DIVSELXSPI_VALUE_MASK    (0x47U)
-#define CGC_PRV_SCKCR_CKIO_VALUE_MASK                   (0x07U)
-#define CGC_PRV_SCKCR_FSELCANFD_VALUE_MASK              (0x01U)
-#define CGC_PRV_SCKCR_PHYSEL_VALUE_MASK                 (0x01U)
-#define CGC_PRV_SCKCR_CLMA_VALUE_MASK                   (0x01U)
-#define CGC_PRV_SCKCR_SPIASYNCSEL_VALUE_MASK            (0x01U)
-#define CGC_PRV_SCKCR_SCIASYNCSEL_VALUE_MASK            (0x01U)
-
-#define CGC_PRV_SCKCR2_FSELCR52_VALUE_MASK              (0x03U)
-#define CGC_PRV_SCKCR2_DIVSUBSEL_VALUE_MASK             (0x01U)
-#define CGC_PRV_SCKCR2_SPIASYNCSEL_VALUE_MASK           (0x01U)
-#define CGC_PRV_SCKCR2_SCIASYNCSEL_VALUE_MASK           (0x01U)
+#define CGC_OPEN              (0x00434743U)
+#define CGC_PRV_NUM_CLOCKS    ((uint8_t) CGC_CLOCK_PLL1 + 1U)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -63,8 +50,6 @@ static fsp_err_t             r_cgc_clock_check(cgc_clock_t const clock_source);
 static bool                  r_cgc_stabilization_check(cgc_clock_t clock, cgc_prv_clock_state_t status);
 static void                  r_cgc_clock_change(cgc_clock_t clock, cgc_clock_change_t state);
 static cgc_prv_clock_state_t r_cgc_clock_run_state_get(cgc_clock_t clock);
-static uint32_t              r_cgc_cfg_to_sckcr_parameter(cgc_sckcr_cfg_t * p_sckcr_cfg);
-static uint32_t              r_cgc_cfg_to_sckcr2_parameter(cgc_sckcr2_cfg_t * p_sckcr2_cfg);
 
 #if CGC_CFG_PARAM_CHECKING_ENABLE
 static fsp_err_t r_cgc_common_parameter_checking(cgc_instance_ctrl_t * p_instance_ctrl);
@@ -75,50 +60,26 @@ static fsp_err_t r_cgc_common_parameter_checking(cgc_instance_ctrl_t * p_instanc
  * Private global variables
  **********************************************************************************************************************/
 
-/* Version data structure used by error logger macro. */
-static const fsp_version_t g_cgc_version =
-{
-    .api_version_minor  = CGC_API_VERSION_MINOR,
-    .api_version_major  = CGC_API_VERSION_MAJOR,
-    .code_version_major = CGC_CODE_VERSION_MAJOR,
-    .code_version_minor = CGC_CODE_VERSION_MINOR
-};
-
 static uint32_t volatile * const gp_cgc_clock_stp_registers[CGC_PRV_NUM_CLOCKS] =
 {
-    [CGC_CLOCK_HOCO]     = NULL,
-    [CGC_CLOCK_MOCO]     = NULL,
-    [CGC_CLOCK_LOCO]     = (uint32_t *) BSP_FEATURE_CGC_LOCO_CONTROL_ADDRESS,
-    [CGC_CLOCK_MAIN_OSC] = NULL,
-    [CGC_CLOCK_SUBCLOCK] = NULL,
-    [CGC_CLOCK_PLL]      = NULL,
-    [CGC_CLOCK_PLL2]     = NULL,
-    [CGC_CLOCK_PLL1]     = (uint32_t *) BSP_FEATURE_CGC_PLL1_CONTROL_ADDRESS,
+    [CGC_CLOCK_LOCO] = (uint32_t *) BSP_FEATURE_CGC_LOCO_CONTROL_ADDRESS,
+    [CGC_CLOCK_PLL0] = NULL,           // PLL0 is always running
+    [CGC_CLOCK_PLL1] = (uint32_t *) BSP_FEATURE_CGC_PLL1_CONTROL_ADDRESS,
 };
 
 /* How long of a software delay is required after starting each clock before activating it as the system clock. */
 static const uint32_t g_cgc_software_wait_us[CGC_PRV_NUM_CLOCKS] =
 {
-    [CGC_CLOCK_HOCO]     = 0U,         // No need to support
-    [CGC_CLOCK_MOCO]     = 0U,         // No need to support
-    [CGC_CLOCK_LOCO]     = BSP_FEATURE_CGC_LOCO_STABILIZATION_MAX_US,
-    [CGC_CLOCK_MAIN_OSC] = 0U,         // No need to support
-    [CGC_CLOCK_SUBCLOCK] = 0U,         // No need to support
-    [CGC_CLOCK_PLL]      = 0U,         // No need to support
-    [CGC_CLOCK_PLL2]     = 0U,         // No need to support
-    [CGC_CLOCK_PLL1]     = 0U,         // PLL1 has a stabilization wait flag
+    [CGC_CLOCK_LOCO] = BSP_FEATURE_CGC_LOCO_STABILIZATION_MAX_US,
+    [CGC_CLOCK_PLL0] = 0U,             // PLL0 has a stabilization wait flag
+    [CGC_CLOCK_PLL1] = 0U,             // PLL1 has a stabilization wait flag
 };
 
 static const bsp_reg_protect_t g_cgc_register_protect_settings[CGC_PRV_NUM_CLOCKS] =
 {
-    [CGC_CLOCK_HOCO]     = (bsp_reg_protect_t) NULL, // No need to support
-    [CGC_CLOCK_MOCO]     = (bsp_reg_protect_t) NULL, // No need to support
-    [CGC_CLOCK_LOCO]     = BSP_REG_PROTECT_CGC,
-    [CGC_CLOCK_MAIN_OSC] = (bsp_reg_protect_t) NULL, // No need to support
-    [CGC_CLOCK_SUBCLOCK] = (bsp_reg_protect_t) NULL, // No need to support
-    [CGC_CLOCK_PLL]      = (bsp_reg_protect_t) NULL, // No need to support
-    [CGC_CLOCK_PLL2]     = (bsp_reg_protect_t) NULL, // No need to support
-    [CGC_CLOCK_PLL1]     = BSP_REG_PROTECT_LPC_RESET,
+    [CGC_CLOCK_LOCO] = BSP_REG_PROTECT_CGC,
+    [CGC_CLOCK_PLL0] = (bsp_reg_protect_t) NULL, // PLL0 is always running
+    [CGC_CLOCK_PLL1] = BSP_REG_PROTECT_LPC_RESET,
 };
 
 /***********************************************************************************************************************
@@ -139,7 +100,6 @@ const cgc_api_t g_cgc_on_cgc =
     .oscStopStatusClear   = R_CGC_OscStopStatusClear,
     .callbackSet          = R_CGC_CallbackSet,
     .close                = R_CGC_Close,
-    .versionGet           = R_CGC_VersionGet,
 };
 
 /*******************************************************************************************************************//**
@@ -207,28 +167,27 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
     err = r_cgc_common_parameter_checking(p_instance_ctrl);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
     FSP_ASSERT(NULL != p_clock_cfg);
-    FSP_ASSERT(NULL != (cgc_clock_extend_cfg_t *) p_clock_cfg->p_extend);
 
     /* ATCM wait should be 1-wait when CPU0CLK is over 400MHz */
     FSP_ERROR_RETURN(!((0 == R_TCMAW->CPU0WAIT_b.CPU0WAIT) &&
-                       (CGC_CPU_CLOCK_DIV_1 == ((cgc_clock_extend_cfg_t *) p_clock_cfg->p_extend)->sckcr2.fsel0cr52)),
+                       (CGC_CPU_CLOCK_DIV_1 == p_clock_cfg->divider_cfg.sckcr2_b.fsel0cr52)),
                      FSP_ERR_INVALID_ARGUMENT);
 
     /* Make sure the oscillator is stable. */
     FSP_ERROR_RETURN(!((0 == R_SYSC_S->PLL1MON_b.PLL1MON) &&
-                       (CGC_PHY_CLOCK_PLL1 == ((cgc_clock_extend_cfg_t *) p_clock_cfg->p_extend)->sckcr.phy_sel)),
+                       (CGC_PHY_CLOCK_PLL1 == p_clock_cfg->divider_cfg.sckcr_b.phy_sel)),
                      FSP_ERR_NOT_STABILIZED);
 
     /* Do not stop the clock used by other functions. */
-    FSP_ERROR_RETURN(!((CGC_CLOCK_CHANGE_STOP == ((cgc_clock_extend_cfg_t *) p_clock_cfg->p_extend)->pll1_state) &&
-                       (CGC_PHY_CLOCK_PLL1 == ((cgc_clock_extend_cfg_t *) p_clock_cfg->p_extend)->sckcr.phy_sel)),
+    FSP_ERROR_RETURN(!((CGC_CLOCK_CHANGE_STOP == p_clock_cfg->pll1_state) &&
+                       (CGC_PHY_CLOCK_PLL1 == p_clock_cfg->divider_cfg.sckcr_b.phy_sel)),
                      FSP_ERR_INVALID_ARGUMENT);
 
     /* Do not select a stopped clock as the clock source. */
     if (0 == R_SYSC_S->PLL1EN_b.PLL1EN)
     {
-        FSP_ERROR_RETURN(!((CGC_CLOCK_CHANGE_NONE == ((cgc_clock_extend_cfg_t *) p_clock_cfg->p_extend)->pll1_state) &&
-                           (CGC_PHY_CLOCK_PLL1 == ((cgc_clock_extend_cfg_t *) p_clock_cfg->p_extend)->sckcr.phy_sel)),
+        FSP_ERROR_RETURN(!((CGC_CLOCK_CHANGE_NONE == p_clock_cfg->pll1_state) &&
+                           (CGC_PHY_CLOCK_PLL1 == p_clock_cfg->divider_cfg.sckcr_b.phy_sel)),
                          FSP_ERR_INVALID_ARGUMENT);
     }
 
@@ -237,20 +196,14 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
     FSP_PARAMETER_NOT_USED(err);       // unused in some build configurations
 #endif
 
-    cgc_clock_extend_cfg_t * p_extend = (cgc_clock_extend_cfg_t *) p_clock_cfg->p_extend;
-
-    cgc_sckcr_cfg_t  sckcr_cfg  = p_extend->sckcr;
-    cgc_sckcr2_cfg_t sckcr2_cfg = p_extend->sckcr2;
+    cgc_divider_cfg_t clock_cfg;
+    clock_cfg.sckcr_w  = p_clock_cfg->divider_cfg.sckcr_w;
+    clock_cfg.sckcr2_w = p_clock_cfg->divider_cfg.sckcr2_w;
 
     cgc_clock_change_t options[CGC_PRV_NUM_CLOCKS];
-    options[CGC_CLOCK_HOCO]     = CGC_CLOCK_CHANGE_NONE;
-    options[CGC_CLOCK_LOCO]     = p_clock_cfg->loco_state;
-    options[CGC_CLOCK_MOCO]     = CGC_CLOCK_CHANGE_NONE;
-    options[CGC_CLOCK_MAIN_OSC] = CGC_CLOCK_CHANGE_NONE;
-    options[CGC_CLOCK_SUBCLOCK] = CGC_CLOCK_CHANGE_NONE;
-    options[CGC_CLOCK_PLL]      = CGC_CLOCK_CHANGE_NONE;
-    options[CGC_CLOCK_PLL2]     = CGC_CLOCK_CHANGE_NONE;
-    options[CGC_CLOCK_PLL1]     = p_extend->pll1_state;
+    options[CGC_CLOCK_LOCO] = p_clock_cfg->loco_state;
+    options[CGC_CLOCK_PLL0] = CGC_CLOCK_CHANGE_NONE;
+    options[CGC_CLOCK_PLL1] = p_clock_cfg->pll1_state;
 
     /* Start or stop clocks based on the input configuration. */
     for (int32_t i = (CGC_PRV_NUM_CLOCKS - 1); i >= 0; i--)
@@ -286,12 +239,11 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
         }
     }
 
-    uint32_t sckcr = r_cgc_cfg_to_sckcr_parameter(&sckcr_cfg);
-    sckcr |= R_SYSC_NS->SCKCR_b.CLMASEL & CGC_PRV_SCKCR_CLMA_VALUE_MASK << R_SYSC_NS_SCKCR_CLMASEL_Pos;
-    uint32_t sckcr2 = r_cgc_cfg_to_sckcr2_parameter(&sckcr2_cfg);
+    /* CLMA settings are unsupported for CGC, so do not overwrite CLMA setting value. */
+    clock_cfg.sckcr_w |= (uint32_t) (R_SYSC_NS->SCKCR_b.CLMASEL << R_SYSC_NS_SCKCR_CLMASEL_Pos);
 
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_CGC);
-    bsp_prv_clock_set(sckcr, sckcr2);
+    bsp_prv_clock_set(clock_cfg.sckcr_w, clock_cfg.sckcr2_w);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_CGC);
 
     return FSP_SUCCESS;
@@ -399,17 +351,15 @@ fsp_err_t R_CGC_SystemClockSet (cgc_ctrl_t * const              p_ctrl,
     FSP_PARAMETER_NOT_USED(clock_source);
 #endif
 
-    cgc_clock_extend_cfg_t * p_extend = (cgc_clock_extend_cfg_t *) (p_divider_cfg->p_extend);
+    cgc_divider_cfg_t clock_cfg;
+    clock_cfg.sckcr_w  = p_divider_cfg->sckcr_w;
+    clock_cfg.sckcr2_w = p_divider_cfg->sckcr2_w;
 
-    cgc_sckcr_cfg_t  sckcr_cfg  = p_extend->sckcr;
-    cgc_sckcr2_cfg_t sckcr2_cfg = p_extend->sckcr2;
-
-    uint32_t sckcr = r_cgc_cfg_to_sckcr_parameter(&sckcr_cfg);
-    sckcr |= R_SYSC_NS->SCKCR_b.CLMASEL & CGC_PRV_SCKCR_CLMA_VALUE_MASK << R_SYSC_NS_SCKCR_CLMASEL_Pos;
-    uint32_t sckcr2 = r_cgc_cfg_to_sckcr2_parameter(&sckcr2_cfg);
+    /* CLMA settings are unsupported for CGC, so do not overwrite CLMA setting values. */
+    clock_cfg.sckcr_w |= (uint32_t) (R_SYSC_NS->SCKCR_b.CLMASEL << R_SYSC_NS_SCKCR_CLMASEL_Pos);
 
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_CGC);
-    bsp_prv_clock_set(sckcr, sckcr2);
+    bsp_prv_clock_set(clock_cfg.sckcr_w, clock_cfg.sckcr2_w);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_CGC);
 
     return FSP_SUCCESS;
@@ -440,45 +390,15 @@ fsp_err_t R_CGC_SystemClockGet (cgc_ctrl_t * const        p_ctrl,
     /* Get the system clock source */
     if (NULL != p_clock_source)
     {
-        *p_clock_source = CGC_CLOCK_PLL;
+        /* System clock source is always PLL0. */
+        *p_clock_source = CGC_CLOCK_PLL0;
     }
-
-    cgc_clock_extend_cfg_t * p_extend     = (cgc_clock_extend_cfg_t *) (p_divider_cfg->p_extend);
-    cgc_sckcr_cfg_t        * p_sckcr_cfg  = &p_extend->sckcr;
-    cgc_sckcr2_cfg_t       * p_sckcr2_cfg = &p_extend->sckcr2;
 
     /* Get current dividers. */
     if (NULL != p_divider_cfg)
     {
-        uint32_t divselxspi0 = R_SYSC_NS->SCKCR_b.DIVSELXSPI0;
-        uint32_t fselxspi0   = R_SYSC_NS->SCKCR_b.FSELXSPI0;
-        p_sckcr_cfg->fselxspi0_div =
-            (cgc_xspi_clock_div_t) ((divselxspi0 << R_SYSC_NS_SCKCR_DIVSELXSPI0_Pos) | fselxspi0);
-
-        uint32_t divselxspi1 = R_SYSC_NS->SCKCR_b.DIVSELXSPI1;
-        uint32_t fselxspi1   = R_SYSC_NS->SCKCR_b.FSELXSPI1;
-
-        p_sckcr_cfg->fselxspi1_div =
-            (cgc_xspi_clock_div_t) ((divselxspi1 << R_SYSC_NS_SCKCR_DIVSELXSPI1_Pos) | fselxspi1);
-        p_sckcr_cfg->ckio_div       = (cgc_clock_out_clock_div_t) (R_SYSC_NS->SCKCR_b.CKIO);
-        p_sckcr_cfg->fselcanfd_div  = (cgc_canfd_clock_div_t) (R_SYSC_NS->SCKCR_b.FSELCANFD);
-        p_sckcr_cfg->phy_sel        = (cgc_phy_clock_t) (R_SYSC_NS->SCKCR_b.PHYSEL);
-        p_sckcr_cfg->spi0_async_sel = (cgc_spi_async_clock_t) (R_SYSC_NS->SCKCR_b.SPI0ASYNCSEL);
-        p_sckcr_cfg->spi1_async_sel = (cgc_spi_async_clock_t) (R_SYSC_NS->SCKCR_b.SPI1ASYNCSEL);
-        p_sckcr_cfg->spi2_async_sel = (cgc_spi_async_clock_t) (R_SYSC_NS->SCKCR_b.SPI2ASYNCSEL);
-        p_sckcr_cfg->sci0_async_sel = (cgc_sci_async_clock_t) (R_SYSC_NS->SCKCR_b.SCI0ASYNCSEL);
-        p_sckcr_cfg->sci1_async_sel = (cgc_sci_async_clock_t) (R_SYSC_NS->SCKCR_b.SCI1ASYNCSEL);
-        p_sckcr_cfg->sci2_async_sel = (cgc_sci_async_clock_t) (R_SYSC_NS->SCKCR_b.SCI2ASYNCSEL);
-        p_sckcr_cfg->sci3_async_sel = (cgc_sci_async_clock_t) (R_SYSC_NS->SCKCR_b.SCI3ASYNCSEL);
-        p_sckcr_cfg->sci4_async_sel = (cgc_sci_async_clock_t) (R_SYSC_NS->SCKCR_b.SCI4ASYNCSEL);
-
-        p_sckcr2_cfg->fsel0cr52 = (cgc_cpu_clock_div_t) (R_SYSC_S->SCKCR2_b.FSELCPU0);
-#if BSP_FEATURE_BSP_CPU1_SUPPORTED
-        p_sckcr2_cfg->fsel1cr52 = (cgc_cpu_clock_div_t) (R_SYSC_S->SCKCR2_b.FSELCPU1);
-#endif
-        p_sckcr2_cfg->div_sub_sel    = (cgc_baseclock_div_t) (R_SYSC_S->SCKCR2_b.DIVSELSUB);
-        p_sckcr2_cfg->spi3_async_sel = (cgc_spi_async_clock_t) (R_SYSC_S->SCKCR2_b.SPI3ASYNCSEL);
-        p_sckcr2_cfg->sci5_async_sel = (cgc_sci_async_clock_t) (R_SYSC_S->SCKCR2_b.SCI5ASYNCSEL);
+        p_divider_cfg->sckcr_w  = R_SYSC_NS->SCKCR & (~(R_SYSC_NS_SCKCR_CLMASEL_Msk));
+        p_divider_cfg->sckcr2_w = R_SYSC_S->SCKCR2;
     }
 
     return FSP_SUCCESS;
@@ -562,12 +482,12 @@ fsp_err_t R_CGC_OscStopStatusClear (cgc_ctrl_t * const p_ctrl)
  *
  * @retval FSP_ERR_UNSUPPORTED    API not supported.
  **********************************************************************************************************************/
-fsp_err_t R_CGC_CallbackSet (cgc_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_CGC_CallbackSet (cgc_ctrl_t * const          p_ctrl,
                              void (                    * p_callback)(cgc_callback_args_t *),
                              void const * const          p_context,
                              cgc_callback_args_t * const p_callback_memory)
 {
-    FSP_PARAMETER_NOT_USED(p_api_ctrl);
+    FSP_PARAMETER_NOT_USED(p_ctrl);
     FSP_PARAMETER_NOT_USED(p_callback);
     FSP_PARAMETER_NOT_USED(p_context);
     FSP_PARAMETER_NOT_USED(p_callback_memory);
@@ -596,22 +516,6 @@ fsp_err_t R_CGC_Close (cgc_ctrl_t * const p_ctrl)
     p_instance_ctrl->open = 0U;
 
     /* All done, return success. */
-    return FSP_SUCCESS;
-}
-
-/*******************************************************************************************************************//**
- * DEPRECATED Return the driver version.  Implements @ref cgc_api_t::versionGet.
- *
- * @retval FSP_SUCCESS                 Module version provided in p_version.
- * @retval FSP_ERR_ASSERTION           Invalid input argument.
- **********************************************************************************************************************/
-fsp_err_t R_CGC_VersionGet (fsp_version_t * const p_version)
-{
-#if CGC_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_version);
-#endif
-    p_version->version_id = g_cgc_version.version_id;
-
     return FSP_SUCCESS;
 }
 
@@ -672,9 +576,21 @@ static fsp_err_t r_cgc_clock_check (cgc_clock_t const clock_source)
  **********************************************************************************************************************/
 static cgc_prv_clock_state_t r_cgc_clock_run_state_get (cgc_clock_t clock)
 {
+    cgc_prv_clock_state_t ret = CGC_PRV_CLOCK_STATE_STOPPED;
 
-    /* Get clock run state. */
-    return (cgc_prv_clock_state_t) (*gp_cgc_clock_stp_registers[clock]);
+    /* Get clock run state via control register if clock have control register. */
+    if (NULL != gp_cgc_clock_stp_registers[clock])
+    {
+        /* Get clock run state. */
+        ret = (cgc_prv_clock_state_t) (*gp_cgc_clock_stp_registers[clock]);
+    }
+    else
+    {
+        /* PLL0 have no control register and is always running. */
+        ret = CGC_PRV_CLOCK_STATE_RUNNING;
+    }
+
+    return ret;
 }
 
 /*******************************************************************************************************************//**
@@ -720,67 +636,4 @@ static void r_cgc_clock_change (cgc_clock_t clock, cgc_clock_change_t state)
 
     /* Wait setting to be reflected in hardware registers. */
     FSP_HARDWARE_REGISTER_WAIT(*gp_cgc_clock_stp_registers[clock], state_set_value);
-}
-
-/*******************************************************************************************************************//**
- * Converts cgc_sckcr_cfg_t to the SCKCR register setting parameter.
- *
- * @param[in]  p_sckcr_cfg   Pointer to clock configuration structure
- *
- * @return     SCKCR setting parameter
- **********************************************************************************************************************/
-static uint32_t r_cgc_cfg_to_sckcr_parameter (cgc_sckcr_cfg_t * p_sckcr_cfg)
-{
-    cgc_sckcr_cfg_t sckcr_cfg = *p_sckcr_cfg;
-
-    uint32_t sckcr =
-        (((sckcr_cfg.fselxspi0_div & CGC_PRV_SCKCR_FSELXSPI_DIVSELXSPI_VALUE_MASK) << R_SYSC_NS_SCKCR_FSELXSPI0_Pos) |
-         ((sckcr_cfg.fselxspi1_div & CGC_PRV_SCKCR_FSELXSPI_DIVSELXSPI_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_FSELXSPI1_Pos) |
-         ((sckcr_cfg.ckio_div & CGC_PRV_SCKCR_CKIO_VALUE_MASK) << R_SYSC_NS_SCKCR_CKIO_Pos) |
-         ((sckcr_cfg.fselcanfd_div & CGC_PRV_SCKCR_FSELCANFD_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_FSELCANFD_Pos) |
-         ((sckcr_cfg.phy_sel & CGC_PRV_SCKCR_PHYSEL_VALUE_MASK) << R_SYSC_NS_SCKCR_PHYSEL_Pos) |
-         ((sckcr_cfg.spi0_async_sel & CGC_PRV_SCKCR_SPIASYNCSEL_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_SPI0ASYNCSEL_Pos) |
-         ((sckcr_cfg.spi1_async_sel & CGC_PRV_SCKCR_SPIASYNCSEL_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_SPI1ASYNCSEL_Pos) |
-         ((sckcr_cfg.spi2_async_sel & CGC_PRV_SCKCR_SPIASYNCSEL_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_SPI2ASYNCSEL_Pos) |
-         ((sckcr_cfg.sci0_async_sel & CGC_PRV_SCKCR_SCIASYNCSEL_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_SCI0ASYNCSEL_Pos) |
-         ((sckcr_cfg.sci1_async_sel & CGC_PRV_SCKCR_SCIASYNCSEL_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_SCI1ASYNCSEL_Pos) |
-         ((sckcr_cfg.sci2_async_sel & CGC_PRV_SCKCR_SCIASYNCSEL_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_SCI2ASYNCSEL_Pos) |
-         ((sckcr_cfg.sci3_async_sel & CGC_PRV_SCKCR_SCIASYNCSEL_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_SCI3ASYNCSEL_Pos) |
-         ((sckcr_cfg.sci4_async_sel & CGC_PRV_SCKCR_SCIASYNCSEL_VALUE_MASK) <<
-            R_SYSC_NS_SCKCR_SCI4ASYNCSEL_Pos));
-
-    return sckcr;
-}
-
-/*******************************************************************************************************************//**
- * Converts cgc_sckcr2_cfg_t to the SCKCR2 register setting parameter.
- *
- * @param[in]  p_sckcr2_cfg  Pointer to clock configuration structure
- * @return     SCKCR2 setting parameter
- **********************************************************************************************************************/
-static uint32_t r_cgc_cfg_to_sckcr2_parameter (cgc_sckcr2_cfg_t * p_sckcr2_cfg)
-{
-    cgc_sckcr2_cfg_t sckcr2_cfg = *p_sckcr2_cfg;
-
-    uint32_t sckcr2 = (((sckcr2_cfg.fsel0cr52 & CGC_PRV_SCKCR2_FSELCR52_VALUE_MASK) << R_SYSC_S_SCKCR2_FSELCPU0_Pos) |
-#if BSP_FEATURE_BSP_CPU1_SUPPORTED
-                       ((sckcr2_cfg.fsel1cr52 & CGC_PRV_SCKCR2_FSELCR52_VALUE_MASK) << R_SYSC_S_SCKCR2_FSELCPU1_Pos) |
-#endif
-                       ((sckcr2_cfg.div_sub_sel & CGC_PRV_SCKCR2_DIVSUBSEL_VALUE_MASK) <<
-                        R_SYSC_S_SCKCR2_DIVSELSUB_Pos) |
-                       ((sckcr2_cfg.spi3_async_sel & CGC_PRV_SCKCR2_SPIASYNCSEL_VALUE_MASK) <<
-                        R_SYSC_S_SCKCR2_SPI3ASYNCSEL_Pos) |
-                       ((sckcr2_cfg.sci5_async_sel & CGC_PRV_SCKCR2_SCIASYNCSEL_VALUE_MASK) <<
-                        R_SYSC_S_SCKCR2_SCI5ASYNCSEL_Pos));
-
-    return sckcr2;
 }

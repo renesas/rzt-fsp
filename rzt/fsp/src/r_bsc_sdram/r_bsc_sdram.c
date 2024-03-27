@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -82,33 +82,18 @@
 
 #define BSC_SDRAM_PROTECT_KEY                    (0xA55A0000)
 
-#define BSC_SDRAM_UNIT_CONVERSION                (1000U)
-
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
-typedef enum e_bsc_sdram_refresh_count_source_div
-{
-    BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_4    = 2U,
-    BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_16   = 4U,
-    BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_64   = 6U,
-    BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_256  = 8U,
-    BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_1024 = 10U,
-    BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_2048 = 11U,
-    BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_4096 = 12U,
-} bsc_sdram_refresh_count_source_div_t;
-
-typedef struct st_refresh_cycle_setting_const_t
-{
-    uint8_t count;
-    bsc_sdram_refresh_count_source_div_t divider;
-} refresh_cycle_setting_const_t;
 
 /***********************************************************************************************************************
- * Private function declarations
+ * Private function prototypes
  **********************************************************************************************************************/
-static fsp_err_t r_bsc_sdram_refresh_cycle_calc(bsc_sdram_instance_ctrl_t     * p_instance_ctrl,
-                                                refresh_cycle_setting_const_t * p_ref_cycle);
+#if BSC_SDRAM_CFG_PARAM_CHECKING_ENABLE
+static fsp_err_t r_bsc_sdram_open_param_checking(bsc_sdram_instance_ctrl_t * p_instance_ctrl,
+                                                 sdram_cfg_t const * const   p_cfg);
+
+#endif
 
 /***********************************************************************************************************************
  * ISR prototypes
@@ -118,22 +103,22 @@ void bsc_sdram_cmi_int_isr(void);
 /** Look-up table for WTRC values */
 static const uint32_t wtrc_value_lut[] =
 {
-    [SDRAM_WAIT_CYCLE_2] = 0U,
-    [SDRAM_WAIT_CYCLE_3] = 1U,
-    [SDRAM_WAIT_CYCLE_5] = 2U,
-    [SDRAM_WAIT_CYCLE_8] = 3U,
+    [2] = 0U,
+    [3] = 1U,
+    [5] = 2U,
+    [8] = 3U,
 };
 
 /** Look-up table for Auto-Refresh count clock source */
 static const uint32_t cks_value_lut[] =
 {
-    [BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_4]    = 1U,
-    [BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_16]   = 2U,
-    [BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_64]   = 3U,
-    [BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_256]  = 4U,
-    [BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_1024] = 5U,
-    [BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_2048] = 6U,
-    [BSC_SDRAM_REFRESH_COUNT_SOURCE_DIV_4096] = 7U,
+    [SDRAM_REFRESH_CYCLE_SOURCE_DIV_4]    = 1U,
+    [SDRAM_REFRESH_CYCLE_SOURCE_DIV_16]   = 2U,
+    [SDRAM_REFRESH_CYCLE_SOURCE_DIV_64]   = 3U,
+    [SDRAM_REFRESH_CYCLE_SOURCE_DIV_256]  = 4U,
+    [SDRAM_REFRESH_CYCLE_SOURCE_DIV_1024] = 5U,
+    [SDRAM_REFRESH_CYCLE_SOURCE_DIV_2048] = 6U,
+    [SDRAM_REFRESH_CYCLE_SOURCE_DIV_4096] = 7U,
 };
 
 /*******************************************************************************************************************//**
@@ -168,18 +153,15 @@ const sdram_api_t g_sdram_on_bsc_sdram =
  * @retval FSP_ERR_ASSERTION        The parameter p_instance_ctrl or p_cfg is NULL.
  * @retval FSP_ERR_INVALID_CHANNEL  Invalid Channel.
  * @retval FSP_ERR_ALREADY_OPEN     Driver has already been opened with the same p_instance_ctrl.
- * @retval FSP_ERR_INVALID_ARGUMENT Auto-Refresh time is not achievable.
+ * @retval FSP_ERR_INVALID_ARGUMENT SDRAM parameter is not available.
  **********************************************************************************************************************/
 fsp_err_t R_BSC_SDRAM_Open (sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_cfg)
 {
     bsc_sdram_instance_ctrl_t * p_instance_ctrl = (bsc_sdram_instance_ctrl_t *) p_ctrl;
 
 #if BSC_SDRAM_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_instance_ctrl);
-    FSP_ASSERT(NULL != p_cfg);
-    FSP_ASSERT(NULL != p_cfg->p_extend);
-    FSP_ERROR_RETURN(BSC_SDRAM_VALID_CS_CHANNELS & (1U << p_cfg->chip_select), FSP_ERR_INVALID_CHANNEL);
-    FSP_ERROR_RETURN(BSC_SDRAM_PRV_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
+    fsp_err_t err = r_bsc_sdram_open_param_checking(p_instance_ctrl, p_cfg);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 #endif
 
     bsc_sdram_extended_cfg_t * p_cfg_extend = (bsc_sdram_extended_cfg_t *) p_cfg->p_extend;
@@ -195,7 +177,7 @@ fsp_err_t R_BSC_SDRAM_Open (sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_c
 
     /* Calculate the CSnWCR register base address. */
     uint32_t   address_gap = (uint32_t) &R_BSC->CS3WCR_0 - (uint32_t) &R_BSC->CS2WCR_0;
-    uint32_t * p_csnwcr    = (uint32_t *) ((uint32_t) &R_BSC->CS0WCR_0 + (address_gap * p_cfg->chip_select));
+    uint32_t * p_csnwcr    = (uint32_t *) ((uint32_t) &R_BSC->CS0WCR_0 + (address_gap * p_cfg_extend->chip_select));
 
     /* Set bus access idle cycle. */
     uint32_t csnbcr = (((p_cfg->data_width & BSC_SDRAM_PRV_CSNBCR_BSZ_VALUE_MASK) <<
@@ -237,18 +219,15 @@ fsp_err_t R_BSC_SDRAM_Open (sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_c
      * Refresh count = 8 times -> RTCSR.RRC = 4 */
     uint32_t rrc = p_cfg->refresh_request_count >> 1;
 
-    refresh_cycle_setting_const_t ref_cycle_settings;
-    fsp_err_t ret = r_bsc_sdram_refresh_cycle_calc(p_instance_ctrl, &ref_cycle_settings);
-
     uint32_t rtcsr = (rrc & BSC_SDRAM_PRV_RTCSR_RRC_VALUE_MASK << BSC_SDRAM_PRV_RTCSR_RRC_Pos) |
-                     ((cks_value_lut[ref_cycle_settings.divider] & BSC_SDRAM_PRV_RTCSR_CKS_VALUE_MASK) <<
+                     ((cks_value_lut[p_cfg->source_div] & BSC_SDRAM_PRV_RTCSR_CKS_VALUE_MASK) <<
                       BSC_SDRAM_PRV_RTCSR_CKS_Pos) |
                      BSC_SDRAM_PRV_RTCSR_CMIE_Msk;
 
-    R_BSC->CSnBCR[p_cfg->chip_select] = csnbcr;
+    R_BSC->CSnBCR[p_cfg_extend->chip_select] = csnbcr;
     R_BSC->SDCR  = sdcr;
     R_BSC->RTCNT = BSC_SDRAM_PROTECT_KEY | 0x00U;
-    R_BSC->RTCOR = BSC_SDRAM_PROTECT_KEY | ref_cycle_settings.count;
+    R_BSC->RTCOR = BSC_SDRAM_PROTECT_KEY | p_cfg->auto_refresh_cycle;
     R_BSC->RTCSR = BSC_SDRAM_PROTECT_KEY | rtcsr;
 
     *p_csnwcr = csnwcr;
@@ -275,12 +254,9 @@ fsp_err_t R_BSC_SDRAM_Open (sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_c
         R_BSP_IrqCfgEnable(p_cfg_extend->cmi_irq, p_cfg_extend->cmi_ipl, p_instance_ctrl);
     }
 
-    if (FSP_SUCCESS == ret)
-    {
-        p_instance_ctrl->open = BSC_SDRAM_PRV_OPEN;
-    }
+    p_instance_ctrl->open = BSC_SDRAM_PRV_OPEN;
 
-    return ret;
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**
@@ -420,6 +396,15 @@ fsp_err_t R_BSC_SDRAM_Close (sdram_ctrl_t * p_ctrl)
     FSP_ERROR_RETURN(BSC_SDRAM_PRV_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
+    bsc_sdram_extended_cfg_t * p_cfg_extend = (bsc_sdram_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+
+    /* Disable CPU interrupts. */
+    if (p_cfg_extend->cmi_irq >= 0)
+    {
+        R_BSP_IrqDisable(p_cfg_extend->cmi_irq);
+        R_FSP_IsrContextSet(p_cfg_extend->cmi_irq, NULL);
+    }
+
     /* Disable clock to the BSC block */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_STOP(FSP_IP_BSC, BSC_CHANNEL_DUMMY);
@@ -435,91 +420,75 @@ fsp_err_t R_BSC_SDRAM_Close (sdram_ctrl_t * p_ctrl)
  * @} (end addtogroup BSC_SDRAM)
  **********************************************************************************************************************/
 
-/*******************************************************************************************************************//**
- * Calculates refresh time settings. Evaluates and determines the best possible settings set to the refresh time
- * related registers.
- *
- * @param[in]  p_instance_ctrl           Pointer to a driver handle
- * @param[out] p_ref_cycle               Timer setting information stored here if successful
- *
- * @retval FSP_SUCCESS                  Valid RTCOR.RFSHTV and RTCSR.CKS values were calculated
- * @retval FSP_ERR_INVALID_ARGUMENT     Auto-Refresh time is not achievable
+/***********************************************************************************************************************
+ * Private Functions
  **********************************************************************************************************************/
-static fsp_err_t r_bsc_sdram_refresh_cycle_calc (bsc_sdram_instance_ctrl_t     * p_instance_ctrl,
-                                                 refresh_cycle_setting_const_t * p_ref_cycle)
+
+#if BSC_SDRAM_CFG_PARAM_CHECKING_ENABLE
+
+/*******************************************************************************************************************//**
+ * Parameter checking for R_BSC_SDRAM_Open.
+ *
+ * @param[in] p_instance_ctrl          Pointer to instance control structure.
+ * @param[in] p_cfg                    Configuration structure for this instance
+ *
+ * @retval FSP_SUCCESS                 Initialization was successful and timer has started.
+ * @retval FSP_ERR_ASSERTION           A required input pointer is NULL.
+ * @retval FSP_ERR_ALREADY_OPEN        R_BSC_SDRAM_Open has already been called for this p_ctrl.
+ * @retval FSP_ERR_INVALID_ARGUMENT    SDRAM parameter is not available on BSC.
+ * @retval FSP_ERR_INVALID_CHANNEL     Invalid Channel.
+ **********************************************************************************************************************/
+static fsp_err_t r_bsc_sdram_open_param_checking (bsc_sdram_instance_ctrl_t * p_instance_ctrl,
+                                                  sdram_cfg_t const * const   p_cfg)
 {
-    /* In this function, if the calculated result is indivisible, the decimal point is rounded down.
-     * This allows to set an interval time that is always shorter than the user-input tREF,
-     * so the SDRAM tREF timing regulation violations do not occur. */
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ASSERT(NULL != p_cfg);
+    FSP_ASSERT(NULL != p_cfg->p_extend);
+    FSP_ERROR_RETURN(BSC_SDRAM_PRV_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 
-    fsp_err_t ret = FSP_SUCCESS;
+    /* Validate period parameter. */
+    FSP_ERROR_RETURN(p_cfg->auto_refresh_cycle < UINT8_MAX, FSP_ERR_INVALID_ARGUMENT);
 
-    uint32_t peripheral_clock_hz                = R_FSP_SystemClockHzGet(FSP_PRIV_CLOCK_CKIO);
-    uint32_t requested_tref_period_ms           = p_instance_ctrl->p_cfg->auto_refresh_cycle;
-    sdram_address_bus_width_t row_address_width = p_instance_ctrl->p_cfg->row_address_width;
+    /* Validate number of bits of Row/Column Address. */
+    FSP_ERROR_RETURN((SDRAM_ADDRESS_BUS_WIDTH_11_BITS <= p_cfg->row_address_width), FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((p_cfg->row_address_width <= SDRAM_ADDRESS_BUS_WIDTH_13_BITS), FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((p_cfg->column_address_width <= SDRAM_ADDRESS_BUS_WIDTH_10_BITS), FSP_ERR_INVALID_ARGUMENT);
 
-    /* Calculate the number of SDRAM row address bit.
-     * SDRAM_ADDRESS_BUS_WIDTH_11_BITS = 0x3 -> Row address number = 2^(3 + 8) = 2048 row,
-     * SDRAM_ADDRESS_BUS_WIDTH_12_BITS = 0x4 -> Row address number = 2^(4 + 8) = 4096 row,
-     * SDRAM_ADDRESS_BUS_WIDTH_13_BITS = 0x5 -> Row address number = 2^(5 + 8) = 8192 row,
-     */
-    uint32_t sdram_address_row_bit_number = 1U << (row_address_width + 8);
+    /* Validate divider. */
+    FSP_ERROR_RETURN(SDRAM_REFRESH_CYCLE_SOURCE_DIV_1 != p_cfg->source_div, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(SDRAM_REFRESH_CYCLE_SOURCE_DIV_2 != p_cfg->source_div, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(SDRAM_REFRESH_CYCLE_SOURCE_DIV_8 != p_cfg->source_div, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(SDRAM_REFRESH_CYCLE_SOURCE_DIV_32 != p_cfg->source_div, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(SDRAM_REFRESH_CYCLE_SOURCE_DIV_128 != p_cfg->source_div, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(SDRAM_REFRESH_CYCLE_SOURCE_DIV_512 != p_cfg->source_div, FSP_ERR_INVALID_ARGUMENT);
 
-    /* Required refresh period of SDRAM */
-    uint64_t requested_refresh_period_ns = requested_tref_period_ms * BSC_SDRAM_UNIT_CONVERSION *
-                                           BSC_SDRAM_UNIT_CONVERSION;
-    requested_refresh_period_ns = requested_refresh_period_ns / sdram_address_row_bit_number;
+    /* Validate timing parameters. */
+    FSP_ERROR_RETURN(p_cfg->ras_precharge_cycle <= 3, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(p_cfg->ras_to_cas_delay_cycle <= 3, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(p_cfg->write_recovery_cycle <= 3, FSP_ERR_INVALID_ARGUMENT);
 
-    /* Get count number to count */
-    uint64_t period_counts = requested_refresh_period_ns * peripheral_clock_hz /
-                             BSC_SDRAM_UNIT_CONVERSION / BSC_SDRAM_UNIT_CONVERSION / BSC_SDRAM_UNIT_CONVERSION;
+    FSP_ERROR_RETURN(p_cfg->cas_latency != 0, FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN(p_cfg->cas_latency <= 4, FSP_ERR_INVALID_ARGUMENT);
 
-    /* The number of continuous refresh cycles make the period of occurrence of refresh long. */
-    period_counts = period_counts * (p_instance_ctrl->p_cfg->refresh_request_count);
+    FSP_ERROR_RETURN(((2 == p_cfg->row_cycle) || (3 == p_cfg->row_cycle) ||
+                      (5 == p_cfg->row_cycle) || (8 == p_cfg->row_cycle)),
+                     FSP_ERR_INVALID_ARGUMENT);
 
-    /* BSC is from 4 divisions. Therefore, it is calculated from the 4-divided value first. */
-    period_counts /= 4;
+    /* Validate refresh count. */
+    FSP_ERROR_RETURN(((1 == p_cfg->refresh_request_count) || (2 == p_cfg->refresh_request_count) ||
+                      (4 == p_cfg->refresh_request_count) ||
+                      (6 == p_cfg->refresh_request_count) || (8 == p_cfg->refresh_request_count)),
+                     FSP_ERR_INVALID_ARGUMENT);
 
-    /* Calculate the smallest divider required to fit the period in 8 bits. */
-    uint32_t divider     = 2;
-    uint32_t max_divider = 12;
+    bsc_sdram_extended_cfg_t * p_cfg_extend = (bsc_sdram_extended_cfg_t *) p_cfg->p_extend;
 
-    while (period_counts > (UINT8_MAX + 1))
-    {
-        period_counts /= 2;
-        divider       += 1;
+    /* Validate channel number. */
+    FSP_ERROR_RETURN(BSC_SDRAM_VALID_CS_CHANNELS & (1U << p_cfg_extend->chip_select), FSP_ERR_INVALID_CHANNEL);
 
-        /* 3 (= 2^3 = 8 division), 5 (= 2^5 = 32 division), 7 (= 2^7 = 128 division), 9 (= 2^9 = 512 division)
-         * cannot be set by BSC. */
-        if ((3 == divider) || (5 == divider) || (7 == divider) || (9 == divider))
-        {
-            period_counts /= 2;
-            divider       += 1;
-            continue;
-        }
-
-        /* If the divider is larger than the maximum divider, set the period and divider to the maximum. */
-        if (divider > max_divider)
-        {
-            period_counts = UINT8_MAX;
-            divider       = max_divider;
-            ret           = FSP_ERR_INVALID_ARGUMENT;
-            break;
-        }
-    }
-
-    /* If the requested period is less than one count, set the period to 1 count and the divider to 2. */
-    if (period_counts == 0)
-    {
-        period_counts = 1;
-        divider       = 2;
-    }
-
-    p_ref_cycle->count   = period_counts & UINT8_MAX;
-    p_ref_cycle->divider = (bsc_sdram_refresh_count_source_div_t) divider;
-
-    return ret;
+    return FSP_SUCCESS;
 }
+
+#endif
 
 /*******************************************************************************************************************//**
  * BSC_CMI interrupt processing. When an CMI interrupt fires, the user callback function is called if it is
@@ -527,8 +496,10 @@ static fsp_err_t r_bsc_sdram_refresh_cycle_calc (bsc_sdram_instance_ctrl_t     *
  **********************************************************************************************************************/
 void bsc_sdram_cmi_int_isr (void)
 {
+    BSC_SDRAM_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
-    FSP_CONTEXT_SAVE
+    FSP_CONTEXT_SAVE;
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
@@ -556,5 +527,7 @@ void bsc_sdram_cmi_int_isr (void)
     FSP_PARAMETER_NOT_USED(dummy);
 
     /* Restore context if RTOS is used */
-    FSP_CONTEXT_RESTORE
+    FSP_CONTEXT_RESTORE;
+
+    BSC_SDRAM_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }

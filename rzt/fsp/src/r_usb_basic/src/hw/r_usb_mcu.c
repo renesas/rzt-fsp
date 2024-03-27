@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -840,6 +840,7 @@ bool usb_check_use_usba_module (usb_utr_t * ptr)
 
 void usbfs_interrupt_handler (void)
 {
+	USB_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
 #else                                  /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
     IRQn_Type irq = R_FSP_CurrentIrqGet();
@@ -847,6 +848,7 @@ void usbfs_interrupt_handler (void)
 #endif                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
 
     usbfs_usbi_isr();
+    USB_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 void usbfs_resume_handler (void)

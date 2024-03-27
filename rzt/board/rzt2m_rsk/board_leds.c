@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -48,14 +48,16 @@
  **********************************************************************************************************************/
 
 /** Array of LED IOPORT pins. */
-static const uint16_t g_bsp_prv_leds[] =
+static const uint32_t g_bsp_prv_leds[][2] =
 {
- #if (0 == BSP_CFG_CPU)
-    (uint16_t) BSP_IO_PORT_19_PIN_6,   ///< RLED0
-    (uint16_t) BSP_IO_PORT_19_PIN_4,   ///< RLED1
- #elif (1 == BSP_CFG_CPU)
-    (uint16_t) BSP_IO_PORT_20_PIN_0,   ///< RLED2
-    (uint16_t) BSP_IO_PORT_23_PIN_4,   ///< RLED3
+ #if defined(BSP_CFG_CORE_CR52)
+  #if (0 == BSP_CFG_CORE_CR52)
+    {(uint32_t) BSP_IO_PORT_19_PIN_6, (uint32_t) BSP_IO_REGION_SAFE}, ///< LED0(Green)
+    {(uint32_t) BSP_IO_PORT_19_PIN_4, (uint32_t) BSP_IO_REGION_SAFE}  ///< LED1(Yellow)
+  #elif (1 == BSP_CFG_CORE_CR52)
+    {(uint32_t) BSP_IO_PORT_20_PIN_0, (uint32_t) BSP_IO_REGION_SAFE}, ///< LED2(Red)
+    {(uint32_t) BSP_IO_PORT_23_PIN_4, (uint32_t) BSP_IO_REGION_SAFE}  ///< LED3(Red)
+  #endif
  #endif
 };
 
@@ -67,8 +69,8 @@ static const uint16_t g_bsp_prv_leds[] =
 
 const bsp_leds_t g_bsp_leds =
 {
-    .led_count = (uint16_t) ((sizeof(g_bsp_prv_leds) / sizeof(g_bsp_prv_leds[0]))),
-    .p_leds    = &g_bsp_prv_leds[0]
+    .led_count = (uint16_t) (sizeof(g_bsp_prv_leds) / sizeof(g_bsp_prv_leds[0])),
+    .p_leds    = g_bsp_prv_leds
 };
 
 /***********************************************************************************************************************

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -37,9 +37,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-
-#define SPI_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define SPI_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /*************************************************************************************************
  * Type defines for the SPI interface API
@@ -111,19 +108,22 @@ typedef enum e_spi_clock_delay_count
     SPI_DELAY_COUNT_8                  ///< Set RSPCK delay count to 8 RSPCK
 } spi_delay_count_t;
 
+/** SPI communication clock source. */
+typedef enum e_spi_clock_source
+{
+    SPI_CLOCK_SOURCE_SPI0ASYNCCLK,
+    SPI_CLOCK_SOURCE_SPI1ASYNCCLK,
+    SPI_CLOCK_SOURCE_SPI2ASYNCCLK,
+    SPI_CLOCK_SOURCE_SPI3ASYNCCLK,
+    SPI_CLOCK_SOURCE_PCLKM
+} spi_clock_source_t;
+
 /** SPI Clock Divider settings. */
 typedef struct
 {
     uint8_t spbr;                      ///< SPBR register setting
     uint8_t brdv : 2;                  ///< BRDV setting in SPCMD0
 } rspck_div_setting_t;
-
-/** Synchronizer circuit configuration. */
-typedef enum e_spi_uart_synchronizer
-{
-    SPI_SYNCHRONIZER_NOT_BYPASS = 0x0, ///< Synchronizer bypass disable
-    SPI_SYNCHRONIZER_BYPASS     = 0x1  ///< Synchronizer bypass enable
-} spi_synchronizer_t;
 
 /** Extended SPI interface configuration */
 typedef struct st_spi_extended_cfg
@@ -135,11 +135,11 @@ typedef struct st_spi_extended_cfg
     spi_mosi_idle_value_fixing_t mosi_idle;          ///< Select MOSI idle fixed value and selection
     spi_parity_t                 parity;             ///< Select parity and enable/disable parity
     spi_byte_swap_t              byte_swap;          ///< Select byte swap mode
+    spi_clock_source_t           clock_source;       ///< Communication clock source (PCLKSPI)
     rspck_div_setting_t          spck_div;           ///< Register values for configuring the SPI Clock Divider.
     spi_delay_count_t            spck_delay;         ///< SPI Clock Delay Register Setting
     spi_delay_count_t            ssl_negation_delay; ///< SPI Slave Select Negation Delay Register Setting
     spi_delay_count_t            next_access_delay;  ///< SPI Next-Access Delay Register Setting
-    spi_synchronizer_t           sync_bypass;        ///< DEPRECATED - Clock synchronizer selection
     uint8_t transmit_fifo_threshold;                 ///< Transmit FIFO threshold (0~3)
     uint8_t receive_fifo_threshold;                  ///< Receive FIFO threshold (0~3)
     uint8_t receive_data_ready_detect_adjustment;    ///< Receive data ready detect timing(0~255PCLKSPIn)
@@ -179,31 +179,26 @@ extern const spi_api_t g_spi_on_spi;
 /***********************************************************************************************************************
  * Public APIs
  **********************************************************************************************************************/
-fsp_err_t R_SPI_Open(spi_ctrl_t * p_api_ctrl, spi_cfg_t const * const p_cfg);
+fsp_err_t R_SPI_Open(spi_ctrl_t * p_ctrl, spi_cfg_t const * const p_cfg);
 
-fsp_err_t R_SPI_Read(spi_ctrl_t * const    p_api_ctrl,
-                     void                * p_dest,
-                     uint32_t const        length,
-                     spi_bit_width_t const bit_width);
+fsp_err_t R_SPI_Read(spi_ctrl_t * const p_ctrl, void * p_dest, uint32_t const length, spi_bit_width_t const bit_width);
 
-fsp_err_t R_SPI_Write(spi_ctrl_t * const    p_api_ctrl,
+fsp_err_t R_SPI_Write(spi_ctrl_t * const    p_ctrl,
                       void const          * p_src,
                       uint32_t const        length,
                       spi_bit_width_t const bit_width);
 
-fsp_err_t R_SPI_WriteRead(spi_ctrl_t * const    p_api_ctrl,
+fsp_err_t R_SPI_WriteRead(spi_ctrl_t * const    p_ctrl,
                           void const          * p_src,
                           void                * p_dest,
                           uint32_t const        length,
                           spi_bit_width_t const bit_width);
 
-fsp_err_t R_SPI_Close(spi_ctrl_t * const p_api_ctrl);
+fsp_err_t R_SPI_Close(spi_ctrl_t * const p_ctrl);
 
-fsp_err_t R_SPI_VersionGet(fsp_version_t * p_version);
+fsp_err_t R_SPI_CalculateBitrate(uint32_t bitrate, spi_clock_source_t clock_source, rspck_div_setting_t * spck_div);
 
-fsp_err_t R_SPI_CalculateBitrate(uint32_t bitrate, rspck_div_setting_t * spck_div);
-
-fsp_err_t R_SPI_CallbackSet(spi_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_SPI_CallbackSet(spi_ctrl_t * const          p_ctrl,
                             void (                    * p_callback)(spi_callback_args_t *),
                             void const * const          p_context,
                             spi_callback_args_t * const p_callback_memory);

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -38,8 +38,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define MTU3_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define MTU3_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -164,6 +162,17 @@ typedef enum e_mtu3_io_pin
     MTU3_IO_PIN_MTIOCA_AND_MTIOCB = 2, ///< MTIOCA and MTIOCB
 } mtu3_io_pin_t;
 
+/** MTU3 event group operation
+ *  @note Event link must be configured by the ELC
+ */
+typedef enum e_mtu3_elc_operation_option
+{
+    MTU3_EVENT_OPERATION_SELECT_COUNT_START   = 0x0, ///< The MTU event operation is set to start counting
+    MTU3_EVENT_OPERATION_SELECT_COUNT_RESTART = 0x1, ///< The MTU event operation is set to restart counting
+    MTU3_EVENT_OPERATION_SELECT_INPUT_CAPTURE = 0x2, ///< The MTU event operation is set to input capture
+    MTU3_EVENT_OPERATION_SELECT_DISABLE       = 0x3, ///< The MTU event operation is set to disable
+} mtu3_elc_operation_option_t;
+
 /** Configurations for output pins. */
 typedef struct st_mtu3_output_pin
 {
@@ -254,6 +263,14 @@ typedef struct st_mtu3_status
     timer_state_t state;               ///< Current timer state (running or stopped)
 } mtu3_status_t;
 
+/** MTU3 configuration for event link function*/
+typedef struct st_mtu3_elc_operation
+{
+    mtu3_elc_operation_option_t mtu0_elc_operation; ///< MTU0 operation select
+    mtu3_elc_operation_option_t mtu3_elc_operation; ///< MTU3 operation select
+    mtu3_elc_operation_option_t mtu4_elc_operation; ///< MTU4 operation select
+} mtu3_elc_operation_t;
+
 /** MTU3 set counter. */
 typedef struct st_mtu3_counter
 {
@@ -333,6 +350,33 @@ typedef struct st_mtu3_extended_uvw_cfg
     IRQn_Type capture_w_irq;           ///< Capture/Compare match W interrupt
 } mtu3_extended_uvw_cfg_t;
 
+typedef enum e_mtu3_phase_counting_mode
+{
+    MTU3_PHASE_COUNTING_MODE_NONE,     ///< Disable Counting Mode
+    MTU3_PHASE_COUNTING_MODE_1,        ///< Mode 1
+    MTU3_PHASE_COUNTING_MODE_200,      ///< Mode 2 (00)
+    MTU3_PHASE_COUNTING_MODE_201,      ///< Mode 2 (01)
+    MTU3_PHASE_COUNTING_MODE_210,      ///< Mode 2 (1x)
+    MTU3_PHASE_COUNTING_MODE_300,      ///< Mode 3 (00)
+    MTU3_PHASE_COUNTING_MODE_301,      ///< Mode 3 (01)
+    MTU3_PHASE_COUNTING_MODE_310,      ///< Mode 3 (1x)
+    MTU3_PHASE_COUNTING_MODE_4,        ///< Mode 4
+    MTU3_PHASE_COUNTING_MODE_50,       ///< Mode 5 (0x)
+    MTU3_PHASE_COUNTING_MODE_51,       ///< Mode 5 (10)
+} mtu3_phase_counting_mode_t;
+
+typedef enum e_mtu3_bit_mode
+{
+    MTU3_BIT_MODE_NORMAL_16BIT,        ///< normal mode(16bit mode)
+    MTU3_BIT_MODE_NORMAL_32BIT,        ///< normal mode(32bit mode)
+} mtu3_bit_mode_t;
+
+typedef enum e_mtu3_external_clock
+{
+    MTU3_EXTERNAL_CLOCK_MTCLKA_B = 0x0, ///< MTCLKA, MTCLKB
+    MTU3_EXTERNAL_CLOCK_MTCLKC_D = 0x1, ///< MTCLKC, MTCLKD
+} mtu3_external_clock_t;
+
 /** The MTU3 extension constitutes a unique feature of MTU3. */
 typedef struct st_mtu3_extended_cfg
 {
@@ -353,16 +397,22 @@ typedef struct st_mtu3_extended_cfg
     mtu3_noise_filter_mtclk_setting_t  noise_filter_mtclk_setting;
     mtu3_noise_filter_external_clock_t noise_filter_mtclk_clk;
 
-    bool adc_request_enable;                   ///< A/D Converter Start Request Enable(ch5 and ch8 are excluded)
+    bool adc_request_enable;                        ///< A/D Converter Start Request Enable(ch5 and ch8 are excluded)
+
+    mtu3_elc_operation_t mtu3_elc_event_operation;  ///< MTU3 event link operation
 
     /* Used for other than MTU5 */
-    uint8_t   capture_a_ipl;                   ///< Capture/Compare match A interrupt priority
-    uint8_t   capture_b_ipl;                   ///< Capture/Compare match B interrupt priority
-    IRQn_Type capture_a_irq;                   ///< Capture/Compare match A interrupt
-    IRQn_Type capture_b_irq;                   ///< Capture/Compare match B interrupt
 
-    mtu3_extended_uvw_cfg_t const * p_uvw_cfg; ///< Advanced MTU ch5 features, optional
-    mtu3_extended_pwm_cfg_t const * p_pwm_cfg; ///< Advanced PWM features, optional
+    uint8_t   capture_a_ipl;                        ///< Capture/Compare match A interrupt priority
+    uint8_t   capture_b_ipl;                        ///< Capture/Compare match B interrupt priority
+    IRQn_Type capture_a_irq;                        ///< Capture/Compare match A interrupt
+    IRQn_Type capture_b_irq;                        ///< Capture/Compare match B interrupt
+
+    mtu3_extended_uvw_cfg_t const * p_uvw_cfg;      ///< Advanced MTU ch5 features, optional
+    mtu3_extended_pwm_cfg_t const * p_pwm_cfg;      ///< Advanced PWM features, optional
+    mtu3_phase_counting_mode_t      counting_mode;  ///< Select the counting mode.
+    mtu3_bit_mode_t                 bit_mode;       ///< Select bit mode
+    mtu3_external_clock_t           external_clock; ///< Select External Clock Input Pins
 } mtu3_extended_cfg_t;
 
 /**********************************************************************************************************************
@@ -391,12 +441,11 @@ fsp_err_t R_MTU3_OutputDisable(timer_ctrl_t * const p_ctrl, mtu3_io_pin_t pin);
 fsp_err_t R_MTU3_AdcTriggerSet(timer_ctrl_t * const     p_ctrl,
                                mtu3_adc_compare_match_t which_compare_match,
                                uint16_t                 compare_match_value);
-fsp_err_t R_MTU3_CallbackSet(timer_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_MTU3_CallbackSet(timer_ctrl_t * const          p_ctrl,
                              void (                      * p_callback)(timer_callback_args_t *),
                              void const * const            p_context,
                              timer_callback_args_t * const p_callback_memory);
 fsp_err_t R_MTU3_Close(timer_ctrl_t * const p_ctrl);
-fsp_err_t R_MTU3_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup MTU3)

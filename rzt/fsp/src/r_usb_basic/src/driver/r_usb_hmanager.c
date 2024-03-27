@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -28,7 +28,7 @@
 #include "inc/r_usb_extern.h"
 #include "../hw/inc/r_usb_bitdefine.h"
 #include "../hw/inc/r_usb_reg_access.h"
-#include "r_usb_hhci.h"
+#include "inc/r_usb_hhci.h"
 
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
 
@@ -1207,8 +1207,10 @@ void usb_hstd_enum_get_descriptor (usb_utr_t * ptr, uint16_t addr, uint16_t cnt_
 
     usb_shstd_std_req_msg[ptr->ip].ipp           = ptr->ipp;
     usb_shstd_std_req_msg[ptr->ip].ip            = ptr->ip;
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
     usb_shstd_std_req_msg[ptr->ip].p_transfer_rx = ptr->p_transfer_rx;
     usb_shstd_std_req_msg[ptr->ip].p_transfer_tx = ptr->p_transfer_tx;
+#endif
 
  #if USB_IP_EHCI_OHCI == 1
     usb_hstd_transfer_start(&usb_shstd_std_req_msg[ptr->ip]);

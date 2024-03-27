@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -94,8 +94,10 @@ typedef struct usb_utr
 #endif /* #if (BSP_CFG_RTOS == 2) */
     uint8_t errcnt;                            /* Error count */
     uint8_t segment;                           /* Last flag */
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
     const transfer_instance_t * p_transfer_tx; ///< Send context
     const transfer_instance_t * p_transfer_rx; ///< Receive context
+#endif
     union
     {
         usb_regadr_t ipp;                      /* USB module startAddress(USB0/USB1)*/
@@ -238,20 +240,26 @@ typedef struct usb_pipe_reg
 
 typedef enum e_usb_class_internal
 {
-    USB_CLASS_INTERNAL_PCDC = 0,       ///< PCDC Class
-    USB_CLASS_INTERNAL_PCDCC,          ///< PCDCC Class
-    USB_CLASS_INTERNAL_PCDC2,          ///< PCDC2 Class
-    USB_CLASS_INTERNAL_PCDCC2,         ///< PCDCC2 Class
-    USB_CLASS_INTERNAL_PHID,           ///< PHID Class
-    USB_CLASS_INTERNAL_PVND,           ///< PVND Class
-    USB_CLASS_INTERNAL_HCDC,           ///< HCDC Class
-    USB_CLASS_INTERNAL_HCDCC,          ///< HCDCC Class
-    USB_CLASS_INTERNAL_HHID,           ///< HHID Class
-    USB_CLASS_INTERNAL_HVND,           ///< HVND Class
-    USB_CLASS_INTERNAL_HMSC,           ///< HMSC Class
-    USB_CLASS_INTERNAL_PMSC,           ///< PMSC Class
-    USB_CLASS_INTERNAL_REQUEST,        ///< PMSC Class
-    USB_CLASS_INTERNAL_END             ///< USB Class
+    USB_CLASS_INTERNAL_PCDC = 0,       ///< PCDC Class      0
+    USB_CLASS_INTERNAL_PCDCC,          ///< PCDCC Class     1
+    USB_CLASS_INTERNAL_PCDC2,          ///< PCDC2 Class     2
+    USB_CLASS_INTERNAL_PCDCC2,         ///< PCDCC2 Class    3
+    USB_CLASS_INTERNAL_PHID,           ///< PHID Class      4
+    USB_CLASS_INTERNAL_PHID2,          ///< PHID2 Class     5
+    USB_CLASS_INTERNAL_PAUD,           ///< PAUD Class      6
+    USB_CLASS_INTERNAL_PPRN,           ///< PPRN Class      7
+    USB_CLASS_INTERNAL_DFU,            ///< DFU Class       8
+    USB_CLASS_INTERNAL_PVND,           ///< PVND Class      9
+    USB_CLASS_INTERNAL_HCDC,           ///< HCDC Class      10
+    USB_CLASS_INTERNAL_HCDCC,          ///< HCDCC Class     11
+    USB_CLASS_INTERNAL_HHID,           ///< HHID Class      12
+    USB_CLASS_INTERNAL_HVND,           ///< HVND Class      13
+    USB_CLASS_INTERNAL_HMSC,           ///< HMSC Class      14
+    USB_CLASS_INTERNAL_PMSC,           ///< PMSC Class      15
+    USB_CLASS_INTERNAL_HPRN,           ///< HPRN Class      16
+    USB_CLASS_INTERNAL_HUVC,           ///< HUVC Class      17
+    USB_CLASS_INTERNAL_REQUEST,        ///< USB Class Request      18
+    USB_CLASS_INTERNAL_END,            ///< USB Class       19
 } usb_class_internal_t;
 
 #endif /* R_USB_TYPEDEF_H */

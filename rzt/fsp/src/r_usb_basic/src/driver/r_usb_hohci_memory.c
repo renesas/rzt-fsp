@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -31,7 +31,7 @@
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
  ***********************************************************************************************************************/
-#include "r_usb_hhci_local.h"
+#include "../driver/inc/r_usb_hhci_local.h"
 
 /***********************************************************************************************************************
  * Macro definitions
@@ -64,7 +64,7 @@ BSP_ALIGN_VARIABLE(16) st_usb_ohci_hcd_device_data_t gs_usb_hstd_ohci_device_dat
 USB_BUFFER_PLACE_IN_SECTION;
 BSP_ALIGN_VARIABLE(16) st_usb_ohci_hcd_endpoint_t gs_usb_hstd_ohci_endpoint_memory[USB_OHCI_NUM_ENDPOINT]
 USB_BUFFER_PLACE_IN_SECTION;
-BSP_ALIGN_VARIABLE(16) st_usb_ohci_hcd_endpoint_p_t gs_usb_hstd_ohci_enable_endpoint[USB_OHCI_MAXDEVICE][
+BSP_ALIGN_VARIABLE(16) st_usb_ohci_hcd_endpoint_p_t gs_usb_hstd_ohci_enable_endpoint[USB_OHCI_MAXDEVICE + 1][
     USB_OHCI_MAXENDPOINT][2] USB_BUFFER_PLACE_IN_SECTION;
 BSP_ALIGN_VARIABLE(16) st_usb_ohci_iso_info_t gs_usb_hstd_ohci_iso_endpoint[USB_OHCI_ISO_MAXDEVICE]
 USB_BUFFER_PLACE_IN_SECTION;

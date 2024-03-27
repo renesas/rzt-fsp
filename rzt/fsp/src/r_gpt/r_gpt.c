@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -135,15 +135,6 @@ void gpt_capture_b_isr(void);
  * Private global variables
  **********************************************************************************************************************/
 
-/* Version data structure used by error logger macro. */
-static const fsp_version_t g_gpt_version =
-{
-    .api_version_minor  = TIMER_API_VERSION_MINOR,
-    .api_version_major  = TIMER_API_VERSION_MAJOR,
-    .code_version_major = GPT_CODE_VERSION_MAJOR,
-    .code_version_minor = GPT_CODE_VERSION_MINOR
-};
-
 /***********************************************************************************************************************
  * Global Variables
  **********************************************************************************************************************/
@@ -163,7 +154,6 @@ const timer_api_t g_timer_on_gpt =
     .statusGet    = R_GPT_StatusGet,
     .callbackSet  = R_GPT_CallbackSet,
     .close        = R_GPT_Close,
-    .versionGet   = R_GPT_VersionGet
 };
 
 /*******************************************************************************************************************//**
@@ -735,23 +725,23 @@ fsp_err_t R_GPT_AdcTriggerSet (timer_ctrl_t * const    p_ctrl,
  * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
  * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
-fsp_err_t R_GPT_CallbackSet (timer_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_GPT_CallbackSet (timer_ctrl_t * const          p_ctrl,
                              void (                      * p_callback)(timer_callback_args_t *),
                              void const * const            p_context,
                              timer_callback_args_t * const p_callback_memory)
 {
-    gpt_instance_ctrl_t * p_ctrl = (gpt_instance_ctrl_t *) p_api_ctrl;
+    gpt_instance_ctrl_t * p_instance_ctrl = (gpt_instance_ctrl_t *) p_ctrl;
 
 #if GPT_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_callback);
-    FSP_ERROR_RETURN(GPT_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(GPT_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
     /* Store callback and context */
-    p_ctrl->p_callback        = p_callback;
-    p_ctrl->p_context         = p_context;
-    p_ctrl->p_callback_memory = p_callback_memory;
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
 }
@@ -790,25 +780,6 @@ fsp_err_t R_GPT_Close (timer_ctrl_t * const p_ctrl)
     gpt_disable_interrupt(p_instance_ctrl);
 
     return err;
-}
-
-/*******************************************************************************************************************//**
- * DEPRECATED Sets driver version based on compile time macros. Implements @ref timer_api_t::versionGet.
- *
- * @retval FSP_SUCCESS                 Version stored in p_version.
- * @retval FSP_ERR_ASSERTION           p_version was NULL.
- **********************************************************************************************************************/
-fsp_err_t R_GPT_VersionGet (fsp_version_t * const p_version)
-{
-#if GPT_CFG_PARAM_CHECKING_ENABLE
-
-    /* Verify parameters are valid */
-    FSP_ASSERT(NULL != p_version);
-#endif
-
-    p_version->version_id = g_gpt_version.version_id;
-
-    return FSP_SUCCESS;
 }
 
 /** @} (end addtogroup GPT) */
@@ -1467,8 +1438,10 @@ static void r_gpt_call_callback (gpt_instance_ctrl_t * p_ctrl, timer_event_t eve
  **********************************************************************************************************************/
 static void r_gpt_capture_common_isr (gpt_prv_capture_event_t event)
 {
+    GPT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
-    FSP_CONTEXT_SAVE
+    FSP_CONTEXT_SAVE;
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
@@ -1505,7 +1478,9 @@ static void r_gpt_capture_common_isr (gpt_prv_capture_event_t event)
     }
 
     /* Restore context if RTOS is used */
-    FSP_CONTEXT_RESTORE
+    FSP_CONTEXT_RESTORE;
+
+    GPT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 /*******************************************************************************************************************//**
@@ -1513,6 +1488,8 @@ static void r_gpt_capture_common_isr (gpt_prv_capture_event_t event)
  **********************************************************************************************************************/
 void gpt_counter_overflow_isr (void)
 {
+    GPT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
 
@@ -1546,6 +1523,8 @@ void gpt_counter_overflow_isr (void)
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+
+    GPT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 #if GPT_PRV_EXTRA_FEATURES_ENABLED == GPT_CFG_OUTPUT_SUPPORT_ENABLE
@@ -1555,6 +1534,8 @@ void gpt_counter_overflow_isr (void)
  **********************************************************************************************************************/
 void gpt_counter_underflow_isr (void)
 {
+    GPT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
 
@@ -1568,6 +1549,8 @@ void gpt_counter_underflow_isr (void)
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+
+    GPT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 #endif
@@ -1577,6 +1560,8 @@ void gpt_counter_underflow_isr (void)
  **********************************************************************************************************************/
 void gpt_dead_time_isr (void)
 {
+    GPT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
 
@@ -1590,6 +1575,8 @@ void gpt_dead_time_isr (void)
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+
+    GPT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 /*******************************************************************************************************************//**

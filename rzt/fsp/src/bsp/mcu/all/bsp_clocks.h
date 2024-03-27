@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -22,7 +22,7 @@
 #define BSP_CLOCKS_H
 
 /***********************************************************************************************************************
- * Includes
+ * Includes   <System Includes> , "Project Includes"
  **********************************************************************************************************************/
 #include "bsp_clock_cfg.h"
 #include "bsp_api.h"
@@ -225,7 +225,6 @@ FSP_HEADER
 void bsp_clock_init(void);             // Used internally by BSP
 
 /* Used internally by CGC */
-
 void bsp_prv_clock_set(uint32_t sckcr, uint32_t sckcr2);
 
 /** Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */

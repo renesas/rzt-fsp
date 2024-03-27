@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -37,14 +37,12 @@ FSP_HEADER
 #include "r_ether_cfg.h"
 #include "r_ether_api.h"
 #ifdef GMAC_IMPLEMENT_ETHSW
- #include "r_ethsw_api.h"
-#endif                                  // GMAC_IMPLEMENT_ETHSW
+ #include "r_ethsw.h"
+#endif                                 // GMAC_IMPLEMENT_ETHSW
 
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define GMAC_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define GMAC_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -97,7 +95,7 @@ typedef struct st_gmac_extend_cfg
 
     ether_phy_instance_t const *(*pp_phy_instance)[BSP_FEATURE_GMAC_MAX_PORTS]; ///< Pointer to ETHER_PHY instance
 #ifdef GMAC_IMPLEMENT_ETHSW
-    ethsw_instance_t const * p_ethsw_instance;                                  ///< Pointer to ETHER_SWITCH instance
+    ether_switch_instance_t const * p_ethsw_instance;                           ///< Pointer to ETHER_SWITCH instance
 #endif // GMAC_IMPLEMENT_ETHSW
 } gmac_extend_cfg_t;
 
@@ -130,6 +128,13 @@ typedef struct st_gmac_instance_ctrl
 
     uint32_t local_pause_bits;                    ///< Local pause bits got from PHY.
     uint32_t partner_pause_bits;                  ///< Partner pause bits got from PHY.
+
+    /* Pointer to callback and optional working memory */
+    void (* p_callback)(ether_callback_args_t *);
+    ether_callback_args_t * p_callback_memory;
+
+    /* Pointer to context to be passed into callback function */
+    void const * p_context;
 } gmac_instance_ctrl_t;
 
 /*
@@ -184,6 +189,14 @@ typedef struct st_gmac_pause_resolution
     uint8_t           receive;
 } gmac_pause_resolution_t;
 
+/** Link status of each port */
+typedef enum e_gmac_link_status
+{
+    GMAC_LINK_STATUS_DOWN  = 0,        ///< Link down
+    GMAC_LINK_STATUS_UP    = 1,        ///< Link up
+    GMAC_LINK_STATUS_READY = 2,        ///< Link establishment
+} gmac_link_status_t;
+
 /**********************************************************************************************************************
  * Exported global variables
  **********************************************************************************************************************/
@@ -211,13 +224,16 @@ fsp_err_t R_GMAC_Write(ether_ctrl_t * const p_ctrl, void * const p_buffer, uint3
 
 fsp_err_t R_GMAC_LinkProcess(ether_ctrl_t * const p_ctrl);
 
-fsp_err_t R_GMAC_GetLinkStatus(ether_ctrl_t * const p_ctrl, uint8_t port, ether_link_status_t * p_status);
+fsp_err_t R_GMAC_GetLinkStatus(ether_ctrl_t * const p_ctrl, uint8_t port, gmac_link_status_t * p_status);
 
 fsp_err_t R_GMAC_WakeOnLANEnable(ether_ctrl_t * const p_ctrl);
 
 fsp_err_t R_GMAC_TxStatusGet(ether_ctrl_t * const p_ctrl, void * const p_buffer_address);
 
-fsp_err_t R_GMAC_VersionGet(fsp_version_t * const p_version);
+fsp_err_t R_GMAC_CallbackSet(ether_ctrl_t * const          p_ctrl,
+                             void (                      * p_callback)(ether_callback_args_t *),
+                             void const * const            p_context,
+                             ether_callback_args_t * const p_callback_memory);
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHER)

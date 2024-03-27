@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -38,8 +38,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define POEG_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define POEG_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -79,7 +77,6 @@ fsp_err_t R_POEG_CallbackSet(poeg_ctrl_t * const          p_ctrl,
 fsp_err_t R_POEG_OutputDisable(poeg_ctrl_t * const p_ctrl);
 fsp_err_t R_POEG_Reset(poeg_ctrl_t * const p_ctrl);
 fsp_err_t R_POEG_Close(poeg_ctrl_t * const p_ctrl);
-fsp_err_t R_POEG_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup POEG)

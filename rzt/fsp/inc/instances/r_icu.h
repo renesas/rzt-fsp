@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -69,18 +69,18 @@ extern const external_irq_api_t g_external_irq_on_icu;
 /***********************************************************************************************************************
  * Public APIs
  **********************************************************************************************************************/
-fsp_err_t R_ICU_ExternalIrqOpen(external_irq_ctrl_t * const p_api_ctrl, external_irq_cfg_t const * const p_cfg);
+fsp_err_t R_ICU_ExternalIrqOpen(external_irq_ctrl_t * const p_ctrl, external_irq_cfg_t const * const p_cfg);
 
-fsp_err_t R_ICU_ExternalIrqEnable(external_irq_ctrl_t * const p_api_ctrl);
+fsp_err_t R_ICU_ExternalIrqEnable(external_irq_ctrl_t * const p_ctrl);
 
-fsp_err_t R_ICU_ExternalIrqDisable(external_irq_ctrl_t * const p_api_ctrl);
+fsp_err_t R_ICU_ExternalIrqDisable(external_irq_ctrl_t * const p_ctrl);
 
-fsp_err_t R_ICU_ExternalIrqCallbackSet(external_irq_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_ICU_ExternalIrqCallbackSet(external_irq_ctrl_t * const          p_ctrl,
                                        void (                             * p_callback)(external_irq_callback_args_t *),
                                        void const * const                   p_context,
                                        external_irq_callback_args_t * const p_callback_memory);
 
-fsp_err_t R_ICU_ExternalIrqClose(external_irq_ctrl_t * const p_api_ctrl);
+fsp_err_t R_ICU_ExternalIrqClose(external_irq_ctrl_t * const p_ctrl);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup ICU)

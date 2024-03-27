@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -28,6 +28,7 @@
  *         : 31.08.2015 1.00    First Release
  ***********************************************************************************************************************/
 
+
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
  ***********************************************************************************************************************/
@@ -44,9 +45,9 @@
 /***********************************************************************************************************************
  * Private global variables and functions
  ***********************************************************************************************************************/
-#if  USB_IP_EHCI_OHCI == 1
 
  #define USB_VAL_32          (32U)
+ #define USB_VAL_100         (100U)
  #define USB_VAL_XFF         (0x000000FFU)
  #define USB_VAL_XC0         (0x000000C0U)
  #define USB_VAL_X80         (0x00000080U)
@@ -81,6 +82,7 @@
  #define USB_VAL_X100        (0x00000100U)
  #define USB_VAL_X200        (0x00000200U)
 
+#if  USB_IP_EHCI_OHCI == 1
 /***********************************************************************************************************************
  * Static variables and functions
  ***********************************************************************************************************************/
@@ -754,7 +756,7 @@ void usb_hstd_ohci_port_reset (uint32_t portnum)
 
     /* r_usb_hstd_hci_wait_time(10); */     /* Wait 10ms */
  #ifdef USB_CFG_HMSC_USE
-    R_BSP_SoftwareDelay(100, BSP_DELAY_UNITS_MILLISECONDS);
+    R_BSP_SoftwareDelay(USB_VAL_100, BSP_DELAY_UNITS_MILLISECONDS);
  #else
     R_BSP_SoftwareDelay(10, BSP_DELAY_UNITS_MILLISECONDS);
  #endif

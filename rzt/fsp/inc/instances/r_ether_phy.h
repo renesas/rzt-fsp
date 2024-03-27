@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -41,16 +41,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHER_PHY_CODE_VERSION_MAJOR    (1U)       // DEPRECATED
-#define ETHER_PHY_CODE_VERSION_MINOR    (3U)       // DEPRECATED
-
-/* PHY chip */
-#define ETHER_PHY_CHIP_VSC8541          (1U << 0)  ///< VSC8541
-#define ETHER_PHY_CHIP_KSZ9131          (1U << 1)  ///< KSZ9131
-#define ETHER_PHY_CHIP_KSZ9031          (1U << 2)  ///< KSZ9031
-#define ETHER_PHY_CHIP_KSZ8081          (1U << 3)  ///< KSZ8081
-#define ETHER_PHY_CHIP_KSZ8041          (1U << 4)  ///< KSZ8041
-#define ETHER_PHY_CHIP_OTHER            (1U << 15) ///< Other
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -86,17 +76,6 @@ typedef enum e_ether_phy_mdio
     ETHER_PHY_MDIO_ESC   = 2           ///< EtherCAT
 } ether_phy_mdio_t;
 
-/** Identify PHY-LSI */
-typedef enum e_ether_phy_chip
-{
-    ETHER_PHY_CHIP_VSC8541_TYPE = ETHER_PHY_CHIP_VSC8541, ///< VSC8541
-    ETHER_PHY_CHIP_KSZ9131_TYPE = ETHER_PHY_CHIP_KSZ9131, ///< KSZ9131
-    ETHER_PHY_CHIP_KSZ9031_TYPE = ETHER_PHY_CHIP_KSZ9031, ///< KSZ9031
-    ETHER_PHY_CHIP_KSZ8081_TYPE = ETHER_PHY_CHIP_KSZ8081, ///< KSZ8081
-    ETHER_PHY_CHIP_KSZ8041_TYPE = ETHER_PHY_CHIP_KSZ8041, ///< KSZ8041
-    ETHER_PHY_CHIP_OTHER_TYPE   = ETHER_PHY_CHIP_OTHER    ///< Other
-} ether_phy_chip_t;
-
 /** PHY Speed for setting */
 typedef enum e_ether_phy_speed
 {
@@ -124,18 +103,19 @@ typedef enum e_ether_phy_auto_negotiation
 /** Extended configuration */
 typedef struct s_ether_phy_extend_cfg
 {
-    ether_phy_port_type_t port_type;                 ///< Port type
-    ether_phy_chip_t      phy_chip;                  ///< PHY chip type
-    ether_phy_mdio_t      mdio_type;                 ///< MDIO type
+    ether_phy_port_type_t port_type;                                     ///< Port type
+    ether_phy_mdio_t      mdio_type;                                     ///< MDIO type
 
-    ether_phy_speed_t            bps;                ///< PHY Speed
-    ether_phy_duplex_t           duplex;             ///< PHY Duplex
-    ether_phy_auto_negotiation_t auto_negotiation;   ///< Auto Negotiation ON/OFF
+    ether_phy_speed_t            bps;                                    ///< PHY Speed
+    ether_phy_duplex_t           duplex;                                 ///< PHY Duplex
+    ether_phy_auto_negotiation_t auto_negotiation;                       ///< Auto Negotiation ON/OFF
 
-    bsp_io_port_pin_t phy_reset_pin;                 ///< PHY reset pin
-    uint32_t          phy_reset_time;                ///< PHY reset assert time in millsecond
+    bsp_io_port_pin_t phy_reset_pin;                                     ///< PHY reset pin
+    uint32_t          phy_reset_time;                                    ///< PHY reset assert time in millsecond
 
-    ether_selector_instance_t * p_selector_instance; ///< Instance of selector driver
+    ether_selector_instance_t * p_selector_instance;                     ///< Instance of selector driver
+
+    void (* p_target_init)(ether_phy_instance_ctrl_t * p_instance_ctrl); ///< Pointer to callback that is called to initialize the target.
 } ether_phy_extend_cfg_t;
 
 /**********************************************************************************************************************
@@ -159,6 +139,12 @@ fsp_err_t R_ETHER_PHY_Open(ether_phy_ctrl_t * const p_ctrl, ether_phy_cfg_t cons
 
 fsp_err_t R_ETHER_PHY_Close(ether_phy_ctrl_t * const p_ctrl);
 
+fsp_err_t R_ETHER_PHY_ChipInit(ether_phy_ctrl_t * const p_ctrl, ether_phy_cfg_t const * const p_cfg);
+
+fsp_err_t R_ETHER_PHY_Read(ether_phy_ctrl_t * const p_ctrl, uint32_t reg_addr, uint32_t * const p_data);
+
+fsp_err_t R_ETHER_PHY_Write(ether_phy_ctrl_t * const p_ctrl, uint32_t reg_addr, uint32_t data);
+
 fsp_err_t R_ETHER_PHY_StartAutoNegotiate(ether_phy_ctrl_t * const p_ctrl);
 
 fsp_err_t R_ETHER_PHY_LinkPartnerAbilityGet(ether_phy_ctrl_t * const p_ctrl,
@@ -167,8 +153,6 @@ fsp_err_t R_ETHER_PHY_LinkPartnerAbilityGet(ether_phy_ctrl_t * const p_ctrl,
                                             uint32_t * const         p_partner_pause);
 
 fsp_err_t R_ETHER_PHY_LinkStatusGet(ether_phy_ctrl_t * const p_ctrl);
-
-fsp_err_t R_ETHER_PHY_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHER_PHY)

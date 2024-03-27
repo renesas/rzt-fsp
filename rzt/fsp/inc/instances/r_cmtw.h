@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -35,16 +35,12 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 
-/* Leading zeroes removed to avoid coding standards violation. */
-#define CMTW_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define CMTW_CODE_VERSION_MINOR    (3U) // DEPRECATED
-
 /** Maximum number of clock counts in 16 bit timer. */
-#define CMTW_MAX_CLOCK_COUNTS      (UINT32_MAX)
+#define CMTW_MAX_CLOCK_COUNTS    (UINT32_MAX)
 
 /** Maximum period value allowed for CMTW. */
-#define CMTW_MAX_PERIOD_32BIT      (UINT32_MAX + 1U)
-#define CMTW_MAX_PERIOD_16BIT      (UINT16_MAX + 1U)
+#define CMTW_MAX_PERIOD_32BIT    (UINT32_MAX + 1U)
+#define CMTW_MAX_PERIOD_16BIT    (UINT16_MAX + 1U)
 
 /*******************************************************************************************************************//**
  * @addtogroup CMTW
@@ -109,6 +105,7 @@ typedef struct st_cmtw_instance_ctrl
     const timer_cfg_t * p_cfg;                    // Pointer to initial configurations
     R_CMTW0_Type      * p_reg;                    // Base register for this channel
     uint32_t            period;                   // Current timer period (counts)
+    uint32_t            output_channel_mask;      // Output channel bitmask
 
     void (* p_callback)(timer_callback_args_t *); // Pointer to callback that is called when a timer_event_t occurs.
     timer_callback_args_t * p_callback_memory;    // Pointer to non-secure memory that can be used to pass arguments to a callback in non-secure memory.
@@ -162,11 +159,10 @@ fsp_err_t R_CMTW_Stop(timer_ctrl_t * const p_ctrl);
 fsp_err_t R_CMTW_Open(timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_cfg);
 fsp_err_t R_CMTW_OutputEnable(timer_ctrl_t * const p_ctrl, cmtw_io_pin_t pin);
 fsp_err_t R_CMTW_OutputDisable(timer_ctrl_t * const p_ctrl, cmtw_io_pin_t pin);
-fsp_err_t R_CMTW_CallbackSet(timer_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_CMTW_CallbackSet(timer_ctrl_t * const          p_ctrl,
                              void (                      * p_callback)(timer_callback_args_t *),
                              void const * const            p_context,
                              timer_callback_args_t * const p_callback_memory);
-fsp_err_t R_CMTW_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup CMTW)

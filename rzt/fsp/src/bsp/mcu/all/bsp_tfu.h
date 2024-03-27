@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -69,12 +69,25 @@ FSP_HEADER
  #error "Compiler not supported!"
 #endif
 
+#if BSP_CFG_USE_TFU_MATHLIB
+ #define sinf(x)                    __sinf(x)
+ #define cosf(x)                    __cosf(x)
+ #define atan2f(y, x)               __atan2f(y, x)
+ #define hypotf(x, y)               __hypotf(x, y)
+ #define atan2hypotf(y, x, a, h)    __atan2hypotf(y, x, a, h)
+ #define sincosf(a, s, c)           __sincosf(a, s, c)
+#endif
+
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
 
 /***********************************************************************************************************************
  * Exported global variables
+ **********************************************************************************************************************/
+
+/***********************************************************************************************************************
+ * Exported global functions (to be accessed by other files)
  **********************************************************************************************************************/
 
 /***********************************************************************************************************************
@@ -206,19 +219,6 @@ BSP_TFU_INLINE void __atan2hypotf (float y_cord, float x_cord, float * atan2, fl
     /* Read sqrt (x_cord2 + y_cord2) from R_TFU->ATDT0 */
     *hypot = R_TFU->ATDT0 * R_TFU_HYPOT_SCALING_FACTOR;
 }
-
-#if BSP_CFG_USE_TFU_MATHLIB
- #define sinf(x)                    __sinf(x)
- #define cosf(x)                    __cosf(x)
- #define atan2f(y, x)               __atan2f(y, x)
- #define hypotf(x, y)               __hypotf(x, y)
- #define atan2hypotf(y, x, a, h)    __atan2hypotf(y, x, a, h)
- #define sincosf(a, s, c)           __sincosf(a, s, c)
-#endif
-
-/***********************************************************************************************************************
- * Exported global functions (to be accessed by other files)
- **********************************************************************************************************************/
 
 /** @} (end addtogroup BSP_MCU) */
 

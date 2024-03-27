@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,7 +19,7 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_NETWORKING_INTERFACES
  * @defgroup ETHERCAT_SSC_PORT_API EtherCAT SSC Interface
  * @brief Interface for EtherCAT SSC functions.
  *
@@ -27,8 +27,6 @@
  * The EtherCAT SSC port module (rm_ethercat_ssc_port) provides an API for EtherCAT Slave Stack Code that use
  * the EtherCAT Slave Controler peripheral.
  *
- * Implemented by:
- * - @ref RM_ETHERCAT_SSC_PORT
  *
  * @{
  **********************************************************************************************************************/
@@ -43,7 +41,6 @@
 /* Register definitions, common services and error codes. */
 #include "bsp_api.h"
 #include "r_timer_api.h"
-#include "rm_ethercat_ssc_port_cfg.h"
 
 /* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
@@ -51,8 +48,6 @@ FSP_HEADER
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define ETHERCAT_SSC_PORT_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define ETHERCAT_SSC_PORT_API_VERSION_MINOR    (3U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -73,10 +68,7 @@ typedef struct st_ethercat_ssc_port_callback_args
     void const              * p_context; ///< Placeholder for user data.  Set in @ref ethercat_ssc_port_api_t::open function in @ref ethercat_ssc_port_cfg_t.
 } ethercat_ssc_port_callback_args_t;
 
-/** Control block.  Allocate an instance specific control block to pass into the API calls.
- * @par Implemented as
- * - ethercat_ssc_port_instance_ctrl_t
- */
+/** Control block.  Allocate an instance specific control block to pass into the API calls. */
 typedef void ethercat_ssc_port_ctrl_t;
 
 /** Configuration parameters. */
@@ -84,16 +76,16 @@ typedef struct st_ethercat_ssc_port_cfg
 {
     uint32_t reset_hold_time;                                        ///< PHY Reset signal hold time (ms)
     uint32_t reset_wait_time;                                        ///< Wait time after PHY reset relase (us)
-    uint32_t offset_address;                                         ///< PHY offset physical address
+    uint32_t address_offset;                                         ///< Offset of the PHY address
 
-    IRQn_Type esc_cat_irq;                                           ///< EtherCAT IRQ interrupt number
-    uint8_t   esc_cat_ipl;                                           ///< EtherCAT interrupt priority
+    IRQn_Type common_irq;                                            ///< EtherCAT IRQ interrupt number
+    uint8_t   common_ipl;                                            ///< EtherCAT interrupt priority
 
-    IRQn_Type esc_sync0_irq;                                         ///< EtherCAT Sync0 IRQ interrupt number
-    uint8_t   esc_sync0_ipl;                                         ///< EtherCAT Sync0 interrupt priority
+    IRQn_Type sync0_irq;                                             ///< EtherCAT Sync0 IRQ interrupt number
+    uint8_t   sync0_ipl;                                             ///< EtherCAT Sync0 interrupt priority
 
-    IRQn_Type esc_sync1_irq;                                         ///< EtherCAT Sync1 IRQ interrupt number
-    uint8_t   esc_sync1_ipl;                                         ///< EtherCAT Sync1 interrupt priority
+    IRQn_Type sync1_irq;                                             ///< EtherCAT Sync1 IRQ interrupt number
+    uint8_t   sync1_ipl;                                             ///< EtherCAT Sync1 interrupt priority
 
     void (* p_callback)(ethercat_ssc_port_callback_args_t * p_args); ///< Callback provided when an ISR occurs.
 
@@ -108,8 +100,6 @@ typedef struct st_ethercat_ssc_port_cfg
 typedef struct st_ethercat_ssc_port_api
 {
     /** Open driver.
-     * @par Implemented as
-     * - @ref RM_ETHERCAT_SSC_PORT_Open()
      *
      * @param[in]  p_api_ctrl       Pointer to control structure.
      * @param[in]  p_cfg            Pointer to EtherCAT SSC port configuration structure.
@@ -117,20 +107,10 @@ typedef struct st_ethercat_ssc_port_api
     fsp_err_t (* open)(ethercat_ssc_port_ctrl_t * const p_api_ctrl, ethercat_ssc_port_cfg_t const * const p_cfg);
 
     /** Close driver.
-     * @par Implemented as
-     * - @ref RM_ETHERCAT_SSC_PORT_Close()
      *
      * @param[in]  p_api_ctrl       Pointer to control structure.
      */
     fsp_err_t (* close)(ethercat_ssc_port_ctrl_t * const p_api_ctrl);
-
-    /** Return the version of the driver.
-     * @par Implemented as
-     * - @ref RM_ETHERCAT_SSC_PORT_VersionGet()
-     *
-     * @param[out] p_data       Memory address to return version information to.
-     */
-    fsp_err_t (* versionGet)(fsp_version_t * const p_data);
 } ethercat_ssc_port_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -32,16 +32,15 @@
  * Includes   <System Includes> , "Project Includes"
  ***********************************************************************************************************************/
 
-#include "r_usb_basic_local.h"
 #if (BSP_CFG_RTOS == 2)
- #include "r_usb_cstd_rtos.h"
+ #include "../driver/inc/r_usb_cstd_rtos.h"
 #endif                                 /* (BSP_CFG_RTOS == 2) */
-#if  USB_IP_EHCI_OHCI == 1
 
+#include "../driver/inc/r_usb_basic_local.h"
 /***********************************************************************************************************************
  * Macro definitions
  ***********************************************************************************************************************/
-
+#if  USB_IP_EHCI_OHCI == 1
 /***********************************************************************************************************************
  * External variables and functions
  ***********************************************************************************************************************/

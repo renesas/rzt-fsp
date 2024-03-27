@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -51,20 +51,22 @@ FSP_HEADER
 /** Information on how many LEDs and what pins they are on. */
 typedef struct st_bsp_leds
 {
-    uint16_t         led_count;        ///< The number of LEDs on this board
-    uint16_t const * p_leds;           ///< Pointer to an array of IOPORT pins for controlling LEDs
+    uint16_t led_count;                ///< The number of LEDs on this board
+    uint32_t const (*p_leds)[2];       ///< Pointer to an array of IOPORT pins for controlling LEDs
 } bsp_leds_t;
 
 /** Available user-controllable LEDs on this board. These enums can be can be used to index into the array of LED pins
  * found in the bsp_leds_t structure. */
 typedef enum e_bsp_led
 {
-#if (0 == BSP_CFG_CPU)
+#if defined(BSP_CFG_CORE_CR52)
+ #if (0 == BSP_CFG_CORE_CR52)
     BSP_LED_RLED0 = 0,                 ///< Green
     BSP_LED_RLED1 = 1,                 ///< Yellow
-#elif (1 == BSP_CFG_CPU)
+ #elif (1 == BSP_CFG_CORE_CR52)
     BSP_LED_RLED2 = 0,                 ///< Red
     BSP_LED_RLED3 = 1,                 ///< Red
+ #endif
 #endif
 } bsp_led_t;
 

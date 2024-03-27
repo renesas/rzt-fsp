@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -23,15 +23,13 @@
 
 /*******************************************************************************************************************//**
  * @defgroup THREE_PHASE_API Three-Phase Interface
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_TIMERS_INTERFACES
  * @brief Interface for three-phase timer functions.
  *
  * @section THREE_PHASE_API_SUMMARY Summary
  * The Three-Phase interface provides functionality for synchronous start/stop/reset control of three timer channels for
  * use in 3-phase motor control applications.
  *
- * Implemented by:
- * - @ref GPT_THREE_PHASE
  *
  * @{
  **********************************************************************************************************************/
@@ -52,8 +50,6 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 /* Leading zeroes removed to avoid coding standard violation. */
-#define THREE_PHASE_API_VERSION_MAJOR    (1U) // DEPRECATED
-#define THREE_PHASE_API_VERSION_MINOR    (2U) // DEPRECATED
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -77,13 +73,22 @@ typedef enum e_three_phase_buffer_mode
 /** Struct for passing duty cycle values to @ref three_phase_api_t::dutyCycleSet */
 typedef struct st_three_phase_duty_cycle
 {
-    uint32_t duty[3];                  ///< Duty cycle
-    uint32_t duty_buffer[3];           ///< Double-buffer for duty cycle values
+    /**
+     * Duty cycle.
+     * Note: When the GPT instances are configured in TIMER_MODE_TRIANGLE_WAVE_ASYMMETRIC_PWM_MODE3,
+     *       this value sets the duty cycle count that is transfered to GTCCRA/B at the trough.
+     */
+    uint32_t duty[3];
+
+    /**
+     * Double-buffer for duty cycle values.
+     * Note: When the GPT instances are configured in TIMER_MODE_TRIANGLE_WAVE_ASYMMETRIC_PWM_MODE3,
+     *       this value sets the duty cycle count that is transfered to GTCCRA/B at the crest.
+     */
+    uint32_t duty_buffer[3];
 } three_phase_duty_cycle_t;
 
 /** Three-Phase control block.  Allocate an instance specific control block to pass into the timer API calls.
- * @par Implemented as
- * - gpt_three_phase_instance_ctrl_t
  */
 typedef void three_phase_ctrl_t;
 
@@ -107,8 +112,6 @@ typedef struct st_three_phase_cfg
 typedef struct st_three_phase_api
 {
     /** Initial configuration.
-     * @par Implemented as
-     * - @ref R_GPT_THREE_PHASE_Open()
      *
      * @param[in]   p_ctrl     Pointer to control block. Must be declared by user. Elements set here.
      * @param[in]   p_cfg      Pointer to configuration structure. All elements of this structure must be set by user.
@@ -116,24 +119,18 @@ typedef struct st_three_phase_api
     fsp_err_t (* open)(three_phase_ctrl_t * const p_ctrl, three_phase_cfg_t const * const p_cfg);
 
     /** Start all three timers synchronously.
-     * @par Implemented as
-     * - @ref R_GPT_THREE_PHASE_Start()
      *
      * @param[in]   p_ctrl     Control block set in @ref three_phase_api_t::open call for this timer.
      */
     fsp_err_t (* start)(three_phase_ctrl_t * const p_ctrl);
 
     /** Stop all three timers synchronously.
-     * @par Implemented as
-     * - @ref R_GPT_THREE_PHASE_Stop()
      *
      * @param[in]   p_ctrl     Control block set in @ref three_phase_api_t::open call for this timer.
      */
     fsp_err_t (* stop)(three_phase_ctrl_t * const p_ctrl);
 
     /** Reset all three timers synchronously.
-     * @par Implemented as
-     * - @ref R_GPT_THREE_PHASE_Reset()
      *
      * @param[in]   p_ctrl     Control block set in @ref three_phase_api_t::open call for this timer.
      */
@@ -142,8 +139,6 @@ typedef struct st_three_phase_api
     /** Sets the duty cycle match values.  If the timer is counting, the updated duty cycle is
      * reflected after the next timer expiration.
      *
-     * @par Implemented as
-     * - @ref R_GPT_THREE_PHASE_DutyCycleSet()
      *
      * @param[in]   p_ctrl             Control block set in @ref three_phase_api_t::open call for this timer.
      * @param[in]   p_duty_cycle       Duty cycle values for all three timer channels.
@@ -151,8 +146,6 @@ typedef struct st_three_phase_api
     fsp_err_t (* dutyCycleSet)(three_phase_ctrl_t * const p_ctrl, three_phase_duty_cycle_t * const p_duty_cycle);
 
     /** Specify callback function and optional context pointer and working memory pointer.
-     * @par Implemented as
-     * - @ref R_GPT_THREE_PHASE_CallbackSet()
      *
      * @param[in]   p_ctrl                   Control block set in @ref three_phase_api_t::open call.
      * @param[in]   p_callback               Callback function to register with GPT U-channel
@@ -160,24 +153,14 @@ typedef struct st_three_phase_api
      * @param[in]   p_working_memory         Pointer to volatile memory where callback structure can be allocated.
      *                                       Callback arguments allocated here are only valid during the callback.
      */
-    fsp_err_t (* callbackSet)(three_phase_ctrl_t * const p_api_ctrl, void (* p_callback)(timer_callback_args_t *),
+    fsp_err_t (* callbackSet)(three_phase_ctrl_t * const p_ctrl, void (* p_callback)(timer_callback_args_t *),
                               void const * const p_context, timer_callback_args_t * const p_callback_memory);
 
     /** Allows driver to be reconfigured and may reduce power consumption.
-     * @par Implemented as
-     * - @ref R_GPT_THREE_PHASE_Close()
      *
      * @param[in]   p_ctrl     Control block set in @ref three_phase_api_t::open call for this timer.
      */
     fsp_err_t (* close)(three_phase_ctrl_t * const p_ctrl);
-
-    /** DEPRECATED Get version and store it in provided pointer p_version.
-     * @par Implemented as
-     * - @ref R_GPT_THREE_PHASE_VersionGet()
-     *
-     * @param[out]  p_version  Code and API version used.
-     */
-    fsp_err_t (* versionGet)(fsp_version_t * const p_version);
 } three_phase_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */

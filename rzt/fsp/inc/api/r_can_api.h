@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -22,7 +22,7 @@
 #define R_CAN_API_H
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_CONNECTIVITY_INTERFACES
  * @defgroup CAN_API CAN Interface
  * @brief Interface for CAN peripheral
  *
@@ -33,9 +33,6 @@
  * - Interrupt driven transmit/receive processing
  * - Callback function support with returning event code
  * - Hardware resource locking during a transaction
- *
- * Implemented by:
- * - @ref CANFD
  *
  * @{
  **********************************************************************************************************************/
@@ -67,18 +64,19 @@ FSP_HEADER
 /** CAN event codes */
 typedef enum e_can_event
 {
-    CAN_EVENT_ERR_WARNING          = 2,    ///< Error Warning event.
-    CAN_EVENT_ERR_PASSIVE          = 4,    ///< Error Passive event.
-    CAN_EVENT_ERR_BUS_OFF          = 8,    ///< Bus Off event.
-    CAN_EVENT_BUS_RECOVERY         = 16,   ///< Bus Off Recovery event.
-    CAN_EVENT_MAILBOX_MESSAGE_LOST = 32,   ///< Mailbox has been overrun.
-    CAN_EVENT_ERR_BUS_LOCK         = 128,  ///< Bus lock detected (32 consecutive dominant bits).
-    CAN_EVENT_ERR_CHANNEL          = 256,  ///< Channel error has occurred.
-    CAN_EVENT_TX_ABORTED           = 512,  ///< Transmit abort event.
-    CAN_EVENT_RX_COMPLETE          = 1024, ///< Receive complete event.
-    CAN_EVENT_TX_COMPLETE          = 2048, ///< Transmit complete event.
-    CAN_EVENT_ERR_GLOBAL           = 4096, ///< Global error has occurred.
-    CAN_EVENT_TX_FIFO_EMPTY        = 8192, ///< Transmit FIFO is empty.
+    CAN_EVENT_ERR_WARNING          = 0x0002, ///< Error Warning event.
+    CAN_EVENT_ERR_PASSIVE          = 0x0004, ///< Error Passive event.
+    CAN_EVENT_ERR_BUS_OFF          = 0x0008, ///< Bus Off event.
+    CAN_EVENT_BUS_RECOVERY         = 0x0010, ///< Bus Off Recovery event.
+    CAN_EVENT_MAILBOX_MESSAGE_LOST = 0x0020, ///< Mailbox has been overrun.
+    CAN_EVENT_ERR_BUS_LOCK         = 0x0080, ///< Bus lock detected (32 consecutive dominant bits).
+    CAN_EVENT_ERR_CHANNEL          = 0x0100, ///< Channel error has occurred.
+    CAN_EVENT_TX_ABORTED           = 0x0200, ///< Transmit abort event.
+    CAN_EVENT_RX_COMPLETE          = 0x0400, ///< Receive complete event.
+    CAN_EVENT_TX_COMPLETE          = 0x0800, ///< Transmit complete event.
+    CAN_EVENT_ERR_GLOBAL           = 0x1000, ///< Global error has occurred.
+    CAN_EVENT_TX_FIFO_EMPTY        = 0x2000, ///< Transmit FIFO is empty.
+    CAN_EVENT_FIFO_MESSAGE_LOST    = 0x4000, ///< Receive FIFO overrun.
 } can_event_t;
 
 /** CAN Operation modes */
@@ -160,9 +158,8 @@ typedef struct st_can_callback_args
         uint32_t mailbox;              ///< Mailbox number of interrupt source.
         uint32_t buffer;               ///< Buffer number of interrupt source.
     };
-    can_frame_t * p_frame;             // DEPRECATED Pointer to the received frame.
-    void const  * p_context;           ///< Context provided to user during callback.
-    can_frame_t   frame;               ///< Received frame data.
+    void const * p_context;            ///< Context provided to user during callback.
+    can_frame_t  frame;                ///< Received frame data.
 } can_callback_args_t;
 
 /** CAN Configuration */
@@ -185,9 +182,6 @@ typedef struct st_can_cfg
 } can_cfg_t;
 
 /** CAN control block.  Allocate an instance specific control block to pass into the CAN API calls.
- * @par Implemented as
- * - can_instance_ctrl_t
- * - canfd_instance_ctrl_t
  */
 typedef void can_ctrl_t;
 
@@ -195,8 +189,6 @@ typedef void can_ctrl_t;
 typedef struct st_can_api
 {
     /** Open function for CAN device
-     * @par Implemented as
-     * - R_CANFD_Open()
      *
      * @param[in,out]  p_ctrl     Pointer to the CAN control block. Must be declared by user. Value set here.
      * @param[in]      p_cfg      Pointer to CAN configuration structure. All elements of this structure must be set by
@@ -205,8 +197,6 @@ typedef struct st_can_api
     fsp_err_t (* open)(can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg);
 
     /** Write function for CAN device
-     * @par Implemented as
-     * - R_CANFD_Write()
      * @param[in]   p_ctrl          Pointer to the CAN control block.
      * @param[in]   buffer          Buffer number (mailbox or message buffer) to write to.
      * @param[in]   p_frame         Pointer for frame of CAN ID, DLC, data and frame type to write.
@@ -214,8 +204,6 @@ typedef struct st_can_api
     fsp_err_t (* write)(can_ctrl_t * const p_ctrl, uint32_t buffer_number, can_frame_t * const p_frame);
 
     /** Read function for CAN device
-     * @par Implemented as
-     * - R_CANFD_Read()
      * @param[in]   p_ctrl          Pointer to the CAN control block.
      * @param[in]   buffer          Message buffer (number) to read from.
      * @param[in]   p_frame         Pointer to store the CAN ID, DLC, data and frame type.
@@ -223,25 +211,19 @@ typedef struct st_can_api
     fsp_err_t (* read)(can_ctrl_t * const p_ctrl, uint32_t buffer_number, can_frame_t * const p_frame);
 
     /** Close function for CAN device
-     * @par Implemented as
-     * - R_CANFD_Close()
      * @param[in]   p_ctrl     Pointer to the CAN control block.
      */
     fsp_err_t (* close)(can_ctrl_t * const p_ctrl);
 
     /** Mode Transition function for CAN device
-     * @par Implemented as
-     * - R_CANFD_ModeTransition()
      * @param[in]   p_ctrl               Pointer to the CAN control block.
      * @param[in]   operation_mode       Destination CAN operation state.
      * @param[in]   test_mode            Destination CAN test state.
      */
-    fsp_err_t (* modeTransition)(can_ctrl_t * const p_api_ctrl, can_operation_mode_t operation_mode,
+    fsp_err_t (* modeTransition)(can_ctrl_t * const p_ctrl, can_operation_mode_t operation_mode,
                                  can_test_mode_t test_mode);
 
     /** Get CAN channel info.
-     * @par Implemented as
-     * - R_CANFD_InfoGet()
      *
      * @param[in]   p_ctrl  Handle for channel (pointer to channel control block)
      * @param[out]  p_info  Memory address to return channel specific data to.
@@ -249,8 +231,6 @@ typedef struct st_can_api
     fsp_err_t (* infoGet)(can_ctrl_t * const p_ctrl, can_info_t * const p_info);
 
     /** Specify callback function and optional context pointer and working memory pointer.
-     * @par Implemented as
-     * - R_CANFD_CallbackSet()
      *
      * @param[in]   p_ctrl                   Control block set in @ref can_api_t::open call.
      * @param[in]   p_callback               Callback function to register
@@ -258,7 +238,7 @@ typedef struct st_can_api
      * @param[in]   p_working_memory         Pointer to volatile memory where callback structure can be allocated.
      *                                       Callback arguments allocated here are only valid during the callback.
      */
-    fsp_err_t (* callbackSet)(can_ctrl_t * const p_api_ctrl, void (* p_callback)(can_callback_args_t *),
+    fsp_err_t (* callbackSet)(can_ctrl_t * const p_ctrl, void (* p_callback)(can_callback_args_t *),
                               void const * const p_context, can_callback_args_t * const p_callback_memory);
 } can_api_t;
 
@@ -271,7 +251,7 @@ typedef struct st_can_instance
 } can_instance_t;
 
 /*******************************************************************************************************************//**
- * @} (end addtogroup CAN_API)
+ * @} (end defgroup CAN_API)
  **********************************************************************************************************************/
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */

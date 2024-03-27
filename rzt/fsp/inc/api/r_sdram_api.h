@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -19,19 +19,17 @@
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * @ingroup RENESAS_INTERFACES
+ * @ingroup RENESAS_SYSTEM_INTERFACES
  * @defgroup SDRAM_API SDRAM Interface
  * @brief Interface for external sdram communication.
  *
  * @section SDRAM_API_SUMMARY Summary
  * The SDRAM interface provides APIs and definitions for SDRAM communication.
  *
- * Implemented by:
- * - @ref BSC_SDRAM
  * @{
  **********************************************************************************************************************/
-#ifndef SDRAM_H
-#define SDRAM_H
+#ifndef R_SDRAM_API_H
+#define R_SDRAM_API_H
 
 /***********************************************************************************************************************
  * Includes
@@ -47,19 +45,6 @@ FSP_HEADER
  * Typedef definitions
  **********************************************************************************************************************/
 
-/** SDRAM chip select. */
-typedef enum e_sdram_chip_select
-{
-    SDRAM_CHIP_SELECT_0 = 0x00,        ///< Device connected to Chip-Select 0
-    SDRAM_CHIP_SELECT_1,               ///< Device connected to Chip-Select 1
-    SDRAM_CHIP_SELECT_2,               ///< Device connected to Chip-Select 2
-    SDRAM_CHIP_SELECT_3,               ///< Device connected to Chip-Select 3
-    SDRAM_CHIP_SELECT_4,               ///< Device connected to Chip-Select 4
-    SDRAM_CHIP_SELECT_5,               ///< Device connected to Chip-Select 5
-    SDRAM_CHIP_SELECT_6,               ///< Device connected to Chip-Select 6
-    SDRAM_CHIP_SELECT_7,               ///< Device connected to Chip-Select 7
-} sdram_chip_select_t;
-
 /** SDRAM data bus width. */
 typedef enum e_sdram_data_bus_width
 {
@@ -68,75 +53,74 @@ typedef enum e_sdram_data_bus_width
     SDRAM_DATA_BUS_WIDTH_32BIT = 0x03, ///< Data bus width 32bit
 } sdram_data_bus_width_t;
 
-/** SDRAM wait cycle. */
-typedef enum e_sdram_wait_cycle
-{
-    SDRAM_WAIT_CYCLE_0 = 0x00,
-    SDRAM_WAIT_CYCLE_1 = 0x01,
-    SDRAM_WAIT_CYCLE_2 = 0x02,
-    SDRAM_WAIT_CYCLE_3 = 0x03,
-    SDRAM_WAIT_CYCLE_4 = 0x04,
-    SDRAM_WAIT_CYCLE_5 = 0x05,
-    SDRAM_WAIT_CYCLE_6 = 0x06,
-    SDRAM_WAIT_CYCLE_7 = 0x07,
-    SDRAM_WAIT_CYCLE_8 = 0x08,
-} sdram_wait_cycle_t;
-
 /** Number of bits of SDRAM Row/Column address. */
 typedef enum e_sdram_address_width
 {
-    SDRAM_ADDRESS_BUS_WIDTH_8_BITS  = 0x0,
-    SDRAM_ADDRESS_BUS_WIDTH_9_BITS  = 0x1,
-    SDRAM_ADDRESS_BUS_WIDTH_10_BITS = 0x2,
-    SDRAM_ADDRESS_BUS_WIDTH_11_BITS = 0x3,
-    SDRAM_ADDRESS_BUS_WIDTH_12_BITS = 0x4,
-    SDRAM_ADDRESS_BUS_WIDTH_13_BITS = 0x5,
+    SDRAM_ADDRESS_BUS_WIDTH_8_BITS  = 0x0, ///< Address bus width 8bit
+    SDRAM_ADDRESS_BUS_WIDTH_9_BITS  = 0x1, ///< Address bus width 9bit
+    SDRAM_ADDRESS_BUS_WIDTH_10_BITS = 0x2, ///< Address bus width 10bit
+    SDRAM_ADDRESS_BUS_WIDTH_11_BITS = 0x3, ///< Address bus width 11bit
+    SDRAM_ADDRESS_BUS_WIDTH_12_BITS = 0x4, ///< Address bus width 12bit
+    SDRAM_ADDRESS_BUS_WIDTH_13_BITS = 0x5, ///< Address bus width 13bit
 } sdram_address_bus_width_t;
 
 /** Write burst mode */
 typedef enum e_sdram_write_burst_mode
 {
-    SDRAM_WRITE_BURST_MODE_BURST_READ_BURST_WRITE  = 0x0U,
-    SDRAM_WRITE_BURST_MODE_BURST_READ_SINGLE_WRITE = 0x01U,
-} sdram_write_burst_mode;
+    SDRAM_WRITE_BURST_MODE_BURST  = 0x0U,  ///< Burst write setting
+    SDRAM_WRITE_BURST_MODE_SINGLE = 0x01U, ///< Single write setting
+} sdram_write_burst_mode_t;
+
+/** SDRAM Refresh cycle clock source divisors */
+typedef enum e_sdram_refresh_cycle_source_div
+{
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_1    = 0,  ///< SDRAM Refresh cycle clock source divided by 1
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_2    = 1,  ///< SDRAM Refresh cycle clock source divided by 2
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_4    = 2,  ///< SDRAM Refresh cycle clock source divided by 4
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_8    = 3,  ///< SDRAM Refresh cycle clock source divided by 8
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_16   = 4,  ///< SDRAM Refresh cycle clock source divided by 16
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_32   = 5,  ///< SDRAM Refresh cycle clock source divided by 32
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_64   = 6,  ///< SDRAM Refresh cycle clock source divided by 64
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_128  = 7,  ///< SDRAM Refresh cycle clock source divided by 128
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_256  = 8,  ///< SDRAM Refresh cycle clock source divided by 256
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_512  = 9,  ///< SDRAM Refresh cycle clock source divided by 512
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_1024 = 10, ///< SDRAM Refresh cycle clock source divided by 1024
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_2048 = 11, ///< SDRAM Refresh cycle clock source divided by 2048
+    SDRAM_REFRESH_CYCLE_SOURCE_DIV_4096 = 12, ///< SDRAM Refresh cycle clock source divided by 4096
+} sdram_refresh_cycle_source_div_t;
 
 /** SDRAM configuration */
 typedef struct st_sdram_cfg
 {
-    sdram_chip_select_t    chip_select;             ///< Select which device to use
     sdram_data_bus_width_t data_width;              ///< Select data bus width
 
     sdram_address_bus_width_t row_address_width;    ///< Number of bits of SDRAM Row address
     sdram_address_bus_width_t column_address_width; ///< Number of bits of SDRAM Column address
 
-    sdram_wait_cycle_t ras_precharge_cycle;         ///< Cycle between PRECHARGE and ACTIVE command (tRP)
-    sdram_wait_cycle_t ras_to_cas_delay_cycle;      ///< Cycle between ACTIVE and READ/WRITE command (tRCD)
-    sdram_wait_cycle_t cas_latency;                 ///< CAS Latency cycle (tCL)
-    sdram_wait_cycle_t write_recovery_cycle;        ///< Cycle between Data In and PRECHARGE command (tWR)
-    sdram_wait_cycle_t row_cycle;                   ///< Cycle between REFRESH/ACTIVE and REFRESH/ACTIVE command (tRC)
+    uint32_t ras_precharge_cycle;                   ///< Cycle between PRECHARGE and ACTIVE command (tRP)
+    uint32_t ras_to_cas_delay_cycle;                ///< Cycle between ACTIVE and READ/WRITE command (tRCD)
+    uint32_t cas_latency;                           ///< CAS Latency cycle (tCL)
+    uint32_t write_recovery_cycle;                  ///< Cycle between Data In and PRECHARGE command (tWR)
+    uint32_t row_cycle;                             ///< Cycle between REFRESH/ACTIVE and REFRESH/ACTIVE command (tRC)
 
-    uint32_t auto_refresh_cycle;                    ///< Auto-Refresh cycle time (ms)
+    uint32_t auto_refresh_cycle;                    ///< Auto-Refresh cycle time
+    sdram_refresh_cycle_source_div_t source_div;    ///< Auto-Refresh cycle clock source divider
 
     uint32_t refresh_request_count;                 ///< The number of continuous refresh cycles
 
-    /** Select Burst Read / Burst Write or Burst Read / Single Write in MRS */
-    sdram_write_burst_mode write_burst_mode;
+    /** Select Burst Write or Single Write in MRS */
+    sdram_write_burst_mode_t write_burst_mode;
 
     void const * p_extend;             ///< SDRAM hardware dependent configuration
 } sdram_cfg_t;
 
-/** SDRAM control block.  Allocate an instance specific control block to pass into the SDRAM API calls.
- * @par Implemented as
- * - bsc_sdram_instance_ctrl_t
- */
+/** SDRAM control block.  Allocate an instance specific control block to pass into the SDRAM API calls. */
 typedef void sdram_ctrl_t;
 
 /** SDRAM implementations follow this API. */
 typedef struct st_sdram_api
 {
     /** Open the SDRAM driver module.
-     * @par Implemented as
-     * - @ref R_BSC_SDRAM_Open()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      * @param[in] p_cfg                Pointer to a configuration structure
@@ -144,46 +128,37 @@ typedef struct st_sdram_api
     fsp_err_t (* open)(sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_cfg);
 
     /** Enter Self Refresh mode.
-     * @par Implemented as
-     * - @ref R_BSC_SDRAM_SelfRefreshEnter()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
     fsp_err_t (* selfRefreshEnter)(sdram_ctrl_t * p_ctrl);
 
     /** Exit Self Refresh mode.
-     * @par Implemented as
-     * - @ref R_BSC_SDRAM_SelfRefreshExit()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
     fsp_err_t (* selfRefreshExit)(sdram_ctrl_t * p_ctrl);
 
     /** Enter Power Down mode.
-     * @par Implemented as
-     * - @ref R_BSC_SDRAM_PowerDownEnter()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
     fsp_err_t (* powerDownEnter)(sdram_ctrl_t * p_ctrl);
 
     /** Exit Power Down mode.
-     * @par Implemented as
-     * - @ref R_BSC_SDRAM_PowerDownExit()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
     fsp_err_t (* powerDownExit)(sdram_ctrl_t * p_ctrl);
 
     /** Close the SDRAM driver module.
-     * @par Implemented as
-     * - @ref R_BSC_SDRAM_Close()
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
     fsp_err_t (* close)(sdram_ctrl_t * p_ctrl);
 } sdram_api_t;
 
+/** This structure encompasses everything that is needed to use an instance of this interface. */
 typedef struct st_sdram_instance
 {
     sdram_ctrl_t      * p_ctrl;        ///< Pointer to the control structure for this instance
@@ -197,5 +172,5 @@ FSP_FOOTER
 #endif
 
 /******************************************************************************************************************//**
- * @} (end addtogroup SDRAM_API)
+ * @} (end defgroup SDRAM_API)
  **********************************************************************************************************************/

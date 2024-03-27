@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -30,6 +30,7 @@
  * Includes
  **********************************************************************************************************************/
 #include "bsp_api.h"
+#include "r_dmac_cfg.h"
 #include "r_transfer_api.h"
 
 /* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
@@ -38,8 +39,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define DMAC_CODE_VERSION_MAJOR            (1U) // DEPRECATED
-#define DMAC_CODE_VERSION_MINOR            (3U) // DEPRECATED
 
 /** Max configurable number of transfers in TRANSFER_MODE_NORMAL. */
 #define DMAC_MAX_NORMAL_TRANSFER_LENGTH    (0xFFFFFFFF)
@@ -103,31 +102,13 @@ typedef struct st_dmac_link_cfg
     void * volatile       p_next_link_addr;                    ///< Next link address.
 } dmac_link_cfg_t;
 
-/** Events that can trigger a callback function. */
-typedef enum e_dmac_event
+/** Select the Next register set to be executed next. */
+typedef enum e_dmac_register_select_reverse
 {
-    DMAC_EVENT_TRANSFER_END   = 0,     ///< DMA transfer has completed.
-    DMAC_EVENT_TRANSFER_ERROR = 1,     ///< DMA error has occurred.
-} dmac_event_t;
-
-/** Callback function parameter data. */
-typedef struct st_dmac_callback_args_t
-{
-    dmac_event_t event;                ///< Event code
-    void const * p_context;            ///< Placeholder for user data.  Set in transfer_api_t::open function in ::transfer_cfg_t.
-} dmac_callback_args_t;
-
-/** Transfer size specifies the size of each individual transfer. */
-typedef enum e_dmac_transfer_size
-{
-    DMAC_TRANSFER_SIZE_1_BYTE  = 0,    ///< Each transfer transfers a 8-bit value.
-    DMAC_TRANSFER_SIZE_2_BYTE  = 1,    ///< Each transfer transfers a 16-bit value.
-    DMAC_TRANSFER_SIZE_4_BYTE  = 2,    ///< Each transfer transfers a 32-bit value.
-    DMAC_TRANSFER_SIZE_8_BYTE  = 3,    ///< Each transfer transfers a 64-bit value.
-    DMAC_TRANSFER_SIZE_16_BYTE = 4,    ///< Each transfer transfers a 128-bit value.
-    DMAC_TRANSFER_SIZE_32_BYTE = 5,    ///< Each transfer transfers a 256-bit value.
-    DMAC_TRANSFER_SIZE_64_BYTE = 6,    ///< Each transfer transfers a 512-bit value.
-} dmac_transfer_size_t;
+    DMAC_REGISTER_SELECT_REVERSE_DISABLE = 0x0,                    ///< Use Next0 register set.
+    DMAC_REGISTER_SELECT_REVERSE_ENABLE  = 0x1,                    ///< Use Next1 register set.
+    DMAC_REGISTER_SELECT_REVERSE_ENABLE_PERFORM_ACCORDINGLY = 0x3, ///< Use Next1 register set after Next0 register set transfer completed.
+} dmac_register_select_reverse_t;
 
 /** DACK output mode. See 'DMA Transfer Request Detection Operation Setting Table' of RZ microprocessor manual. */
 typedef enum e_dmac_ack_mode
@@ -152,22 +133,6 @@ typedef enum e_dmac_request_direction
     DMAC_REQUEST_DIRECTION_SOURCE_MODULE      = 0, ///< Requested by a transfer source module.
     DMAC_REQUEST_DIRECTION_DESTINATION_MODULE = 1, ///< Requested by a transfer destination module.
 } dmac_request_direction_t;
-
-/** Select the Next register set to be executed next. */
-typedef enum e_dmac_register_select_reverse
-{
-    DMAC_REGISTER_SELECT_REVERSE_DISABLE = 0x0,                    ///< Use Next0 register set.
-    DMAC_REGISTER_SELECT_REVERSE_ENABLE  = 0x1,                    ///< Use Next1 register set.
-    DMAC_REGISTER_SELECT_REVERSE_ENABLE_PERFORM_ACCORDINGLY = 0x3, ///< Use Next1 register set after Next0 register set transfer completed.
-} dmac_register_select_reverse_t;
-
-/** Register set settings. */
-typedef struct st_dmac_register_set_setting
-{
-    void const * p_src;                ///< Source pointer.
-    void       * p_dest;               ///< Destination pointer.
-    uint32_t     length;               ///< Transfer byte.
-} dmac_register_set_setting_t;
 
 /** DMAC channel scheduling. */
 typedef enum e_dmac_channel_scheduling
@@ -195,6 +160,10 @@ typedef struct st_dmac_instance_ctrl
 
     /* Pointer to base register. */
     R_DMAC0_Type * p_reg;
+
+    void (* p_callback)(transfer_callback_args_t *); // Pointer to callback
+    transfer_callback_args_t * p_callback_memory;    // Pointer to optional callback argument memory
+    void const               * p_context;            // Pointer to context to be passed into callback function
 } dmac_instance_ctrl_t;
 
 /** DMAC transfer configuration extension. This extension is required. */
@@ -223,29 +192,11 @@ typedef struct st_dmac_extended_cfg
     dmac_channel_scheduling_t channel_scheduling;              ///< DMA channel scheduling
 
     /** Callback for transfer end interrupt. */
-    void (* p_callback)(dmac_callback_args_t * cb_data);
+    void (* p_callback)(transfer_callback_args_t * cb_data);
 
-    /** Placeholder for user data.  Passed to the user p_callback in ::dmac_callback_args_t. */
+    /** Placeholder for user data.  Passed to the user p_callback in ::transfer_callback_args_t. */
     void const * p_context;
-
-    /** DEPRECATED - p_peripheral_module_handler will be removed in the major release. Instead of this, p_callback will be used.
-     *
-     * Peripheral module handler that is called on completion of the transfer. */
-    void (* p_peripheral_module_handler)(IRQn_Type);
 } dmac_extended_cfg_t;
-
-/** DMAC transfer information configuration extension. This extension is required. */
-typedef struct st_dmac_extended_info
-{
-    /** Select number of source bytes to transfer at once. */
-    dmac_transfer_size_t src_size;
-
-    /** Select number of destination bytes to transfer at once. */
-    dmac_transfer_size_t dest_size;
-
-    /** Next1 Register set settings */
-    dmac_register_set_setting_t * p_next1_register_setting;
-} dmac_extended_info_t;
 
 /**********************************************************************************************************************
  * Exported global variables
@@ -260,20 +211,25 @@ extern const transfer_api_t g_transfer_on_dmac;
 /***********************************************************************************************************************
  * Public Function Prototypes
  **********************************************************************************************************************/
-fsp_err_t R_DMAC_Open(transfer_ctrl_t * const p_api_ctrl, transfer_cfg_t const * const p_cfg);
-fsp_err_t R_DMAC_Reconfigure(transfer_ctrl_t * const p_api_ctrl, transfer_info_t * p_info);
-fsp_err_t R_DMAC_Reset(transfer_ctrl_t * const p_api_ctrl,
+fsp_err_t R_DMAC_Open(transfer_ctrl_t * const p_ctrl, transfer_cfg_t const * const p_cfg);
+fsp_err_t R_DMAC_Reconfigure(transfer_ctrl_t * const p_ctrl, transfer_info_t * p_info);
+fsp_err_t R_DMAC_Reset(transfer_ctrl_t * const p_ctrl,
                        void const * volatile   p_src,
                        void * volatile         p_dest,
                        uint16_t const          num_transfers);
-fsp_err_t R_DMAC_SoftwareStart(transfer_ctrl_t * const p_api_ctrl, transfer_start_mode_t mode);
-fsp_err_t R_DMAC_SoftwareStop(transfer_ctrl_t * const p_api_ctrl);
-fsp_err_t R_DMAC_Enable(transfer_ctrl_t * const p_api_ctrl);
-fsp_err_t R_DMAC_Disable(transfer_ctrl_t * const p_api_ctrl);
-fsp_err_t R_DMAC_InfoGet(transfer_ctrl_t * const p_api_ctrl, transfer_properties_t * const p_info);
-fsp_err_t R_DMAC_Close(transfer_ctrl_t * const p_api_ctrl);
-fsp_err_t R_DMAC_VersionGet(fsp_version_t * const p_version);
-fsp_err_t R_DMAC_LinkDescriptorSet(transfer_ctrl_t * const p_api_ctrl, dmac_link_cfg_t * p_descriptor);
+fsp_err_t R_DMAC_SoftwareStart(transfer_ctrl_t * const p_ctrl, transfer_start_mode_t mode);
+fsp_err_t R_DMAC_SoftwareStop(transfer_ctrl_t * const p_ctrl);
+fsp_err_t R_DMAC_Enable(transfer_ctrl_t * const p_ctrl);
+fsp_err_t R_DMAC_Disable(transfer_ctrl_t * const p_ctrl);
+fsp_err_t R_DMAC_InfoGet(transfer_ctrl_t * const p_ctrl, transfer_properties_t * const p_info);
+fsp_err_t R_DMAC_Close(transfer_ctrl_t * const p_ctrl);
+fsp_err_t R_DMAC_Reload(transfer_ctrl_t * const p_ctrl, void const * p_src, void * p_dest,
+                        uint32_t const num_transfers);
+fsp_err_t R_DMAC_CallbackSet(transfer_ctrl_t * const          p_ctrl,
+                             void (                         * p_callback)(transfer_callback_args_t *),
+                             void const * const               p_context,
+                             transfer_callback_args_t * const p_callback_memory);
+fsp_err_t R_DMAC_LinkDescriptorSet(transfer_ctrl_t * const p_ctrl, dmac_link_cfg_t * p_descriptor);
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

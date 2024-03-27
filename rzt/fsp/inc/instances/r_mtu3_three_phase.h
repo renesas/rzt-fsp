@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -38,8 +38,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define MTU3_THREE_PHASE_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define MTU3_THREE_PHASE_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -128,7 +126,6 @@ fsp_err_t R_MTU3_THREE_PHASE_CallbackSet(three_phase_ctrl_t * const    p_ctrl,
                                          void const * const            p_context,
                                          timer_callback_args_t * const p_callback_memory);
 fsp_err_t R_MTU3_THREE_PHASE_Close(three_phase_ctrl_t * const p_ctrl);
-fsp_err_t R_MTU3_THREE_PHASE_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup MTU3_THREE_PHASE)

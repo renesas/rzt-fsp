@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,7 +40,7 @@
 #endif                                 /* defined(USB_CFG_HHID_USE) */
 
 #if (BSP_CFG_RTOS == 2)
- #include "r_usb_cstd_rtos.h"
+ #include "../driver/inc/r_usb_cstd_rtos.h"
 
 /******************************************************************************
  * Macro definitions
@@ -56,7 +56,6 @@
  ******************************************************************************/
 
 /** Declare a task handler for the created tasks. **/
- #if (USB_UT_MODE == 0)
   #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
    #if USB_IP_EHCI_OHCI == 0
 static TaskHandle_t g_hcd_tsk_hdl;
@@ -68,12 +67,9 @@ static TaskHandle_t g_mgr_tsk_hdl;
 static TaskHandle_t g_hub_tsk_hdl;
    #endif                              /* USB_CFG_HUB == USB_CFG_ENABLE */
   #endif                               /* ( (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST ) */
- #endif                                /* #if (USB_UT_MODE == 0) */
 
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if (USB_UT_MODE == 0)
 static TaskHandle_t g_pcd_tsk_hdl;
-  #endif
  #endif                                /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 
  #if defined(USB_CFG_PMSC_USE)
@@ -94,9 +90,7 @@ static QueueHandle_t g_hci_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
  #endif /* #if USB_IP_EHCI_OHCI == 0 */
 static QueueHandle_t g_mgr_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_hub_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
- #if (USB_UT_MODE == 0)
 static QueueHandle_t g_pcd_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
- #endif                                /*   #if (USB_UT_MODE == 0) */
 static QueueHandle_t g_cls_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_hmsc_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_hmsc_req_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
@@ -125,7 +119,6 @@ static QueueHandle_t g_hcdc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_hhid_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_pmsc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
 
- #if (USB_UT_MODE == 0)
   #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
    #if USB_IP_EHCI_OHCI == 0
 static void * g_p_hcd_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
@@ -146,7 +139,6 @@ static void * g_p_hcdc_mpl[QUEUE_SIZE];
 static void * g_p_hhid_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
    #endif                              /* defined(USB_CFG_HHID_USE) */
   #endif                               /* ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST) */
- #endif                                /* (USB_UT_MODE == 0) */
 
 /** Declare an array of memory pool handlers. **/
 QueueHandle_t * g_mpl_table[] =
@@ -168,7 +160,6 @@ QueueHandle_t * g_mpl_table[] =
     &g_pmsc_mpl_hdl,                   /* A memory pool handler of USB PMSC task */
 };
 
- #if (USB_UT_MODE == 0)
 
 /******************************************************************************
  * Function Name: usb_rtos_configuration
@@ -976,7 +967,6 @@ usb_rtos_err_t usb_rtos_delete (void)
     return err;
 }                                      /* End of function usb_rtos_delete() */
 
- #endif /* #if (USB_UT_MODE == 0) */
 
 /******************************************************************************
  * Function Name   : usb_cstd_rec_msg

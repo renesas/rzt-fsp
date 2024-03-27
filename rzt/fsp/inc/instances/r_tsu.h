@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -40,10 +40,6 @@ FSP_HEADER
  * Macro definitions
  **********************************************************************************************************************/
 
-/* Version of code that implements the API defined in this file */
-#define TSU_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define TSU_CODE_VERSION_MINOR    (3U) // DEPRECATED
-
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
@@ -70,19 +66,19 @@ extern const adc_api_t g_adc_on_tsu;
 fsp_err_t R_TSU_Open(adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg);
 fsp_err_t R_TSU_ScanCfg(adc_ctrl_t * p_ctrl, void const * const p_extend);
 fsp_err_t R_TSU_ScanStart(adc_ctrl_t * p_ctrl);
+fsp_err_t R_TSU_ScanGroupStart(adc_ctrl_t * p_ctrl, adc_group_mask_t group_mask);
 fsp_err_t R_TSU_ScanStop(adc_ctrl_t * p_ctrl);
 fsp_err_t R_TSU_StatusGet(adc_ctrl_t * p_ctrl, adc_status_t * p_status);
 fsp_err_t R_TSU_Read(adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint16_t * const p_data);
 fsp_err_t R_TSU_Read32(adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint32_t * const p_data);
 fsp_err_t R_TSU_Close(adc_ctrl_t * p_ctrl);
 fsp_err_t R_TSU_InfoGet(adc_ctrl_t * p_ctrl, adc_info_t * p_adc_info);
-fsp_err_t R_TSU_Calibrate(adc_ctrl_t * const p_ctrl, void * const p_extend);
+fsp_err_t R_TSU_Calibrate(adc_ctrl_t * const p_ctrl, void const * p_extend);
 fsp_err_t R_TSU_OffsetSet(adc_ctrl_t * const p_ctrl, adc_channel_t const reg_id, int32_t offset);
-fsp_err_t R_TSU_CallbackSet(adc_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_TSU_CallbackSet(adc_ctrl_t * const          p_ctrl,
                             void (                    * p_callback)(adc_callback_args_t *),
                             void const * const          p_context,
                             adc_callback_args_t * const p_callback_memory);
-fsp_err_t R_TSU_VersionGet(fsp_version_t * const p_version);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup TSU)

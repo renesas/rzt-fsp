@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -26,9 +26,15 @@
 #ifndef BSP_COMPILER_SUPPORT_H
 #define BSP_COMPILER_SUPPORT_H
 
+/***********************************************************************************************************************
+ * Includes   <System Includes> , "Project Includes"
+ **********************************************************************************************************************/
 #if (defined(__ARM_FEATURE_CMSE) && (__ARM_FEATURE_CMSE == 3))
  #include <arm_cmse.h>
 #endif
+
+/** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
+FSP_HEADER
 
 /***********************************************************************************************************************
  * Macro definitions
@@ -97,5 +103,8 @@
  **********************************************************************************************************************/
 
 /** @} (end of addtogroup BSP_MCU) */
+
+/** Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
+FSP_FOOTER
 
 #endif

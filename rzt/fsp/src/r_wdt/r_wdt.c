@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -168,9 +168,9 @@ fsp_err_t R_WDT_Open (wdt_ctrl_t * const p_ctrl, wdt_cfg_t const * const p_cfg)
     p_instance_ctrl->p_callback = p_cfg->p_callback;
     p_instance_ctrl->p_context  = p_cfg->p_context;
 
-#if (0 == BSP_CFG_CPU)
+#if (0 == BSP_CFG_CORE_CR52)
     p_instance_ctrl->p_reg = R_WDT0;
-#elif (1 == BSP_CFG_CPU)
+#elif (1 == BSP_CFG_CORE_CR52)
     p_instance_ctrl->p_reg = R_WDT1;
 #endif
 
@@ -451,6 +451,8 @@ static fsp_err_t r_wdt_parameter_checking (wdt_instance_ctrl_t * const p_instanc
  **********************************************************************************************************************/
 void wdt_underflow_isr (uint32_t id)
 {
+    WDT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     FSP_PARAMETER_NOT_USED(id);
 
     /* Call user registered callback */
@@ -484,4 +486,6 @@ void wdt_underflow_isr (uint32_t id)
             }
         }
     }
+
+    WDT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }

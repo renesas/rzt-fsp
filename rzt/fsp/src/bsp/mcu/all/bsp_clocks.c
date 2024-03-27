@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -53,7 +53,7 @@
 
 /* Calculate the value to write to SCKCR2. */
 #define BSP_PRV_STARTUP_SCKCR2_FSELCPU0_BITS                (BSP_CFG_FSELCPU0 & 3U)
-#if BSP_FEATURE_BSP_CPU1_SUPPORTED
+#if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
  #define BSP_PRV_STARTUP_SCKCR2_FSELCPU1_BITS               ((BSP_CFG_FSELCPU1 & 3U) << 2U)
 #else
  #define BSP_PRV_STARTUP_SCKCR2_FSELCPU1_BITS               (0U)
@@ -87,7 +87,7 @@
 
 #define BSP_PRV_STARTUP_SCKCR2_FSELCPU0_ICLK_MUL2           (BSP_CLOCKS_FSELCPU0_ICLK_MUL2 << \
                                                              R_SYSC_S_SCKCR2_FSELCPU0_Pos)
-#if BSP_FEATURE_BSP_CPU1_SUPPORTED
+#if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
  #define BSP_PRV_STARTUP_SCKCR2_FSELCPU1_ICLK_MUL2          (BSP_CLOCKS_FSELCPU1_ICLK_MUL2 << \
                                                              R_SYSC_S_SCKCR2_FSELCPU1_Pos)
 #endif
@@ -137,9 +137,9 @@ static void bsp_prv_clock_set_hard_reset(void);
 void SystemCoreClockUpdate (void)
 {
     uint32_t devselsub = R_SYSC_S->SCKCR2_b.DIVSELSUB;
-#if (0 == BSP_CFG_CPU)
+#if (0 == BSP_CFG_CORE_CR52)
     uint32_t fselcpu = R_SYSC_S->SCKCR2_b.FSELCPU0;
-#elif (1 == BSP_CFG_CPU)
+#elif (1 == BSP_CFG_CORE_CR52)
     uint32_t fselcpu = R_SYSC_S->SCKCR2_b.FSELCPU1;
 #endif
 
@@ -423,7 +423,7 @@ void bsp_prv_clock_temporaliy_set_system_clock (uint32_t sckcr2)
             ((sckcr2_cpu_clock & ~R_SYSC_S_SCKCR2_FSELCPU0_Msk) | BSP_PRV_STARTUP_SCKCR2_FSELCPU0_ICLK_MUL2);
     }
 
-#if BSP_FEATURE_BSP_CPU1_SUPPORTED
+#if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
 
     /* Check if FSELCPU1 bit of sckcr2 variable is 00b and CPU1 clock is 800MHz. (Or 600MHz) */
     if (!(BSP_PRV_SCKCR2_FSELCPU1_MASK & sckcr2))

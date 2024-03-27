@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -18,10 +18,15 @@
  * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
  **********************************************************************************************************************/
 
-/** @} (end addtogroup BSP_MCU) */
-
 #ifndef BSP_IRQ_H
 #define BSP_IRQ_H
+
+/***********************************************************************************************************************
+ * Includes   <System Includes> , "Project Includes"
+ **********************************************************************************************************************/
+#if defined(BSP_CFG_CORE_CR52)
+ #include "cr/bsp_irq_core.h"
+#endif
 
 /** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
@@ -29,14 +34,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define BSP_ICU_VECTOR_MAX_ENTRIES    (BSP_VECTOR_TABLE_MAX_ENTRIES)
-
-#define BSP_PRV_GICD_ADDRESS(cpu_num)                   (cpu_num == 0 ? (GICD0) : (GICD1))
-#define BSP_PRV_GICR_TARGET0_INTREG_ADDRESS(cpu_num)    (cpu_num == 0 ? (GICR0_TARGET0_INTREG) : (GICR1_TARGET0_INTREG))
-#define BSP_PRV_GICR_TARGET0_IFREG_ADDRESS(cpu_num)     (cpu_num == 0 ? (GICR0_TARGET0_IFREG) : (GICR1_TARGET0_IFREG))
-
-#define BSP_PRV_IRQ_CONFIG_MASK               (0x000000FFU)
-#define BSP_PRV_GICD_ICFGR_INT_CONFIG_MASK    (1UL << 1UL)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -45,10 +42,18 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Exported global variables
  **********************************************************************************************************************/
-extern void * gp_renesas_isr_context[BSP_ICU_VECTOR_MAX_ENTRIES + BSP_CORTEX_VECTOR_TABLE_ENTRIES];
 
 /***********************************************************************************************************************
  * Exported global functions (to be accessed by other files)
+ **********************************************************************************************************************/
+
+/***********************************************************************************************************************
+ * Inline Functions
+ **********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * @addtogroup BSP_MCU
+ * @{
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
@@ -62,14 +67,7 @@ __STATIC_INLINE void R_FSP_IsrContextSet (IRQn_Type const irq, void * p_context)
 {
     /* This provides access to the ISR context array defined in bsp_irq.c. This is an inline function instead of
      * being part of bsp_irq.c for performance considerations because it is used in interrupt service routines. */
-    if (irq >= 0)
-    {
-        gp_renesas_isr_context[irq] = p_context;
-    }
-    else
-    {
-        gp_renesas_isr_context[(uint32_t) irq + BSP_VECTOR_NUM_OFFSET + BSP_ICU_VECTOR_MAX_ENTRIES] = p_context;
-    }
+    r_fsp_irq_context_set(irq, p_context);
 }
 
 /*******************************************************************************************************************//**
@@ -77,28 +75,10 @@ __STATIC_INLINE void R_FSP_IsrContextSet (IRQn_Type const irq, void * p_context)
  *
  * @param[in] irq            Interrupt for which to clear the Pending bit. Note that the enums listed for IRQn_Type are
  *                           only those for the Cortex Processor Exceptions Numbers.
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqClearPending (IRQn_Type irq)
 {
-    GICD_Type         * GICD;
-    GICR_SGI_PPI_Type * GICR_TARGET0_INTREG;
-
-    GICD                = BSP_PRV_GICD_ADDRESS(BSP_CFG_CPU);
-    GICR_TARGET0_INTREG = BSP_PRV_GICR_TARGET0_INTREG_ADDRESS(BSP_CFG_CPU);
-
-    if (irq >= 0)
-    {
-        uint32_t _irq = (uint32_t) irq;
-        GICD->GICD_ICPENDR[(((uint32_t) irq) /
-                            BSP_VECTOR_NUM_OFFSET)] = (uint32_t) (0x00000001UL << (_irq % BSP_VECTOR_NUM_OFFSET));
-    }
-    else
-    {
-        uint32_t _irq = ((uint32_t) irq + BSP_VECTOR_NUM_OFFSET);
-        GICR_TARGET0_INTREG->GICR_ICPENDR0 = (uint32_t) (0x00000001UL << _irq);
-    }
+    r_bsp_irq_clear_pending(irq);
 }
 
 /*******************************************************************************************************************//**
@@ -107,34 +87,11 @@ __STATIC_INLINE void R_BSP_IrqClearPending (IRQn_Type irq)
  * @param[in] irq            Interrupt that gets a pending bit.. Note that the enums listed for IRQn_Type are
  *                           only those for the Cortex Processor Exceptions Numbers.
  *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
- *
  * @return  Value indicating the status of the level interrupt.
  **********************************************************************************************************************/
 __STATIC_INLINE uint32_t R_BSP_IrqPendingGet (IRQn_Type irq)
 {
-    GICD_Type         * GICD;
-    GICR_SGI_PPI_Type * GICR_TARGET0_INTREG;
-    uint32_t            value = 0;
-
-    GICD                = BSP_PRV_GICD_ADDRESS(BSP_CFG_CPU);
-    GICR_TARGET0_INTREG = BSP_PRV_GICR_TARGET0_INTREG_ADDRESS(BSP_CFG_CPU);
-
-    if (irq >= 0)
-    {
-        uint32_t _irq  = (uint32_t) irq;
-        uint32_t shift = (_irq % BSP_VECTOR_NUM_OFFSET);
-        value = (GICD->GICD_ISPENDR[(((uint32_t) irq) / BSP_VECTOR_NUM_OFFSET)] & (uint32_t) (0x00000001UL << shift)) >>
-                shift;
-    }
-    else
-    {
-        uint32_t _irq  = ((uint32_t) irq + BSP_VECTOR_NUM_OFFSET);
-        uint32_t shift = _irq;
-        value = (GICR_TARGET0_INTREG->GICR_ISPENDR0 & (uint32_t) (0x00000001UL << shift)) >> shift;
-    }
-
-    return value;
+    return r_bsp_irq_pending_get(irq);
 }
 
 /*******************************************************************************************************************//**
@@ -143,53 +100,13 @@ __STATIC_INLINE uint32_t R_BSP_IrqPendingGet (IRQn_Type irq)
  * @param[in] irq            The IRQ number to configure.
  * @param[in] priority       GIC priority of the interrupt
  * @param[in] p_context      The interrupt context is a pointer to data required in the ISR.
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqCfg (IRQn_Type const irq, uint32_t priority, void * p_context)
 {
-#if (52U == __CORTEX_R)
-    GICD_Type         * GICD;
-    GICR_SGI_PPI_Type * GICR_TARGET0_INTREG;
+    r_bsp_irq_cfg(irq, priority);
 
-    GICD                = BSP_PRV_GICD_ADDRESS(BSP_CFG_CPU);
-    GICR_TARGET0_INTREG = BSP_PRV_GICR_TARGET0_INTREG_ADDRESS(BSP_CFG_CPU);
-
-    if (irq >= 0)
-    {
-        uint32_t _irq = (uint32_t) irq;
-
-        /* Set the interrupt group to 1 (IRQ) */
-        GICD->GICD_IGROUPR[(((uint32_t) irq) /
-                            BSP_VECTOR_NUM_OFFSET)] |= (uint32_t) (0x00000001UL << (_irq % BSP_VECTOR_NUM_OFFSET));
-
-        /* Set the interrupt priority */
-        GICD->GICD_IPRIORITYR[((uint32_t) irq) /
-                              4UL] &= (uint32_t) (~(BSP_PRV_IRQ_CONFIG_MASK << (8UL * (_irq % 4UL))));
-        GICD->GICD_IPRIORITYR[((uint32_t) irq) /
-                              4UL] |= (priority << (BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT + (8UL * (_irq % 4UL))));
-
-        /* Store the context. The context is recovered in the ISR. */
-        R_FSP_IsrContextSet(irq, p_context);
-    }
-    else
-    {
-        uint32_t _irq = ((uint32_t) irq + BSP_VECTOR_NUM_OFFSET);
-
-        /* Set the interrupt group to 1 (IRQ) */
-        GICR_TARGET0_INTREG->GICR_IGROUPR0 |= (uint32_t) (0x00000001UL << _irq);
-
-        /* Set the interrupt priority */
-        GICR_TARGET0_INTREG->GICR_IPRIORITYR[(((uint32_t) irq + BSP_VECTOR_NUM_OFFSET)) /
-                                             4UL] &= (uint32_t) (~(BSP_PRV_IRQ_CONFIG_MASK << (8UL * (_irq % 4UL))));
-        GICR_TARGET0_INTREG->GICR_IPRIORITYR[(((uint32_t) irq + BSP_VECTOR_NUM_OFFSET)) /
-                                             4UL] |=
-            (priority << (BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT + (8UL * (_irq % 4UL))));
-
-        /* Store the context. The context is recovered in the ISR. */
-        R_FSP_IsrContextSet(irq, p_context);
-    }
-#endif
+    /* Store the context. The context is recovered in the ISR. */
+    R_FSP_IsrContextSet(irq, p_context);
 }
 
 /*******************************************************************************************************************//**
@@ -197,28 +114,10 @@ __STATIC_INLINE void R_BSP_IrqCfg (IRQn_Type const irq, uint32_t priority, void 
  *
  * @param[in] irq            The IRQ number to enable. Note that the enums listed for IRQn_Type are only those for the
  *                           Cortex Processor Exceptions Numbers.
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqEnableNoClear (IRQn_Type const irq)
 {
-    GICD_Type         * GICD;
-    GICR_SGI_PPI_Type * GICR_TARGET0_INTREG;
-
-    GICD                = BSP_PRV_GICD_ADDRESS(BSP_CFG_CPU);
-    GICR_TARGET0_INTREG = BSP_PRV_GICR_TARGET0_INTREG_ADDRESS(BSP_CFG_CPU);
-
-    if (irq >= 0)
-    {
-        uint32_t _irq = (uint32_t) irq;
-        GICD->GICD_ISENABLER[(((uint32_t) irq) /
-                              BSP_VECTOR_NUM_OFFSET)] |= (uint32_t) (0x00000001UL << (_irq % BSP_VECTOR_NUM_OFFSET));
-    }
-    else
-    {
-        uint32_t _irq = ((uint32_t) irq + BSP_VECTOR_NUM_OFFSET);
-        GICR_TARGET0_INTREG->GICR_ISENABLER0 |= (uint32_t) (0x00000001UL << _irq);
-    }
+    r_bsp_irq_enable_no_clear(irq);
 }
 
 /*******************************************************************************************************************//**
@@ -226,8 +125,6 @@ __STATIC_INLINE void R_BSP_IrqEnableNoClear (IRQn_Type const irq)
  *
  * @param[in] irq            The IRQ number to enable. Note that the enums listed for IRQn_Type are only those for the
  *                           Cortex Processor Exceptions Numbers.
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqEnable (IRQn_Type const irq)
 {
@@ -243,31 +140,10 @@ __STATIC_INLINE void R_BSP_IrqEnable (IRQn_Type const irq)
  *
  * @param[in] irq            The IRQ number to disable in the GIC. Note that the enums listed for IRQn_Type are
  *                           only those for the Cortex Processor Exceptions Numbers.
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqDisable (IRQn_Type const irq)
 {
-    GICD_Type         * GICD;
-    GICR_SGI_PPI_Type * GICR_TARGET0_INTREG;
-
-    GICD                = BSP_PRV_GICD_ADDRESS(BSP_CFG_CPU);
-    GICR_TARGET0_INTREG = BSP_PRV_GICR_TARGET0_INTREG_ADDRESS(BSP_CFG_CPU);
-
-    if (irq >= 0)
-    {
-        uint32_t _irq = (uint32_t) irq;
-        GICD->GICD_ICENABLER[(((uint32_t) irq) /
-                              BSP_VECTOR_NUM_OFFSET)] = (uint32_t) (0x00000001UL << (_irq % BSP_VECTOR_NUM_OFFSET));
-    }
-    else
-    {
-        uint32_t _irq = ((uint32_t) irq + BSP_VECTOR_NUM_OFFSET);
-        GICR_TARGET0_INTREG->GICR_ICENABLER0 = (uint32_t) (0x00000001UL << _irq);
-    }
-
-    __DSB();
-    __ISB();
+    r_bsp_irq_disable(irq);
 }
 
 /*******************************************************************************************************************//**
@@ -276,8 +152,6 @@ __STATIC_INLINE void R_BSP_IrqDisable (IRQn_Type const irq)
  * @param[in] irq            Interrupt number.
  * @param[in] priority       GIC priority of the interrupt
  * @param[in] p_context      The interrupt context is a pointer to data required in the ISR.
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqCfgEnable (IRQn_Type const irq, uint32_t priority, void * p_context)
 {
@@ -296,7 +170,7 @@ __STATIC_INLINE void * R_FSP_IsrContextGet (IRQn_Type const irq)
 {
     /* This provides access to the ISR context array defined in bsp_irq.c. This is an inline function instead of
      * being part of bsp_irq.c for performance considerations because it is used in interrupt service routines. */
-    return gp_renesas_isr_context[irq];
+    return gp_renesas_isr_context[irq + BSP_VECTOR_NUM_OFFSET];
 }
 
 /*******************************************************************************************************************//**
@@ -304,24 +178,10 @@ __STATIC_INLINE void * R_FSP_IsrContextGet (IRQn_Type const irq)
  *
  * @param[in] irq             The IRQ number to configure.
  * @param[in] detect_type     GIC detect type of the interrupt (0 : active-HIGH level, 1 : rising edge-triggerd).
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqDetectTypeSet (IRQn_Type const irq, uint32_t detect_type)
 {
-    uint32_t    _irq = (uint32_t) irq;
-    GICD_Type * GICD;
-
-    GICD = BSP_PRV_GICD_ADDRESS(BSP_CFG_CPU);
-
-    if (0 != detect_type)
-    {
-        GICD->GICD_ICFGR[(((uint32_t) irq) / 16UL)] |= BSP_PRV_GICD_ICFGR_INT_CONFIG_MASK << (2UL * (_irq % 16UL));
-    }
-    else
-    {
-        GICD->GICD_ICFGR[(((uint32_t) irq) / 16UL)] &= ~(BSP_PRV_GICD_ICFGR_INT_CONFIG_MASK << (2UL * (_irq % 16UL)));
-    }
+    r_bsp_irq_detect_type_set(irq, detect_type);
 }
 
 /*******************************************************************************************************************//**
@@ -329,25 +189,16 @@ __STATIC_INLINE void R_BSP_IrqDetectTypeSet (IRQn_Type const irq, uint32_t detec
  *
  * @param[in] irq               The IRQ number to configure.
  * @param[in] interrupt_group   GIC interrupt group number ( 0 : FIQ, 1 : IRQ ).
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqGroupSet (IRQn_Type const irq, uint32_t interrupt_group)
 {
-    uint32_t    _irq = (uint32_t) irq;
-    GICD_Type * GICD;
-
-    GICD = BSP_PRV_GICD_ADDRESS(BSP_CFG_CPU);
-    GICD->GICD_IGROUPR[(((uint32_t) irq) /
-                        BSP_VECTOR_NUM_OFFSET)] |= (interrupt_group << (_irq % BSP_VECTOR_NUM_OFFSET));
+    r_bsp_irq_group_set(irq, interrupt_group);
 }
 
 /*******************************************************************************************************************//**
  * Sets the interrupt mask level.
  *
  * @param[in] mask_level          The interrupt mask level
- *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_IrqMaskLevelSet (uint32_t mask_level)
 {
@@ -357,8 +208,6 @@ __STATIC_INLINE void R_BSP_IrqMaskLevelSet (uint32_t mask_level)
 /*******************************************************************************************************************//**
  * Gets the interrupt mask level.
  *
- * @warning Do not call this function for system exceptions where the IRQn_Type value is < 0.
- *
  * @return  Value indicating the interrupt mask level.
  **********************************************************************************************************************/
 __STATIC_INLINE uint32_t R_BSP_IrqMaskLevelGet (void)
@@ -366,6 +215,8 @@ __STATIC_INLINE uint32_t R_BSP_IrqMaskLevelGet (void)
     return (uint32_t) ((FSP_CRITICAL_SECTION_GET_CURRENT_STATE() >> BSP_FEATURE_BSP_IRQ_PRIORITY_POS_BIT) &
                        0x0000001FUL);
 }
+
+/** @} (end addtogroup BSP_MCU) */
 
 /*******************************************************************************************************************//**
  * @internal
@@ -376,7 +227,6 @@ __STATIC_INLINE uint32_t R_BSP_IrqMaskLevelGet (void)
 
 /* Public functions defined in bsp.h */
 void bsp_irq_cfg(void);                // Used internally by BSP
-void bsp_common_interrupt_handler(uint32_t id);
 
 /** @} (end addtogroup BSP_MCU_PRV) */
 

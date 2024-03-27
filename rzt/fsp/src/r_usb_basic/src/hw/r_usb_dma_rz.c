@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -37,19 +37,16 @@
 /*******************************************************************************
  * Includes   <System Includes>, "Project Includes"
  *******************************************************************************/
+#include "../driver/inc/r_usb_typedef.h"
+#include "../driver/inc/r_usb_extern.h"
 
-#include "r_usb_typedef.h"
-#include "r_usb_extern.h"
+#if  USB_IP_EHCI_OHCI == 0
 #include "r_usb_bitdefine.h"
 #include "r_usb_reg_access.h"
 
-#if  USB_IP_EHCI_OHCI == 0
  #if USB_CFG_DMA == USB_CFG_ENABLE
   #include "r_usb_dmaca_rz_if.h"
   #include "r_usb_dmaca_rz_target.h"
- #endif                                /* USB_CFG_DMA == USB_CFG_ENABLE */
-
- #if (USB_CFG_DMA == USB_CFG_ENABLE)
   #include "r_usb_dmac.h"
 
   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)

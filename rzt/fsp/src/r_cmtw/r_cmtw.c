@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -78,7 +78,9 @@
 static void     r_cmtw_period_register_set(cmtw_instance_ctrl_t * p_instance_ctrl, uint32_t period_counts);
 static void     r_cmtw_hardware_cfg(cmtw_instance_ctrl_t * const p_instance_ctrl, timer_cfg_t const * const p_cfg);
 static uint32_t r_cmtw_clock_frequency_get(R_CMTW0_Type * p_cmtw_regs);
-static void     r_cmtw_call_callback(cmtw_instance_ctrl_t * p_ctrl, timer_event_t event, uint32_t capture);
+static void     r_cmtw_enable_irq(IRQn_Type const irq, uint32_t priority, void * p_context);
+static void     r_cmtw_disable_irq(IRQn_Type irq);
+static void     r_cmtw_call_callback(cmtw_instance_ctrl_t * p_instance_ctrl, timer_event_t event, uint32_t capture);
 
 #if CMTW_CFG_PARAM_CHECKING_ENABLE
 static fsp_err_t r_cmtw_open_param_checking(cmtw_instance_ctrl_t * p_instance_ctrl, timer_cfg_t const * const p_cfg);
@@ -95,15 +97,6 @@ void cmtw_oc1_int_isr(void);
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
-
-/** Version data structure. */
-static const fsp_version_t s_cmtw_version =
-{
-    .api_version_minor  = TIMER_API_VERSION_MINOR,
-    .api_version_major  = TIMER_API_VERSION_MAJOR,
-    .code_version_minor = CMTW_CODE_VERSION_MINOR,
-    .code_version_major = CMTW_CODE_VERSION_MAJOR,
-};
 
 /***********************************************************************************************************************
  * Global Variables
@@ -124,7 +117,6 @@ const timer_api_t g_timer_on_cmtw =
     .statusGet    = R_CMTW_StatusGet,
     .callbackSet  = R_CMTW_CallbackSet,
     .close        = R_CMTW_Close,
-    .versionGet   = R_CMTW_VersionGet
 };
 
 /*******************************************************************************************************************//**
@@ -199,27 +191,19 @@ fsp_err_t R_CMTW_Start (timer_ctrl_t * const p_ctrl)
     FSP_ERROR_RETURN(CMTW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    cmtw_extended_cfg_t * p_extend = (cmtw_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
-
     uint32_t cmwior = p_instance_ctrl->p_reg->CMWIOR;
 
-    if ((CMTW_OUTPUT_CONTROL_ENABLED == p_extend->toc0_control) ||
-        (CMTW_OUTPUT_CONTROL_ENABLED == p_extend->toc1_control))
+    if (0 != p_instance_ctrl->output_channel_mask)
     {
-        cmwior &= (uint32_t) ~(1 << CMTW_PRV_CMWIOR_OC0E_OFFSET);
-        cmwior |= (p_extend->toc0_control & CMTW_PRV_CMWIOR_OC0E_VALUE_MASK) << CMTW_PRV_CMWIOR_OC0E_OFFSET;
-        cmwior &= (uint32_t) ~(1 << CMTW_PRV_CMWIOR_OC1E_OFFSET);
-        cmwior |= (p_extend->toc1_control & CMTW_PRV_CMWIOR_OC1E_VALUE_MASK) << CMTW_PRV_CMWIOR_OC1E_OFFSET;
-
         /* When One-shot operating, change the OCn bit to toggle the output signal at start API. */
         if (TIMER_MODE_ONE_SHOT == p_instance_ctrl->p_cfg->mode)
         {
-            if (p_extend->toc0_control == CMTW_OUTPUT_CONTROL_ENABLED)
+            if (0 != (p_instance_ctrl->output_channel_mask & (1U << CMTW_IO_PIN_TOC0)))
             {
                 cmwior ^= CMTW_PRV_CMWIOR_OC_MASK << CMTW_PRV_CMWIOR_OC0_OFFSET;
             }
 
-            if (p_extend->toc1_control == CMTW_OUTPUT_CONTROL_ENABLED)
+            if (0 != (p_instance_ctrl->output_channel_mask & (1U << CMTW_IO_PIN_TOC1)))
             {
                 cmwior ^= CMTW_PRV_CMWIOR_OC_MASK << CMTW_PRV_CMWIOR_OC1_OFFSET;
             }
@@ -467,11 +451,13 @@ fsp_err_t R_CMTW_OutputEnable (timer_ctrl_t * const p_ctrl, cmtw_io_pin_t pin)
     if ((CMTW_IO_PIN_TOC0 == pin) || (CMTW_IO_PIN_TOC0_AND_TOC1 == pin))
     {
         cmwior |= 1 << CMTW_PRV_CMWIOR_OC0E_OFFSET;
+        p_instance_ctrl->output_channel_mask |= (uint32_t) (1 << CMTW_IO_PIN_TOC0);
     }
 
     if ((CMTW_IO_PIN_TOC1 == pin) || (CMTW_IO_PIN_TOC0_AND_TOC1 == pin))
     {
         cmwior |= 1 << CMTW_PRV_CMWIOR_OC1E_OFFSET;
+        p_instance_ctrl->output_channel_mask |= (uint32_t) (1 << CMTW_IO_PIN_TOC1);
     }
 
     p_instance_ctrl->p_reg->CMWIOR = (uint16_t) cmwior & CMTW_PRV_CMWIOR_MASK;
@@ -501,11 +487,13 @@ fsp_err_t R_CMTW_OutputDisable (timer_ctrl_t * const p_ctrl, cmtw_io_pin_t pin)
     if ((CMTW_IO_PIN_TOC0 == pin) || (CMTW_IO_PIN_TOC0_AND_TOC1 == pin))
     {
         cmwior &= (uint32_t) ~(1 << CMTW_PRV_CMWIOR_OC0E_OFFSET);
+        p_instance_ctrl->output_channel_mask &= (uint32_t) ~(1 << CMTW_IO_PIN_TOC0);
     }
 
     if ((CMTW_IO_PIN_TOC1 == pin) || (CMTW_IO_PIN_TOC0_AND_TOC1 == pin))
     {
         cmwior &= (uint32_t) ~(1 << CMTW_PRV_CMWIOR_OC1E_OFFSET);
+        p_instance_ctrl->output_channel_mask &= (uint32_t) ~(1 << CMTW_IO_PIN_TOC1);
     }
 
     p_instance_ctrl->p_reg->CMWIOR = (uint16_t) cmwior & CMTW_PRV_CMWIOR_MASK;
@@ -521,23 +509,23 @@ fsp_err_t R_CMTW_OutputDisable (timer_ctrl_t * const p_ctrl, cmtw_io_pin_t pin)
  * @retval  FSP_ERR_ASSERTION            A required pointer is NULL.
  * @retval  FSP_ERR_NOT_OPEN             The control block has not been opened.
  **********************************************************************************************************************/
-fsp_err_t R_CMTW_CallbackSet (timer_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_CMTW_CallbackSet (timer_ctrl_t * const          p_ctrl,
                               void (                      * p_callback)(timer_callback_args_t *),
                               void const * const            p_context,
                               timer_callback_args_t * const p_callback_memory)
 {
-    cmtw_instance_ctrl_t * p_ctrl = (cmtw_instance_ctrl_t *) p_api_ctrl;
+    cmtw_instance_ctrl_t * p_instance_ctrl = (cmtw_instance_ctrl_t *) p_ctrl;
 
 #if CMTW_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_ctrl);
+    FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_callback);
-    FSP_ERROR_RETURN(CMTW_OPEN == p_ctrl->open, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(CMTW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
     /* Store callback and context */
-    p_ctrl->p_callback        = p_callback;
-    p_ctrl->p_context         = p_context;
-    p_ctrl->p_callback_memory = p_callback_memory;
+    p_instance_ctrl->p_callback        = p_callback;
+    p_instance_ctrl->p_context         = p_context;
+    p_instance_ctrl->p_callback_memory = p_callback_memory;
 
     return FSP_SUCCESS;
 }
@@ -567,52 +555,18 @@ fsp_err_t R_CMTW_Close (timer_ctrl_t * const p_ctrl)
     /* Stop timer */
     p_instance_ctrl->p_reg->CMWSTR = CMTW_PRV_CMWSTR_STOP_TIMER;
 
-    if (FSP_INVALID_VECTOR != p_extend->capture_ic0_irq)
-    {
-        R_BSP_IrqDisable(p_extend->capture_ic0_irq);
-    }
-
-    if (FSP_INVALID_VECTOR != p_extend->capture_ic1_irq)
-    {
-        R_BSP_IrqDisable(p_extend->capture_ic1_irq);
-    }
-
-    if (FSP_INVALID_VECTOR != p_extend->compare_oc0_irq)
-    {
-        R_BSP_IrqDisable(p_extend->compare_oc0_irq);
-    }
-
-    if (FSP_INVALID_VECTOR != p_extend->compare_oc1_irq)
-    {
-        R_BSP_IrqDisable(p_extend->compare_oc1_irq);
-    }
-
-    R_BSP_IrqDisable(p_cfg->cycle_end_irq);
+    /* Disable interrupts. */
+    r_cmtw_disable_irq(p_cfg->cycle_end_irq);
+    r_cmtw_disable_irq(p_extend->capture_ic0_irq);
+    r_cmtw_disable_irq(p_extend->capture_ic1_irq);
+    r_cmtw_disable_irq(p_extend->compare_oc0_irq);
+    r_cmtw_disable_irq(p_extend->compare_oc1_irq);
 
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_STOP(FSP_IP_CMTW, p_cfg->channel);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
     p_instance_ctrl->open = 0U;
-
-    return FSP_SUCCESS;
-}
-
-/*******************************************************************************************************************//**
- * DEPRECATED Sets driver version based on compile time macros.  Implements @ref timer_api_t::versionGet.
- *
- * @retval     FSP_SUCCESS          Version in p_version.
- * @retval     FSP_ERR_ASSERTION    The parameter p_version is NULL.
- **********************************************************************************************************************/
-fsp_err_t R_CMTW_VersionGet (fsp_version_t * const p_version)
-{
-#if CMTW_CFG_PARAM_CHECKING_ENABLE
-
-    /* Verify parameters are valid */
-    FSP_ASSERT(NULL != p_version);
-#endif
-
-    p_version->version_id = s_cmtw_version.version_id;
 
     return FSP_SUCCESS;
 }
@@ -722,55 +676,43 @@ static void r_cmtw_hardware_cfg (cmtw_instance_ctrl_t * const p_instance_ctrl, t
 
     uint32_t cmwior = 0x00000000;
 
+    /* Each interrupt enable. */
+    cmwcr |= (1U << CMTW_PRV_CMWCR_CMWIE_OFFSET) | (1U << CMTW_PRV_CMWCR_IC0IE_OFFSET) |
+             (1U << CMTW_PRV_CMWCR_IC1IE_OFFSET) | (1U << CMTW_PRV_CMWCR_OC0IE_OFFSET) |
+             (1U << CMTW_PRV_CMWCR_OC1IE_OFFSET);
+
     /* Set output if requested */
     cmwior |=
-        ((p_extend->toc0 & CMTW_PRV_CMWIOR_OC0_VALUE_MASK) <<
-            CMTW_PRV_CMWIOR_OC0_OFFSET) |
+        ((p_extend->toc0 & CMTW_PRV_CMWIOR_OC0_VALUE_MASK) << CMTW_PRV_CMWIOR_OC0_OFFSET) |
         ((p_extend->toc1 & CMTW_PRV_CMWIOR_OC1_VALUE_MASK) << CMTW_PRV_CMWIOR_OC1_OFFSET);
-    cmwcr |=
-        ((p_extend->toc0_control & CMTW_PRV_CMWCR_OC0IE_VALUE_MASK) <<
-            CMTW_PRV_CMWCR_OC0IE_OFFSET) |
-        ((p_extend->toc1_control & CMTW_PRV_CMWCR_OC1IE_VALUE_MASK) << CMTW_PRV_CMWCR_OC1IE_OFFSET);
 
-    if (p_extend->compare_oc0_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_extend->compare_oc0_irq, p_extend->compare_oc0_ipl, p_instance_ctrl);
-    }
+    cmwior |=
+        ((p_extend->toc0_control & CMTW_PRV_CMWIOR_OC0E_VALUE_MASK) << CMTW_PRV_CMWIOR_OC0E_OFFSET) |
+        ((p_extend->toc1_control & CMTW_PRV_CMWIOR_OC1E_VALUE_MASK) << CMTW_PRV_CMWIOR_OC1E_OFFSET);
 
-    if (p_extend->compare_oc1_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_extend->compare_oc1_irq, p_extend->compare_oc1_ipl, p_instance_ctrl);
-    }
+    /* Track current output enable pin. */
+    p_instance_ctrl->output_channel_mask =
+        (uint32_t) ((p_extend->toc0_control << CMTW_IO_PIN_TOC0) | (p_extend->toc1_control << CMTW_IO_PIN_TOC1));
+
+    r_cmtw_enable_irq(p_extend->compare_oc0_irq, p_extend->compare_oc0_ipl, p_instance_ctrl);
+    r_cmtw_enable_irq(p_extend->compare_oc1_irq, p_extend->compare_oc1_ipl, p_instance_ctrl);
 
     /* Set input capture if requested */
     cmwior |=
-        ((p_extend->capture_ic0_source & CMTW_PRV_CMWIOR_IC0_VALUE_MASK) <<
-            CMTW_PRV_CMWIOR_IC0_OFFSET) |
+        ((p_extend->capture_ic0_source & CMTW_PRV_CMWIOR_IC0_VALUE_MASK) << CMTW_PRV_CMWIOR_IC0_OFFSET) |
         ((p_extend->capture_ic1_source & CMTW_PRV_CMWIOR_IC1_VALUE_MASK) << CMTW_PRV_CMWIOR_IC1_OFFSET);
-    cmwcr |=
-        ((p_extend->ic0_control & CMTW_PRV_CMWCR_IC0IE_VALUE_MASK) <<
-            CMTW_PRV_CMWCR_IC0IE_OFFSET) |
-        ((p_extend->ic1_control & CMTW_PRV_CMWCR_IC1IE_VALUE_MASK) << CMTW_PRV_CMWCR_IC1IE_OFFSET);
 
-    if (p_extend->capture_ic0_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_extend->capture_ic0_irq, p_extend->capture_ic0_ipl, p_instance_ctrl);
-    }
+    cmwior |=
+        ((p_extend->ic0_control & CMTW_PRV_CMWIOR_IC0E_VALUE_MASK) << CMTW_PRV_CMWIOR_IC0E_OFFSET) |
+        ((p_extend->ic1_control & CMTW_PRV_CMWIOR_IC1E_VALUE_MASK) << CMTW_PRV_CMWIOR_IC1E_OFFSET);
 
-    if (p_extend->capture_ic1_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_extend->capture_ic1_irq, p_extend->capture_ic1_ipl, p_instance_ctrl);
-    }
+    r_cmtw_enable_irq(p_extend->capture_ic0_irq, p_extend->capture_ic0_ipl, p_instance_ctrl);
+    r_cmtw_enable_irq(p_extend->capture_ic1_irq, p_extend->capture_ic1_ipl, p_instance_ctrl);
 
     /* Set period register and update duty cycle if output mode is used for one-shot or periodic mode. */
     r_cmtw_period_register_set(p_instance_ctrl, p_cfg->period_counts);
 
-    cmwcr |= 1 << CMTW_PRV_CMWCR_CMWIE_OFFSET;
-
-    if (p_cfg->cycle_end_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_cfg->cycle_end_irq, p_cfg->cycle_end_ipl, p_instance_ctrl);
-    }
+    r_cmtw_enable_irq(p_cfg->cycle_end_irq, p_cfg->cycle_end_ipl, p_instance_ctrl);
 
     p_instance_ctrl->p_reg->CMWIOR = (uint16_t) cmwior & CMTW_PRV_CMWIOR_MASK;
     p_instance_ctrl->p_reg->CMWCR  = (uint16_t) cmwcr & CMTW_PRV_CMWCR_MASK;
@@ -844,18 +786,48 @@ static uint32_t r_cmtw_clock_frequency_get (R_CMTW0_Type * p_cmtw_regs)
 }
 
 /*******************************************************************************************************************//**
+ * Disables interrupt if it is a valid vector number.
+ *
+ * @param[in]  irq                     Interrupt number
+ **********************************************************************************************************************/
+static void r_cmtw_disable_irq (IRQn_Type irq)
+{
+    /* Disable interrupts. */
+    if (irq >= 0)
+    {
+        R_BSP_IrqDisable(irq);
+        R_FSP_IsrContextSet(irq, NULL);
+    }
+}
+
+/*******************************************************************************************************************//**
+ * Configures and enables interrupt if it is a valid vector number.
+ *
+ * @param[in]  irq                     Interrupt number
+ * @param[in]  priority                Interrupt controller priority of the interrupt
+ * @param[in]  p_context               The interrupt context is a pointer to data required in the ISR.
+ **********************************************************************************************************************/
+static void r_cmtw_enable_irq (IRQn_Type const irq, uint32_t priority, void * p_context)
+{
+    if (irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(irq, priority, p_context);
+    }
+}
+
+/*******************************************************************************************************************//**
  * Calls user callback.
  *
- * @param[in]     p_ctrl     Pointer to CMTW instance control block
- * @param[in]     event      Event code
- * @param[in]     capture    Event capture counts (if applicable)
+ * @param[in]     p_instance_ctrl     Pointer to CMTW instance control block
+ * @param[in]     event               Event code
+ * @param[in]     capture             Event capture counts (if applicable)
  **********************************************************************************************************************/
-static void r_cmtw_call_callback (cmtw_instance_ctrl_t * p_ctrl, timer_event_t event, uint32_t capture)
+static void r_cmtw_call_callback (cmtw_instance_ctrl_t * p_instance_ctrl, timer_event_t event, uint32_t capture)
 {
     timer_callback_args_t args;
 
     /* Store callback arguments in memory provided by user if available. */
-    timer_callback_args_t * p_args = p_ctrl->p_callback_memory;
+    timer_callback_args_t * p_args = p_instance_ctrl->p_callback_memory;
     if (NULL == p_args)
     {
         /* Store on stack */
@@ -869,19 +841,21 @@ static void r_cmtw_call_callback (cmtw_instance_ctrl_t * p_ctrl, timer_event_t e
 
     p_args->event     = event;
     p_args->capture   = capture;
-    p_args->p_context = p_ctrl->p_context;
+    p_args->p_context = p_instance_ctrl->p_context;
 
-    p_ctrl->p_callback(p_args);
+    p_instance_ctrl->p_callback(p_args);
 
-    if (NULL != p_ctrl->p_callback_memory)
+    if (NULL != p_instance_ctrl->p_callback_memory)
     {
         /* Restore callback memory in case this is a nested interrupt. */
-        *p_ctrl->p_callback_memory = args;
+        *p_instance_ctrl->p_callback_memory = args;
     }
 }
 
 void cmtw_cm_int_isr (void)
 {
+    CMTW_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE
 
@@ -907,10 +881,14 @@ void cmtw_cm_int_isr (void)
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE
+
+        CMTW_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 void cmtw_ic0_int_isr (void)
 {
+    CMTW_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE
 
@@ -937,10 +915,14 @@ void cmtw_ic0_int_isr (void)
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE
+
+        CMTW_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 void cmtw_ic1_int_isr (void)
 {
+    CMTW_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE
 
@@ -967,10 +949,14 @@ void cmtw_ic1_int_isr (void)
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE
+
+        CMTW_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 void cmtw_oc0_int_isr (void)
 {
+    CMTW_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE
 
@@ -995,15 +981,19 @@ void cmtw_oc0_int_isr (void)
     /* Invoke the callback function if it is set. */
     if (NULL != p_instance_ctrl->p_callback)
     {
-        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_OUTPUT_COMPARE_0, 0);
+        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_COMPARE_A, 0);
     }
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE
+
+        CMTW_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 void cmtw_oc1_int_isr (void)
 {
+    CMTW_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE
 
@@ -1029,9 +1019,11 @@ void cmtw_oc1_int_isr (void)
     /* Invoke the callback function if it is set. */
     if (NULL != p_instance_ctrl->p_callback)
     {
-        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_OUTPUT_COMPARE_1, 0);
+        r_cmtw_call_callback(p_instance_ctrl, TIMER_EVENT_COMPARE_B, 0);
     }
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE
+
+        CMTW_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }

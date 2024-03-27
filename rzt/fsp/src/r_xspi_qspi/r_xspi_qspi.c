@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -133,15 +133,6 @@ static fsp_err_t r_xspi_qspi_program_param_check(xspi_qspi_instance_ctrl_t * p_i
  * Private global variables
  **********************************************************************************************************************/
 
-/** Version data structure used by error logger macro. */
-static const fsp_version_t g_xspi_qspi_version =
-{
-    .api_version_minor  = SPI_FLASH_API_VERSION_MINOR,
-    .api_version_major  = SPI_FLASH_API_VERSION_MAJOR,
-    .code_version_major = XSPI_QSPI_CODE_VERSION_MAJOR,
-    .code_version_minor = XSPI_QSPI_CODE_VERSION_MINOR
-};
-
 /*******************************************************************************************************************//**
  * @addtogroup XSPI_QSPI
  * @{
@@ -166,7 +157,6 @@ const spi_flash_api_t g_spi_flash_on_xspi_qspi =
     .bankSet        = R_XSPI_QSPI_BankSet,
     .autoCalibrate  = R_XSPI_QSPI_AutoCalibrate,
     .close          = R_XSPI_QSPI_Close,
-    .versionGet     = R_XSPI_QSPI_VersionGet,
 };
 
 /***********************************************************************************************************************
@@ -226,8 +216,6 @@ fsp_err_t R_XSPI_QSPI_Open (spi_flash_ctrl_t * p_ctrl, spi_flash_cfg_t const * c
     {
         p_instance_ctrl->p_reg->CSSCTL_b.CS1SIZE = p_cfg_extend->memory_size;
     }
-
-    p_instance_ctrl->p_reg->WRAPCFG = 0x0000;
 
     p_instance_ctrl->p_reg->LIOCFGCS[p_cfg_extend->chip_select] =
         ((p_cfg->spi_protocol & XSPI_QSPI_PRV_LIOCFGCS_PRTMD_VALUE_MASK) << XSPI_QSPI_PRV_LIOCFGCS_PRTMD_OFFSET) |
@@ -400,6 +388,8 @@ fsp_err_t R_XSPI_QSPI_XipExit (spi_flash_ctrl_t * p_ctrl)
  * @retval FSP_ERR_DEVICE_BUSY         The device is busy.
  *
  * @note In this API, data can be written up to 64 bytes at a time.
+ * @note This API performs page program operations to the device. Writing across pages is not supported.
+ * Please set the write address and write size according to the page size of your device.
  **********************************************************************************************************************/
 fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
                              uint8_t const * const p_src,
@@ -669,26 +659,6 @@ fsp_err_t R_XSPI_QSPI_Close (spi_flash_ctrl_t * p_ctrl)
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_STOP(FSP_IP_XSPI, p_cfg_extend->unit);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
-
-    return FSP_SUCCESS;
-}
-
-/*******************************************************************************************************************//**
- * DEPRECATED Get the driver version based on compile time macros.
- *
- * Implements @ref spi_flash_api_t::versionGet.
- *
- * @retval     FSP_SUCCESS          Successful close.
- * @retval     FSP_ERR_ASSERTION    p_version is NULL.
- *
- **********************************************************************************************************************/
-fsp_err_t R_XSPI_QSPI_VersionGet (fsp_version_t * const p_version)
-{
-#if XSPI_QSPI_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(NULL != p_version);
-#endif
-
-    p_version->version_id = g_xspi_qspi_version.version_id;
 
     return FSP_SUCCESS;
 }

@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -38,15 +38,15 @@
  * Exported global variables (to be accessed by other files)
  **********************************************************************************************************************/
 
-/***********************************************************************************************************************
- * Private global variables and functions
- **********************************************************************************************************************/
-
 /** Used for holding reference counters for protection bits. */
 volatile uint16_t g_protect_counters[] =
 {
     0U, 0U, 0U, 0U
 };
+
+/***********************************************************************************************************************
+ * Private global variables and functions
+ **********************************************************************************************************************/
 
 /** Masks for setting or clearing the PRCR register. Use -1 for size because PWPR in MPC is used differently. */
 static const uint16_t g_prcr_masks[] =

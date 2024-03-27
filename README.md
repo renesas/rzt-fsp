@@ -10,12 +10,20 @@ FSP uses an open software ecosystem and provides flexibility in using your prefe
 
 ### Current Release
 
-[FSP v1.3.0](https://github.com/renesas/rzt-fsp/releases/tag/v1.3.0)
+[FSP v2.0.0](https://github.com/renesas/rzt-fsp/releases/tag/v2.0.0)
 
 ### Supported RZ/T series Kits
 
 - RSK+RZT2M
 - RSK+RZT2L
+
+### Supported Software Packaged with FSP
+
+For a list of software modules packaged with FSP, see [Supported Software](SUPPORTED_SOFTWARE.md).
+
+### Product Security Advisories
+
+[Product Security Advisories](https://github.com/renesas/rzt-fsp/issues?q=label%3Aproduct_security_advisory) for FSP and third party software (where available) are tagged with the 'product_security_advisory' label. Please check these issues for information from the respective vendors for affected versions and a recommended workaround or patch upgrade.
 
 ### Known Issues
 
@@ -25,7 +33,7 @@ Known issues checks Getting Started with Flexible Software Package (Documentatio
 
 ### Setup Instructions
 
-See Getting Started with Flexible Software Package (Documentation No: R01AN6434EJ).  
+See Getting Started with Flexible Software Package (Documentation No: R01AN6434EJ).
 
 #### For existing users that are using FSP with e² studio
 
@@ -33,18 +41,19 @@ See Getting Started with Flexible Software Package (Documentation No: R01AN6434E
 - FSP versions of 1.1.0 and later require a minimum e² studio version of 2022-10.
 - FSP versions of 1.2.0 and later require a minimum e² studio version of 2023-01.
 - FSP versions of 1.3.0 and later require a minimum e² studio version of 2023-07.
+- FSP versions of 2.0.0 and later require a minimum e² studio version of 2024-01.
 
 If you have already installed a previous FSP release that included e² studio then you can download the packs separately. These are available for download under the Assets section for each release. There is a zipped version, FSP_Packs_\<version\>.zip, and an installer version, FSP_Packs_\<version\>.exe.
 
 #### For new users that are using FSP with e² studio
 
-1.	Download the FSP with e² studio Installer from the Assets section of the [current release](https://github.com/renesas/rzt-fsp/releases/tag/v1.3.0).
+1.	Download the FSP with e² studio Installer from the Assets section of the [current release](https://github.com/renesas/rzt-fsp/releases/tag/v2.0.0).
 2.	Run the installer. This will install the e² studio tool, FSP packs, GCC toolchain and other tools required to use this software. No additional installations are required.
 
 #### If using FSP Smart Configurator (FSP SC) with IAR Embedded Workbench for ARM ####
 
-1. Download the IAR Embedded Workbench for ARM installer from [IAR website](https://www.iar.com/jp/products/architectures/arm/iar-embedded-workbench-for-arm/).
-2. Download the FSP Smart Configurator Installer from the Assets section of the [current release](https://github.com/renesas/rzt-fsp/releases/tag/v1.3.0).
+1. Download the IAR Embedded Workbench for ARM installer from [IAR website](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/).
+2. Download the FSP Smart Configurator Installer from the Assets section of the [current release](https://github.com/renesas/rzt-fsp/releases/tag/v2.0.0).
 3. Run each installer.
 
 
@@ -59,5 +68,9 @@ RZ/T2M Product Information : www.renesas.com/rzt2m
 RZ/T2L Product Information : www.renesas.com/rzt2l
 
 e² studio : www.renesas.com/e2studio
+
+Example Projects : [RZ/T2M sample code](https://www.renesas.com/products/microcontrollers-microprocessors/rz-mpus/rzt2m-high-performance-multi-function-mpu-realizing-high-speed-processing-and-high-precision-control#tab-sample-code), [RZ/T2L sample code](https://www.renesas.com/products/microcontrollers-microprocessors/rz-mpus/rzt2l-high-performance-mpu-realizing-high-speed-and-high-precision-real-time-control-ethercat#tab-sample-code)
+
+Knowledge Base: https://en-support.renesas.com/knowledgeBase/category/31243
 
 Support: www.renesas.com/support

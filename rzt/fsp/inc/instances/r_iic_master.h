@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -36,8 +36,6 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define IIC_MASTER_CODE_VERSION_MAJOR    (1U) // DEPRECATED
-#define IIC_MASTER_CODE_VERSION_MINOR    (3U) // DEPRECATED
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -124,27 +122,26 @@ extern i2c_master_api_t const g_i2c_master_on_iic;
 /***********************************************************************************************************************
  * Public APIs
  **********************************************************************************************************************/
-fsp_err_t R_IIC_MASTER_Open(i2c_master_ctrl_t * const p_api_ctrl, i2c_master_cfg_t const * const p_cfg);
+fsp_err_t R_IIC_MASTER_Open(i2c_master_ctrl_t * const p_ctrl, i2c_master_cfg_t const * const p_cfg);
 
-fsp_err_t R_IIC_MASTER_Read(i2c_master_ctrl_t * const p_api_ctrl,
+fsp_err_t R_IIC_MASTER_Read(i2c_master_ctrl_t * const p_ctrl,
                             uint8_t * const           p_dest,
                             uint32_t const            bytes,
                             bool const                restart);
-fsp_err_t R_IIC_MASTER_Write(i2c_master_ctrl_t * const p_api_ctrl,
+fsp_err_t R_IIC_MASTER_Write(i2c_master_ctrl_t * const p_ctrl,
                              uint8_t * const           p_src,
                              uint32_t const            bytes,
                              bool const                restart);
-fsp_err_t R_IIC_MASTER_Abort(i2c_master_ctrl_t * const p_api_ctrl);
-fsp_err_t R_IIC_MASTER_SlaveAddressSet(i2c_master_ctrl_t * const    p_api_ctrl,
+fsp_err_t R_IIC_MASTER_Abort(i2c_master_ctrl_t * const p_ctrl);
+fsp_err_t R_IIC_MASTER_SlaveAddressSet(i2c_master_ctrl_t * const    p_ctrl,
                                        uint32_t const               slave,
                                        i2c_master_addr_mode_t const addr_mode);
-fsp_err_t R_IIC_MASTER_Close(i2c_master_ctrl_t * const p_api_ctrl);
-fsp_err_t R_IIC_MASTER_VersionGet(fsp_version_t * const p_version);
-fsp_err_t R_IIC_MASTER_CallbackSet(i2c_master_ctrl_t * const          p_api_ctrl,
+fsp_err_t R_IIC_MASTER_Close(i2c_master_ctrl_t * const p_ctrl);
+fsp_err_t R_IIC_MASTER_CallbackSet(i2c_master_ctrl_t * const          p_ctrl,
                                    void (                           * p_callback)(i2c_master_callback_args_t *),
                                    void const * const                 p_context,
                                    i2c_master_callback_args_t * const p_callback_memory);
-fsp_err_t R_IIC_MASTER_StatusGet(i2c_master_ctrl_t * const p_api_ctrl, i2c_master_status_t * p_status);
+fsp_err_t R_IIC_MASTER_StatusGet(i2c_master_ctrl_t * const p_ctrl, i2c_master_status_t * p_status);
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

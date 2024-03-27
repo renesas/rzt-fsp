@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -405,8 +405,10 @@ void usb_cstd_dma_driver (void)
     if (gs_usb_cstd_dma_int.wp != gs_usb_cstd_dma_int.rp)
     {
         utr.ip            = (uint8_t) gs_usb_cstd_dma_int.buf[gs_usb_cstd_dma_int.rp].ip;
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
         utr.p_transfer_tx = gs_usb_cstd_dma_int.buf[gs_usb_cstd_dma_int.wp].p_cfg->p_transfer_tx;
         utr.p_transfer_rx = gs_usb_cstd_dma_int.buf[gs_usb_cstd_dma_int.wp].p_cfg->p_transfer_rx;
+#endif
         if (USB_MODE_HOST == g_usb_usbmode[utr.ip])
         {
    #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)

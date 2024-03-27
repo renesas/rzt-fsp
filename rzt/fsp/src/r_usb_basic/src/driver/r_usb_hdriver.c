@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -321,6 +321,7 @@ usb_er_t usb_hstd_transfer_start_req (usb_utr_t * ptr)
 
     p_tran_data->cur_task_hdl = xTaskGetCurrentTaskHandle();
   #if ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE))
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
     if (0 != ptr->p_transfer_tx)
     {
         p_tran_data->p_transfer_tx = ptr->p_transfer_tx;
@@ -338,6 +339,7 @@ usb_er_t usb_hstd_transfer_start_req (usb_utr_t * ptr)
     {
         p_tran_data->p_transfer_rx = 0;
     }
+#endif /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) */
   #endif
 
     /* Send message */
@@ -401,8 +403,10 @@ usb_er_t usb_hstd_hcd_snd_mbx (usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, 
         hp->ipp       = ptr->ipp;
         hp->ip        = ptr->ip;
  #if ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE))
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
         hp->p_transfer_rx = ptr->p_transfer_rx;
         hp->p_transfer_tx = ptr->p_transfer_tx;
+#endif
  #endif                                /* #if ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE)) */
  #if (BSP_CFG_RTOS == 2)
         hp->cur_task_hdl = ptr->cur_task_hdl;
@@ -464,8 +468,10 @@ void usb_hstd_mgr_snd_mbx (usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, uint
         mp->ipp     = ptr->ipp;
         mp->ip      = ptr->ip;
  #if ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE))
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L)
         mp->p_transfer_rx = ptr->p_transfer_rx;
         mp->p_transfer_tx = ptr->p_transfer_tx;
+ #endif
  #endif
  #if (BSP_CFG_RTOS == 2)
         mp->cur_task_hdl = ptr->cur_task_hdl;
@@ -2301,7 +2307,7 @@ void usb_hstd_dummy_function (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
 void usb_hstd_suspend_complete (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
 {
     usb_instance_ctrl_t ctrl;
-    usb_cfg_t         * p_cfg;
+    usb_cfg_t         * p_cfg = NULL;
 
     (void) data1;
     (void) data2;
@@ -2321,15 +2327,22 @@ void usb_hstd_suspend_complete (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
  #if defined(BSP_MCU_GROUP_RA6M3)
         p_cfg = (usb_cfg_t *) R_FSP_IsrContextGet((IRQn_Type) VECTOR_NUMBER_USBHS_USB_INT_RESUME);
  #else
+#ifdef VECTOR_NUMBER_USB_HI
         p_cfg = (usb_cfg_t *) R_FSP_IsrContextGet((IRQn_Type) VECTOR_NUMBER_USB_HI);
+#endif
  #endif
     }
     else
     {
+#ifdef VECTOR_NUMBER_USB_HI
         p_cfg = (usb_cfg_t *) R_FSP_IsrContextGet((IRQn_Type) VECTOR_NUMBER_USB_HI);
+#endif
     }
-
+#if defined(BSP_MCU_GROUP_RA6M3) || defined(VECTOR_NUMBER_USB_HI)
     ctrl.p_context = (void *) p_cfg->p_context;
+#else
+    FSP_PARAMETER_NOT_USED(p_cfg);
+#endif
 
     usb_set_event(USB_STATUS_SUSPEND, &ctrl);
 }
@@ -2349,7 +2362,7 @@ void usb_hstd_suspend_complete (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
 void usb_hstd_resume_complete (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
 {
     usb_instance_ctrl_t ctrl;
-    usb_cfg_t         * p_cfg;
+    usb_cfg_t         * p_cfg = NULL;
 
     (void) data1;
     (void) data2;
@@ -2369,15 +2382,22 @@ void usb_hstd_resume_complete (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
  #if defined(BSP_MCU_GROUP_RA6M3)
         p_cfg = (usb_cfg_t *) R_FSP_IsrContextGet((IRQn_Type) VECTOR_NUMBER_USBHS_USB_INT_RESUME);
  #else
+#ifdef VECTOR_NUMBER_USB_HI
         p_cfg = (usb_cfg_t *) R_FSP_IsrContextGet((IRQn_Type) VECTOR_NUMBER_USB_HI);
+#endif
  #endif
     }
     else
     {
+#ifdef VECTOR_NUMBER_USB_HI
         p_cfg = (usb_cfg_t *) R_FSP_IsrContextGet((IRQn_Type) VECTOR_NUMBER_USB_HI);
+#endif
     }
-
+#if defined(BSP_MCU_GROUP_RA6M3) || defined(VECTOR_NUMBER_USB_HI)
     ctrl.p_context = (void *) p_cfg->p_context;
+#else
+    FSP_PARAMETER_NOT_USED(p_cfg);
+#endif
 
     usb_set_event(USB_STATUS_RESUME, &ctrl);
 }                                      /* End of function usb_hstd_resume_complete */

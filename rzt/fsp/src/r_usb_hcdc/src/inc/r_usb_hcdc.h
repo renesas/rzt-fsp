@@ -1,5 +1,5 @@
 /***********************************************************************************************************************
- * Copyright [2020-2023] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
+ * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
  *
  * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
  * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
@@ -71,6 +71,17 @@ extern void     usb_hcdc_class_check(usb_utr_t * ptr, uint16_t ** table);
 
 void     usb_hcdc_enumeration(usb_clsinfo_t * mess);
 uint16_t usb_hcdc_pipe_info(usb_utr_t * ptr, uint8_t * table, uint16_t speed, uint16_t length);
+
+void usb_hcdc_set_control_line_state(usb_instance_ctrl_t * p_ctrl, uint8_t device_address, usb_setup_t * setup); /* DEPRECATED */
+void usb_hcdc_set_line_coding(usb_instance_ctrl_t   * p_ctrl,
+                              uint8_t                 device_address,
+                              usb_hcdc_linecoding_t * g_com_parm,
+                              usb_setup_t           * setup);                                                    /* DEPRECATED */
+void usb_hcdc_get_line_coding(usb_instance_ctrl_t   * p_ctrl,
+                              uint8_t                 device_address,
+                              usb_hcdc_linecoding_t * g_com_parm,
+                              usb_setup_t           * setup);                                                    /* DEPRECATED */
+
 
 #endif                                 /* R_USB_HCDC_H */
 
