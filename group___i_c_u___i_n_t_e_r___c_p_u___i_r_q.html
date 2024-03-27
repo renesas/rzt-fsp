@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Inter-CPU IRQ on ICU (r_icu_inter_cpu_irq)</title>
+<title>RZT Flexible Software Package Documentation: Inter-CPU IRQ on ICU (r_icu_inter_cpu_irq)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,24 +140,41 @@ $(document).ready(function(){initNavTree('group___i_c_u___i_n_t_e_r___c_p_u___i_
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Inter-CPU IRQ on ICU (r_icu_inter_cpu_irq)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Inter-CPU IRQ on ICU (r_icu_inter_cpu_irq)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___m_o_d_u_l_e_s.html">System</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga66367184ba4bd716b174d1c960d77cae"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__cfg__t">icu_inter_cpu_irq_cfg_t</a> const *const p_cfg)</td></tr>
-<tr class="separator:ga66367184ba4bd716b174d1c960d77cae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0c2911e08d0529aac4134e4d302d08d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c2911e08d0529aac4134e4d302d08d5">R_ICU_INTER_CPU_IRQ_Generate</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_api_ctrl)</td></tr>
-<tr class="separator:ga0c2911e08d0529aac4134e4d302d08d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0c27ff523c2ecdd4f9f55b7ffebbd384"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c27ff523c2ecdd4f9f55b7ffebbd384">R_ICU_INTER_CPU_IRQ_CallbackSet</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga0c27ff523c2ecdd4f9f55b7ffebbd384"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab979e79ab28366f8d35a5eedf4215d4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#gab979e79ab28366f8d35a5eedf4215d4d">R_ICU_INTER_CPU_IRQ_Close</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_api_ctrl)</td></tr>
-<tr class="separator:gab979e79ab28366f8d35a5eedf4215d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga233ad2210b3f7d08142b24a0fb4ec24b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga233ad2210b3f7d08142b24a0fb4ec24b">R_ICU_INTER_CPU_IRQ_Open</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_ctrl, <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__cfg__t">icu_inter_cpu_irq_cfg_t</a> const *const p_cfg)</td></tr>
+<tr class="separator:ga233ad2210b3f7d08142b24a0fb4ec24b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad62525b6368606baba35b8617c9979eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#gad62525b6368606baba35b8617c9979eb">R_ICU_INTER_CPU_IRQ_Generate</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:gad62525b6368606baba35b8617c9979eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7d96e287e647e6e3e4b3ec2c880dc9d6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga7d96e287e647e6e3e4b3ec2c880dc9d6">R_ICU_INTER_CPU_IRQ_CallbackSet</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga7d96e287e647e6e3e4b3ec2c880dc9d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga262a55624725c7fd7dae58126c2f9d0f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga262a55624725c7fd7dae58126c2f9d0f">R_ICU_INTER_CPU_IRQ_Close</a> (<a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga262a55624725c7fd7dae58126c2f9d0f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the ICU peripheral on RZ microprocessor. This module implements the <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html">Inter CPU IRQ Interface</a>. </p>
@@ -141,9 +209,17 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; System &gt; Inter-CPU IRQ on r_icu_inter_cpu_irq</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; System &gt; Inter-CPU IRQ on r_icu_inter_cpu_irq.<br />
+ <h2>Configurations for System &gt; Inter-CPU IRQ (r_icu_inter_cpu_irq)</h2>
+This module can be added to the Stacks tab via New Stack &gt; System &gt; Inter-CPU IRQ (r_icu_inter_cpu_irq).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -167,11 +243,11 @@ Pin Configuration</h2>
 Usage Notes</h1>
 <h2>Use case 1) Software interrupt Single core usage</h2>
 <p>Software interrupts can be generated to CPU0 itself using INTCPU.</p><ul>
-<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> can be used to configure the software interrupt notification.<ul>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga233ad2210b3f7d08142b24a0fb4ec24b">R_ICU_INTER_CPU_IRQ_Open()</a> can be used to configure the software interrupt notification.<ul>
 <li>When using INTCPU0 to generate a software interrupt for CPU0 itself, it needs to set "Software Interrupt Priority".</li>
 </ul>
 </li>
-<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c2911e08d0529aac4134e4d302d08d5">R_ICU_INTER_CPU_IRQ_Generate()</a> can be used to generate notification of configured software interrupts.</li>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#gad62525b6368606baba35b8617c9979eb">R_ICU_INTER_CPU_IRQ_Generate()</a> can be used to generate notification of configured software interrupts.</li>
 </ul>
 <h3>Example of stack configuration</h3>
 <table class="doxtable">
@@ -194,7 +270,7 @@ ICU INTER CPU IRQ Single core usage</div></div>
  <h2>Use case 2) Software interrupt Dual core usage (2 channels)</h2>
 <p>Software interrupts can be generated between CPU0 and CPU1 using INTCPU.</p>
 <ul>
-<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> can be used to configure the software interrupt notification.<ul>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga233ad2210b3f7d08142b24a0fb4ec24b">R_ICU_INTER_CPU_IRQ_Open()</a> can be used to configure the software interrupt notification.<ul>
 <li>When using INTCPU1 to generate a software interrupt from CPU0 to CPU1.<ul>
 <li>On the CPU0 side, the "Software Interrupt Priority" setting shall be set to "disabled".</li>
 <li>On the CPU1 side, "Software Interrupt Priority" must be set to receive software interrupt notifications.</li>
@@ -207,12 +283,12 @@ ICU INTER CPU IRQ Single core usage</div></div>
 </li>
 </ul>
 </li>
-<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c2911e08d0529aac4134e4d302d08d5">R_ICU_INTER_CPU_IRQ_Generate()</a> can be used to generate notification of configured software interrupts.<ul>
-<li>When using inter-CPUs interrupts, CPU0 and CPU1 must be after executing <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> each other.</li>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#gad62525b6368606baba35b8617c9979eb">R_ICU_INTER_CPU_IRQ_Generate()</a> can be used to generate notification of configured software interrupts.<ul>
+<li>When using inter-CPUs interrupts, CPU0 and CPU1 must be after executing <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga233ad2210b3f7d08142b24a0fb4ec24b">R_ICU_INTER_CPU_IRQ_Open()</a> each other.</li>
 </ul>
 </li>
 </ul>
-<p>If the parameter check is Enable and "Callback" is "NULL", the <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> function returns FSP_ERR_ASSERTION, so set any callback function.</p>
+<p>If the parameter check is Enable and "Callback" is "NULL", the <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga233ad2210b3f7d08142b24a0fb4ec24b">R_ICU_INTER_CPU_IRQ_Open()</a> function returns FSP_ERR_ASSERTION, so set any callback function.</p>
 <h3>Example of stack configuration</h3>
 <table class="doxtable">
 <tr>
@@ -242,14 +318,14 @@ ICU INTER CPU IRQ Dual core usage 2channels</div></div>
  <h2>Use case 3) Software interrupt Dual core usage (1 channel)</h2>
 <p>Software interrupts can be generated between CPU0 and CPU1 using same INTCPU.</p>
 <ul>
-<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> can be used to configure the software interrupt notification.<ul>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga233ad2210b3f7d08142b24a0fb4ec24b">R_ICU_INTER_CPU_IRQ_Open()</a> can be used to configure the software interrupt notification.<ul>
 <li>When using INTCPU3 to generate a software interrupt between CPU0 and CPU1, "Software Interrupt Priority" must be set on both CPUs.</li>
 <li>Before each CPU generates a software interrupt, it can use "R_BSP_IrqDisable" to disable interrupts to itself.</li>
 <li>After each CPU generates a software interrupt, it can use "R_BSP_IrqEnable" to enable interrupts to itself.</li>
 </ul>
 </li>
-<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c2911e08d0529aac4134e4d302d08d5">R_ICU_INTER_CPU_IRQ_Generate()</a> can be used to generate notification of configured software interrupts.<ul>
-<li>When using inter-CPUs interrupts, CPU0 and CPU1 must be after executing <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open()</a> each other.</li>
+<li><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#gad62525b6368606baba35b8617c9979eb">R_ICU_INTER_CPU_IRQ_Generate()</a> can be used to generate notification of configured software interrupts.<ul>
+<li>When using inter-CPUs interrupts, CPU0 and CPU1 must be after executing <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga233ad2210b3f7d08142b24a0fb4ec24b">R_ICU_INTER_CPU_IRQ_Open()</a> each other.</li>
 </ul>
 </li>
 </ul>
@@ -276,9 +352,9 @@ Examples</h1>
 <h2><a class="anchor" id="r-icu-inter-cpu-irq-examples-basic"></a>
 Basic Example</h2>
 <p>This is a basic example of minimal use of the icu_inter_cpu_irq module in an application.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="keyword">volatile</span> <span class="keywordtype">bool</span> g_icu_inter_cpu_irq_notification_receive_flag = <span class="keyword">false</span>;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_icu_inter_cpu_irq_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line"></div><div class="line">    <span class="comment">/* Open the driver. */</span></div><div class="line">    err = <a class="code" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga66367184ba4bd716b174d1c960d77cae">R_ICU_INTER_CPU_IRQ_Open</a>(&amp;g_icu_inter_cpu_irq_ctrl, &amp;g_icu_inter_cpu_irq_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable interrupt. */</span></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Generate INTCPU0. */</span></div><div class="line">    err = <a class="code" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga0c2911e08d0529aac4134e4d302d08d5">R_ICU_INTER_CPU_IRQ_Generate</a>(&amp;g_icu_inter_cpu_irq_ctrl);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (!g_icu_inter_cpu_irq_notification_receive_flag)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Wait until an interrupt notification is received */</span></div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> example_callback (<a class="code" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(p_args);</div><div class="line"></div><div class="line">    g_icu_inter_cpu_irq_notification_receive_flag = <span class="keyword">true</span>;</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><h2 class="groupheader">Function Documentation</h2>
-<a id="ga66367184ba4bd716b174d1c960d77cae"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga66367184ba4bd716b174d1c960d77cae">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Open()</h2>
+<div class="fragment"><div class="line"></div><div class="line"><span class="keyword">volatile</span> <span class="keywordtype">bool</span> g_icu_inter_cpu_irq_notification_receive_flag = <span class="keyword">false</span>;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_icu_inter_cpu_irq_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line"></div><div class="line">    <span class="comment">/* Open the driver. */</span></div><div class="line">    err = <a class="code" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#ga233ad2210b3f7d08142b24a0fb4ec24b">R_ICU_INTER_CPU_IRQ_Open</a>(&amp;g_icu_inter_cpu_irq_ctrl, &amp;g_icu_inter_cpu_irq_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable interrupt. */</span></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Generate INTCPU0. */</span></div><div class="line">    err = <a class="code" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html#gad62525b6368606baba35b8617c9979eb">R_ICU_INTER_CPU_IRQ_Generate</a>(&amp;g_icu_inter_cpu_irq_ctrl);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (!g_icu_inter_cpu_irq_notification_receive_flag)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Wait until an interrupt notification is received */</span></div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> example_callback (<a class="code" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__callback__args__t">icu_inter_cpu_irq_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(p_args);</div><div class="line"></div><div class="line">    g_icu_inter_cpu_irq_notification_receive_flag = <span class="keyword">true</span>;</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><h2 class="groupheader">Function Documentation</h2>
+<a id="ga233ad2210b3f7d08142b24a0fb4ec24b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga233ad2210b3f7d08142b24a0fb4ec24b">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Open()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -287,7 +363,7 @@ Basic Example</h2>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_INTER_CPU_IRQ_Open </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -309,7 +385,7 @@ Basic Example</h2>
     <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>The channel requested in p_cfg is not available on the device selected in r_bsp_cfg.h. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>Module is already open. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Parameter check failure due to one or more reasons below:<ol type="1">
-<li>p_api_ctrl or p_cfg is NULL.</li>
+<li>p_ctrl or p_cfg is NULL.</li>
 <li>Callback parameter is NULL. </li>
 </ol>
 </td></tr>
@@ -319,8 +395,8 @@ Basic Example</h2>
 
 </div>
 </div>
-<a id="ga0c2911e08d0529aac4134e4d302d08d5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga0c2911e08d0529aac4134e4d302d08d5">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Generate()</h2>
+<a id="gad62525b6368606baba35b8617c9979eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad62525b6368606baba35b8617c9979eb">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Generate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -329,7 +405,7 @@ Basic Example</h2>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_INTER_CPU_IRQ_Generate </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em></td><td>)</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -338,7 +414,7 @@ Basic Example</h2>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Function executed without issue. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_api_ctrl or p_src is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_src is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Device is not open. </td></tr>
   </table>
   </dd>
@@ -346,8 +422,8 @@ Basic Example</h2>
 
 </div>
 </div>
-<a id="ga0c27ff523c2ecdd4f9f55b7ffebbd384"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga0c27ff523c2ecdd4f9f55b7ffebbd384">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_CallbackSet()</h2>
+<a id="ga7d96e287e647e6e3e4b3ec2c880dc9d6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7d96e287e647e6e3e4b3ec2c880dc9d6">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -356,7 +432,7 @@ Basic Example</h2>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_INTER_CPU_IRQ_CallbackSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -383,7 +459,7 @@ Basic Example</h2>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#a63c1d322efc3212fc48397ec80a66f5b">icu_inter_cpu_irq_api_t::callbackSet()</a>.</p>
+<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#a3dc5773f681eee52da08a3c5383b04bd">icu_inter_cpu_irq_api_t::callbackSet()</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
@@ -395,8 +471,8 @@ Basic Example</h2>
 
 </div>
 </div>
-<a id="gab979e79ab28366f8d35a5eedf4215d4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab979e79ab28366f8d35a5eedf4215d4d">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Close()</h2>
+<a id="ga262a55624725c7fd7dae58126c2f9d0f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga262a55624725c7fd7dae58126c2f9d0f">&#9670;&nbsp;</a></span>R_ICU_INTER_CPU_IRQ_Close()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -405,7 +481,7 @@ Basic Example</h2>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_INTER_CPU_IRQ_Close </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#ga8fa79d63ba76dddd3036d083aaf4d810">icu_inter_cpu_irq_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em></td><td>)</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -415,7 +491,7 @@ Basic Example</h2>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Device closed successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Device not opened. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_api_ctrl is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -428,7 +504,7 @@ Basic Example</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

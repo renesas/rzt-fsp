@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: I/O Ports (r_ioport)</title>
+<title>RZT Flexible Software Package Documentation: I/O Ports (r_ioport)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___i_o_p_o_r_t.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___i_o_p_o_r_t.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">I/O Ports (r_ioport)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">I/O Ports (r_ioport)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___m_o_d_u_l_e_s.html">System</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -109,26 +177,24 @@ Functions</h2></td></tr>
 <tr class="separator:ga3daa7097b08c7f623a741e2e481cf89f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab518fc544fe2b59722e30bd0a28ef430"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#gab518fc544fe2b59722e30bd0a28ef430">R_IOPORT_PinCfg</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin, uint32_t cfg)</td></tr>
 <tr class="separator:gab518fc544fe2b59722e30bd0a28ef430"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga01fe1fa97720d982173bf110032fa21f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#ga01fe1fa97720d982173bf110032fa21f">R_IOPORT_PinEventInputRead</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin, <a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> *p_pin_event)</td></tr>
+<tr class="separator:ga01fe1fa97720d982173bf110032fa21f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa561f3c4df61925e4c24b420b78a5583"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#gaa561f3c4df61925e4c24b420b78a5583">R_IOPORT_PinEventOutputWrite</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin, <a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> pin_value)</td></tr>
+<tr class="separator:gaa561f3c4df61925e4c24b420b78a5583"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadb3ad72c9add6d73eb896c58c36f34ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#gadb3ad72c9add6d73eb896c58c36f34ee">R_IOPORT_PinRead</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin, <a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> *p_pin_value)</td></tr>
 <tr class="separator:gadb3ad72c9add6d73eb896c58c36f34ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab84c08b8ac66d18c5636ebc772133e77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#gab84c08b8ac66d18c5636ebc772133e77">R_IOPORT_PortRead</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a> port, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> *p_port_value)</td></tr>
-<tr class="separator:gab84c08b8ac66d18c5636ebc772133e77"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga31825f3f0295317e5b446d74f791cd68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#ga31825f3f0295317e5b446d74f791cd68">R_IOPORT_PortWrite</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a> port, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> value, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> mask)</td></tr>
-<tr class="separator:ga31825f3f0295317e5b446d74f791cd68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1b17ca2e38acde207881e7e4ba2a7e28"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#ga1b17ca2e38acde207881e7e4ba2a7e28">R_IOPORT_PinWrite</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin, <a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> level)</td></tr>
 <tr class="separator:ga1b17ca2e38acde207881e7e4ba2a7e28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab83a07936c37ad904c329f8209d735e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#gab83a07936c37ad904c329f8209d735e1">R_IOPORT_PortDirectionSet</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a> port, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> direction_values, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> mask)</td></tr>
 <tr class="separator:gab83a07936c37ad904c329f8209d735e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac6797f0cf13907487f66f99e3ed937b2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#gac6797f0cf13907487f66f99e3ed937b2">R_IOPORT_PortEventInputRead</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a> port, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> *p_event_data)</td></tr>
 <tr class="separator:gac6797f0cf13907487f66f99e3ed937b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga01fe1fa97720d982173bf110032fa21f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#ga01fe1fa97720d982173bf110032fa21f">R_IOPORT_PinEventInputRead</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin, <a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> *p_pin_event)</td></tr>
-<tr class="separator:ga01fe1fa97720d982173bf110032fa21f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8d3f8c4c90241587fee076b6fb0623ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#ga8d3f8c4c90241587fee076b6fb0623ff">R_IOPORT_PortEventOutputWrite</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a> port, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> event_data, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> mask_value)</td></tr>
 <tr class="separator:ga8d3f8c4c90241587fee076b6fb0623ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa561f3c4df61925e4c24b420b78a5583"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#gaa561f3c4df61925e4c24b420b78a5583">R_IOPORT_PinEventOutputWrite</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin, <a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> pin_value)</td></tr>
-<tr class="separator:gaa561f3c4df61925e4c24b420b78a5583"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7af603d9d81f6907399da7b18cbfd286"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#ga7af603d9d81f6907399da7b18cbfd286">R_IOPORT_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *p_data)</td></tr>
-<tr class="separator:ga7af603d9d81f6907399da7b18cbfd286"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab84c08b8ac66d18c5636ebc772133e77"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#gab84c08b8ac66d18c5636ebc772133e77">R_IOPORT_PortRead</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a> port, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> *p_port_value)</td></tr>
+<tr class="separator:gab84c08b8ac66d18c5636ebc772133e77"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga31825f3f0295317e5b446d74f791cd68"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t.html#ga31825f3f0295317e5b446d74f791cd68">R_IOPORT_PortWrite</a> (<a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const p_ctrl, <a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a> port, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> value, <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> mask)</td></tr>
+<tr class="separator:ga31825f3f0295317e5b446d74f791cd68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the I/O Ports peripheral on RZ microprocessors. This module implements the <a class="el" href="group___i_o_p_o_r_t___a_p_i.html">I/O Port Interface</a>. </p>
@@ -158,7 +224,7 @@ Features</h2>
 </ul>
 <h1><a class="anchor" id="r-ioport-configuration"></a>
 Configuration</h1>
-<p>The I/O PORT HAL module must be configured by the user for the desired operation. The operating state of an I/O pin can be set via the RZ Configuration tool. When the project is built a pin configuration file is created. The BSP will automatically configure the MPU IO ports accordingly at startup using the same API functions mentioned in this document.</p>
+<p>The I/O PORT HAL module must be configured by the user for the desired operation. The operating state of an I/O pin can be set via the FSP Configuration tool. When the project is built a pin configuration file is created. The BSP will automatically configure the MPU IO ports accordingly at startup using the same API functions mentioned in this document.</p>
 <p><a class="anchor" id="um_ioport_initialize_io_port_module"></a><a class="anchor" id="um_ioport_configure_multiple_pins"></a><a class="anchor" id="um_ioport_module_initialization_data_dependency"></a><a class="anchor" id="um_ioport_configure_direction_of_io_port_pins"></a><a class="anchor" id="um_ioport_configure_pfs_register"></a><a class="anchor" id="um_ioport_configure_drctl_register"></a><a class="anchor" id="um_ioport_configure_aselp_register"></a> <h2>Build Time Configurations for r_ioport</h2>
 The following build time configurations are defined in fsp_cfg/r_ioport_cfg.h:<br />
 </p><table class="doxtable">
@@ -175,8 +241,8 @@ Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; System &gt; I/O Port Driver on r_ioport</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; System &gt; I/O Port Driver on r_ioport.<br />
+ <h2>Configurations for System &gt; I/O Port (r_ioport)</h2>
+This module can be added to the Stacks tab via New Stack &gt; System &gt; I/O Port (r_ioport).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -491,7 +557,7 @@ Input direction</li>
 </ul>
 </td><td>Output direction </td><td>Select event direction for Single port 0 </td></tr>
 <tr>
-<td>ELC Single Port 0 &gt; Common &gt; Port selection</td><td>Refer to the RZ Configuration tool for available options.</td><td>P16_0 </td><td>Select port number for Single port 0 </td></tr>
+<td>ELC Single Port 0 &gt; Common &gt; Port selection</td><td>Refer to the RZT Configuration tool for available options.</td><td>P16_0 </td><td>Select port number for Single port 0 </td></tr>
 <tr>
 <td>ELC Single Port 0 &gt; Output Direction Setting &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger Single output port 0 </td></tr>
 <tr>
@@ -531,7 +597,7 @@ Input direction</li>
 </ul>
 </td><td>Output direction </td><td>Select event direction for Single port 1 </td></tr>
 <tr>
-<td>ELC Single Port 1 &gt; Common &gt; Port selection</td><td>Refer to the RZ Configuration tool for available options.</td><td>P16_0 </td><td>Select port number for Single port 1 </td></tr>
+<td>ELC Single Port 1 &gt; Common &gt; Port selection</td><td>Refer to the RZT Configuration tool for available options.</td><td>P16_0 </td><td>Select port number for Single port 1 </td></tr>
 <tr>
 <td>ELC Single Port 1 &gt; Output Direction Setting &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger Single output port 1 </td></tr>
 <tr>
@@ -571,7 +637,7 @@ Input direction</li>
 </ul>
 </td><td>Output direction </td><td>Select event direction for Single port 2 </td></tr>
 <tr>
-<td>ELC Single Port 2 &gt; Common &gt; Port selection</td><td>Refer to the RZ Configuration tool for available options.</td><td>P16_0 </td><td>Select port number for Single port 2 </td></tr>
+<td>ELC Single Port 2 &gt; Common &gt; Port selection</td><td>Refer to the RZT Configuration tool for available options.</td><td>P16_0 </td><td>Select port number for Single port 2 </td></tr>
 <tr>
 <td>ELC Single Port 2 &gt; Output Direction Setting &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger Single output port 2 </td></tr>
 <tr>
@@ -611,7 +677,7 @@ Input direction</li>
 </ul>
 </td><td>Output direction </td><td>Select event direction for Single port 3 </td></tr>
 <tr>
-<td>ELC Single Port 3 &gt; Common &gt; Port selection</td><td>Refer to the RZ Configuration tool for available options.</td><td>P16_0 </td><td>Select port number for Single port 3 </td></tr>
+<td>ELC Single Port 3 &gt; Common &gt; Port selection</td><td>Refer to the RZT Configuration tool for available options.</td><td>P16_0 </td><td>Select port number for Single port 3 </td></tr>
 <tr>
 <td>ELC Single Port 3 &gt; Output Direction Setting &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger Single output port 3 </td></tr>
 <tr>
@@ -658,7 +724,7 @@ Examples</h1>
 <p>This is a basic example of minimal use of the IOPORT in an application.</p>
 <div class="fragment"><div class="line"></div><div class="line"><span class="keywordtype">void</span> basic_example ()</div><div class="line">{</div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> readLevel;</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>      err;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the IOPORT module and configure the pins</span></div><div class="line"><span class="comment">     * Note: The default pin configuration name in the RZ microprocessor Configuration tool is g_bsp_pin_cfg */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#ga24938047dccc62c4426ff543489454de">R_IOPORT_Open</a>(&amp;g_ioport_ctrl, &amp;g_bsp_pin_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Call R_IOPORT_PinsCfg if the configuration was not part of initial configurations made in open */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#ga3daa7097b08c7f623a741e2e481cf89f">R_IOPORT_PinsCfg</a>(&amp;g_ioport_ctrl, &amp;g_runtime_pin_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Set Pin 6 of Port 19 to High */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#ga1b17ca2e38acde207881e7e4ba2a7e28">R_IOPORT_PinWrite</a>(&amp;g_ioport_ctrl, <a class="code" href="group___b_s_p___i_o.html#gga0adbfd4b7db319886d667acb4804d80aa625c20708c698d2e5cd93c4f7767e851">BSP_IO_PORT_19_PIN_6</a>, <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0acf9a28559b5a18ed9b8af4c2a7df10ef">BSP_IO_LEVEL_HIGH</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Read Pin 6 of Port 19 */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#gadb3ad72c9add6d73eb896c58c36f34ee">R_IOPORT_PinRead</a>(&amp;g_ioport_ctrl, <a class="code" href="group___b_s_p___i_o.html#gga0adbfd4b7db319886d667acb4804d80aa625c20708c698d2e5cd93c4f7767e851">BSP_IO_PORT_19_PIN_6</a>, &amp;readLevel);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Blinky Example</h2>
 <p>This example uses IOPORT to configure and toggle a pin to blink an LED.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="keywordtype">void</span> blinky_example ()</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the IOPORT module and configure the pins */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#ga24938047dccc62c4426ff543489454de">R_IOPORT_Open</a>(&amp;g_ioport_ctrl, &amp;g_bsp_pin_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Configure Pin as output</span></div><div class="line"><span class="comment">     * Call the R_IOPORT_PinCfg if the configuration was not part of initial configurations made in open */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#gab518fc544fe2b59722e30bd0a28ef430">R_IOPORT_PinCfg</a>(&amp;g_ioport_ctrl, USER_LED_PORT, <a class="code" href="group___i_o_p_o_r_t___a_p_i.html#ggac617eebcb7c2c1e45fa8e04fc473e574ab4d8c12714fab80d21b5b5a636f3cf97">IOPORT_CFG_PORT_DIRECTION_OUTPUT</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> level = <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0abb31064742440cdbdd638330a1cf7a9f">BSP_IO_LEVEL_LOW</a>;</div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Determine the next state of the LEDs */</span></div><div class="line">        <span class="keywordflow">if</span> (<a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0abb31064742440cdbdd638330a1cf7a9f">BSP_IO_LEVEL_LOW</a> == level)</div><div class="line">        {</div><div class="line">            level = <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0acf9a28559b5a18ed9b8af4c2a7df10ef">BSP_IO_LEVEL_HIGH</a>;</div><div class="line">        }</div><div class="line">        <span class="keywordflow">else</span></div><div class="line">        {</div><div class="line">            level = <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0abb31064742440cdbdd638330a1cf7a9f">BSP_IO_LEVEL_LOW</a>;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="comment">/* Update LED on RZ microprocessor RSK board */</span></div><div class="line">        err = <a class="code" href="group___i_o_p_o_r_t.html#ga1b17ca2e38acde207881e7e4ba2a7e28">R_IOPORT_PinWrite</a>(&amp;g_ioport_ctrl, USER_LED_PORT, level);</div><div class="line">        handle_error(err);</div><div class="line"></div><div class="line">        <span class="comment">/* Delay */</span></div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(100, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>); <span class="comment">// NOLINT</span></div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>ELC Example</h2>
+<div class="fragment"><div class="line"></div><div class="line"><span class="keywordtype">void</span> blinky_example ()</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the IOPORT module and configure the pins */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#ga24938047dccc62c4426ff543489454de">R_IOPORT_Open</a>(&amp;g_ioport_ctrl, &amp;g_bsp_pin_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Configure Pin as output</span></div><div class="line"><span class="comment">     * Call the R_IOPORT_PinCfg if the configuration was not part of initial configurations made in open */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#gab518fc544fe2b59722e30bd0a28ef430">R_IOPORT_PinCfg</a>(&amp;g_ioport_ctrl, USER_LED_PORT, IOPORT_CFG_PORT_DIRECTION_OUTPUT);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> level = <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0abb31064742440cdbdd638330a1cf7a9f">BSP_IO_LEVEL_LOW</a>;</div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Determine the next state of the LEDs */</span></div><div class="line">        <span class="keywordflow">if</span> (<a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0abb31064742440cdbdd638330a1cf7a9f">BSP_IO_LEVEL_LOW</a> == level)</div><div class="line">        {</div><div class="line">            level = <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0acf9a28559b5a18ed9b8af4c2a7df10ef">BSP_IO_LEVEL_HIGH</a>;</div><div class="line">        }</div><div class="line">        <span class="keywordflow">else</span></div><div class="line">        {</div><div class="line">            level = <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0abb31064742440cdbdd638330a1cf7a9f">BSP_IO_LEVEL_LOW</a>;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="comment">/* Update LED on RZ microprocessor RSK board */</span></div><div class="line">        err = <a class="code" href="group___i_o_p_o_r_t.html#ga1b17ca2e38acde207881e7e4ba2a7e28">R_IOPORT_PinWrite</a>(&amp;g_ioport_ctrl, USER_LED_PORT, level);</div><div class="line">        handle_error(err);</div><div class="line"></div><div class="line">        <span class="comment">/* Delay */</span></div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(100, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>); <span class="comment">// NOLINT</span></div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>ELC Example</h2>
 <p>This is an example of using IOPORT with ELC events. The ELC event system allows toggling an output pin without intervention from processor.</p>
 <div class="fragment"><div class="line"></div><div class="line"><span class="keyword">static</span> <a class="code" href="group___e_l_c.html#structelc__instance__ctrl__t">elc_instance_ctrl_t</a> g_elc_ctrl;</div><div class="line"><span class="keyword">static</span> <a class="code" href="group___e_l_c___a_p_i.html#structelc__cfg__t">elc_cfg_t</a>           g_elc_cfg;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> ioport_elc_example ()</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the software and sets the links defined in the control structure. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga35864de459d2ef45a03da4343729712f">R_ELC_Open</a>(&amp;g_elc_ctrl, &amp;g_elc_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Create or modify a link between a peripheral function and an event source. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga4b40a4cb59194b6315cf608cd5e36bd9">R_ELC_LinkSet</a>(&amp;g_elc_ctrl, ELC_PERIPHERAL_SINGLEPORT1, ELC_EVENT_IOPORT_SINGLE0);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="keyword">const</span> <a class="code" href="group___i_o_p_o_r_t.html#structioport__extend__cfg__t">ioport_extend_cfg_t</a> g_ioport_cfg_extend_with_elc =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___i_o_p_o_r_t.html#ae996b045e5cd3d3aafa2e303eef622de">single_port_cfg</a>[IOPORT_SINGLE_PORT_0] =</div><div class="line">        {</div><div class="line">            .<a class="code" href="group___i_o_p_o_r_t.html#a0b3044299c4d5b19c4fc7ad635ec59f4">event_control</a>  = <a class="code" href="group___i_o_p_o_r_t.html#gga04dddafb062136b04f33eeea27648397a79407e79fac3398eb44cb42f2b1ccbf7">IOPORT_EVENT_CONTROL_ENABLE</a>,</div><div class="line">            .direction      = <a class="code" href="group___i_o_p_o_r_t.html#gga06a4ad7ce5b0c573328feccb1e2c54fbaf147669fc3abf3e19614e0f246bcd3a6">IOPORT_EVENT_DIRECTION_INPUT</a>,</div><div class="line">            .port_num       = (uint16_t) SINGLE_INPUT_PORT0,</div><div class="line">            .operation      = <a class="code" href="group___i_o_p_o_r_t.html#gga6baec76057e6dbc11b3de637ba3ca76eac8f41721c8941ae9416e6d087d4698be">IOPORT_EVENT_OUTPUT_OPERATION_TOGGLE</a>,</div><div class="line">            .edge_detection = <a class="code" href="group___i_o_p_o_r_t.html#gga4f8bf2319abee01387ae77ca7e85fb0aa1775a3e0a4f16c2142edf5630a2f8fe7">IOPORT_EVENT_DETECTION_BOTH_EGDE</a></div><div class="line">        },</div><div class="line">        .single_port_cfg[IOPORT_SINGLE_PORT_1] =</div><div class="line">        {</div><div class="line">            .event_control  = <a class="code" href="group___i_o_p_o_r_t.html#gga04dddafb062136b04f33eeea27648397a79407e79fac3398eb44cb42f2b1ccbf7">IOPORT_EVENT_CONTROL_ENABLE</a>,</div><div class="line">            .direction      = <a class="code" href="group___i_o_p_o_r_t.html#gga06a4ad7ce5b0c573328feccb1e2c54fba36d0452e98647759803ddc117bbc1b40">IOPORT_EVENT_DIRECTION_OUTPUT</a>,</div><div class="line">            .port_num       = (uint16_t) SINGLE_OUTPUT_PORT1,</div><div class="line">            .operation      = <a class="code" href="group___i_o_p_o_r_t.html#gga6baec76057e6dbc11b3de637ba3ca76eac8f41721c8941ae9416e6d087d4698be">IOPORT_EVENT_OUTPUT_OPERATION_TOGGLE</a>,</div><div class="line">            .edge_detection = <a class="code" href="group___i_o_p_o_r_t.html#gga4f8bf2319abee01387ae77ca7e85fb0aa1775a3e0a4f16c2142edf5630a2f8fe7">IOPORT_EVENT_DETECTION_BOTH_EGDE</a></div><div class="line">        },</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="keyword">const</span> <a class="code" href="group___i_o_p_o_r_t___a_p_i.html#structioport__cfg__t">ioport_cfg_t</a> g_bsp_with_elc_pin_cfg =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___i_o_p_o_r_t___a_p_i.html#af5b820497125b07a94537deb03a37f0d">number_of_pins</a> = g_bsp_pin_cfg.number_of_pins,</div><div class="line">        .p_pin_cfg_data = g_bsp_pin_cfg.p_pin_cfg_data,</div><div class="line">        .p_extend       = &amp;g_ioport_cfg_extend_with_elc,</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the IOPORT module and configure the pins with ELC configs */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#ga24938047dccc62c4426ff543489454de">R_IOPORT_Open</a>(&amp;g_ioport_ctrl, &amp;g_bsp_with_elc_pin_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Call R_IOPORT_PinsCfg if the configuration was not part of initial configurations made in open */</span></div><div class="line">    err = <a class="code" href="group___i_o_p_o_r_t.html#ga3daa7097b08c7f623a741e2e481cf89f">R_IOPORT_PinsCfg</a>(&amp;g_ioport_ctrl, &amp;g_runtime_pin_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        <span class="comment">/* ELC SINGLE_INPUT_PORT0 setting is both edge detection.</span></div><div class="line"><span class="comment">         * When SINGLE_INPUT_PORT0 input is high -&gt; low (for example, press SW on the board), high signal is output from SINGLE_OUTPUT_PORT1.</span></div><div class="line"><span class="comment">         * When SINGLE_INPUT_PORT0 input is low -&gt; high (for example, release SW on the board), low signal is output from SINGLE_OUTPUT_PORT1.</span></div><div class="line"><span class="comment">         *</span></div><div class="line"><span class="comment">         * This is done without intervention from processor */</span></div><div class="line">        ;</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -1161,6 +1227,96 @@ Single input port configuration. </td></tr>
 
 </div>
 </div>
+<a id="ga01fe1fa97720d982173bf110032fa21f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga01fe1fa97720d982173bf110032fa21f">&#9670;&nbsp;</a></span>R_IOPORT_PinEventInputRead()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_PinEventInputRead </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a>&#160;</td>
+          <td class="paramname"><em>pin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> *&#160;</td>
+          <td class="paramname"><em>p_pin_event</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Reads the value of the event input data of a specific pin. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#aed708d8a848a6e142ce5bf8cc085360f">ioport_api_t::pinEventInputRead</a>.</p>
+<p>The pin event data is captured in response to a trigger from the ELC. This function enables this data to be read. Using the event system allows the captured data to be stored when it occurs and then read back at a later time.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Pin read </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>NULL pointer </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The module has not been opened </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Port is not valid ELC PORT. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaa561f3c4df61925e4c24b420b78a5583"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa561f3c4df61925e4c24b420b78a5583">&#9670;&nbsp;</a></span>R_IOPORT_PinEventOutputWrite()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_PinEventOutputWrite </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a>&#160;</td>
+          <td class="paramname"><em>pin</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a>&#160;</td>
+          <td class="paramname"><em>pin_value</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This function writes the event output data value to a pin. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#a52c0dcf252f3502911337a9f99e17986">ioport_api_t::pinEventOutputWrite</a>.</p>
+<p>Using the event system enables a pin state to be stored by this function in advance of being output on the pin. The output to the pin will occur when the ELC event occurs.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Pin event data written </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Port or Pin or value not valid </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The module has not been opened </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>NULL pointer </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="gadb3ad72c9add6d73eb896c58c36f34ee"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gadb3ad72c9add6d73eb896c58c36f34ee">&#9670;&nbsp;</a></span>R_IOPORT_PinRead()</h2>
 
@@ -1203,104 +1359,6 @@ Single input port configuration. </td></tr>
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>This function is re-entrant for different pins. </dd></dl>
-
-</div>
-</div>
-<a id="gab84c08b8ac66d18c5636ebc772133e77"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab84c08b8ac66d18c5636ebc772133e77">&#9670;&nbsp;</a></span>R_IOPORT_PortRead()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_PortRead </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a>&#160;</td>
-          <td class="paramname"><em>port</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> *&#160;</td>
-          <td class="paramname"><em>p_port_value</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reads the value on an IO port. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#ac0de7591b4c5680e87ab2d219e2748c2">ioport_api_t::portRead</a>.</p>
-<p>The specified port will be read, and the levels for all the pins will be returned by PINm register. Each bit in the returned value corresponds to a pin on the port. For example, bit 7 corresponds to pin 7, bit 6 to pin 6, and so on.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Port read </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>NULL pointer </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The module has not been opened</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>This function is re-entrant for different ports. </dd></dl>
-
-</div>
-</div>
-<a id="ga31825f3f0295317e5b446d74f791cd68"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga31825f3f0295317e5b446d74f791cd68">&#9670;&nbsp;</a></span>R_IOPORT_PortWrite()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_PortWrite </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a>&#160;</td>
-          <td class="paramname"><em>port</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a>&#160;</td>
-          <td class="paramname"><em>value</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a>&#160;</td>
-          <td class="paramname"><em>mask</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Writes to multiple pins on a port. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#a5a71c5cffcdcacab2425d46603451cf2">ioport_api_t::portWrite</a>.</p>
-<p>The output value will be written to the specified port. Each bit in the value parameter corresponds to a bit on the port. For example, bit 7 corresponds to pin 7, bit 6 to pin 6, and so on. Each bit in the mask parameter corresponds to a pin on the port.</p>
-<p>Only the bits with the corresponding bit in the mask value set will be updated. For example, value = 0x00FF, mask = 0x0003 results in only bits 0 and 1 being updated.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Port written to </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>The port and/or mask not valid </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The module has not been opened </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>NULL pointerd</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>This function is re-entrant for different ports. This function makes use of the Pm register to atomically modify the levels on the specified pins on a port. </dd></dl>
 
 </div>
 </div>
@@ -1447,51 +1505,6 @@ Single input port configuration. </td></tr>
 
 </div>
 </div>
-<a id="ga01fe1fa97720d982173bf110032fa21f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga01fe1fa97720d982173bf110032fa21f">&#9670;&nbsp;</a></span>R_IOPORT_PinEventInputRead()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_PinEventInputRead </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a>&#160;</td>
-          <td class="paramname"><em>pin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> *&#160;</td>
-          <td class="paramname"><em>p_pin_event</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reads the value of the event input data of a specific pin. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#aed708d8a848a6e142ce5bf8cc085360f">ioport_api_t::pinEventInputRead</a>.</p>
-<p>The pin event data is captured in response to a trigger from the ELC. This function enables this data to be read. Using the event system allows the captured data to be stored when it occurs and then read back at a later time.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Pin read </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>NULL pointer </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The module has not been opened </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Port is not valid ELC PORT. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="ga8d3f8c4c90241587fee076b6fb0623ff"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga8d3f8c4c90241587fee076b6fb0623ff">&#9670;&nbsp;</a></span>R_IOPORT_PortEventOutputWrite()</h2>
 
@@ -1544,14 +1557,14 @@ Single input port configuration. </td></tr>
 
 </div>
 </div>
-<a id="gaa561f3c4df61925e4c24b420b78a5583"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaa561f3c4df61925e4c24b420b78a5583">&#9670;&nbsp;</a></span>R_IOPORT_PinEventOutputWrite()</h2>
+<a id="gab84c08b8ac66d18c5636ebc772133e77"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab84c08b8ac66d18c5636ebc772133e77">&#9670;&nbsp;</a></span>R_IOPORT_PortRead()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_PinEventOutputWrite </td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_PortRead </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const&#160;</td>
           <td class="paramname"><em>p_ctrl</em>, </td>
@@ -1559,14 +1572,14 @@ Single input port configuration. </td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a>&#160;</td>
-          <td class="paramname"><em>pin</em>, </td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a>&#160;</td>
+          <td class="paramname"><em>port</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a>&#160;</td>
-          <td class="paramname"><em>pin_value</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a> *&#160;</td>
+          <td class="paramname"><em>p_port_value</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -1575,44 +1588,70 @@ Single input port configuration. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>This function writes the event output data value to a pin. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#a52c0dcf252f3502911337a9f99e17986">ioport_api_t::pinEventOutputWrite</a>.</p>
-<p>Using the event system enables a pin state to be stored by this function in advance of being output on the pin. The output to the pin will occur when the ELC event occurs.</p>
+<p>Reads the value on an IO port. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#ac0de7591b4c5680e87ab2d219e2748c2">ioport_api_t::portRead</a>.</p>
+<p>The specified port will be read, and the levels for all the pins will be returned by PINm register. Each bit in the returned value corresponds to a pin on the port. For example, bit 7 corresponds to pin 7, bit 6 to pin 6, and so on.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Pin event data written </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Port or Pin or value not valid </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The module has not been opened </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Port read </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>NULL pointer </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The module has not been opened</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>This function is re-entrant for different ports. </dd></dl>
 
 </div>
 </div>
-<a id="ga7af603d9d81f6907399da7b18cbfd286"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga7af603d9d81f6907399da7b18cbfd286">&#9670;&nbsp;</a></span>R_IOPORT_VersionGet()</h2>
+<a id="ga31825f3f0295317e5b446d74f791cd68"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga31825f3f0295317e5b446d74f791cd68">&#9670;&nbsp;</a></span>R_IOPORT_PortWrite()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_VersionGet </td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IOPORT_PortWrite </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *&#160;</td>
-          <td class="paramname"><em>p_data</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gafc061c58bb812cb2a8f25222353634cd">ioport_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga33a147902fb258f531c0bae40166f46e">bsp_io_port_t</a>&#160;</td>
+          <td class="paramname"><em>port</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a>&#160;</td>
+          <td class="paramname"><em>value</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html#gaf5da96a68757260a2cb370fec69f0836">ioport_size_t</a>&#160;</td>
+          <td class="paramname"><em>mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>DEPRECATED Returns IOPort HAL driver version. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#a001924b9dd280688859fd74421e7b046">ioport_api_t::versionGet</a>.</p>
+<p>Writes to multiple pins on a port. Implements <a class="el" href="group___i_o_p_o_r_t___a_p_i.html#a5a71c5cffcdcacab2425d46603451cf2">ioport_api_t::portWrite</a>.</p>
+<p>The output value will be written to the specified port. Each bit in the value parameter corresponds to a bit on the port. For example, bit 7 corresponds to pin 7, bit 6 to pin 6, and so on. Each bit in the mask parameter corresponds to a pin on the port.</p>
+<p>Only the bits with the corresponding bit in the mask value set will be updated. For example, value = 0x00FF, mask = 0x0003 results in only bits 0 and 1 being updated.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version information read </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_data is NULL</td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Port written to </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>The port and/or mask not valid </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The module has not been opened </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>NULL pointerd</td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>This function is reentrant. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>This function is re-entrant for different ports. This function makes use of the Pm register to atomically modify the levels on the specified pins on a port. </dd></dl>
 
 </div>
 </div>
@@ -1622,7 +1661,7 @@ Single input port configuration. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

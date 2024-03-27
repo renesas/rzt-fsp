@@ -64,11 +64,11 @@ var group___c_a_n_f_d =
       [ "CANFD_FRAME_OPTION_BRS", "group___c_a_n_f_d.html#gga6c4d104c3a9cce6b74a05035f0af6d87a4a5ce70c8fb9ab5d9e320a79dd59aebf", null ],
       [ "CANFD_FRAME_OPTION_FD", "group___c_a_n_f_d.html#gga6c4d104c3a9cce6b74a05035f0af6d87a46bb2a869fc5c7b63b16bc822d4ec712", null ]
     ] ],
-    [ "R_CANFD_Open", "group___c_a_n_f_d.html#ga664d1e07613b250a3084681a613334be", null ],
-    [ "R_CANFD_Close", "group___c_a_n_f_d.html#ga7387d2e68262798a52c3a820ce12ea47", null ],
-    [ "R_CANFD_Write", "group___c_a_n_f_d.html#gadc41bfd0b92eb607d8dbc0b8c248bb94", null ],
-    [ "R_CANFD_Read", "group___c_a_n_f_d.html#gab31328c78c603cbdc1c83846d4a6a7bb", null ],
-    [ "R_CANFD_ModeTransition", "group___c_a_n_f_d.html#ga00c7557917ce6e78eb2969d7b5855890", null ],
-    [ "R_CANFD_InfoGet", "group___c_a_n_f_d.html#ga16ff5e9e44e32191944292aea98ab4cb", null ],
-    [ "R_CANFD_CallbackSet", "group___c_a_n_f_d.html#ga96f34361e525a46f121b11d627c3a1a8", null ]
+    [ "R_CANFD_Open", "group___c_a_n_f_d.html#gac97f5d7fbeba98f905e40e2bdd68b3e4", null ],
+    [ "R_CANFD_Close", "group___c_a_n_f_d.html#ga3c3f42b9f17eafb2509fff92078260f5", null ],
+    [ "R_CANFD_Write", "group___c_a_n_f_d.html#ga342b57bf1c586e52edf8d9982254c894", null ],
+    [ "R_CANFD_Read", "group___c_a_n_f_d.html#ga1c2bd917d511835fcf86dc0134fd87ff", null ],
+    [ "R_CANFD_ModeTransition", "group___c_a_n_f_d.html#ga8e1d973298eb7f577213f1fcf57e6e5a", null ],
+    [ "R_CANFD_InfoGet", "group___c_a_n_f_d.html#ga57a9454bd0f131c7e1976a71d4fc1fbd", null ],
+    [ "R_CANFD_CallbackSet", "group___c_a_n_f_d.html#ga314a93d1f133518f5b659d74a95432a0", null ]
 ];

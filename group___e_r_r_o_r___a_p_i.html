@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: ERROR Interface</title>
+<title>RZT Flexible Software Package Documentation: ERROR Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___e_r_r_o_r___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,12 +140,30 @@ $(document).ready(function(){initNavTree('group___e_r_r_o_r___a_p_i.html','');})
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">ERROR Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">ERROR Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___i_n_t_e_r_f_a_c_e_s.html">System</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -102,8 +171,7 @@ $(document).ready(function(){initNavTree('group___e_r_r_o_r___a_p_i.html','');})
 <p>Defines the API and data structures for the ERROR event handling implementation of the ERROR interface.</p>
 <h1><a class="anchor" id="ERROR_API_SUMMARY"></a>
 Summary</h1>
-<p>The ERROR API provides an interface for error event handling.</p>
-<p>Implemented by: <a class="el" href="group___i_c_u___e_r_r_o_r.html">Interruput Controller Unit (ICU) ERROR (r_icu_error)</a> </p>
+<p>The ERROR API provides an interface for error event handling. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -120,6 +188,11 @@ Data Structures</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:gaaadb84a75334249f5216e8b6b717f1c2"><td class="memItemLeft" align="right" valign="top">typedef void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a></td></tr>
 <tr class="separator:gaaadb84a75334249f5216e8b6b717f1c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ga7737b8292e5cc27e1fb9ef504d392107"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#ga7737b8292e5cc27e1fb9ef504d392107">error_event_t</a> </td></tr>
+<tr class="separator:ga7737b8292e5cc27e1fb9ef504d392107"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structerror__callback__args__t" id="structerror__callback__args__t"></a>
@@ -141,20 +214,22 @@ Typedefs</h2></td></tr>
 <td class="fieldname">
 p_context</td>
 <td class="fielddoc">
-Set in <a class="el" href="group___e_r_r_o_r___a_p_i.html#ad2912611cb98abd46c82ea4819dbdcd8">error_api_t::open</a> function in <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__cfg__t">error_cfg_t</a>. <p>Placeholder for user data. </p>
+<p>Placeholder for user data. Set in <a class="el" href="group___e_r_r_o_r___a_p_i.html#ad2912611cb98abd46c82ea4819dbdcd8">error_api_t::open</a> function in <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__cfg__t">error_cfg_t</a>. </p>
 </td></tr>
 <tr><td class="fieldtype">
-<a id="a4c4e6b3119337d4da6d56c9d99eda69f"></a>uint32_t</td>
-<td class="fieldname">
-error_source</td>
-<td class="fielddoc">
-Error source. </td></tr>
-<tr><td class="fieldtype">
-<a id="a654a0c26bbefe3782931cad7c7bfdeb9"></a>uint32_t</td>
+<a id="a2c1d9f60d383da649abba137ad098c86"></a><a class="el" href="group___e_r_r_o_r___a_p_i.html#ga7737b8292e5cc27e1fb9ef504d392107">error_event_t</a></td>
 <td class="fieldname">
 error_event</td>
 <td class="fielddoc">
-Error event. </td></tr>
+<p>The event can be used to identify what error event caused the callback. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="afa37cb4f38e26616a151ecf2a286a527"></a>uint32_t</td>
+<td class="fieldname">
+error_status</td>
+<td class="fielddoc">
+<p>Error status. This value is from an error event status register that depends on each device product and error event source. A dedicated enum is defined on the instance side. Please refer to each driver implementation for details. </p>
+</td></tr>
 </table>
 
 </div>
@@ -250,12 +325,12 @@ Error event. </td></tr>
 <tr class="separator:ad2912611cb98abd46c82ea4819dbdcd8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa53d8858387573f690aa2c63710c6c74"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#aa53d8858387573f690aa2c63710c6c74">close</a> )(<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:aa53d8858387573f690aa2c63710c6c74"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab449a36e7a7648f4dcc150e690e6cd2e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#ab449a36e7a7648f4dcc150e690e6cd2e">statusGet</a> )(<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t source, uint32_t *p_status)</td></tr>
-<tr class="separator:ab449a36e7a7648f4dcc150e690e6cd2e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ad42cc1b5faf101ee5d8b27668370eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#a0ad42cc1b5faf101ee5d8b27668370eb">statusClear</a> )(<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t source, uint32_t event)</td></tr>
-<tr class="separator:a0ad42cc1b5faf101ee5d8b27668370eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8fd63f86b2746a1e563dae505b65af2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#a8fd63f86b2746a1e563dae505b65af2a">callbackSet</a> )(<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:a8fd63f86b2746a1e563dae505b65af2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e4236674e9039f9f1e00941254c4bd5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#a3e4236674e9039f9f1e00941254c4bd5">statusGet</a> )(<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t event, uint32_t *p_status)</td></tr>
+<tr class="separator:a3e4236674e9039f9f1e00941254c4bd5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b069697f79792a6c8a509c210172ad7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#a7b069697f79792a6c8a509c210172ad7">statusClear</a> )(<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t event, uint32_t status)</td></tr>
+<tr class="separator:a7b069697f79792a6c8a509c210172ad7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a198d164cc1378616abf8d92f619d0cf3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html#a198d164cc1378616abf8d92f619d0cf3">callbackSet</a> )(<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:a198d164cc1378616abf8d92f619d0cf3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="ad2912611cb98abd46c82ea4819dbdcd8"></a>
@@ -269,11 +344,7 @@ Error event. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initial configuration. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga18d916ce03534b1f773dfa7ee16aec4d">R_ICU_ERROR_Open()</a> </li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Initial configuration. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block. Must be declared by user. Elements set here. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">p_cfg</td><td>Pointer to configuration structure. All elements of this structure must be set by user. </td></tr>
@@ -294,11 +365,7 @@ Error event. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Disable the associated interrupts. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___i_c_u___e_r_r_o_r.html#gad65e169511ec90719ab6154f8efe4f9c">R_ICU_ERROR_Close()</a> </li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Disable the associated interrupts. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___e_r_r_o_r___a_p_i.html#ad2912611cb98abd46c82ea4819dbdcd8">error_api_t::open</a> call. </td></tr>
   </table>
@@ -307,25 +374,21 @@ Error event. </td></tr>
 
 </div>
 </div>
-<a id="ab449a36e7a7648f4dcc150e690e6cd2e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab449a36e7a7648f4dcc150e690e6cd2e">&#9670;&nbsp;</a></span>statusGet</h2>
+<a id="a3e4236674e9039f9f1e00941254c4bd5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e4236674e9039f9f1e00941254c4bd5">&#9670;&nbsp;</a></span>statusGet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  error_api_t::statusGet) (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t source, uint32_t *p_status)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  error_api_t::statusGet) (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t event, uint32_t *p_status)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the status of error events. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___i_c_u___e_r_r_o_r.html#gaff9db9aa4c9cf0f239b91f8226f9ac88">R_ICU_ERROR_StatusGet()</a> </li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Get the status of error events. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___e_r_r_o_r___a_p_i.html#ad2912611cb98abd46c82ea4819dbdcd8">error_api_t::open</a> call. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">source</td><td>Select error source. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">event</td><td>Select error event. </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">p_status</td><td>Collection of error status. </td></tr>
   </table>
   </dd>
@@ -333,48 +396,40 @@ Error event. </td></tr>
 
 </div>
 </div>
-<a id="a0ad42cc1b5faf101ee5d8b27668370eb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ad42cc1b5faf101ee5d8b27668370eb">&#9670;&nbsp;</a></span>statusClear</h2>
+<a id="a7b069697f79792a6c8a509c210172ad7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b069697f79792a6c8a509c210172ad7">&#9670;&nbsp;</a></span>statusClear</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  error_api_t::statusClear) (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t source, uint32_t event)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  error_api_t::statusClear) (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t event, uint32_t status)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Clear the status of error events. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga2baa7240d28bf1e6935ea15c662a2462">R_ICU_ERROR_StatusClear()</a></li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Clear the status of error events. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___e_r_r_o_r___a_p_i.html#ad2912611cb98abd46c82ea4819dbdcd8">error_api_t::open</a> call. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">source</td><td>Select error source. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">data</td><td>Event information to be cleared. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">event</td><td>Select error event. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">status</td><td>Status information to be cleared. </td></tr>
   </table>
   </dd>
 </dl>
 
 </div>
 </div>
-<a id="a8fd63f86b2746a1e563dae505b65af2a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8fd63f86b2746a1e563dae505b65af2a">&#9670;&nbsp;</a></span>callbackSet</h2>
+<a id="a198d164cc1378616abf8d92f619d0cf3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a198d164cc1378616abf8d92f619d0cf3">&#9670;&nbsp;</a></span>callbackSet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  error_api_t::callbackSet) (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *const p_callback_memory)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  error_api_t::callbackSet) (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *const p_callback_memory)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga9cd776ea2af54457484a8701cb8c2ee4">R_ICU_ERROR_CallbackSet()</a></li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
+<p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___e_r_r_o_r___a_p_i.html#ad2912611cb98abd46c82ea4819dbdcd8">error_api_t::open</a> call. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">p_callback</td><td>Callback function to register </td></tr>
@@ -437,10 +492,43 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>ERROR control block. Allocate an instance specific control block to pass into the ERROR API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="structicu__error__instance__ctrl__t.html">icu_error_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>ERROR control block. Allocate an instance specific control block to pass into the ERROR API calls. </p>
+
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ga7737b8292e5cc27e1fb9ef504d392107"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7737b8292e5cc27e1fb9ef504d392107">&#9670;&nbsp;</a></span>error_event_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___e_r_r_o_r___a_p_i.html#ga7737b8292e5cc27e1fb9ef504d392107">error_event_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Error event source. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107abd41fe8fb97f5a54834941f1f5829c0d"></a>ERROR_EVENT_CPU0&#160;</td><td class="fielddoc"><p>Error event from CPU0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107a010ecacef28c0185931fa4298bcdfc82"></a>ERROR_EVENT_CPU1&#160;</td><td class="fielddoc"><p>Error event from CPU1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107a259b086b45d694a5b2cc3273fcb59d54"></a>ERROR_EVENT_PERIPHERAL_0&#160;</td><td class="fielddoc"><p>Error event from Peripheral 0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107a99f9adfb750e95483cdf390d3638dd3c"></a>ERROR_EVENT_PERIPHERAL_1&#160;</td><td class="fielddoc"><p>Error event from Peripheral 1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107abd41fe8fb97f5a54834941f1f5829c0d"></a>ERROR_EVENT_CPU0&#160;</td><td class="fielddoc"><p>Error event from CPU0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107a259b086b45d694a5b2cc3273fcb59d54"></a>ERROR_EVENT_PERIPHERAL_0&#160;</td><td class="fielddoc"><p>Error event from Peripheral 0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107a99f9adfb750e95483cdf390d3638dd3c"></a>ERROR_EVENT_PERIPHERAL_1&#160;</td><td class="fielddoc"><p>Error event from Peripheral 1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107ac6287ec9014889bce18903aae184f078"></a>ERROR_EVENT_PERIPHERAL_2&#160;</td><td class="fielddoc"><p>Error event from Peripheral 2. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga7737b8292e5cc27e1fb9ef504d392107a525019677b01555da982f9ed16ca43eb"></a>ERROR_EVENT_PERIPHERAL_3&#160;</td><td class="fielddoc"><p>Error event from Peripheral 3. </p>
+</td></tr>
+</table>
 
 </div>
 </div>
@@ -450,7 +538,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

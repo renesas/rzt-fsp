@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Interruput Controller Unit (ICU) ERROR (r_icu_error)</title>
+<title>RZT Flexible Software Package Documentation: Interruput Controller Unit (ICU) ERROR (r_icu_error)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___i_c_u___e_r_r_o_r.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,26 +140,43 @@ $(document).ready(function(){initNavTree('group___i_c_u___e_r_r_o_r.html','');})
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a>  </div>
   <div class="headertitle">
-<div class="title">Interruput Controller Unit (ICU) ERROR (r_icu_error)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Interruput Controller Unit (ICU) ERROR (r_icu_error)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___m_o_d_u_l_e_s.html">System</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga18d916ce03534b1f773dfa7ee16aec4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga18d916ce03534b1f773dfa7ee16aec4d">R_ICU_ERROR_Open</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__cfg__t">error_cfg_t</a> const *const p_cfg)</td></tr>
-<tr class="separator:ga18d916ce03534b1f773dfa7ee16aec4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad65e169511ec90719ab6154f8efe4f9c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#gad65e169511ec90719ab6154f8efe4f9c">R_ICU_ERROR_Close</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_api_ctrl)</td></tr>
-<tr class="separator:gad65e169511ec90719ab6154f8efe4f9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaff9db9aa4c9cf0f239b91f8226f9ac88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#gaff9db9aa4c9cf0f239b91f8226f9ac88">R_ICU_ERROR_StatusGet</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_api_ctrl, uint32_t source, uint32_t *const p_status)</td></tr>
-<tr class="separator:gaff9db9aa4c9cf0f239b91f8226f9ac88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2baa7240d28bf1e6935ea15c662a2462"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga2baa7240d28bf1e6935ea15c662a2462">R_ICU_ERROR_StatusClear</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_api_ctrl, uint32_t source, uint32_t const event)</td></tr>
-<tr class="separator:ga2baa7240d28bf1e6935ea15c662a2462"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9cd776ea2af54457484a8701cb8c2ee4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga9cd776ea2af54457484a8701cb8c2ee4">R_ICU_ERROR_CallbackSet</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga9cd776ea2af54457484a8701cb8c2ee4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga484cdee6f66d8b098229ec58e2fcf77b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga484cdee6f66d8b098229ec58e2fcf77b">R_ICU_ERROR_Open</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__cfg__t">error_cfg_t</a> const *const p_cfg)</td></tr>
+<tr class="separator:ga484cdee6f66d8b098229ec58e2fcf77b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga3fc1d8f491a16bc99ddafa4dc06dda9a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga3fc1d8f491a16bc99ddafa4dc06dda9a">R_ICU_ERROR_Close</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga3fc1d8f491a16bc99ddafa4dc06dda9a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0ecd50722a0081eedeb222804bba0a96"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga0ecd50722a0081eedeb222804bba0a96">R_ICU_ERROR_StatusGet</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t source, uint32_t *const p_status)</td></tr>
+<tr class="separator:ga0ecd50722a0081eedeb222804bba0a96"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga233f43936777480ec8c63d4337d5f0a9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#ga233f43936777480ec8c63d4337d5f0a9">R_ICU_ERROR_StatusClear</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, uint32_t source, uint32_t const event)</td></tr>
+<tr class="separator:ga233f43936777480ec8c63d4337d5f0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad54abd237ceefb5bb6c4632ad885bf60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___e_r_r_o_r.html#gad54abd237ceefb5bb6c4632ad885bf60">R_ICU_ERROR_CallbackSet</a> (<a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:gad54abd237ceefb5bb6c4632ad885bf60"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the ICU peripheral on RZ microprocessor. This module implements the <a class="el" href="group___e_r_r_o_r___a_p_i.html">ERROR Interface</a>. </p>
@@ -153,9 +221,17 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; System &gt; ERROR Driver on r_icu_error</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; System &gt; ERROR Driver on r_icu_error.<br />
+ <h2>Configurations for System &gt; ERROR (r_icu_error)</h2>
+This module can be added to the Stacks tab via New Stack &gt; System &gt; ERROR (r_icu_error).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -472,10 +548,20 @@ Usage Notes</h1>
 <li>Use R_ICU_ERROR_StatusGet to get the error status currently occurring.</li>
 <li>Use R_ICU_ERROR_StatusClear to clear the desired error status flag.</li>
 </ol>
+<h2>Multiplex Interrupt</h2>
+<p>Since the ICU_ERROR controls the interrupt processing of the related peripheral module when an error event occurs, the PERI_ERRn interrupt calls the interrupt on each peripheral side in the error handler. Therefore, the relation between the multiplex interrupts settings on each side and the actual operation is as follows. For example, if multiplex interrupt setting (ICU_ERROR side) is enabled, multiple interrupts are always enabled for the related peripheral's interrupts, regardless of the multiplex interrupt setting (Each peripheral side). Conversely, if the multiplex interrupt setting (ICU_ERROR side) is disabled, it is depended on the multiplex interrupt setting (Each peripheral side) whether it is possible to permit multiplex interrupts.</p>
+<table class="doxtable">
+<tr>
+<th></th><th>Multiplex Interrupt Enable setting (ICU_ERROR side) </th><th>Multiplex Interrupt Disable setting (ICU_ERROR side)  </th></tr>
+<tr>
+<td>Multiplex Interrupt Enable setting (Each peripheral side) </td><td>Multiplex interrupt operation is enabled </td><td>Multiplex interrupt operation follow the settings of each peripheral side </td></tr>
+<tr>
+<td>Multiplex Interrupt Disable setting (Each peripheral side) </td><td>Multiplex interrupt operation is enabled </td><td>Multiplex interrupt operation is disabled </td></tr>
+</table>
 <h2>Error Events</h2>
 <p>Error sources and events of the source is as follows:</p>
-<h3>ICU_ERROR_EVENT_SOURCE_CPU0</h3>
-<p>The full list of events of the source "ICU_ERROR_EVENT_SOURCE_CPU0" for RZ/T2M and RZ/T2L is as follows:</p>
+<h3>ERROR_EVENT_CPU0</h3>
+<p>The full list of events of the source "ERROR_EVENT_CPU0" for RZ/T2M and RZ/T2L is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Error Event </th><th>Error Name </th><th>Interrupt Sources  </th></tr>
@@ -533,8 +619,8 @@ Usage Notes</h1>
 <td>ICU_ERROR_CPU0_ERROR_EVENT25 </td><td>CPU0_ERREVENT25 </td><td>Software running in EL2 unlocks TESTR1. TESTR1 is for testing purposes only. </td></tr>
 </table>
 <p><br />
- </p><h3>ICU_ERROR_EVENT_SOURCE_CPU1</h3>
-<p>The full list of events of the source "ICU_ERROR_EVENT_SOURCE_CPU1" for RZ/T2M is as follows:</p>
+ </p><h3>ERROR_EVENT_CPU1</h3>
+<p>The full list of events of the source "ERROR_EVENT_CPU1" for RZ/T2M is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Error Event </th><th>Error Name </th><th>Interrupt Sources  </th></tr>
@@ -592,8 +678,8 @@ Usage Notes</h1>
 <td>ICU_ERROR_CPU1_ERROR_EVENT25 </td><td>CPU1_ERREVENT25 </td><td>Software running in EL2 unlocks TESTR1. TESTR1 is for testing purposes only. </td></tr>
 </table>
 <p><br />
- </p><h3>ICU_ERROR_EVENT_SOURCE_PERIPHERAL_0</h3>
-<p>The full list of events of the source "ICU_ERROR_EVENT_SOURCE_PERIPHERAL_0" for RZ/T2M is as follows:</p>
+ </p><h3>ERROR_EVENT_PERIPHERAL_0</h3>
+<p>The full list of events of the source "ERROR_EVENT_PERIPHERAL_0" for RZ/T2M is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Error Event </th><th>Error Name </th><th>Interrupt Sources  </th></tr>
@@ -663,7 +749,7 @@ Usage Notes</h1>
 <td>ICU_ERROR_PERIPHERAL_ERROR_0_DSMIF1_SCDE2 </td><td>DSMIF1_SCDE2 </td><td>DSMIF1 Short-circuit detection 2 </td></tr>
 </table>
 <p><br />
- The full list of events of the source "ICU_ERROR_EVENT_SOURCE_PERIPHERAL_0" for RZ/T2L is as follows:</p>
+ The full list of events of the source "ERROR_EVENT_PERIPHERAL_0" for RZ/T2L is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Error Event </th><th>Error Name </th><th>Interrupt Sources  </th></tr>
@@ -732,8 +818,8 @@ Usage Notes</h1>
 </table>
 <p><br />
 </p>
-<h3>ICU_ERROR_EVENT_SOURCE_PERIPHERAL_1</h3>
-<p>The full list of events of the source "ICU_ERROR_EVENT_SOURCE_PERIPHERAL_1" for RZ/T2M is as follows:</p>
+<h3>ERROR_EVENT_PERIPHERAL_1</h3>
+<p>The full list of events of the source "ERROR_EVENT_PERIPHERAL_1" for RZ/T2M is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Error Event </th><th>Error Name </th><th>Interrupt Sources  </th></tr>
@@ -793,7 +879,7 @@ Usage Notes</h1>
 <td>ICU_ERROR_PERIPHERAL_ERROR_1_MPU_DBGW </td><td>MPU_DBGW </td><td>Master MPU Write channel for Debug error </td></tr>
 </table>
 <p><br />
- The full list of events of the source "ICU_ERROR_EVENT_SOURCE_PERIPHERAL_1" for RZ/T2L is as follows:</p>
+ The full list of events of the source "ERROR_EVENT_PERIPHERAL_1" for RZ/T2L is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Error Event </th><th>Error Name </th><th>Interrupt Sources  </th></tr>
@@ -843,8 +929,8 @@ Usage Notes</h1>
 <td>ICU_ERROR_PERIPHERAL_ERROR_1_DSMIF0_OVC2EL0 </td><td>DSMIF0_OVC2EL0 </td><td>DSMIF0 lower threshold overcurrent detection 2 CH0 </td></tr>
 </table>
 <p><br />
- </p><h3>ICU_ERROR_EVENT_SOURCE_PERIPHERAL_2</h3>
-<p>The full list of events of the source "ICU_ERROR_EVENT_SOURCE_PERIPHERAL_2" for RZ/T2L is as follows:</p>
+ </p><h3>ERROR_EVENT_PERIPHERAL_2</h3>
+<p>The full list of events of the source "ERROR_EVENT_PERIPHERAL_2" for RZ/T2L is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Error Event </th><th>Error Name </th><th>Interrupt Sources  </th></tr>
@@ -914,8 +1000,8 @@ Usage Notes</h1>
 <td>ICU_ERROR_PERIPHERAL_ERROR_2_DSMIF1_OVC2EL2 </td><td>DSMIF1_OVC2EL2 </td><td>DSMIF1 lower threshold overcurrent detection 2 CH5 </td></tr>
 </table>
 <p><br />
- </p><h3>ICU_ERROR_EVENT_SOURCE_PERIPHERAL_3</h3>
-<p>The full list of events of the source "ICU_ERROR_EVENT_SOURCE_PERIPHERAL_3" for RZ/T2L is as follows:</p>
+ </p><h3>ERROR_EVENT_PERIPHERAL_3</h3>
+<p>The full list of events of the source "ERROR_EVENT_PERIPHERAL_3" for RZ/T2L is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Error Event </th><th>Error Name </th><th>Interrupt Sources  </th></tr>
@@ -985,9 +1071,9 @@ Usage Notes</h1>
 <h2>Basic Example</h2>
 <p>This is a basic example of minimal use of the R_ICU_ERROR in an application.</p>
 <p>This example shows how to notify via a callback and clear the error flag when a CPU0_ERROR15 error occurs.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">void</span> error_callback (<a class="code" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <span class="comment">/* Clear the error flags. */</span></div><div class="line">    <span class="keywordflow">if</span> ((ICU_ERROR_EVENT_SOURCE_CPU0 == p_args-&gt;<a class="code" href="group___e_r_r_o_r___a_p_i.html#a4c4e6b3119337d4da6d56c9d99eda69f">error_source</a>) &amp;&amp;</div><div class="line">        (ICU_ERROR_CPU0_ERROR_EVENT15 == p_args-&gt;<a class="code" href="group___e_r_r_o_r___a_p_i.html#a654a0c26bbefe3782931cad7c7bfdeb9">error_event</a>))</div><div class="line">    {</div><div class="line">        <a class="code" href="group___i_c_u___e_r_r_o_r.html#ga2baa7240d28bf1e6935ea15c662a2462">R_ICU_ERROR_StatusClear</a>(&amp;g_error_ctrl, ICU_ERROR_EVENT_SOURCE_CPU0, ICU_ERROR_CPU0_ERROR_EVENT15);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> simple_example ()</div><div class="line">{</div><div class="line">    <span class="comment">/* Open the ICU_ERROR driver to configure to occur an interrupt</span></div><div class="line"><span class="comment">     * when CPU0_ERROR15(Timeout for LLPP bus) event occurs. */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___i_c_u___e_r_r_o_r.html#ga18d916ce03534b1f773dfa7ee16aec4d">R_ICU_ERROR_Open</a>(&amp;g_error_ctrl, &amp;g_error_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Add code here. When CPU0_ERROR15(Timeout for LLPP bus) event occurs,</span></div><div class="line"><span class="comment">     * the ICU_ERROR driver notifies via a callback. */</span></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><h2 class="groupheader">Function Documentation</h2>
-<a id="ga18d916ce03534b1f773dfa7ee16aec4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga18d916ce03534b1f773dfa7ee16aec4d">&#9670;&nbsp;</a></span>R_ICU_ERROR_Open()</h2>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> error_callback (<a class="code" href="group___e_r_r_o_r___a_p_i.html#structerror__callback__args__t">error_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <span class="comment">/* Clear the error flags. */</span></div><div class="line">    <span class="keywordflow">if</span> ((<a class="code" href="group___e_r_r_o_r___a_p_i.html#ga7737b8292e5cc27e1fb9ef504d392107abd41fe8fb97f5a54834941f1f5829c0d">ERROR_EVENT_CPU0</a> == p_args-&gt;<a class="code" href="group___e_r_r_o_r___a_p_i.html#a2c1d9f60d383da649abba137ad098c86">error_event</a>) &amp;&amp;</div><div class="line">        (ICU_ERROR_CPU0_ERROR_EVENT15 == p_args-&gt;<a class="code" href="group___e_r_r_o_r___a_p_i.html#afa37cb4f38e26616a151ecf2a286a527">error_status</a>))</div><div class="line">    {</div><div class="line">        <a class="code" href="group___i_c_u___e_r_r_o_r.html#ga233f43936777480ec8c63d4337d5f0a9">R_ICU_ERROR_StatusClear</a>(&amp;g_error_ctrl, <a class="code" href="group___e_r_r_o_r___a_p_i.html#ga7737b8292e5cc27e1fb9ef504d392107abd41fe8fb97f5a54834941f1f5829c0d">ERROR_EVENT_CPU0</a>, ICU_ERROR_CPU0_ERROR_EVENT15);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> simple_example ()</div><div class="line">{</div><div class="line">    <span class="comment">/* Open the ICU_ERROR driver to configure to occur an interrupt</span></div><div class="line"><span class="comment">     * when CPU0_ERROR15(Timeout for LLPP bus) event occurs. */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___i_c_u___e_r_r_o_r.html#ga484cdee6f66d8b098229ec58e2fcf77b">R_ICU_ERROR_Open</a>(&amp;g_error_ctrl, &amp;g_error_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Add code here. When CPU0_ERROR15(Timeout for LLPP bus) event occurs,</span></div><div class="line"><span class="comment">     * the ICU_ERROR driver notifies via a callback. */</span></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><h2 class="groupheader">Function Documentation</h2>
+<a id="ga484cdee6f66d8b098229ec58e2fcf77b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga484cdee6f66d8b098229ec58e2fcf77b">&#9670;&nbsp;</a></span>R_ICU_ERROR_Open()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -996,7 +1082,7 @@ Usage Notes</h1>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_ERROR_Open </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1024,8 +1110,8 @@ Usage Notes</h1>
 
 </div>
 </div>
-<a id="gad65e169511ec90719ab6154f8efe4f9c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad65e169511ec90719ab6154f8efe4f9c">&#9670;&nbsp;</a></span>R_ICU_ERROR_Close()</h2>
+<a id="ga3fc1d8f491a16bc99ddafa4dc06dda9a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga3fc1d8f491a16bc99ddafa4dc06dda9a">&#9670;&nbsp;</a></span>R_ICU_ERROR_Close()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1034,7 +1120,7 @@ Usage Notes</h1>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_ERROR_Close </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em></td><td>)</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -1052,8 +1138,8 @@ Usage Notes</h1>
 
 </div>
 </div>
-<a id="gaff9db9aa4c9cf0f239b91f8226f9ac88"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaff9db9aa4c9cf0f239b91f8226f9ac88">&#9670;&nbsp;</a></span>R_ICU_ERROR_StatusGet()</h2>
+<a id="ga0ecd50722a0081eedeb222804bba0a96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0ecd50722a0081eedeb222804bba0a96">&#9670;&nbsp;</a></span>R_ICU_ERROR_StatusGet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1062,7 +1148,7 @@ Usage Notes</h1>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_ERROR_StatusGet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1095,8 +1181,8 @@ Usage Notes</h1>
 
 </div>
 </div>
-<a id="ga2baa7240d28bf1e6935ea15c662a2462"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2baa7240d28bf1e6935ea15c662a2462">&#9670;&nbsp;</a></span>R_ICU_ERROR_StatusClear()</h2>
+<a id="ga233f43936777480ec8c63d4337d5f0a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga233f43936777480ec8c63d4337d5f0a9">&#9670;&nbsp;</a></span>R_ICU_ERROR_StatusClear()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1105,7 +1191,7 @@ Usage Notes</h1>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_ERROR_StatusClear </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1139,8 +1225,8 @@ Usage Notes</h1>
 
 </div>
 </div>
-<a id="ga9cd776ea2af54457484a8701cb8c2ee4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9cd776ea2af54457484a8701cb8c2ee4">&#9670;&nbsp;</a></span>R_ICU_ERROR_CallbackSet()</h2>
+<a id="gad54abd237ceefb5bb6c4632ad885bf60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad54abd237ceefb5bb6c4632ad885bf60">&#9670;&nbsp;</a></span>R_ICU_ERROR_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1149,7 +1235,7 @@ Usage Notes</h1>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ICU_ERROR_CallbackSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___e_r_r_o_r___a_p_i.html#gaaadb84a75334249f5216e8b6b717f1c2">error_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1176,7 +1262,7 @@ Usage Notes</h1>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___e_r_r_o_r___a_p_i.html#a8fd63f86b2746a1e563dae505b65af2a">error_api_t::callbackSet</a>.</p>
+<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___e_r_r_o_r___a_p_i.html#a198d164cc1378616abf8d92f619d0cf3">error_api_t::callbackSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
@@ -1194,7 +1280,7 @@ Usage Notes</h1>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

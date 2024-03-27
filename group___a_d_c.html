@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Analog to Digital Converter (r_adc)</title>
+<title>RZT Flexible Software Package Documentation: Analog to Digital Converter (r_adc)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___a_d_c.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___a_d_c.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Analog to Digital Converter (r_adc)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Analog to Digital Converter (r_adc)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___a_n_a_l_o_g___m_o_d_u_l_e_s.html">Analog</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -105,10 +173,12 @@ Functions</h2></td></tr>
 <tr class="separator:gade895e0810cecb3be6a9e5217f5c78ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga994514574730e0701dc1a6ad41889f88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88">R_ADC_ScanCfg</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, void const *const p_channel_cfg)</td></tr>
 <tr class="separator:ga994514574730e0701dc1a6ad41889f88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9110aa7c0d36661e561641f522eeb737"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga9110aa7c0d36661e561641f522eeb737">R_ADC_CallbackSet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga9110aa7c0d36661e561641f522eeb737"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1cc44d84e1dd1cad8fdafe1e91a3b6d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga1cc44d84e1dd1cad8fdafe1e91a3b6d0">R_ADC_InfoGet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#structadc__info__t">adc_info_t</a> *p_adc_info)</td></tr>
+<tr class="separator:ga1cc44d84e1dd1cad8fdafe1e91a3b6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4a7fb2265b5a03c7586253ff28b3faf2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2">R_ADC_ScanStart</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl)</td></tr>
 <tr class="separator:ga4a7fb2265b5a03c7586253ff28b3faf2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga12d4b4406ff0aa0c7ae8f068432a72f5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga12d4b4406ff0aa0c7ae8f068432a72f5">R_ADC_ScanGroupStart</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#gaee17c30275c1c9376cc485a62ea121eb">adc_group_mask_t</a> group_mask)</td></tr>
+<tr class="separator:ga12d4b4406ff0aa0c7ae8f068432a72f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga9b5242c153c6320a564ed9ffd324f144"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga9b5242c153c6320a564ed9ffd324f144">R_ADC_ScanStop</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl)</td></tr>
 <tr class="separator:ga9b5242c153c6320a564ed9ffd324f144"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga676b1c7f1ccceda288cbb2ad79a14ff2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga676b1c7f1ccceda288cbb2ad79a14ff2">R_ADC_StatusGet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#structadc__status__t">adc_status_t</a> *p_status)</td></tr>
@@ -119,16 +189,14 @@ Functions</h2></td></tr>
 <tr class="separator:ga905e1cd6ff8ca4aaf91ee63529dc0d0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf0701bf45818dee071cb12e979017bce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#gaf0701bf45818dee071cb12e979017bce">R_ADC_SampleStateCountSet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c.html#structadc__sample__state__t">adc_sample_state_t</a> *p_sample)</td></tr>
 <tr class="separator:gaf0701bf45818dee071cb12e979017bce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga1cc44d84e1dd1cad8fdafe1e91a3b6d0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga1cc44d84e1dd1cad8fdafe1e91a3b6d0">R_ADC_InfoGet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#structadc__info__t">adc_info_t</a> *p_adc_info)</td></tr>
-<tr class="separator:ga1cc44d84e1dd1cad8fdafe1e91a3b6d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga499187b3067534e42a57239ead111797"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga499187b3067534e42a57239ead111797">R_ADC_Close</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl)</td></tr>
 <tr class="separator:ga499187b3067534e42a57239ead111797"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5ef435c2d9a890729e770e6d25c790e1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga5ef435c2d9a890729e770e6d25c790e1">R_ADC_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga5ef435c2d9a890729e770e6d25c790e1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gafb2e4cd66d5bd276d05eb5fa104a2037"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#gafb2e4cd66d5bd276d05eb5fa104a2037">R_ADC_Calibrate</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, void *const p_extend)</td></tr>
-<tr class="separator:gafb2e4cd66d5bd276d05eb5fa104a2037"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf3bc65f19ba61612e0b7517dfd41ab61"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#gaf3bc65f19ba61612e0b7517dfd41ab61">R_ADC_OffsetSet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814">adc_channel_t</a> const reg_id, int32_t offset)</td></tr>
 <tr class="separator:gaf3bc65f19ba61612e0b7517dfd41ab61"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac73578543d084faf58d17474dbaad23a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#gac73578543d084faf58d17474dbaad23a">R_ADC_Calibrate</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, void const *p_extend)</td></tr>
+<tr class="separator:gac73578543d084faf58d17474dbaad23a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0b7b4813962829f9e25731cd88f4c708"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#ga0b7b4813962829f9e25731cd88f4c708">R_ADC_CallbackSet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga0b7b4813962829f9e25731cd88f4c708"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the and ADC12 peripherals on RZ microprocessor. This module implements the <a class="el" href="group___a_d_c___a_p_i.html">ADC Interface</a>. </p>
@@ -178,9 +246,17 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt system-wide. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Analog &gt; ADC Driver on r_adc</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Analog &gt; ADC Driver on r_adc.<br />
+ <h2>Configurations for Analog &gt; ADC (r_adc)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Analog &gt; ADC (r_adc).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -233,9 +309,9 @@ Channel 2</li>
 <tr>
 <td>Input &gt; Sample and Hold &gt; Sample Hold States (Applies only to channels 0, 1, 2)</td><td>Must be a valid non-negative integer with configurable value 4 to 255</td><td>24 </td><td>Specifies the updated sample-and-hold count for the channel dedicated sample-and-hold circuit </td></tr>
 <tr>
-<td>Input &gt; Start Trigger &gt; Group A</td><td>Refer to the RZ Configuration tool for available options.</td><td>Disabled </td><td>A/D Conversion Start Trigger Select for Group A. </td></tr>
+<td>Input &gt; Start Trigger &gt; Group A</td><td>Refer to the RZT Configuration tool for available options.</td><td>Disabled </td><td>A/D Conversion Start Trigger Select for Group A. </td></tr>
 <tr>
-<td>Input &gt; Start Trigger &gt; Group B</td><td>Refer to the RZ Configuration tool for available options.</td><td>Disabled </td><td>A/D Conversion Start Trigger Select for Group B. </td></tr>
+<td>Input &gt; Start Trigger &gt; Group B</td><td>Refer to the RZT Configuration tool for available options.</td><td>Disabled </td><td>A/D Conversion Start Trigger Select for Group B. </td></tr>
 <tr>
 <td>Input &gt; Start Trigger &gt; Group C Enabled</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -245,11 +321,11 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Set to true to enable Group C, false to disable Group C. </td></tr>
 <tr>
-<td>Input &gt; Start Trigger &gt; Group C</td><td>Refer to the RZ Configuration tool for available options.</td><td>Disabled </td><td>A/D Conversion Start Trigger Select for Group C. </td></tr>
+<td>Input &gt; Start Trigger &gt; Group C</td><td>Refer to the RZT Configuration tool for available options.</td><td>Disabled </td><td>A/D Conversion Start Trigger Select for Group C. </td></tr>
 <tr>
-<td>Input &gt; Channel Scan Mask (channel availability varies by MCU)</td><td>Refer to the RZ Configuration tool for available options.</td><td></td><td>In Normal mode of operation, this bitmask field specifies the channels that are enabled in that ADC unit. In group mode, this field specifies which channels belong to group A. </td></tr>
+<td>Input &gt; Channel Scan Mask (channel availability varies by MCU)</td><td>Refer to the RZT Configuration tool for available options.</td><td></td><td>In Normal mode of operation, this bitmask field specifies the channels that are enabled in that ADC unit. In group mode, this field specifies which channels belong to group A. </td></tr>
 <tr>
-<td>Input &gt; Group B Scan Mask (channel availability varies by MCU)</td><td>Refer to the RZ Configuration tool for available options.</td><td></td><td>In group mode, this field specifies which channels belong to group B. </td></tr>
+<td>Input &gt; Group B Scan Mask (channel availability varies by MCU)</td><td>Refer to the RZT Configuration tool for available options.</td><td></td><td>In group mode, this field specifies which channels belong to group B. </td></tr>
 <tr>
 <td>Input &gt; Add/Average Count</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -266,16 +342,12 @@ Add sixteen samples</li>
 Average two samples</li>
 <li>
 Average four samples</li>
-<li>
-Average eight samples</li>
-<li>
-Average sixteen samples</li>
 </ul>
 </td><td>Disabled </td><td>Specifies if addition or averaging needs to be done for any of the channels in this unit. </td></tr>
 <tr>
-<td>Input &gt; Addition/Averaging Mask (channel availability varies by MCU and unit)</td><td>Refer to the RZ Configuration tool for available options.</td><td></td><td>Select channels to include in the Addition/Averaging Mask </td></tr>
+<td>Input &gt; Addition/Averaging Mask (channel availability varies by MCU and unit)</td><td>Refer to the RZT Configuration tool for available options.</td><td></td><td>Select channels to include in the Addition/Averaging Mask </td></tr>
 <tr>
-<td>Input &gt; Group C Scan Mask (channel availability varies by MCU)</td><td>Refer to the RZ Configuration tool for available options.</td><td></td><td>In group mode, this field specifies which channels belong to group C. </td></tr>
+<td>Input &gt; Group C Scan Mask (channel availability varies by MCU)</td><td>Refer to the RZT Configuration tool for available options.</td><td></td><td>In group mode, this field specifies which channels belong to group C. </td></tr>
 <tr>
 <td>Interrupts &gt; Normal/Group A Trigger</td><td>MCU Specific Options</td><td></td><td>Specifies the trigger type to be used for this unit.  </td></tr>
 <tr>
@@ -300,6 +372,14 @@ Group A can interrupt Group B; Group B scan restarts immediately and scans conti
 <td>Interrupts &gt; Scan End Group B Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select group B scan end interrupt priority. </td></tr>
 <tr>
 <td>Interrupts &gt; Scan End Group C Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select group C scan end interrupt priority. </td></tr>
+<tr>
+<td>ELC &gt; ADC0 event A &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC_SSEL settings. </td></tr>
+<tr>
+<td>ELC &gt; ADC0 event B &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC_SSEL settings. </td></tr>
+<tr>
+<td>ELC &gt; ADC1 event A &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC_SSEL settings. </td></tr>
+<tr>
+<td>ELC &gt; ADC1 event B &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC_SSEL settings. </td></tr>
 <tr>
 <td>ELC &gt; Output Event Signal</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -348,9 +428,9 @@ ADC Operational Modes</h2>
 </li>
 </ul>
 <h3>Double-triggering</h3>
-<p>When double-triggering is enabled a single channel is selected to be scanned twice before an interrupt is thrown. The first scan result when using double-triggering is always saved to the selected channel's data register. The second result is saved to the data duplexing register (<a class="el" href="group___a_d_c___a_p_i.html#ggaafc4060027875f8fe46242b0656d7814a2602b0a06ce1ce485d0812de6f6f4091">ADC_CHANNEL_DUPLEX</a>).</p>
+<p>When double-triggering is enabled a single channel is selected to be scanned twice before an interrupt is thrown. The first scan result when using double-triggering is always saved to the selected channel's data register. The second result is saved to the data duplexing register (<a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814a2602b0a06ce1ce485d0812de6f6f4091">ADC_CHANNEL_DUPLEX</a>).</p>
 <p>Double-triggering uses Group A; only one channel can be selected when enabled. No other scanning is possible on Group A while double-trigger mode is selected.</p>
-<p>When extended double-triggering is enabled both ADC input events are routed to Group A. The interrupt is still thrown after every two scans regardless of the triggering event(s). While the first and second scan are saved to the selected ADC data register and the ADC duplexing register as before, scans associated with event A and B are additionally copied into duplexing register A and B, respectively (<a class="el" href="group___a_d_c___a_p_i.html#ggaafc4060027875f8fe46242b0656d7814aadc3763b403f4b9ab667602137a9de57">ADC_CHANNEL_DUPLEX_A</a> and <a class="el" href="group___a_d_c___a_p_i.html#ggaafc4060027875f8fe46242b0656d7814aa66d57680818caebf7be4d68f8c505be">ADC_CHANNEL_DUPLEX_B</a>).</p>
+<p>When extended double-triggering is enabled both ADC input events are routed to Group A. The interrupt is still thrown after every two scans regardless of the triggering event(s). While the first and second scan are saved to the selected ADC data register and the ADC duplexing register as before, scans associated with event A and B are additionally copied into duplexing register A and B, respectively (<a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814aadc3763b403f4b9ab667602137a9de57">ADC_CHANNEL_DUPLEX_A</a> and <a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814aa66d57680818caebf7be4d68f8c505be">ADC_CHANNEL_DUPLEX_B</a>).</p>
 <h2>Sample-State Count Setting</h2>
 <p>The application program can modify the setting of the sample-state count for analog channels by calling the <a class="el" href="group___a_d_c.html#gaf0701bf45818dee071cb12e979017bce">R_ADC_SampleStateCountSet()</a> API function. The application program only needs to modify the sample-state count settings from their default values to increase the sampling time. This can be either because the impedance of the input signal is too high to secure sufficient sampling time under the default setting or if the ADCLK is too slow. To modify the sample-state count for a given channel, set the channel number and the number of states when calling the <a class="el" href="group___a_d_c.html#gaf0701bf45818dee071cb12e979017bce">R_ADC_SampleStateCountSet()</a> API function. Valid sample state counts are 8-255.</p>
 <p>If the sample state count needs to be changed for multiple channels, the application program must call the <a class="el" href="group___a_d_c.html#gaf0701bf45818dee071cb12e979017bce">R_ADC_SampleStateCountSet()</a> API function repeatedly, with appropriately modified arguments for each channel.</p>
@@ -364,9 +444,9 @@ ADC Operational Modes</h2>
 Examples</h1>
 <h2>Basic Example</h2>
 <p>This is a basic example of minimal use of the ADC in an application.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* A channel configuration is generated by the FSP Configuration editor based on the options selected.  If additional</span></div><div class="line"><span class="comment"> * configurations are desired additional adc_channel_cfg_t elements can be defined and passed to R_ADC_ScanCfg. */</span></div><div class="line"><span class="keyword">const</span> <a class="code" href="group___a_d_c.html#structadc__channel__cfg__t">adc_channel_cfg_t</a> g_adc0_channel_cfg =</div><div class="line">{</div><div class="line">    .<a class="code" href="group___a_d_c.html#a706f698d4cd3a57b1e04503c143003dc">scan_mask</a>          = <a class="code" href="group___a_d_c.html#ggada437c4b88ed24eb8b9c94c0b45d76eaac501dac2fb65d1f922a6177d149b56bd">ADC_MASK_CHANNEL_0</a> | <a class="code" href="group___a_d_c.html#ggada437c4b88ed24eb8b9c94c0b45d76eaaee05b1448c74da666ef0ed4bf1bbfb8e">ADC_MASK_CHANNEL_1</a>,</div><div class="line">    .scan_mask_group_b  = 0,</div><div class="line">    .priority_group_a   = (<a class="code" href="group___a_d_c.html#ga79014196d08d86b161b77892bf26b100">adc_group_a_t</a>) 0,</div><div class="line">    .add_mask           = 0,</div><div class="line">    .sample_hold_mask   = 0,</div><div class="line">    .sample_hold_states = 0,</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> adc_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac">R_ADC_Open</a>(&amp;g_adc0_ctrl, &amp;g_adc0_cfg);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Enable channels. */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88">R_ADC_ScanCfg</a>(&amp;g_adc0_ctrl, &amp;g_adc0_channel_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* In software trigger mode, start a scan by calling R_ADC_ScanStart(). In other modes, enable external</span></div><div class="line"><span class="comment">     * triggers by calling R_ADC_ScanStart(). */</span></div><div class="line">    (void) <a class="code" href="group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2">R_ADC_ScanStart</a>(&amp;g_adc0_ctrl);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Wait for conversion to complete. */</span></div><div class="line">    <a class="code" href="group___a_d_c___a_p_i.html#structadc__status__t">adc_status_t</a> status;</div><div class="line">    status.<a class="code" href="group___a_d_c___a_p_i.html#a276869569116678c7838ef506fceb77b">state</a> = <a class="code" href="group___a_d_c___a_p_i.html#gga2783ab2e29809bf0a50bc66c6fa8d3c6abe1c11b191e48669cc5129aca45800d7">ADC_STATE_SCAN_IN_PROGRESS</a>;</div><div class="line">    <span class="keywordflow">while</span> (<a class="code" href="group___a_d_c___a_p_i.html#gga2783ab2e29809bf0a50bc66c6fa8d3c6abe1c11b191e48669cc5129aca45800d7">ADC_STATE_SCAN_IN_PROGRESS</a> == status.<a class="code" href="group___a_d_c___a_p_i.html#a276869569116678c7838ef506fceb77b">state</a>)</div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___a_d_c.html#ga676b1c7f1ccceda288cbb2ad79a14ff2">R_ADC_StatusGet</a>(&amp;g_adc0_ctrl, &amp;status);</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Read converted data. */</span></div><div class="line">    uint16_t channel1_conversion_result;</div><div class="line">    err = <a class="code" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read</a>(&amp;g_adc0_ctrl, <a class="code" href="group___a_d_c___a_p_i.html#ggaafc4060027875f8fe46242b0656d7814a203b48944d019f4fda969a6fc2a9e492">ADC_CHANNEL_1</a>, &amp;channel1_conversion_result);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Double-Trigger Example</h2>
-<p>This example demonstrates reading data from a double-trigger scan. A flag is used to wait for a callback event. Two scans must occur before the callback is called. These results are read via <a class="el" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read</a> using the selected channel enum value as well as <a class="el" href="group___a_d_c___a_p_i.html#ggaafc4060027875f8fe46242b0656d7814a2602b0a06ce1ce485d0812de6f6f4091">ADC_CHANNEL_DUPLEX</a>.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="keyword">volatile</span> <span class="keywordtype">bool</span> scan_complete_flag = <span class="keyword">false</span>;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> adc_callback (<a class="code" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(p_args);</div><div class="line"></div><div class="line">    scan_complete_flag = <span class="keyword">true</span>;</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> adc_double_trigger_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the module. */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac">R_ADC_Open</a>(&amp;g_adc0_ctrl, &amp;g_adc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable double-trigger channel. */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88">R_ADC_ScanCfg</a>(&amp;g_adc0_ctrl, &amp;g_adc0_channel_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable scan triggering from ELC events. */</span></div><div class="line">    (void) <a class="code" href="group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2">R_ADC_ScanStart</a>(&amp;g_adc0_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for conversion to complete. Two scans must be triggered before a callback occurs. */</span></div><div class="line">    scan_complete_flag = <span class="keyword">false</span>;</div><div class="line">    <span class="keywordflow">while</span> (!scan_complete_flag)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Wait for callback to set flag. */</span></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Read converted data from both scans. */</span></div><div class="line">    uint16_t channel1_conversion_result_0;</div><div class="line">    uint16_t channel1_conversion_result_1;</div><div class="line">    err = <a class="code" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read</a>(&amp;g_adc0_ctrl, <a class="code" href="group___a_d_c___a_p_i.html#ggaafc4060027875f8fe46242b0656d7814a203b48944d019f4fda969a6fc2a9e492">ADC_CHANNEL_1</a>, &amp;channel1_conversion_result_0);</div><div class="line">    handle_error(err);</div><div class="line">    err = <a class="code" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read</a>(&amp;g_adc0_ctrl, <a class="code" href="group___a_d_c___a_p_i.html#ggaafc4060027875f8fe46242b0656d7814a2602b0a06ce1ce485d0812de6f6f4091">ADC_CHANNEL_DUPLEX</a>, &amp;channel1_conversion_result_1);</div><div class="line">    handle_error(err);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* A channel configuration is generated by the FSP Configuration editor based on the options selected.  If additional</span></div><div class="line"><span class="comment"> * configurations are desired additional adc_channel_cfg_t elements can be defined and passed to R_ADC_ScanCfg. */</span></div><div class="line"><span class="keyword">const</span> <a class="code" href="group___a_d_c.html#structadc__channel__cfg__t">adc_channel_cfg_t</a> g_adc0_channel_cfg =</div><div class="line">{</div><div class="line">    .<a class="code" href="group___a_d_c.html#a706f698d4cd3a57b1e04503c143003dc">scan_mask</a>          = <a class="code" href="group___a_d_c.html#ggada437c4b88ed24eb8b9c94c0b45d76eaac501dac2fb65d1f922a6177d149b56bd">ADC_MASK_CHANNEL_0</a> | <a class="code" href="group___a_d_c.html#ggada437c4b88ed24eb8b9c94c0b45d76eaaee05b1448c74da666ef0ed4bf1bbfb8e">ADC_MASK_CHANNEL_1</a>,</div><div class="line">    .scan_mask_group_b  = 0,</div><div class="line">    .priority_group_a   = (<a class="code" href="group___a_d_c.html#ga79014196d08d86b161b77892bf26b100">adc_group_a_t</a>) 0,</div><div class="line">    .add_mask           = 0,</div><div class="line">    .sample_hold_mask   = 0,</div><div class="line">    .sample_hold_states = 0,</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> adc_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac">R_ADC_Open</a>(&amp;g_adc0_ctrl, &amp;g_adc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable channels. */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88">R_ADC_ScanCfg</a>(&amp;g_adc0_ctrl, &amp;g_adc0_channel_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* In software trigger mode, start a scan by calling R_ADC_ScanStart(). In other modes, enable external</span></div><div class="line"><span class="comment">     * triggers by calling R_ADC_ScanStart(). */</span></div><div class="line">    (void) <a class="code" href="group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2">R_ADC_ScanStart</a>(&amp;g_adc0_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for conversion to complete. */</span></div><div class="line">    <a class="code" href="group___a_d_c___a_p_i.html#structadc__status__t">adc_status_t</a> status;</div><div class="line">    status.<a class="code" href="group___a_d_c___a_p_i.html#a276869569116678c7838ef506fceb77b">state</a> = <a class="code" href="group___a_d_c___a_p_i.html#gga2783ab2e29809bf0a50bc66c6fa8d3c6abe1c11b191e48669cc5129aca45800d7">ADC_STATE_SCAN_IN_PROGRESS</a>;</div><div class="line">    <span class="keywordflow">while</span> (<a class="code" href="group___a_d_c___a_p_i.html#gga2783ab2e29809bf0a50bc66c6fa8d3c6abe1c11b191e48669cc5129aca45800d7">ADC_STATE_SCAN_IN_PROGRESS</a> == status.<a class="code" href="group___a_d_c___a_p_i.html#a276869569116678c7838ef506fceb77b">state</a>)</div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___a_d_c.html#ga676b1c7f1ccceda288cbb2ad79a14ff2">R_ADC_StatusGet</a>(&amp;g_adc0_ctrl, &amp;status);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Read converted data. */</span></div><div class="line">    uint16_t channel1_conversion_result;</div><div class="line">    err = <a class="code" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read</a>(&amp;g_adc0_ctrl, <a class="code" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814a203b48944d019f4fda969a6fc2a9e492">ADC_CHANNEL_1</a>, &amp;channel1_conversion_result);</div><div class="line">    handle_error(err);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Double-Trigger Example</h2>
+<p>This example demonstrates reading data from a double-trigger scan. A flag is used to wait for a callback event. Two scans must occur before the callback is called. These results are read via <a class="el" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read</a> using the selected channel enum value as well as <a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814a2602b0a06ce1ce485d0812de6f6f4091">ADC_CHANNEL_DUPLEX</a>.</p>
+<div class="fragment"><div class="line"></div><div class="line"><span class="keyword">volatile</span> <span class="keywordtype">bool</span> scan_complete_flag = <span class="keyword">false</span>;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> adc_callback (<a class="code" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(p_args);</div><div class="line"></div><div class="line">    scan_complete_flag = <span class="keyword">true</span>;</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> adc_double_trigger_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the module. */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac">R_ADC_Open</a>(&amp;g_adc0_ctrl, &amp;g_adc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable double-trigger channel. */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88">R_ADC_ScanCfg</a>(&amp;g_adc0_ctrl, &amp;g_adc0_channel_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable scan triggering from ELC events. */</span></div><div class="line">    (void) <a class="code" href="group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2">R_ADC_ScanStart</a>(&amp;g_adc0_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for conversion to complete. Two scans must be triggered before a callback occurs. */</span></div><div class="line">    scan_complete_flag = <span class="keyword">false</span>;</div><div class="line">    <span class="keywordflow">while</span> (!scan_complete_flag)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Wait for callback to set flag. */</span></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Read converted data from both scans. */</span></div><div class="line">    uint16_t channel1_conversion_result_0;</div><div class="line">    uint16_t channel1_conversion_result_1;</div><div class="line">    err = <a class="code" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read</a>(&amp;g_adc0_ctrl, <a class="code" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814a203b48944d019f4fda969a6fc2a9e492">ADC_CHANNEL_1</a>, &amp;channel1_conversion_result_0);</div><div class="line">    handle_error(err);</div><div class="line">    err = <a class="code" href="group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da">R_ADC_Read</a>(&amp;g_adc0_ctrl, <a class="code" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814a2602b0a06ce1ce485d0812de6f6f4091">ADC_CHANNEL_DUPLEX</a>, &amp;channel1_conversion_result_1);</div><div class="line">    handle_error(err);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structadc__sample__state__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c.html#structadc__sample__state__t">adc_sample_state_t</a></td></tr>
@@ -652,9 +732,9 @@ Number of states to be used for sample and hold. Affects channels 0-2. </td></tr
 </td></tr>
 <tr><td class="fieldname"><a id="ggae9ce774d7384e84ac724f5a1c6ca0d21a6c9935940088b096683ce038643c93c8"></a>ADC_ADD_AVERAGE_TWO&#160;</td><td class="fielddoc"><p>Average two samples. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae9ce774d7384e84ac724f5a1c6ca0d21aa5551fce055385439e74076ea349ca38"></a>ADC_ADD_AVERAGE_FOUR&#160;</td><td class="fielddoc"><p>Average four samples. </p>
+<tr><td class="fieldname"><a id="ggae9ce774d7384e84ac724f5a1c6ca0d21a3a7e0243d419140e1ae4204860befc65"></a>ADC_ADD_AVERAGE_THREE&#160;</td><td class="fielddoc"><p>Average three samples. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae9ce774d7384e84ac724f5a1c6ca0d21ad2c5445357f4973b69afbab249fc9e83"></a>ADC_ADD_AVERAGE_EIGHT&#160;</td><td class="fielddoc"><p>Average eight samples. </p>
+<tr><td class="fieldname"><a id="ggae9ce774d7384e84ac724f5a1c6ca0d21aa5551fce055385439e74076ea349ca38"></a>ADC_ADD_AVERAGE_FOUR&#160;</td><td class="fielddoc"><p>Average four samples. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggae9ce774d7384e84ac724f5a1c6ca0d21a9026625853db106940c2418a1d65226e"></a>ADC_ADD_AVERAGE_SIXTEEN&#160;</td><td class="fielddoc"><p>Add sixteen samples. </p>
 </td></tr>
@@ -950,35 +1030,23 @@ Number of states to be used for sample and hold. Affects channels 0-2. </td></tr
 
 </div>
 </div>
-<a id="ga9110aa7c0d36661e561641f522eeb737"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9110aa7c0d36661e561641f522eeb737">&#9670;&nbsp;</a></span>R_ADC_CallbackSet()</h2>
+<a id="ga1cc44d84e1dd1cad8fdafe1e91a3b6d0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1cc44d84e1dd1cad8fdafe1e91a3b6d0">&#9670;&nbsp;</a></span>R_ADC_InfoGet()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ADC_CallbackSet </td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ADC_InfoGet </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void(*)(<a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *)&#160;</td>
-          <td class="paramname"><em>p_callback</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void const *const&#160;</td>
-          <td class="paramname"><em>p_context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#structadc__info__t">adc_info_t</a> *&#160;</td>
+          <td class="paramname"><em>p_adc_info</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -987,12 +1055,13 @@ Number of states to be used for sample and hold. Affects channels 0-2. </td></tr
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___a_d_c___a_p_i.html#a8d081aba32f84d62e7d48389b1d10b3e">adc_api_t::callbackSet</a></p>
+<p>Returns the address of the lowest number configured channel and the total number of bytes to be read in order to read the results of the configured channels and return the ELC Event name. If no channels are configured, then a length of 0 is returned.</p>
+<dl class="section note"><dt>Note</dt><dd>In group mode, information is returned for group A only. Calculating information for group B is not currently supported.</dd></dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Information stored in p_adc_info. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Unit is not open. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1022,6 +1091,41 @@ Number of states to be used for sample and hold. Affects channels 0-2. </td></tr
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Unit is not open. </td></tr>
     <tr><td class="paramname">FSP_ERR_IN_USE</td><td>Another scan is still in progress (software trigger). </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga12d4b4406ff0aa0c7ae8f068432a72f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga12d4b4406ff0aa0c7ae8f068432a72f5">&#9670;&nbsp;</a></span>R_ADC_ScanGroupStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ADC_ScanGroupStart </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaee17c30275c1c9376cc485a62ea121eb">adc_group_mask_t</a>&#160;</td>
+          <td class="paramname"><em>group_mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="group___a_d_c___a_p_i.html#aeae126b8a09e1ec34e8e3afb4a3344ff">adc_api_t::scanGroupStart</a> is not supported on the ADC. Use scanStart instead.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1216,44 +1320,6 @@ Number of states to be used for sample and hold. Affects channels 0-2. </td></tr
 
 </div>
 </div>
-<a id="ga1cc44d84e1dd1cad8fdafe1e91a3b6d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga1cc44d84e1dd1cad8fdafe1e91a3b6d0">&#9670;&nbsp;</a></span>R_ADC_InfoGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ADC_InfoGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#structadc__info__t">adc_info_t</a> *&#160;</td>
-          <td class="paramname"><em>p_adc_info</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Returns the address of the lowest number configured channel and the total number of bytes to be read in order to read the results of the configured channels and return the ELC Event name. If no channels are configured, then a length of 0 is returned.</p>
-<dl class="section note"><dt>Note</dt><dd>In group mode, information is returned for group A only. Calculating information for group B is not currently supported.</dd></dl>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Information stored in p_adc_info. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Unit is not open. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="ga499187b3067534e42a57239ead111797"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga499187b3067534e42a57239ead111797">&#9670;&nbsp;</a></span>R_ADC_Close()</h2>
 
@@ -1275,67 +1341,6 @@ Number of states to be used for sample and hold. Affects channels 0-2. </td></tr
     <tr><td class="paramname">FSP_SUCCESS</td><td>Module closed. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Unit is not open. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga5ef435c2d9a890729e770e6d25c790e1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga5ef435c2d9a890729e770e6d25c790e1">&#9670;&nbsp;</a></span>R_ADC_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ADC_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Retrieve the API version number.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version stored in the provided p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gafb2e4cd66d5bd276d05eb5fa104a2037"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gafb2e4cd66d5bd276d05eb5fa104a2037">&#9670;&nbsp;</a></span>R_ADC_Calibrate()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ADC_Calibrate </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *const&#160;</td>
-          <td class="paramname"><em>p_extend</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p><a class="el" href="group___a_d_c.html#gafb2e4cd66d5bd276d05eb5fa104a2037">adc_api_t::R_ADC_Calibrate</a> is not supported on the ADC.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1383,13 +1388,97 @@ Number of states to be used for sample and hold. Affects channels 0-2. </td></tr
 
 </div>
 </div>
+<a id="gac73578543d084faf58d17474dbaad23a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac73578543d084faf58d17474dbaad23a">&#9670;&nbsp;</a></span>R_ADC_Calibrate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ADC_Calibrate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *&#160;</td>
+          <td class="paramname"><em>p_extend</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="group___a_d_c.html#gac73578543d084faf58d17474dbaad23a">adc_api_t::R_ADC_Calibrate</a> is not supported on the ADC.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga0b7b4813962829f9e25731cd88f4c708"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0b7b4813962829f9e25731cd88f4c708">&#9670;&nbsp;</a></span>R_ADC_CallbackSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ADC_CallbackSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___a_d_c___a_p_i.html#a2cd8e8911dcf8c4c617fe62f185b4363">adc_api_t::callbackSet</a></p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

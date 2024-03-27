@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Interfaces</title>
+<title>RZT Flexible Software Package Documentation: Interfaces</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,6 +140,23 @@ $(document).ready(function(){initNavTree('group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#groups">Modules</a>  </div>
@@ -97,126 +165,36 @@ $(document).ready(function(){initNavTree('group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>The FSP interfaces provide APIs for common functionality. They can be implemented by one or more modules. Modules can use other modules as dependencies using this interface layer. </p>
+<p>FSP interfaces provide APIs for common functionality. They can be implemented by one or more modules. Modules can use other modules as dependencies using this interface layer. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
 Modules</h2></td></tr>
-<tr class="memitem:group___a_d_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___a_d_c___a_p_i.html">ADC Interface</a></td></tr>
-<tr class="memdesc:group___a_d_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for A/D Converters. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___a_n_a_l_o_g___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___a_n_a_l_o_g___i_n_t_e_r_f_a_c_e_s.html">Analog</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___a_n_a_l_o_g___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">Analog Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html">Block Media Interface</a></td></tr>
-<tr class="memdesc:group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for block media memory access. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___c_o_n_n_e_c_t_i_v_i_t_y___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___c_o_n_n_e_c_t_i_v_i_t_y___i_n_t_e_r_f_a_c_e_s.html">Connectivity</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___c_o_n_n_e_c_t_i_v_i_t_y___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">Connectivity Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___c_a_n___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_a_n___a_p_i.html">CAN Interface</a></td></tr>
-<tr class="memdesc:group___c_a_n___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for CAN peripheral. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___i_n_p_u_t___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___i_n_p_u_t___i_n_t_e_r_f_a_c_e_s.html">Input</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___i_n_p_u_t___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">Input Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___c_g_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c___a_p_i.html">CGC Interface</a></td></tr>
-<tr class="memdesc:group___c_g_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for clock generation. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___m_o_n_i_t_o_r_i_n_g___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___m_o_n_i_t_o_r_i_n_g___i_n_t_e_r_f_a_c_e_s.html">Monitoring</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___m_o_n_i_t_o_r_i_n_g___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">Monitoring Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___c_r_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_r_c___a_p_i.html">CRC Interface</a></td></tr>
-<tr class="memdesc:group___c_r_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for cyclic redundancy checking. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___i_n_t_e_r_f_a_c_e_s.html">Networking</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">Networking Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___d_o_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_o_c___a_p_i.html">DOC Interface</a></td></tr>
-<tr class="memdesc:group___d_o_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for the Data Operation Circuit. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___s_t_o_r_a_g_e___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___s_t_o_r_a_g_e___i_n_t_e_r_f_a_c_e_s.html">Storage</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___s_t_o_r_a_g_e___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">Storage Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_l_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_l_c___a_p_i.html">ELC Interface</a></td></tr>
-<tr class="memdesc:group___e_l_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for the Event Link Controller. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___s_y_s_t_e_m___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___i_n_t_e_r_f_a_c_e_s.html">System</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___s_y_s_t_e_m___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">System Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_r_r_o_r___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_r_r_o_r___a_p_i.html">ERROR Interface</a></td></tr>
-<tr class="memdesc:group___e_r_r_o_r___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for the ERROR event handling. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___t_i_m_e_r_s___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___i_n_t_e_r_f_a_c_e_s.html">Timers</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___t_i_m_e_r_s___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timers Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t___a_p_i.html">EtherCAT SSC Interface</a></td></tr>
-<tr class="memdesc:group___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for EtherCAT SSC functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_t_h_e_r___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___a_p_i.html">Ethernet Interface</a></td></tr>
-<tr class="memdesc:group___e_t_h_e_r___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for Ethernet functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_t_h_e_r___p_h_y___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html">Ethernet PHY Interface</a></td></tr>
-<tr class="memdesc:group___e_t_h_e_r___p_h_y___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for Ethernet PHY functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html">Ethernet Selector Interface</a></td></tr>
-<tr class="memdesc:group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for Ethernet Selector functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_t_h_s_w___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_s_w___a_p_i.html">Ethernet Switch Interface</a></td></tr>
-<tr class="memdesc:group___e_t_h_s_w___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for Ethernet Switch functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_x_t_e_r_n_a_l___b_u_s___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_x_t_e_r_n_a_l___b_u_s___a_p_i.html">External Bus Interface</a></td></tr>
-<tr class="memdesc:group___e_x_t_e_r_n_a_l___b_u_s___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for external bus communication. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___e_x_t_e_r_n_a_l___i_r_q___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_x_t_e_r_n_a_l___i_r_q___a_p_i.html">External IRQ Interface</a></td></tr>
-<tr class="memdesc:group___e_x_t_e_r_n_a_l___i_r_q___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for detecting external interrupts. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___i_o_p_o_r_t___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_o_p_o_r_t___a_p_i.html">I/O Port Interface</a></td></tr>
-<tr class="memdesc:group___i_o_p_o_r_t___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for accessing I/O ports and configuring I/O functionality. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___i2_c___m_a_s_t_e_r___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html">I2C Master Interface</a></td></tr>
-<tr class="memdesc:group___i2_c___m_a_s_t_e_r___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for I2C master communication. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___i2_c___s_l_a_v_e___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i2_c___s_l_a_v_e___a_p_i.html">I2C Slave Interface</a></td></tr>
-<tr class="memdesc:group___i2_c___s_l_a_v_e___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for I2C slave communication. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html">Inter CPU IRQ Interface</a></td></tr>
-<tr class="memdesc:group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for INTCPU interrupt. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___n_o_r___f_l_a_s_h___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___n_o_r___f_l_a_s_h___a_p_i.html">NOR Flash Interface</a></td></tr>
-<tr class="memdesc:group___n_o_r___f_l_a_s_h___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for external nor flash communication. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___p_o_e3___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html">POE3 Interface</a></td></tr>
-<tr class="memdesc:group___p_o_e3___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for the Port Output Enable for MTU3. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___p_o_e_g___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html">POEG Interface</a></td></tr>
-<tr class="memdesc:group___p_o_e_g___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for the Port Output Enable for GPT. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___g_p_t___p_h_a_s_e___c_o_u_n_t___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_p_t___p_h_a_s_e___c_o_u_n_t___a_p_i.html">Phase count Interface</a></td></tr>
-<tr class="memdesc:group___g_p_t___p_h_a_s_e___c_o_u_n_t___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for phase count timer functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___m_t_u3___p_h_a_s_e___c_o_u_n_t___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3___p_h_a_s_e___c_o_u_n_t___a_p_i.html">Phase count Interface</a></td></tr>
-<tr class="memdesc:group___m_t_u3___p_h_a_s_e___c_o_u_n_t___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for phase count timer functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___r_t_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html">RTC Interface</a></td></tr>
-<tr class="memdesc:group___r_t_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for accessing the Realtime Clock. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___s_d_r_a_m___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html">SDRAM Interface</a></td></tr>
-<tr class="memdesc:group___s_d_r_a_m___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for external sdram communication. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___s_p_i___f_l_a_s_h___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html">SPI Flash Interface</a></td></tr>
-<tr class="memdesc:group___s_p_i___f_l_a_s_h___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for accessing external SPI flash devices. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___s_p_i___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_p_i___a_p_i.html">SPI Interface</a></td></tr>
-<tr class="memdesc:group___s_p_i___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for SPI communications. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html">Shared Memory Interface</a></td></tr>
-<tr class="memdesc:group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for Shared Memory. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___t_h_r_e_e___p_h_a_s_e___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html">Three-Phase Interface</a></td></tr>
-<tr class="memdesc:group___t_h_r_e_e___p_h_a_s_e___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for three-phase timer functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___t_i_m_e_r___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_i_m_e_r___a_p_i.html">Timer Interface</a></td></tr>
-<tr class="memdesc:group___t_i_m_e_r___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for timer functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___t_r_a_n_s_f_e_r___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html">Transfer Interface</a></td></tr>
-<tr class="memdesc:group___t_r_a_n_s_f_e_r___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for data transfer functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___u_a_r_t___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html">UART Interface</a></td></tr>
-<tr class="memdesc:group___u_a_r_t___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for UART communications. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___u_s_b___h_c_d_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_s_b___h_c_d_c___a_p_i.html">USB HCDC Interface</a></td></tr>
-<tr class="memdesc:group___u_s_b___h_c_d_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for USB HCDC functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___u_s_b___h_h_i_d___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_s_b___h_h_i_d___a_p_i.html">USB HHID Interface</a></td></tr>
-<tr class="memdesc:group___u_s_b___h_h_i_d___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for USB HHID functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___u_s_b___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_s_b___a_p_i.html">USB Interface</a></td></tr>
-<tr class="memdesc:group___u_s_b___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for USB functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___u_s_b___p_c_d_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_s_b___p_c_d_c___a_p_i.html">USB PCDC Interface</a></td></tr>
-<tr class="memdesc:group___u_s_b___p_c_d_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for USB PCDC functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___u_s_b___p_m_s_c___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_s_b___p_m_s_c___a_p_i.html">USB PMSC Interface</a></td></tr>
-<tr class="memdesc:group___u_s_b___p_m_s_c___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for USB PMSC functions. <br /></td></tr>
-<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:group___w_d_t___a_p_i"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___w_d_t___a_p_i.html">WDT Interface</a></td></tr>
-<tr class="memdesc:group___w_d_t___a_p_i"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for watch dog timer functions. <br /></td></tr>
+<tr class="memitem:group___r_e_n_e_s_a_s___t_r_a_n_s_f_e_r___i_n_t_e_r_f_a_c_e_s"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_e_n_e_s_a_s___t_r_a_n_s_f_e_r___i_n_t_e_r_f_a_c_e_s.html">Transfer</a></td></tr>
+<tr class="memdesc:group___r_e_n_e_s_a_s___t_r_a_n_s_f_e_r___i_n_t_e_r_f_a_c_e_s"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer Interfaces. <br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
@@ -225,7 +203,7 @@ Modules</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

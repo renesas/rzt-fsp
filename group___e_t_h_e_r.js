@@ -33,15 +33,20 @@ var group___e_t_h_e_r =
       [ "GMAC_PHYLINK_DISABLE", "group___e_t_h_e_r.html#gga57e1f65ccc0c8570c6c0f22515119001a2abd8d36e1759e59f45ff3c0f0eea0ba", null ],
       [ "GMAC_PHYLINK_ENABLE", "group___e_t_h_e_r.html#gga57e1f65ccc0c8570c6c0f22515119001a6c918962fe5c2314bcdc55f65e2fc04d", null ]
     ] ],
+    [ "gmac_link_status_t", "group___e_t_h_e_r.html#ga24f3b2847af3e4c27f85924af55f5241", [
+      [ "GMAC_LINK_STATUS_DOWN", "group___e_t_h_e_r.html#gga24f3b2847af3e4c27f85924af55f5241a25dc2232d0491997613e37d0de68fe65", null ],
+      [ "GMAC_LINK_STATUS_UP", "group___e_t_h_e_r.html#gga24f3b2847af3e4c27f85924af55f5241a1a02828caa9b670b1c1ad5bb45d6c774", null ],
+      [ "GMAC_LINK_STATUS_READY", "group___e_t_h_e_r.html#gga24f3b2847af3e4c27f85924af55f5241ab9372c56622e68ea2dd8f79b42bd54d7", null ]
+    ] ],
     [ "R_GMAC_Open", "group___e_t_h_e_r.html#gac8d170941e53c56274bb64c9a6124d3f", null ],
     [ "R_GMAC_Close", "group___e_t_h_e_r.html#gab285030c547f1d41da498e3fbd08687e", null ],
+    [ "R_GMAC_Read", "group___e_t_h_e_r.html#gaf9be2ed5ce68a77eb387011786a93fcb", null ],
     [ "R_GMAC_BufferRelease", "group___e_t_h_e_r.html#ga4a4aade41773b5a42dabfbd821a8effc", null ],
     [ "R_GMAC_RxBufferUpdate", "group___e_t_h_e_r.html#gaa9bf3c14cc0be8ae1d8ed0e36f1dca44", null ],
-    [ "R_GMAC_LinkProcess", "group___e_t_h_e_r.html#ga6a8f60b892bd40462879d7b8a4d8cc0a", null ],
-    [ "R_GMAC_GetLinkStatus", "group___e_t_h_e_r.html#ga339540980a46c70157afd5d92053549a", null ],
-    [ "R_GMAC_WakeOnLANEnable", "group___e_t_h_e_r.html#gadd60e80d06fe353d4be812dea9b44322", null ],
-    [ "R_GMAC_Read", "group___e_t_h_e_r.html#gaf9be2ed5ce68a77eb387011786a93fcb", null ],
     [ "R_GMAC_Write", "group___e_t_h_e_r.html#ga2f80d8a2cf1b39f6d57460712f46d2a1", null ],
+    [ "R_GMAC_LinkProcess", "group___e_t_h_e_r.html#ga6a8f60b892bd40462879d7b8a4d8cc0a", null ],
+    [ "R_GMAC_GetLinkStatus", "group___e_t_h_e_r.html#ga984055d2a9a39904079a745c38cfedb7", null ],
+    [ "R_GMAC_WakeOnLANEnable", "group___e_t_h_e_r.html#gadd60e80d06fe353d4be812dea9b44322", null ],
     [ "R_GMAC_TxStatusGet", "group___e_t_h_e_r.html#ga919bbcc7c5f7e70a4c9e450dea875f4a", null ],
-    [ "R_GMAC_VersionGet", "group___e_t_h_e_r.html#gad3f1e592fe0ff4dd49071bd4159970da", null ]
+    [ "R_GMAC_CallbackSet", "group___e_t_h_e_r.html#ga35aa2019f4ab2b0d9f4a55cc1061c473", null ]
 ];

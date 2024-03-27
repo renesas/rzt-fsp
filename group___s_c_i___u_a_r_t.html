@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Serial Communications Interface (SCI) UART (r_sci_uart)</title>
+<title>RZT Flexible Software Package Documentation: Serial Communications Interface (SCI) UART (r_sci_uart)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___s_c_i___u_a_r_t.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,40 +140,55 @@ $(document).ready(function(){initNavTree('group___s_c_i___u_a_r_t.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Serial Communications Interface (SCI) UART (r_sci_uart)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Serial Communications Interface (SCI) UART (r_sci_uart)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___c_o_n_n_e_c_t_i_v_i_t_y___m_o_d_u_l_e_s.html">Connectivity</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaef2636b50df00f5e888e833f0e6bbf6c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gaef2636b50df00f5e888e833f0e6bbf6c">R_SCI_UART_Open</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__cfg__t">uart_cfg_t</a> const *const p_cfg)</td></tr>
-<tr class="separator:gaef2636b50df00f5e888e833f0e6bbf6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga49e8b74b71d1901a209a94ed4c220d4d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga49e8b74b71d1901a209a94ed4c220d4d">R_SCI_UART_Close</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl)</td></tr>
-<tr class="separator:ga49e8b74b71d1901a209a94ed4c220d4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac2be874dbe37956cf84532a6ca901165"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gac2be874dbe37956cf84532a6ca901165">R_SCI_UART_Read</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, uint8_t *const p_dest, uint32_t const bytes)</td></tr>
-<tr class="separator:gac2be874dbe37956cf84532a6ca901165"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8916449e6e6de86681c04d1931645e7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga8916449e6e6de86681c04d1931645e7c">R_SCI_UART_Write</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, uint8_t const *const p_src, uint32_t const bytes)</td></tr>
-<tr class="separator:ga8916449e6e6de86681c04d1931645e7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad990fe4af20d895bf37fd26721677410"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gad990fe4af20d895bf37fd26721677410">R_SCI_UART_CallbackSet</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:gad990fe4af20d895bf37fd26721677410"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga3b3a6c761a66c6cbcca3c72a451b3371"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga3b3a6c761a66c6cbcca3c72a451b3371">R_SCI_UART_BaudSet</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, void const *const p_baud_setting)</td></tr>
-<tr class="separator:ga3b3a6c761a66c6cbcca3c72a451b3371"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga00f07c25ed95b9e1de217f34c42b9d38"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga00f07c25ed95b9e1de217f34c42b9d38">R_SCI_UART_InfoGet</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__info__t">uart_info_t</a> *const p_info)</td></tr>
-<tr class="separator:ga00f07c25ed95b9e1de217f34c42b9d38"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga816beee7f9f27113cd2d792c54c6af53"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga816beee7f9f27113cd2d792c54c6af53">R_SCI_UART_Abort</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___u_a_r_t___a_p_i.html#gac36c5a0dffa37b418fb9425a76c57740">uart_dir_t</a> communication_to_abort)</td></tr>
-<tr class="separator:ga816beee7f9f27113cd2d792c54c6af53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gae084836f4ee37c2730f7a8b332d58325"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gae084836f4ee37c2730f7a8b332d58325">R_SCI_UART_ReadStop</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, uint32_t *remaining_bytes)</td></tr>
-<tr class="separator:gae084836f4ee37c2730f7a8b332d58325"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga864f43cde0ddc087748610357cbcd6c2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga864f43cde0ddc087748610357cbcd6c2">R_SCI_UART_BaudCalculate</a> (uint32_t baudrate, bool bitrate_modulation, uint32_t baud_rate_error_x_1000, <a class="el" href="group___s_c_i___u_a_r_t.html#structbaud__setting__t">baud_setting_t</a> *const p_baud_setting)</td></tr>
-<tr class="separator:ga864f43cde0ddc087748610357cbcd6c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga93ce8503fe6cf6f1489f35f51e30eee2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga93ce8503fe6cf6f1489f35f51e30eee2">R_SCI_UART_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *p_version)</td></tr>
-<tr class="separator:ga93ce8503fe6cf6f1489f35f51e30eee2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga85439598e3e74e6405cf179a6761fd6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga85439598e3e74e6405cf179a6761fd6a">R_SCI_UART_Open</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__cfg__t">uart_cfg_t</a> const *const p_cfg)</td></tr>
+<tr class="separator:ga85439598e3e74e6405cf179a6761fd6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab5009c3a48af2cd2c9b424b16115470a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gab5009c3a48af2cd2c9b424b16115470a">R_SCI_UART_Read</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, uint8_t *const p_dest, uint32_t const bytes)</td></tr>
+<tr class="separator:gab5009c3a48af2cd2c9b424b16115470a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8b2cc0e8c4995a3951c282778b3c8c39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga8b2cc0e8c4995a3951c282778b3c8c39">R_SCI_UART_Write</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, uint8_t const *const p_src, uint32_t const bytes)</td></tr>
+<tr class="separator:ga8b2cc0e8c4995a3951c282778b3c8c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga37b66dd990adbfaa3ed85d041fc0f6cf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga37b66dd990adbfaa3ed85d041fc0f6cf">R_SCI_UART_BaudSet</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, void const *const p_baud_setting)</td></tr>
+<tr class="separator:ga37b66dd990adbfaa3ed85d041fc0f6cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae8be5b378d27c6b6609d53d8a86edcaf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gae8be5b378d27c6b6609d53d8a86edcaf">R_SCI_UART_InfoGet</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__info__t">uart_info_t</a> *const p_info)</td></tr>
+<tr class="separator:gae8be5b378d27c6b6609d53d8a86edcaf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8ea2149c33a76211811d7cdbde7ec675"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga8ea2149c33a76211811d7cdbde7ec675">R_SCI_UART_Close</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga8ea2149c33a76211811d7cdbde7ec675"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9010b84e11679e3de8cd78e026265d82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga9010b84e11679e3de8cd78e026265d82">R_SCI_UART_Abort</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, <a class="el" href="group___u_a_r_t___a_p_i.html#gac36c5a0dffa37b418fb9425a76c57740">uart_dir_t</a> communication_to_abort)</td></tr>
+<tr class="separator:ga9010b84e11679e3de8cd78e026265d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabc600810e61f82a9cbc79ba89cdd8e1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gabc600810e61f82a9cbc79ba89cdd8e1f">R_SCI_UART_BaudCalculate</a> (<a class="el" href="group___s_c_i___u_a_r_t.html#structsci__uart__baud__calculation__t">sci_uart_baud_calculation_t</a> const *const p_baud_target, <a class="el" href="group___s_c_i___u_a_r_t.html#ga62708954aea3d9755a464318c83055fb">sci_uart_clock_source_t</a> clock_source, <a class="el" href="group___s_c_i___u_a_r_t.html#structsci__baud__setting__t">sci_baud_setting_t</a> *const p_baud_setting)</td></tr>
+<tr class="separator:gabc600810e61f82a9cbc79ba89cdd8e1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac16ee30bdb15d7974e126f89525f719b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gac16ee30bdb15d7974e126f89525f719b">R_SCI_UART_CallbackSet</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:gac16ee30bdb15d7974e126f89525f719b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaaac6295c7db91ad2535e23350d7a2b9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gaaac6295c7db91ad2535e23350d7a2b9b">R_SCI_UART_ReadStop</a> (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, uint32_t *remaining_bytes)</td></tr>
+<tr class="separator:gaaac6295c7db91ad2535e23350d7a2b9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the SCI peripheral on RZ microprocessor. This module implements the <a class="el" href="group___u_a_r_t___a_p_i.html">UART Interface</a>. </p>
@@ -136,8 +202,8 @@ Features</h2>
 <li>Invoking the user-callback function with an event code (RX/TX complete, TX data empty, RX char, error, etc)</li>
 <li>Baud-rate change at run-time<a class="anchor" id="um_sci_uart_baud_rate"></a></li>
 <li>Bit rate modulation and noise cancellation<a class="anchor" id="um_sci_uart_bitrate_modulation"></a><a class="anchor" id="um_sci_uart_noise_cancellation"></a></li>
-<li>RS232 CTS/RTS hardware flow control (with an associated pin)<a class="anchor" id="um_sci_uart_flow_control"></a></li>
-<li>RS485 Half/Full Duplex flow control<a class="anchor" id="um_sci_uart_flow_control_rs485hd"></a><a class="anchor" id="um_sci_uart_flow_control_rs485fd"></a></li>
+<li>CTS/RTS hardware flow control (with an associated pin)<a class="anchor" id="um_sci_uart_flow_control"></a></li>
+<li>RS-485 Half Duplex driver support with external RS-485 transceiver<a class="anchor" id="um_sci_uart_rs485"></a></li>
 <li>Integration with the DMAC transfer module</li>
 <li>Abort in-progress read/write operations<a class="anchor" id="um_sci_uart_abort"></a></li>
 <li>FIFO support on supported channels<a class="anchor" id="um_sci_uart_fifo_disabled"></a> </li>
@@ -176,16 +242,24 @@ Disable</li>
 </ul>
 </td><td>Disable </td><td>Enable DMAC support for the SCI_UART module. Even if DMAC support is enabled, DMAC is not used without adding DMAC driver. </td></tr>
 <tr>
-<td>RS232/RS485 Flow Control Support</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Flow Control Support</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Enable</li>
 <li>
 Disable</li>
 </ul>
-</td><td>Disable </td><td>Enable RS232 and RS485 flow control support using a user provided pin. </td></tr>
+</td><td>Disable </td><td>Enable flow control support using a user provided pin. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Connectivity &gt; UART Driver on r_sci_uart</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Connectivity &gt; UART Driver on r_sci_uart.<br />
+ <h2>Configurations for Connectivity &gt; UART (r_sci_uart)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Connectivity &gt; UART (r_sci_uart).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -222,7 +296,9 @@ Even</li>
 </ul>
 </td><td>1bit </td><td>Select the number of stop bits. </td></tr>
 <tr>
-<td>Baud &gt; Baud Rate</td><td>Value must be an integer greater than 0</td><td>115200 </td><td>Enter the desired baud rate. </td></tr>
+<td>Baud &gt; Baud Rate</td><td>Value must be an integer greater than 0</td><td>115200 </td><td>Enter the desired baud rate.<br />
+<br />
+If the requested baud rate cannot be achieved, the settings with the smallest percent error are used. The theoretical calculated baud rate and percent error are printed in a comment in the generated <a class="el" href="group___s_c_i___u_a_r_t.html#structsci__baud__setting__t">sci_baud_setting_t</a> structure. </td></tr>
 <tr>
 <td>Baud &gt; Baud Rate Modulation</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -234,39 +310,21 @@ Enabled</li>
 <tr>
 <td>Baud &gt; Max Error (%)</td><td>Must be a valid non negative integer with a maximum configurable value of 100</td><td>5 </td><td>Maximum percent error allowed during baud calculation. This is used by the algorithm to determine whether or not to consider using less accurate alternative register settings.<br />
 <br />
-NOTE: The baud calculation does not show an error in the tool if this percent error was not achieved. The calculated percent error is recorded in a comment in the generated <a class="el" href="group___s_c_i___u_a_r_t.html#structbaud__setting__t">baud_setting_t</a> structure. </td></tr>
+NOTE: The baud calculation does not show an error in the tool if this percent error was not achieved. The calculated percent error is recorded in a comment in the generated <a class="el" href="group___s_c_i___u_a_r_t.html#structsci__baud__setting__t">sci_baud_setting_t</a> structure. </td></tr>
 <tr>
-<td>Baud &gt; Synchronizer Bypass</td><td>Not Bypassed (The operating clock is SCInASYNCCLK)</td><td>Not Bypassed (The operating clock is SCInASYNCCLK) </td><td>Select whether to bypass the synchronizer circuit between the bus clock and operation clock. </td></tr>
-<tr>
-<td>Flow Control &gt; CTS/RTS Selection</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Baud &gt; Synchronizer Bypass</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
-RTS (CTS is disabled)</li>
+Not Bypassed (The operation clock is SCInASYNCCLK)</li>
 <li>
-CTS (Note that RTS is available when enabling External RTS Operation mode which uses 1 GPIO pin)</li>
+Bypassed (The operating clock is same as PCLKM)</li>
 </ul>
-</td><td>RTS (CTS is disabled) </td><td>Select CTS or RTS for the CTSn/RTSn pin of SCI channel n. The SCI hardware supports either the CTS or the RTS control signal on this pin but not both. </td></tr>
+</td><td>Not Bypassed (The operation clock is SCInASYNCCLK) </td><td>Select whether to bypass the synchronizer circuit between the bus clock and operation clock. </td></tr>
 <tr>
-<td>Flow Control &gt; UART Communication Mode</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-RS232</li>
-<li>
-RS485 Half Duplex</li>
-<li>
-RS485 Full Duplex</li>
-</ul>
-</td><td>RS232 </td><td>Select the UART communication mode as either RS232 or RS485. </td></tr>
+<td>Flow Control &gt; CTS/RTS Selection</td><td>MCU Specific Options</td><td></td><td>Select either CTS or RTS function on the CTSn_RTSn pin of SCI channel n or select CTS function on CTSn pin and RTS function on CTSn_RTSn pin of SCI channel n (Available on selected MCUs and channels). </td></tr>
 <tr>
-<td>Flow Control &gt; Pin Control</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Enabled</li>
-<li>
-Disabled</li>
-</ul>
-</td><td>Disabled </td><td>Enables pin control for external RTS in RS232 mode RS485 mode. </td></tr>
+<td>Flow Control &gt; Software RTS Port</td><td>Refer to the RZT Configuration tool for available options.</td><td>Disabled </td><td>Specify the flow control pin port for the MCU. </td></tr>
 <tr>
-<td>Flow Control &gt; RTS Port</td><td>Refer to the RZ Configuration tool for available options.</td><td>Disabled </td><td>Specify the flow control pin port for the MCU. </td></tr>
-<tr>
-<td>Flow Control &gt; RTS Pin</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Flow Control &gt; Software RTS Pin</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Disabled</li>
 <li>
@@ -287,6 +345,26 @@ Disabled</li>
 7</li>
 </ul>
 </td><td>Disabled </td><td>Specify the flow control pin for the MCU. </td></tr>
+<tr>
+<td>Extra &gt; RS-485 &gt; DE Pin</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disable</li>
+<li>
+Enable</li>
+</ul>
+</td><td>Disable </td><td>Enable or disable the DE pin for use in RS-485 half-duplex mode. </td></tr>
+<tr>
+<td>Extra &gt; RS-485 &gt; DE Pin Polarity</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Active Low</li>
+<li>
+Active High</li>
+</ul>
+</td><td>Active High </td><td>Select the polarity of the DE pin. </td></tr>
+<tr>
+<td>Extra &gt; RS-485 &gt; DE Pin Assertion Time</td><td>Must be a valid integer greater than 0 and less than or equal to 31.</td><td>1 </td><td>Configure the time between assertion of the DE pin and the start of a write transfer. The time is specified in multiples of the SCI base clock period. </td></tr>
+<tr>
+<td>Extra &gt; RS-485 &gt; DE Pin Negation Time</td><td>Must be a valid integer greater than 0 and less than or equal to 31.</td><td>1 </td><td>Configure the time between the end of a write transfer and the negation of the DE pin. The time is specified in multiples of the SCI base clock period. </td></tr>
 <tr>
 <td>Extra &gt; Clock Source</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -345,9 +423,14 @@ Max</li>
 </p>
 <h2><a class="anchor" id="r-sci-uart-pin-configuration"></a>
 Pin Configuration</h2>
-<p>This module uses TXD and RXD to communicate to external devices. CTS or RTS can be controlled by the hardware. If both are desired a GPIO pin can be used for RTS. When the internal clock is the source for the baud-rate generator the SCK pin can be used to output a clock with the same frequency as the bit rate.<a class="anchor" id="um_sci_uart_baud_clock_output"></a> </p>
+<p>This module uses TXD and RXD to communicate to external devices. CTS or RTS or both (CTS and RTS) can be controlled by the hardware. When the internal clock is the source for the baud-rate generator the SCK pin can be used to output a clock with the same frequency as the bit rate.<a class="anchor" id="um_sci_uart_baud_clock_output"></a> </p>
 <h1><a class="anchor" id="r-sci-uart-usage_notes"></a>
 Usage Notes</h1>
+<ul>
+<li>When configured for "Hardware CTS and Software RTS" the configured flow control pin will be used for RTS. The pin will be set high inside of the receive ISR while data is being read. It will be set low when all data is read.</li>
+<li>When configured for "Hardware CTS and Hardware RTS" the CTSn_RTSn pin will be used for RTS function and the CTSn pin will be used for CTS function on channel n.</li>
+<li>The driver will follow correct hardware flow control function when CTSn_RTSn pin is connected to CTSn pin when "Hardware CTS and Hardware RTS" flow control is selected. The data will still be transferred when CTSn_RTSn and CTSn are disconnected as the CTSn pin is internally pulled low on the hardware when CTSn pin is configured as a peripheral pin for SCI module. Do not configure CTSn pin if the hardware flow control is not desired.</li>
+</ul>
 <h2><a class="anchor" id="r-sci-uart-limitations"></a>
 Limitations</h2>
 <ul>
@@ -358,33 +441,39 @@ Limitations</h2>
 <h1><a class="anchor" id="r-sci-uart-examples"></a>
 Examples</h1>
 <h2>SCI UART Example</h2>
-<div class="fragment"><div class="line">uint8_t           g_dest[TRANSFER_LENGTH];</div><div class="line">uint8_t           g_src[TRANSFER_LENGTH];</div><div class="line">uint8_t           g_out_of_band_received[TRANSFER_LENGTH];</div><div class="line"><span class="keyword">volatile</span> uint32_t g_transfer_complete = 0;</div><div class="line"><span class="keyword">volatile</span> uint32_t g_receive_complete  = 0;</div><div class="line">uint32_t          g_out_of_band_index = 0;</div><div class="line"><span class="keywordtype">void</span> r_sci_uart_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Initialize p_src to known data */</span></div><div class="line">    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; TRANSFER_LENGTH; i++)</div><div class="line">    {</div><div class="line">        g_src[i] = (uint8_t) (<span class="charliteral">&#39;A&#39;</span> + (i % 26));</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Open the transfer instance with initial configuration. */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___s_c_i___u_a_r_t.html#gaef2636b50df00f5e888e833f0e6bbf6c">R_SCI_UART_Open</a>(&amp;g_uart0_ctrl, &amp;g_uart0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Read data from UART. */</span></div><div class="line">    err = <a class="code" href="group___s_c_i___u_a_r_t.html#gac2be874dbe37956cf84532a6ca901165">R_SCI_UART_Read</a>(&amp;g_uart0_ctrl, g_dest, TRANSFER_LENGTH);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___s_c_i___u_a_r_t.html#ga8916449e6e6de86681c04d1931645e7c">R_SCI_UART_Write</a>(&amp;g_uart0_ctrl, g_src, TRANSFER_LENGTH);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (!g_transfer_complete)</div><div class="line">    {</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (!g_receive_complete)</div><div class="line">    {</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> example_callback (<a class="code" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <span class="comment">/* Handle the UART event */</span></div><div class="line">    <span class="keywordflow">switch</span> (p_args-&gt;<a class="code" href="group___u_a_r_t___a_p_i.html#a558f63e26549462cf3a893ed73fd26ad">event</a>)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Received a character */</span></div><div class="line">        <span class="keywordflow">case</span> <a class="code" href="group___u_a_r_t___a_p_i.html#ggaf739f04f788018b4b59fb7ad75da0a8da794925d1c74f16bde84152508e66a6bd">UART_EVENT_RX_CHAR</a>:</div><div class="line">        {</div><div class="line">            <span class="comment">/* Only put the next character in the receive buffer if there is space for it */</span></div><div class="line">            <span class="keywordflow">if</span> (<span class="keyword">sizeof</span>(g_out_of_band_received) &gt; g_out_of_band_index)</div><div class="line">            {</div><div class="line">                <span class="comment">/* Write either the next one or two bytes depending on the receive data size */</span></div><div class="line">                <span class="keywordflow">if</span> (<a class="code" href="group___u_a_r_t___a_p_i.html#ggadc68b8fd9ded3990f84129df23fee798ad768185f3773e2d5953b28f3345561db">UART_DATA_BITS_8</a> &gt;= g_uart0_cfg.data_bits)</div><div class="line">                {</div><div class="line">                    g_out_of_band_received[g_out_of_band_index++] = (uint8_t) p_args-&gt;<a class="code" href="group___u_a_r_t___a_p_i.html#a828d44762a5e4d11aead4d811a1c5c70">data</a>;</div><div class="line">                }</div><div class="line">                <span class="keywordflow">else</span></div><div class="line">                {</div><div class="line">                    uint16_t * p_dest = (uint16_t *) &amp;g_out_of_band_received[g_out_of_band_index];</div><div class="line">                    *p_dest              = (uint16_t) p_args-&gt;<a class="code" href="group___u_a_r_t___a_p_i.html#a828d44762a5e4d11aead4d811a1c5c70">data</a>;</div><div class="line">                    g_out_of_band_index += 2;</div><div class="line">                }</div><div class="line">            }</div><div class="line"></div><div class="line">            <span class="keywordflow">break</span>;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="comment">/* Receive complete */</span></div><div class="line">        <span class="keywordflow">case</span> <a class="code" href="group___u_a_r_t___a_p_i.html#ggaf739f04f788018b4b59fb7ad75da0a8dabe2b1428416bd300ee15a2608df30837">UART_EVENT_RX_COMPLETE</a>:</div><div class="line">        {</div><div class="line">            g_receive_complete = 1;</div><div class="line">            <span class="keywordflow">break</span>;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="comment">/* Transmit complete */</span></div><div class="line">        <span class="keywordflow">case</span> <a class="code" href="group___u_a_r_t___a_p_i.html#ggaf739f04f788018b4b59fb7ad75da0a8da56867c1db03ea3ee2c704604ac94b767">UART_EVENT_TX_COMPLETE</a>:</div><div class="line">        {</div><div class="line">            g_transfer_complete = 1;</div><div class="line">            <span class="keywordflow">break</span>;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="keywordflow">default</span>:</div><div class="line">        {</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>SCI UART Baud Set Example</h2>
-<div class="fragment"><div class="line"><span class="preprocessor">#define SCI_UART_BAUDRATE_19200      (19200)</span></div><div class="line"><span class="preprocessor">#define SCI_UART_ERROR_RATE_x1000    (5000)</span></div><div class="line"><span class="keywordtype">void</span> r_sci_uart_baud_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___s_c_i___u_a_r_t.html#structbaud__setting__t">baud_setting_t</a> baud_setting;</div><div class="line">    uint32_t       baud_rate                 = SCI_UART_BAUDRATE_19200;</div><div class="line">    <span class="keywordtype">bool</span>           enable_bitrate_modulation = <span class="keyword">false</span>;</div><div class="line">    uint32_t       error_rate_x_1000         = SCI_UART_ERROR_RATE_x1000;</div><div class="line"></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___s_c_i___u_a_r_t.html#ga864f43cde0ddc087748610357cbcd6c2">R_SCI_UART_BaudCalculate</a>(baud_rate, enable_bitrate_modulation, error_rate_x_1000, &amp;baud_setting);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___s_c_i___u_a_r_t.html#ga3b3a6c761a66c6cbcca3c72a451b3371">R_SCI_UART_BaudSet</a>(&amp;g_uart0_ctrl, (<span class="keywordtype">void</span> *) &amp;baud_setting);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line">uint8_t           g_dest[TRANSFER_LENGTH];</div><div class="line">uint8_t           g_src[TRANSFER_LENGTH];</div><div class="line">uint8_t           g_out_of_band_received[TRANSFER_LENGTH];</div><div class="line"><span class="keyword">volatile</span> uint32_t g_transfer_complete = 0;</div><div class="line"><span class="keyword">volatile</span> uint32_t g_receive_complete  = 0;</div><div class="line">uint32_t          g_out_of_band_index = 0;</div><div class="line"><span class="keywordtype">void</span> r_sci_uart_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Initialize p_src to known data */</span></div><div class="line">    <span class="keywordflow">for</span> (uint32_t i = 0; i &lt; TRANSFER_LENGTH; i++)</div><div class="line">    {</div><div class="line">        g_src[i] = (uint8_t) (<span class="charliteral">&#39;A&#39;</span> + (i % 26));</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Open the transfer instance with initial configuration. */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___s_c_i___u_a_r_t.html#ga85439598e3e74e6405cf179a6761fd6a">R_SCI_UART_Open</a>(&amp;g_uart0_ctrl, &amp;g_uart0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Read data from UART. */</span></div><div class="line">    err = <a class="code" href="group___s_c_i___u_a_r_t.html#gab5009c3a48af2cd2c9b424b16115470a">R_SCI_UART_Read</a>(&amp;g_uart0_ctrl, g_dest, TRANSFER_LENGTH);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___s_c_i___u_a_r_t.html#ga8b2cc0e8c4995a3951c282778b3c8c39">R_SCI_UART_Write</a>(&amp;g_uart0_ctrl, g_src, TRANSFER_LENGTH);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (!g_transfer_complete)</div><div class="line">    {</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (!g_receive_complete)</div><div class="line">    {</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> example_callback (<a class="code" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <span class="comment">/* Handle the UART event */</span></div><div class="line">    <span class="keywordflow">switch</span> (p_args-&gt;<a class="code" href="group___u_a_r_t___a_p_i.html#a558f63e26549462cf3a893ed73fd26ad">event</a>)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Received a character */</span></div><div class="line">        <span class="keywordflow">case</span> <a class="code" href="group___u_a_r_t___a_p_i.html#ggaf739f04f788018b4b59fb7ad75da0a8da794925d1c74f16bde84152508e66a6bd">UART_EVENT_RX_CHAR</a>:</div><div class="line">        {</div><div class="line">            <span class="comment">/* Only put the next character in the receive buffer if there is space for it */</span></div><div class="line">            <span class="keywordflow">if</span> (<span class="keyword">sizeof</span>(g_out_of_band_received) &gt; g_out_of_band_index)</div><div class="line">            {</div><div class="line">                <span class="comment">/* Write either the next one or two bytes depending on the receive data size */</span></div><div class="line">                <span class="keywordflow">if</span> (<a class="code" href="group___u_a_r_t___a_p_i.html#ggadc68b8fd9ded3990f84129df23fee798ad768185f3773e2d5953b28f3345561db">UART_DATA_BITS_8</a> &gt;= g_uart0_cfg.data_bits)</div><div class="line">                {</div><div class="line">                    g_out_of_band_received[g_out_of_band_index++] = (uint8_t) p_args-&gt;<a class="code" href="group___u_a_r_t___a_p_i.html#a828d44762a5e4d11aead4d811a1c5c70">data</a>;</div><div class="line">                }</div><div class="line">                <span class="keywordflow">else</span></div><div class="line">                {</div><div class="line">                    uint16_t * p_dest = (uint16_t *) &amp;g_out_of_band_received[g_out_of_band_index];</div><div class="line">                    *p_dest              = (uint16_t) p_args-&gt;<a class="code" href="group___u_a_r_t___a_p_i.html#a828d44762a5e4d11aead4d811a1c5c70">data</a>;</div><div class="line">                    g_out_of_band_index += 2;</div><div class="line">                }</div><div class="line">            }</div><div class="line"></div><div class="line">            <span class="keywordflow">break</span>;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="comment">/* Receive complete */</span></div><div class="line">        <span class="keywordflow">case</span> <a class="code" href="group___u_a_r_t___a_p_i.html#ggaf739f04f788018b4b59fb7ad75da0a8dabe2b1428416bd300ee15a2608df30837">UART_EVENT_RX_COMPLETE</a>:</div><div class="line">        {</div><div class="line">            g_receive_complete = 1;</div><div class="line">            <span class="keywordflow">break</span>;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="comment">/* Transmit complete */</span></div><div class="line">        <span class="keywordflow">case</span> <a class="code" href="group___u_a_r_t___a_p_i.html#ggaf739f04f788018b4b59fb7ad75da0a8da56867c1db03ea3ee2c704604ac94b767">UART_EVENT_TX_COMPLETE</a>:</div><div class="line">        {</div><div class="line">            g_transfer_complete = 1;</div><div class="line">            <span class="keywordflow">break</span>;</div><div class="line">        }</div><div class="line"></div><div class="line">        <span class="keywordflow">default</span>:</div><div class="line">        {</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>SCI UART Baud Set Example</h2>
+<div class="fragment"><div class="line"><span class="preprocessor">#define SCI_UART_BAUDRATE_19200      (19200)</span></div><div class="line"><span class="preprocessor">#define SCI_UART_ERROR_RATE_x1000    (5000)</span></div><div class="line"><span class="keywordtype">void</span> r_sci_uart_baud_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___s_c_i___u_a_r_t.html#structsci__baud__setting__t">sci_baud_setting_t</a>          baud_setting;</div><div class="line">    <a class="code" href="group___s_c_i___u_a_r_t.html#structsci__uart__baud__calculation__t">sci_uart_baud_calculation_t</a> baud_target;</div><div class="line">    baud_target.<a class="code" href="group___s_c_i___u_a_r_t.html#a265ff65e259a80b26e375ed3292ae3e5">baudrate</a>               = SCI_UART_BAUDRATE_19200;</div><div class="line">    baud_target.<a class="code" href="group___s_c_i___u_a_r_t.html#a031c9faa560b24553471626a59d8cdf5">bitrate_modulation</a>     = <span class="keyword">false</span>;</div><div class="line">    baud_target.<a class="code" href="group___s_c_i___u_a_r_t.html#a4b30100db260c9d7a0ef8623562e548e">baud_rate_error_x_1000</a> = SCI_UART_ERROR_RATE_x1000;</div><div class="line"></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___s_c_i___u_a_r_t.html#gabc600810e61f82a9cbc79ba89cdd8e1f">R_SCI_UART_BaudCalculate</a>(&amp;baud_target, SCI_UART_CLOCK_SOURCE_SCI0ASYNCCLK, &amp;baud_setting);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___s_c_i___u_a_r_t.html#ga37b66dd990adbfaa3ed85d041fc0f6cf">R_SCI_UART_BaudSet</a>(&amp;g_uart0_ctrl, (<span class="keywordtype">void</span> *) &amp;baud_setting);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structsci__uart__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__uart__instance__ctrl__t">sci_uart_instance_ctrl_t</a></td></tr>
 <tr class="separator:structsci__uart__instance__ctrl__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structbaud__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#structbaud__setting__t">baud_setting_t</a></td></tr>
-<tr class="separator:structbaud__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structsci__uart__baud__calculation__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__uart__baud__calculation__t">sci_uart_baud_calculation_t</a></td></tr>
+<tr class="separator:structsci__uart__baud__calculation__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structsci__baud__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__baud__setting__t">sci_baud_setting_t</a></td></tr>
+<tr class="separator:structsci__baud__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structsci__uart__rs485__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__uart__rs485__setting__t">sci_uart_rs485_setting_t</a></td></tr>
+<tr class="separator:structsci__uart__rs485__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structsci__uart__extended__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__uart__extended__cfg__t">sci_uart_extended_cfg_t</a></td></tr>
 <tr class="separator:structsci__uart__extended__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:ga5775d25bc461e9b175b7fcb87d71b7c7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga5775d25bc461e9b175b7fcb87d71b7c7">sci_clk_src_t</a> </td></tr>
-<tr class="separator:ga5775d25bc461e9b175b7fcb87d71b7c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga93f7c73d772490ab4d22bda8fd0aa5a6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga93f7c73d772490ab4d22bda8fd0aa5a6">uart_mode_t</a> </td></tr>
-<tr class="separator:ga93f7c73d772490ab4d22bda8fd0aa5a6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaef6e8f161b3f19f95a469e775900c951"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gaef6e8f161b3f19f95a469e775900c951">sci_uart_clock_t</a> </td></tr>
+<tr class="separator:gaef6e8f161b3f19f95a469e775900c951"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab4823b86315f1b32fe6f2c0d56c2b139"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gab4823b86315f1b32fe6f2c0d56c2b139">sci_uart_flow_control_t</a> </td></tr>
+<tr class="separator:gab4823b86315f1b32fe6f2c0d56c2b139"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadf7235ba7fd675f3416ef98c55b810f6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gadf7235ba7fd675f3416ef98c55b810f6">sci_uart_rx_fifo_trigger_t</a> </td></tr>
 <tr class="separator:gadf7235ba7fd675f3416ef98c55b810f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8d278bc6b5096aa0dbe36e5c953cf073"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga8d278bc6b5096aa0dbe36e5c953cf073">sci_uart_start_bit_t</a> </td></tr>
 <tr class="separator:ga8d278bc6b5096aa0dbe36e5c953cf073"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga39a35f02d1e2aa6560591dc6a54de2f6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga39a35f02d1e2aa6560591dc6a54de2f6">sci_uart_noise_cancellation_t</a> </td></tr>
 <tr class="separator:ga39a35f02d1e2aa6560591dc6a54de2f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadf48fb4b7b78272f39f4e29838c09d1b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#gadf48fb4b7b78272f39f4e29838c09d1b">sci_uart_ctsrts_config_t</a> </td></tr>
-<tr class="separator:gadf48fb4b7b78272f39f4e29838c09d1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga0eb8833aa8d674ef41ed3e928f0c3853"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga0eb8833aa8d674ef41ed3e928f0c3853">sci_uart_synchronizer_t</a> </td></tr>
-<tr class="separator:ga0eb8833aa8d674ef41ed3e928f0c3853"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9522502f434bcaa2bbaf9cb1321ce542"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga9522502f434bcaa2bbaf9cb1321ce542">sci_uart_rs485_enable_t</a> </td></tr>
+<tr class="separator:ga9522502f434bcaa2bbaf9cb1321ce542"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga0bd2440ef30f2feca9a2d129989bffce"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga0bd2440ef30f2feca9a2d129989bffce">sci_uart_rs485_de_polarity_t</a> </td></tr>
+<tr class="separator:ga0bd2440ef30f2feca9a2d129989bffce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga62708954aea3d9755a464318c83055fb"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___u_a_r_t.html#ga62708954aea3d9755a464318c83055fb">sci_uart_clock_source_t</a> </td></tr>
+<tr class="separator:ga62708954aea3d9755a464318c83055fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structsci__uart__instance__ctrl__t" id="structsci__uart__instance__ctrl__t"></a>
@@ -402,19 +491,97 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 </div>
-<a name="structbaud__setting__t" id="structbaud__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structbaud__setting__t">&#9670;&nbsp;</a></span>baud_setting_t</h2>
+<a name="structsci__uart__baud__calculation__t" id="structsci__uart__baud__calculation__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structsci__uart__baud__calculation__t">&#9670;&nbsp;</a></span>sci_uart_baud_calculation_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct baud_setting_t</td>
+          <td class="memname">struct sci_uart_baud_calculation_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Baudrate calculation configuration. </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a265ff65e259a80b26e375ed3292ae3e5"></a>uint32_t</td>
+<td class="fieldname">
+baudrate</td>
+<td class="fielddoc">
+Target baudrate. </td></tr>
+<tr><td class="fieldtype">
+<a id="a031c9faa560b24553471626a59d8cdf5"></a>bool</td>
+<td class="fieldname">
+bitrate_modulation</td>
+<td class="fielddoc">
+Whether bitrate modulation use or not. </td></tr>
+<tr><td class="fieldtype">
+<a id="a4b30100db260c9d7a0ef8623562e548e"></a>uint32_t</td>
+<td class="fieldname">
+baud_rate_error_x_1000</td>
+<td class="fielddoc">
+Max baudrate percent error. </td></tr>
+</table>
+
+</div>
+</div>
+<a name="structsci__baud__setting__t" id="structsci__baud__setting__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structsci__baud__setting__t">&#9670;&nbsp;</a></span>sci_baud_setting_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct sci_baud_setting_t</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>Register settings to achieve a desired baud rate and modulation duty. </p>
 </div>
+</div>
+</div>
+<a name="structsci__uart__rs485__setting__t" id="structsci__uart__rs485__setting__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structsci__uart__rs485__setting__t">&#9670;&nbsp;</a></span>sci_uart_rs485_setting_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct sci_uart_rs485_setting_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Configuration settings for controlling the DE signal for RS-485. </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a7ecf6bb47dcdafcd7e569695d0be405b"></a><a class="el" href="group___s_c_i___u_a_r_t.html#ga9522502f434bcaa2bbaf9cb1321ce542">sci_uart_rs485_enable_t</a></td>
+<td class="fieldname">
+enable</td>
+<td class="fielddoc">
+Enable the DE signal. </td></tr>
+<tr><td class="fieldtype">
+<a id="aafcbd1f2c02e2f81d81371bb9e6b895d"></a><a class="el" href="group___s_c_i___u_a_r_t.html#ga0bd2440ef30f2feca9a2d129989bffce">sci_uart_rs485_de_polarity_t</a></td>
+<td class="fieldname">
+polarity</td>
+<td class="fielddoc">
+DE signal polarity. </td></tr>
+<tr><td class="fieldtype">
+<a id="a79bbbb9ce88d5ba7f5880a56cdd02cf8"></a>uint8_t</td>
+<td class="fieldname">
+assertion_time: 5</td>
+<td class="fielddoc">
+Time in baseclock units after assertion of the DE signal and before the start of the write transfer. </td></tr>
+<tr><td class="fieldtype">
+<a id="a07050ff257f7468d3f393b63b067a1c0"></a>uint8_t</td>
+<td class="fieldname">
+negation_time: 5</td>
+<td class="fielddoc">
+Time in baseclock units after the end of a write transfer and before the DE signal is negated. </td></tr>
+</table>
+
 </div>
 </div>
 <a name="structsci__uart__extended__cfg__t" id="structsci__uart__extended__cfg__t"></a>
@@ -432,7 +599,7 @@ Enumerations</h2></td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="aee928f639adab85124e31e500bfa6559"></a><a class="el" href="group___s_c_i___u_a_r_t.html#ga5775d25bc461e9b175b7fcb87d71b7c7">sci_clk_src_t</a></td>
+<a id="a4b608d63ef10baa86c111aa3d2cb6f2c"></a><a class="el" href="group___s_c_i___u_a_r_t.html#gaef6e8f161b3f19f95a469e775900c951">sci_uart_clock_t</a></td>
 <td class="fieldname">
 clock</td>
 <td class="fielddoc">
@@ -450,7 +617,7 @@ noise_cancel</td>
 <td class="fielddoc">
 Noise cancellation setting. </td></tr>
 <tr><td class="fieldtype">
-<a id="a243def9a4105031a58642aa603cac6eb"></a><a class="el" href="group___s_c_i___u_a_r_t.html#structbaud__setting__t">baud_setting_t</a> *</td>
+<a id="a2d544331f38b8452ae009e7d3991db1b"></a><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__baud__setting__t">sci_baud_setting_t</a> *</td>
 <td class="fieldname">
 p_baud_setting</td>
 <td class="fielddoc">
@@ -462,83 +629,80 @@ rx_fifo_trigger</td>
 <td class="fielddoc">
 Receive FIFO trigger level, unused if channel has no FIFO or if DMAC is used. </td></tr>
 <tr><td class="fieldtype">
-<a id="a5aca918689171a8fc982ac9d6ebacbfd"></a><a class="el" href="group___s_c_i___u_a_r_t.html#ga93f7c73d772490ab4d22bda8fd0aa5a6">uart_mode_t</a></td>
-<td class="fieldname">
-uart_mode</td>
-<td class="fielddoc">
-UART communication mode selection. </td></tr>
-<tr><td class="fieldtype">
 <a id="ac5ec261549de2cae5c3a48abe9e2ee67"></a><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a></td>
 <td class="fieldname">
 flow_control_pin</td>
 <td class="fielddoc">
 UART Driver Enable pin. </td></tr>
 <tr><td class="fieldtype">
-<a id="a1b0fb1820e985371cafc2af6cc4b07a1"></a><a class="el" href="group___s_c_i___u_a_r_t.html#gadf48fb4b7b78272f39f4e29838c09d1b">sci_uart_ctsrts_config_t</a></td>
+<a id="aa97993b4804fd761a731322038ec7730"></a><a class="el" href="group___s_c_i___u_a_r_t.html#gab4823b86315f1b32fe6f2c0d56c2b139">sci_uart_flow_control_t</a></td>
 <td class="fieldname">
-ctsrts_en</td>
+flow_control</td>
 <td class="fielddoc">
-CTS/RTS function of the SSn pin. </td></tr>
+CTS/RTS function. </td></tr>
 <tr><td class="fieldtype">
-<a id="a87c69c797e9c90a28866bde9bb5a197a"></a><a class="el" href="group___s_c_i___u_a_r_t.html#ga0eb8833aa8d674ef41ed3e928f0c3853">sci_uart_synchronizer_t</a></td>
+<a id="afbddfe3e0c2394d7cfd9db923078404f"></a><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__uart__rs485__setting__t">sci_uart_rs485_setting_t</a></td>
 <td class="fieldname">
-sync_bypass</td>
+rs485_setting</td>
 <td class="fielddoc">
-DEPRECATED - Clock synchronizer selection. </td></tr>
+RS-485 settings. </td></tr>
+<tr><td class="fieldtype">
+<a id="ac691846d25045bb99df9ed2dcdc779fb"></a><a class="el" href="group___s_c_i___u_a_r_t.html#ga62708954aea3d9755a464318c83055fb">sci_uart_clock_source_t</a></td>
+<td class="fieldname">
+clock_source</td>
+<td class="fielddoc">
+<p>Clock source to generate SCK can either be selected as PCLKM or SCInASYNCCLK. </p>
+</td></tr>
 </table>
 
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="ga5775d25bc461e9b175b7fcb87d71b7c7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga5775d25bc461e9b175b7fcb87d71b7c7">&#9670;&nbsp;</a></span>sci_clk_src_t</h2>
+<a id="gaef6e8f161b3f19f95a469e775900c951"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaef6e8f161b3f19f95a469e775900c951">&#9670;&nbsp;</a></span>sci_uart_clock_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#ga5775d25bc461e9b175b7fcb87d71b7c7">sci_clk_src_t</a></td>
+          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#gaef6e8f161b3f19f95a469e775900c951">sci_uart_clock_t</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Enumeration for SCI clock source. This enumeration name will be changed in the major release. </p>
+<p>Enumeration for SCI clock source </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga5775d25bc461e9b175b7fcb87d71b7c7a628202878594fe0e906308ede0258d0f"></a>SCI_UART_CLOCK_INT&#160;</td><td class="fielddoc"><p>Use internal clock for baud generation. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaef6e8f161b3f19f95a469e775900c951a628202878594fe0e906308ede0258d0f"></a>SCI_UART_CLOCK_INT&#160;</td><td class="fielddoc"><p>Use internal clock for baud generation. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga5775d25bc461e9b175b7fcb87d71b7c7a5047b44e07adeeeae78170f2867341c1"></a>SCI_UART_CLOCK_INT_WITH_BAUDRATE_OUTPUT&#160;</td><td class="fielddoc"><p>Use internal clock for baud generation and output on SCK. </p>
+<tr><td class="fieldname"><a id="ggaef6e8f161b3f19f95a469e775900c951a5047b44e07adeeeae78170f2867341c1"></a>SCI_UART_CLOCK_INT_WITH_BAUDRATE_OUTPUT&#160;</td><td class="fielddoc"><p>Use internal clock for baud generation and output on SCK. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga5775d25bc461e9b175b7fcb87d71b7c7aa666a7bc730c28dd0cd7e6663414b7d7"></a>SCI_UART_CLOCK_EXT8X&#160;</td><td class="fielddoc"><p>Use external clock 8x baud rate. </p>
+<tr><td class="fieldname"><a id="ggaef6e8f161b3f19f95a469e775900c951aa666a7bc730c28dd0cd7e6663414b7d7"></a>SCI_UART_CLOCK_EXT8X&#160;</td><td class="fielddoc"><p>Use external clock 8x baud rate. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga5775d25bc461e9b175b7fcb87d71b7c7a0d1535fdf3d5751bc2bd5f7444dba419"></a>SCI_UART_CLOCK_EXT16X&#160;</td><td class="fielddoc"><p>Use external clock 16x baud rate. </p>
+<tr><td class="fieldname"><a id="ggaef6e8f161b3f19f95a469e775900c951a0d1535fdf3d5751bc2bd5f7444dba419"></a>SCI_UART_CLOCK_EXT16X&#160;</td><td class="fielddoc"><p>Use external clock 16x baud rate. </p>
 </td></tr>
 </table>
 
 </div>
 </div>
-<a id="ga93f7c73d772490ab4d22bda8fd0aa5a6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga93f7c73d772490ab4d22bda8fd0aa5a6">&#9670;&nbsp;</a></span>uart_mode_t</h2>
+<a id="gab4823b86315f1b32fe6f2c0d56c2b139"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab4823b86315f1b32fe6f2c0d56c2b139">&#9670;&nbsp;</a></span>sci_uart_flow_control_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#ga93f7c73d772490ab4d22bda8fd0aa5a6">uart_mode_t</a></td>
+          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#gab4823b86315f1b32fe6f2c0d56c2b139">sci_uart_flow_control_t</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>UART communication mode definition. This enumeration name will be changed in the major release. </p>
+<p>UART flow control mode definition </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a482b7fc0f778e9b4fcb0e666dc4714ed"></a>UART_MODE_RS232&#160;</td><td class="fielddoc"><p>Deprecated - Enables RS232 communication mode. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggab4823b86315f1b32fe6f2c0d56c2b139aedebe19eeaa24e3cd423da139b8a9fb2"></a>SCI_UART_FLOW_CONTROL_RTS&#160;</td><td class="fielddoc"><p>Use CTSn_RTSn pin for RTS. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a01a3080d6ed29e6d3d73fb34e90fce73"></a>UART_MODE_RS485_HD&#160;</td><td class="fielddoc"><p>Deprecated - Enables RS485 half duplex communication mode. </p>
+<tr><td class="fieldname"><a id="ggab4823b86315f1b32fe6f2c0d56c2b139acc27e82fb5fac9e2b83db7e9f890d15c"></a>SCI_UART_FLOW_CONTROL_CTS&#160;</td><td class="fielddoc"><p>Use CTSn_RTSn pin for CTS. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6aced4309bb9703b71521e3937d5974e55"></a>UART_MODE_RS485_FD&#160;</td><td class="fielddoc"><p>Deprecated - Enables RS485 full duplex communication mode. </p>
+<tr><td class="fieldname"><a id="ggab4823b86315f1b32fe6f2c0d56c2b139ab611c5c6f9c65e43361e920f03d4a696"></a>SCI_UART_FLOW_CONTROL_HARDWARE_CTSRTS&#160;</td><td class="fielddoc"><p>Use CTSn pin for CTS, CTSn_RTSn pin for RTS. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6afa139b79213b5e3929dfbeffb4543f5b"></a>SCI_UART_MODE_RS232&#160;</td><td class="fielddoc"><p>Enables RS232 communication mode. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a37d40397fc4e18348de98cc5f8fbf0f1"></a>SCI_UART_MODE_RS485_HD&#160;</td><td class="fielddoc"><p>Enables RS485 half duplex communication mode. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga93f7c73d772490ab4d22bda8fd0aa5a6a7b0e73e318848da9078a1b65d6a786b4"></a>SCI_UART_MODE_RS485_FD&#160;</td><td class="fielddoc"><p>Enables RS485 full duplex communication mode. </p>
+<tr><td class="fieldname"><a id="ggab4823b86315f1b32fe6f2c0d56c2b139a76f2641dddc66691f83619bf48af11c1"></a>SCI_UART_FLOW_CONTROL_CTSRTS&#160;</td><td class="fielddoc"><p>Use SCI pin for CTS, external pin for RTS. </p>
 </td></tr>
 </table>
 
@@ -615,51 +779,66 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
-<a id="gadf48fb4b7b78272f39f4e29838c09d1b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gadf48fb4b7b78272f39f4e29838c09d1b">&#9670;&nbsp;</a></span>sci_uart_ctsrts_config_t</h2>
+<a id="ga9522502f434bcaa2bbaf9cb1321ce542"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9522502f434bcaa2bbaf9cb1321ce542">&#9670;&nbsp;</a></span>sci_uart_rs485_enable_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#gadf48fb4b7b78272f39f4e29838c09d1b">sci_uart_ctsrts_config_t</a></td>
+          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#ga9522502f434bcaa2bbaf9cb1321ce542">sci_uart_rs485_enable_t</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>CTS/RTS function of the SSn pin. </p>
+<p>RS-485 Enable/Disable. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadf48fb4b7b78272f39f4e29838c09d1bae1278e4f9742de66c882e40f641aba78"></a>SCI_UART_CTSRTS_RTS_OUTPUT&#160;</td><td class="fielddoc"><p>Disable CTS function (RTS output function is enabled) </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga9522502f434bcaa2bbaf9cb1321ce542aa05bec8fad1420e777b184f55300b484"></a>SCI_UART_RS485_DISABLE&#160;</td><td class="fielddoc"><p>RS-485 disabled. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggadf48fb4b7b78272f39f4e29838c09d1ba20560f0ff5586381c9c10ad61696c96e"></a>SCI_UART_CTSRTS_CTS_INPUT&#160;</td><td class="fielddoc"><p>Enable CTS function. </p>
+<tr><td class="fieldname"><a id="gga9522502f434bcaa2bbaf9cb1321ce542acd3ee665f5225c5bb017bb64d33cf127"></a>SCI_UART_RS485_ENABLE&#160;</td><td class="fielddoc"><p>RS-485 enabled. </p>
 </td></tr>
 </table>
 
 </div>
 </div>
-<a id="ga0eb8833aa8d674ef41ed3e928f0c3853"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga0eb8833aa8d674ef41ed3e928f0c3853">&#9670;&nbsp;</a></span>sci_uart_synchronizer_t</h2>
+<a id="ga0bd2440ef30f2feca9a2d129989bffce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga0bd2440ef30f2feca9a2d129989bffce">&#9670;&nbsp;</a></span>sci_uart_rs485_de_polarity_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#ga0eb8833aa8d674ef41ed3e928f0c3853">sci_uart_synchronizer_t</a></td>
+          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#ga0bd2440ef30f2feca9a2d129989bffce">sci_uart_rs485_de_polarity_t</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Synchronizer circuit configuration. </p>
+<p>The polarity of the RS-485 DE signal. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga0eb8833aa8d674ef41ed3e928f0c3853ade1cfcc20ea8b6912aa1fca5d30e8f63"></a>SCI_UART_SYNCHRONIZER_NOT_BYPASS&#160;</td><td class="fielddoc"><p>Synchronizer bypass disable. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga0bd2440ef30f2feca9a2d129989bffcea7cfd9e1ff7eca0657388f7cf9ce708fc"></a>SCI_UART_RS485_DE_POLARITY_HIGH&#160;</td><td class="fielddoc"><p>The DE signal is high when a write transfer is in progress. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga0eb8833aa8d674ef41ed3e928f0c3853aaecec70d0fce137266145b8803828d76"></a>SCI_UART_SYNCHRONIZER_BYPASS&#160;</td><td class="fielddoc"><p>Synchronizer bypass enable. </p>
+<tr><td class="fieldname"><a id="gga0bd2440ef30f2feca9a2d129989bffceac1a061d1cb22d6b336e23185af20e089"></a>SCI_UART_RS485_DE_POLARITY_LOW&#160;</td><td class="fielddoc"><p>The DE signal is low when a write transfer is in progress. </p>
 </td></tr>
 </table>
+
+</div>
+</div>
+<a id="ga62708954aea3d9755a464318c83055fb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga62708954aea3d9755a464318c83055fb">&#9670;&nbsp;</a></span>sci_uart_clock_source_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___s_c_i___u_a_r_t.html#ga62708954aea3d9755a464318c83055fb">sci_uart_clock_source_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Source clock selection options for SCI. </p>
 
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="gaef2636b50df00f5e888e833f0e6bbf6c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaef2636b50df00f5e888e833f0e6bbf6c">&#9670;&nbsp;</a></span>R_SCI_UART_Open()</h2>
+<a id="ga85439598e3e74e6405cf179a6761fd6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga85439598e3e74e6405cf179a6761fd6a">&#9670;&nbsp;</a></span>R_SCI_UART_Open()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -668,7 +847,7 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_Open </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -701,35 +880,8 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
-<a id="ga49e8b74b71d1901a209a94ed4c220d4d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga49e8b74b71d1901a209a94ed4c220d4d">&#9670;&nbsp;</a></span>R_SCI_UART_Close()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_Close </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Aborts any in progress transfers. Disables interrupts, receiver, and transmitter. Closes lower level transfer drivers if used. Removes power. Implements <a class="el" href="group___u_a_r_t___a_p_i.html#a4e7e47514702ff0e3515280590dd9659">uart_api_t::close</a></p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Channel successfully closed. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to UART control block is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gac2be874dbe37956cf84532a6ca901165"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac2be874dbe37956cf84532a6ca901165">&#9670;&nbsp;</a></span>R_SCI_UART_Read()</h2>
+<a id="gab5009c3a48af2cd2c9b424b16115470a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab5009c3a48af2cd2c9b424b16115470a">&#9670;&nbsp;</a></span>R_SCI_UART_Read()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -738,7 +890,7 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_Read </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -779,8 +931,8 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
-<a id="ga8916449e6e6de86681c04d1931645e7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8916449e6e6de86681c04d1931645e7c">&#9670;&nbsp;</a></span>R_SCI_UART_Write()</h2>
+<a id="ga8b2cc0e8c4995a3951c282778b3c8c39"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8b2cc0e8c4995a3951c282778b3c8c39">&#9670;&nbsp;</a></span>R_SCI_UART_Write()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -789,7 +941,7 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_Write </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -830,57 +982,8 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
-<a id="gad990fe4af20d895bf37fd26721677410"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad990fe4af20d895bf37fd26721677410">&#9670;&nbsp;</a></span>R_SCI_UART_CallbackSet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_CallbackSet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void(*)(<a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *)&#160;</td>
-          <td class="paramname"><em>p_callback</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void const *const&#160;</td>
-          <td class="paramname"><em>p_context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___u_a_r_t___a_p_i.html#a51b74df27fb26e85700d9524cdfc7c01">uart_api_t::callbackSet</a></p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga3b3a6c761a66c6cbcca3c72a451b3371"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga3b3a6c761a66c6cbcca3c72a451b3371">&#9670;&nbsp;</a></span>R_SCI_UART_BaudSet()</h2>
+<a id="ga37b66dd990adbfaa3ed85d041fc0f6cf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga37b66dd990adbfaa3ed85d041fc0f6cf">&#9670;&nbsp;</a></span>R_SCI_UART_BaudSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -889,7 +992,7 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_BaudSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -904,7 +1007,7 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the baud rate using the clock selected in Open. p_baud_setting is a pointer to a <a class="el" href="group___s_c_i___u_a_r_t.html#structbaud__setting__t">baud_setting_t</a> structure. Implements <a class="el" href="group___u_a_r_t___a_p_i.html#a8b0f901bcc26bd6836fe620235585f98">uart_api_t::baudSet</a></p>
+<p>Updates the baud rate using the clock selected in Open. p_baud_setting is a pointer to a <a class="el" href="group___s_c_i___u_a_r_t.html#structsci__baud__setting__t">sci_baud_setting_t</a> structure. Implements <a class="el" href="group___u_a_r_t___a_p_i.html#a8b0f901bcc26bd6836fe620235585f98">uart_api_t::baudSet</a></p>
 <dl class="section warning"><dt>Warning</dt><dd>This terminates any in-progress transmission.</dd></dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
@@ -917,8 +1020,8 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
-<a id="ga00f07c25ed95b9e1de217f34c42b9d38"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga00f07c25ed95b9e1de217f34c42b9d38">&#9670;&nbsp;</a></span>R_SCI_UART_InfoGet()</h2>
+<a id="gae8be5b378d27c6b6609d53d8a86edcaf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae8be5b378d27c6b6609d53d8a86edcaf">&#9670;&nbsp;</a></span>R_SCI_UART_InfoGet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -927,7 +1030,7 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_InfoGet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -954,8 +1057,35 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
-<a id="ga816beee7f9f27113cd2d792c54c6af53"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga816beee7f9f27113cd2d792c54c6af53">&#9670;&nbsp;</a></span>R_SCI_UART_Abort()</h2>
+<a id="ga8ea2149c33a76211811d7cdbde7ec675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8ea2149c33a76211811d7cdbde7ec675">&#9670;&nbsp;</a></span>R_SCI_UART_Close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_Close </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Aborts any in progress transfers. Disables interrupts, receiver, and transmitter. Closes lower level transfer drivers if used. Removes power. Implements <a class="el" href="group___u_a_r_t___a_p_i.html#a4e7e47514702ff0e3515280590dd9659">uart_api_t::close</a></p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Channel successfully closed. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to UART control block is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga9010b84e11679e3de8cd78e026265d82"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9010b84e11679e3de8cd78e026265d82">&#9670;&nbsp;</a></span>R_SCI_UART_Abort()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -964,7 +1094,7 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_Abort </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -996,8 +1126,108 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
-<a id="gae084836f4ee37c2730f7a8b332d58325"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gae084836f4ee37c2730f7a8b332d58325">&#9670;&nbsp;</a></span>R_SCI_UART_ReadStop()</h2>
+<a id="gabc600810e61f82a9cbc79ba89cdd8e1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabc600810e61f82a9cbc79ba89cdd8e1f">&#9670;&nbsp;</a></span>R_SCI_UART_BaudCalculate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_BaudCalculate </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__uart__baud__calculation__t">sci_uart_baud_calculation_t</a> const *const&#160;</td>
+          <td class="paramname"><em>p_baud_target</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___s_c_i___u_a_r_t.html#ga62708954aea3d9755a464318c83055fb">sci_uart_clock_source_t</a>&#160;</td>
+          <td class="paramname"><em>clock_source</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__baud__setting__t">sci_baud_setting_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_baud_setting</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Calculates baud rate register settings. Evaluates and determines the best possible settings set to the baud rate related registers.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_baud_target</td><td>Baudrate calculation configuration. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">clock_source</td><td>Clock source (PCLKM or SCInASYNCCLK) used for baudrate calculation. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">p_baud_setting</td><td>Baud setting information stored here if successful</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Baud rate is set successfully </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Null pointer </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Baud rate is '0', error in calculated baud rate is larger than requested max error, or requested max error in baud rate is larger than 15%. Clock source frequency could not be get. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gac16ee30bdb15d7974e126f89525f719b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac16ee30bdb15d7974e126f89525f719b">&#9670;&nbsp;</a></span>R_SCI_UART_CallbackSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_CallbackSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___u_a_r_t___a_p_i.html#acfd849190deedb8f9c35bed54dccc111">uart_api_t::callbackSet</a></p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaaac6295c7db91ad2535e23350d7a2b9b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaaac6295c7db91ad2535e23350d7a2b9b">&#9670;&nbsp;</a></span>R_SCI_UART_ReadStop()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1006,7 +1236,7 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_ReadStop </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1038,103 +1268,13 @@ DEPRECATED - Clock synchronizer selection. </td></tr>
 
 </div>
 </div>
-<a id="ga864f43cde0ddc087748610357cbcd6c2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga864f43cde0ddc087748610357cbcd6c2">&#9670;&nbsp;</a></span>R_SCI_UART_BaudCalculate()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_BaudCalculate </td>
-          <td>(</td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>baudrate</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">bool&#160;</td>
-          <td class="paramname"><em>bitrate_modulation</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t&#160;</td>
-          <td class="paramname"><em>baud_rate_error_x_1000</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___s_c_i___u_a_r_t.html#structbaud__setting__t">baud_setting_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_baud_setting</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Calculates baud rate register settings. Evaluates and determines the best possible settings set to the baud rate related registers. The argument structure of this function will be changed in the major release.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">baudrate</td><td>Baud rate [bps]. For example, 19200, 57600, 115200, etc. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">bitrate_modulation</td><td>Enable bitrate modulation </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">baud_rate_error_x_1000</td><td>&lt;baud_rate_percent_error&gt; x 1000 required for module to function. Absolute max baud_rate_error is 15000 (15%). </td></tr>
-    <tr><td class="paramdir">[out]</td><td class="paramname">p_baud_setting</td><td>Baud setting information stored here if successful</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Baud rate is set successfully </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Null pointer </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Baud rate is '0', source clock frequency could not be read, or error in calculated baud rate is larger than 10%. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga93ce8503fe6cf6f1489f35f51e30eee2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga93ce8503fe6cf6f1489f35f51e30eee2">&#9670;&nbsp;</a></span>R_SCI_UART_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_UART_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Provides API and code version in the user provided pointer. Implements <a class="el" href="group___u_a_r_t___a_p_i.html#afd111f21ce7f755b470b5e5d90249768">uart_api_t::versionGet</a></p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">p_version</td><td>Version number set here</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version information stored in provided p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version is NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Block Media Interface</title>
+<title>RZT Flexible Software Package Documentation: Block Media Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,24 +140,37 @@ $(document).ready(function(){initNavTree('group___r_m___b_l_o_c_k___m_e_d_i_a___
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Block Media Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">Block Media Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_t_o_r_a_g_e___i_n_t_e_r_f_a_c_e_s.html">Storage</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Interface for block media memory access. </p>
 <h1><a class="anchor" id="RM_BLOCK_MEDIA_API_SUMMARY"></a>
 Summary</h1>
-<p>The block media interface supports reading, writing, and erasing media devices. All functions are non-blocking if possible. The callback is used to determine when an operation completes.</p>
-<p>Implemented by:</p><ul>
-<li>RM_BLOCK_MEDIA_SDMMC</li>
-<li>RM_BLOCK_MEDIA_USB </li>
-</ul>
+<p>The block media interface supports reading, writing, and erasing media devices. All functions are non-blocking if possible. The callback is used to determine when an operation completes. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -220,10 +284,6 @@ Placeholder for user data. </td></tr>
 <div class="textblock"><p>User configuration structure, used in open function </p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h3>Data Fields</h3></td></tr>
-<tr class="memitem:ab70026957bd70833df1bb841c09e4ce6"><td class="memItemLeft" align="right" valign="top"><a id="ab70026957bd70833df1bb841c09e4ce6"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#ab70026957bd70833df1bb841c09e4ce6">block_size</a></td></tr>
-<tr class="memdesc:ab70026957bd70833df1bb841c09e4ce6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Block size, must be a power of 2 multiple of sector_size_bytes. <br /></td></tr>
-<tr class="separator:ab70026957bd70833df1bb841c09e4ce6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afcbc27df490a8fc36abd2a12694bf8aa"><td class="memItemLeft" align="right" valign="top"><a id="afcbc27df490a8fc36abd2a12694bf8aa"></a>
 void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#afcbc27df490a8fc36abd2a12694bf8aa">p_callback</a> )(<a class="el" href="group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#structrm__block__media__callback__args__t">rm_block_media_callback_args_t</a> *p_args)</td></tr>
 <tr class="memdesc:afcbc27df490a8fc36abd2a12694bf8aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to callback function. <br /></td></tr>
@@ -322,7 +382,7 @@ Media insertion status, true if media is not removable. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initialize block media device. <a class="el" href="group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#a5aa622a8eca72b3722138b467be0d436">rm_block_media_api_t::mediaInit</a> must be called to complete the intitialization procedure.</p>
+<p>Initialize block media device. <a class="el" href="group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#a5aa622a8eca72b3722138b467be0d436">rm_block_media_api_t::mediaInit</a> must be called to complete the initialization procedure.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block. Must be declared by user. Elements set here. </td></tr>
@@ -589,7 +649,7 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggaa3f328da3b53e36f2682f63d0ae1c96ca5150a4a6be559ecc22ce94d509af55e3"></a>RM_BLOCK_MEDIA_EVENT_OPERATION_COMPLETE&#160;</td><td class="fielddoc"><p>Read, write, or erase completed. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggaa3f328da3b53e36f2682f63d0ae1c96ca1b08744b324298474f730a66fb9a8d44"></a>RM_BLOCK_MEDIA_EVENT_ERROR&#160;</td><td class="fielddoc"><p>Media inserted event. </p>
+<tr><td class="fieldname"><a id="ggaa3f328da3b53e36f2682f63d0ae1c96ca1b08744b324298474f730a66fb9a8d44"></a>RM_BLOCK_MEDIA_EVENT_ERROR&#160;</td><td class="fielddoc"><p>Error on media operation. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggaa3f328da3b53e36f2682f63d0ae1c96cad5d83659edff4f48bfda6d323aaed3e9"></a>RM_BLOCK_MEDIA_EVENT_POLL_STATUS&#160;</td><td class="fielddoc"><p>Poll <a class="el" href="group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#a802c5b072fad72944fc03c14a9bbca4e">rm_block_media_api_t::statusGet</a> for write/erase completion. </p>
 </td></tr>
@@ -611,7 +671,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -14,7 +14,7 @@ var group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i =
     [ "icu_inter_cpu_irq_api_t", "group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__api__t", [
       [ "open", "group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#aff168569493759a5cb37983080894447", null ],
       [ "generate", "group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#a048aee24c3dc9989c7a4fe1927973dff", null ],
-      [ "callbackSet", "group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#a63c1d322efc3212fc48397ec80a66f5b", null ],
+      [ "callbackSet", "group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#a3dc5773f681eee52da08a3c5383b04bd", null ],
       [ "close", "group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#a8e3e18d0a5ed1821620c4f16fc2bc572", null ]
     ] ],
     [ "icu_inter_cpu_irq_instance_t", "group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html#structicu__inter__cpu__irq__instance__t", [

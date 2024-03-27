@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: SDRAM Interface</title>
+<title>RZT Flexible Software Package Documentation: SDRAM Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___s_d_r_a_m___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,23 +140,37 @@ $(document).ready(function(){initNavTree('group___s_d_r_a_m___a_p_i.html','');})
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">SDRAM Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">SDRAM Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___i_n_t_e_r_f_a_c_e_s.html">System</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Interface for external sdram communication. </p>
 <h1><a class="anchor" id="SDRAM_API_SUMMARY"></a>
 Summary</h1>
-<p>The SDRAM interface provides APIs and definitions for SDRAM communication.</p>
-<p>Implemented by:</p><ul>
-<li><a class="el" href="group___b_s_c___s_d_r_a_m.html">Bus State Controller (BSC) SDRAM (r_bsc_sdram)</a> </li>
-</ul>
+<p>The SDRAM interface provides APIs and definitions for SDRAM communication. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -113,6 +178,8 @@ Data Structures</h2></td></tr>
 <tr class="separator:structsdram__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structsdram__api__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#structsdram__api__t">sdram_api_t</a></td></tr>
 <tr class="separator:structsdram__api__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structsdram__instance__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#structsdram__instance__t">sdram_instance_t</a></td></tr>
+<tr class="separator:structsdram__instance__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
 Typedefs</h2></td></tr>
@@ -121,16 +188,14 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
-<tr class="memitem:gaafaaad5ae9e9261ae21a6038b4d7c0ee"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#gaafaaad5ae9e9261ae21a6038b4d7c0ee">sdram_chip_select_t</a> </td></tr>
-<tr class="separator:gaafaaad5ae9e9261ae21a6038b4d7c0ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga79b0fb0e78b2a3d1e9e7f0adacc4d59e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga79b0fb0e78b2a3d1e9e7f0adacc4d59e">sdram_data_bus_width_t</a> </td></tr>
 <tr class="separator:ga79b0fb0e78b2a3d1e9e7f0adacc4d59e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga537ecd0dd5640154454ebf02e3b2ded7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga537ecd0dd5640154454ebf02e3b2ded7">sdram_wait_cycle_t</a> </td></tr>
-<tr class="separator:ga537ecd0dd5640154454ebf02e3b2ded7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1716678cbfd8e382c54a8d7bda7ba4a5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1716678cbfd8e382c54a8d7bda7ba4a5">sdram_address_bus_width_t</a> </td></tr>
 <tr class="separator:ga1716678cbfd8e382c54a8d7bda7ba4a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaca0702d24a7e5d8df85acfdab3c95b72"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#gaca0702d24a7e5d8df85acfdab3c95b72">sdram_write_burst_mode</a> </td></tr>
-<tr class="separator:gaca0702d24a7e5d8df85acfdab3c95b72"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1c856af32e42c6541518ffc9baedd5ed"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1c856af32e42c6541518ffc9baedd5ed">sdram_write_burst_mode_t</a> </td></tr>
+<tr class="separator:ga1c856af32e42c6541518ffc9baedd5ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1f0978f4b15342d88b8a8f9357152964"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1f0978f4b15342d88b8a8f9357152964">sdram_refresh_cycle_source_div_t</a> </td></tr>
+<tr class="separator:ga1f0978f4b15342d88b8a8f9357152964"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structsdram__cfg__t" id="structsdram__cfg__t"></a>
@@ -147,12 +212,6 @@ Enumerations</h2></td></tr>
 <div class="textblock"><p>SDRAM configuration </p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="a46aaace339b7f35fa37b5fcb55bc63a7"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#gaafaaad5ae9e9261ae21a6038b4d7c0ee">sdram_chip_select_t</a></td>
-<td class="fieldname">
-chip_select</td>
-<td class="fielddoc">
-Select which device to use. </td></tr>
 <tr><td class="fieldtype">
 <a id="a903e1a7c99b967b5b8a384aae21e4bd9"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga79b0fb0e78b2a3d1e9e7f0adacc4d59e">sdram_data_bus_width_t</a></td>
 <td class="fieldname">
@@ -172,31 +231,31 @@ column_address_width</td>
 <td class="fielddoc">
 Number of bits of SDRAM Column address. </td></tr>
 <tr><td class="fieldtype">
-<a id="ac4669ecce072f58d9589629bdafbaff2"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga537ecd0dd5640154454ebf02e3b2ded7">sdram_wait_cycle_t</a></td>
+<a id="a777872d68228a0f917603b06fdf4cb52"></a>uint32_t</td>
 <td class="fieldname">
 ras_precharge_cycle</td>
 <td class="fielddoc">
 Cycle between PRECHARGE and ACTIVE command (tRP) </td></tr>
 <tr><td class="fieldtype">
-<a id="a54907fa9459bda8ccafb5123b0a57b50"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga537ecd0dd5640154454ebf02e3b2ded7">sdram_wait_cycle_t</a></td>
+<a id="a19ee122365806da74c3a876a8b056544"></a>uint32_t</td>
 <td class="fieldname">
 ras_to_cas_delay_cycle</td>
 <td class="fielddoc">
 Cycle between ACTIVE and READ/WRITE command (tRCD) </td></tr>
 <tr><td class="fieldtype">
-<a id="a2c3fa64c833b1d079f943da30f7c1e05"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga537ecd0dd5640154454ebf02e3b2ded7">sdram_wait_cycle_t</a></td>
+<a id="a896142a05d6cd2f9bb31c4ed89c2dffb"></a>uint32_t</td>
 <td class="fieldname">
 cas_latency</td>
 <td class="fielddoc">
 CAS Latency cycle (tCL) </td></tr>
 <tr><td class="fieldtype">
-<a id="a8fbae3cb700b07e25a9a990ea1ad8d60"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga537ecd0dd5640154454ebf02e3b2ded7">sdram_wait_cycle_t</a></td>
+<a id="a64ffbcf717b20734f8a34bcad9a34e87"></a>uint32_t</td>
 <td class="fieldname">
 write_recovery_cycle</td>
 <td class="fielddoc">
 Cycle between Data In and PRECHARGE command (tWR) </td></tr>
 <tr><td class="fieldtype">
-<a id="a4622a5433137434528f786c3ac6c4b52"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga537ecd0dd5640154454ebf02e3b2ded7">sdram_wait_cycle_t</a></td>
+<a id="a9b406c58f13d07b89a1f3d524ad58cb5"></a>uint32_t</td>
 <td class="fieldname">
 row_cycle</td>
 <td class="fielddoc">
@@ -206,7 +265,13 @@ Cycle between REFRESH/ACTIVE and REFRESH/ACTIVE command (tRC) </td></tr>
 <td class="fieldname">
 auto_refresh_cycle</td>
 <td class="fielddoc">
-Auto-Refresh cycle time (ms) </td></tr>
+Auto-Refresh cycle time. </td></tr>
+<tr><td class="fieldtype">
+<a id="a840d22c6b24a59452aed8b9d9aaa0096"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1f0978f4b15342d88b8a8f9357152964">sdram_refresh_cycle_source_div_t</a></td>
+<td class="fieldname">
+source_div</td>
+<td class="fielddoc">
+Auto-Refresh cycle clock source divider. </td></tr>
 <tr><td class="fieldtype">
 <a id="a4db0de3846b133487545deddf912b5d3"></a>uint32_t</td>
 <td class="fieldname">
@@ -214,11 +279,11 @@ refresh_request_count</td>
 <td class="fielddoc">
 The number of continuous refresh cycles. </td></tr>
 <tr><td class="fieldtype">
-<a id="a51a882273572a89905b6d0cb0e699996"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#gaca0702d24a7e5d8df85acfdab3c95b72">sdram_write_burst_mode</a></td>
+<a id="ad37d4731122b7015a6026db0c9a968ed"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1c856af32e42c6541518ffc9baedd5ed">sdram_write_burst_mode_t</a></td>
 <td class="fieldname">
 write_burst_mode</td>
 <td class="fielddoc">
-<p>Select Burst Read / Burst Write or Burst Read / Single Write in MRS </p>
+<p>Select Burst Write or Single Write in MRS </p>
 </td></tr>
 <tr><td class="fieldtype">
 <a id="a93348e6400d3623835d4abe4aadd4cf2"></a>void const  *</td>
@@ -269,10 +334,7 @@ SDRAM hardware dependent configuration. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Open the SDRAM driver module. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga2f2e78724073df56351b78425722a8d9">R_BSC_SDRAM_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Open the SDRAM driver module.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to a driver handle </td></tr>
@@ -294,10 +356,7 @@ SDRAM hardware dependent configuration. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Enter Self Refresh mode. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga33f746dccad9ebd1d56524ada849ec43">R_BSC_SDRAM_SelfRefreshEnter()</a></li>
-</ul>
-</dd></dl>
+<p>Enter Self Refresh mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to a driver handle </td></tr>
@@ -318,10 +377,7 @@ SDRAM hardware dependent configuration. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Exit Self Refresh mode. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga7aa30d462968c00221b648f82352b0cb">R_BSC_SDRAM_SelfRefreshExit()</a></li>
-</ul>
-</dd></dl>
+<p>Exit Self Refresh mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to a driver handle </td></tr>
@@ -342,10 +398,7 @@ SDRAM hardware dependent configuration. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Enter Power Down mode. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___b_s_c___s_d_r_a_m.html#gae99f1d77f255dfe64daacebbcbd6b103">R_BSC_SDRAM_PowerDownEnter()</a></li>
-</ul>
-</dd></dl>
+<p>Enter Power Down mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to a driver handle </td></tr>
@@ -366,10 +419,7 @@ SDRAM hardware dependent configuration. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Exit Power Down mode. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___b_s_c___s_d_r_a_m.html#gaacd7d6874d39f9d83b4ec87575d7fe20">R_BSC_SDRAM_PowerDownExit()</a></li>
-</ul>
-</dd></dl>
+<p>Exit Power Down mode.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to a driver handle </td></tr>
@@ -390,10 +440,7 @@ SDRAM hardware dependent configuration. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Close the SDRAM driver module. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga0e095ec54c16c07b189163782461fcbc">R_BSC_SDRAM_Close()</a></li>
-</ul>
-</dd></dl>
+<p>Close the SDRAM driver module.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to a driver handle </td></tr>
@@ -403,6 +450,42 @@ SDRAM hardware dependent configuration. </td></tr>
 
 </div>
 </div>
+
+</div>
+</div>
+<a name="structsdram__instance__t" id="structsdram__instance__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structsdram__instance__t">&#9670;&nbsp;</a></span>sdram_instance_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct sdram_instance_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>This structure encompasses everything that is needed to use an instance of this interface. </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a762095cc35af2dc66f7e337e1c690314"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga2660baf73e1d3d4305b8b618d85bc48f">sdram_ctrl_t</a> *</td>
+<td class="fieldname">
+p_ctrl</td>
+<td class="fielddoc">
+Pointer to the control structure for this instance. </td></tr>
+<tr><td class="fieldtype">
+<a id="a5f7aefe7f9701905f437c9878f422fee"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#structsdram__cfg__t">sdram_cfg_t</a> const  *</td>
+<td class="fieldname">
+p_cfg</td>
+<td class="fielddoc">
+Pointer to the configuration structure for this instance. </td></tr>
+<tr><td class="fieldtype">
+<a id="a7a2e7135b95aaf78a6ff6ad95979639f"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#structsdram__api__t">sdram_api_t</a> const  *</td>
+<td class="fieldname">
+p_api</td>
+<td class="fielddoc">
+Pointer to the API structure for this instance. </td></tr>
+</table>
 
 </div>
 </div>
@@ -418,47 +501,11 @@ SDRAM hardware dependent configuration. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>SDRAM control block. Allocate an instance specific control block to pass into the SDRAM API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___b_s_c___s_d_r_a_m.html#structbsc__sdram__instance__ctrl__t">bsc_sdram_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>SDRAM control block. Allocate an instance specific control block to pass into the SDRAM API calls. </p>
 
 </div>
 </div>
 <h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="gaafaaad5ae9e9261ae21a6038b4d7c0ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaafaaad5ae9e9261ae21a6038b4d7c0ee">&#9670;&nbsp;</a></span>sdram_chip_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___s_d_r_a_m___a_p_i.html#gaafaaad5ae9e9261ae21a6038b4d7c0ee">sdram_chip_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>SDRAM chip select. </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaafaaad5ae9e9261ae21a6038b4d7c0eea4d9a4c680221806e2ef2ecdbd292fd4b"></a>SDRAM_CHIP_SELECT_0&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 0. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaafaaad5ae9e9261ae21a6038b4d7c0eea026763dfd8ec2bdffc5e54414dcd4827"></a>SDRAM_CHIP_SELECT_1&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 1. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaafaaad5ae9e9261ae21a6038b4d7c0eea2a7ccff343a8cf6b17322c4a58353a1e"></a>SDRAM_CHIP_SELECT_2&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 2. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaafaaad5ae9e9261ae21a6038b4d7c0eea5c92448ae4c4c11f02d43ada1c544dcf"></a>SDRAM_CHIP_SELECT_3&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 3. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaafaaad5ae9e9261ae21a6038b4d7c0eea3a4b432e277f32aabda53838af5bbccd"></a>SDRAM_CHIP_SELECT_4&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 4. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaafaaad5ae9e9261ae21a6038b4d7c0eea2e2cf335972e09fa3bb6a58eee65e6d8"></a>SDRAM_CHIP_SELECT_5&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 5. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaafaaad5ae9e9261ae21a6038b4d7c0eea4f0388911c0460a5d090a121e0afad0b"></a>SDRAM_CHIP_SELECT_6&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 6. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaafaaad5ae9e9261ae21a6038b4d7c0eea86227c4a604549484026df2742240543"></a>SDRAM_CHIP_SELECT_7&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 7. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
 <a id="ga79b0fb0e78b2a3d1e9e7f0adacc4d59e"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga79b0fb0e78b2a3d1e9e7f0adacc4d59e">&#9670;&nbsp;</a></span>sdram_data_bus_width_t</h2>
 
@@ -482,21 +529,6 @@ SDRAM hardware dependent configuration. </td></tr>
 
 </div>
 </div>
-<a id="ga537ecd0dd5640154454ebf02e3b2ded7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga537ecd0dd5640154454ebf02e3b2ded7">&#9670;&nbsp;</a></span>sdram_wait_cycle_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___s_d_r_a_m___a_p_i.html#ga537ecd0dd5640154454ebf02e3b2ded7">sdram_wait_cycle_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>SDRAM wait cycle. </p>
-
-</div>
-</div>
 <a id="ga1716678cbfd8e382c54a8d7bda7ba4a5"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga1716678cbfd8e382c54a8d7bda7ba4a5">&#9670;&nbsp;</a></span>sdram_address_bus_width_t</h2>
 
@@ -509,21 +541,84 @@ SDRAM hardware dependent configuration. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Number of bits of SDRAM Row/Column address. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga1716678cbfd8e382c54a8d7bda7ba4a5aa0973916302df00d30e859dfde27d3d6"></a>SDRAM_ADDRESS_BUS_WIDTH_8_BITS&#160;</td><td class="fielddoc"><p>Address bus width 8bit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1716678cbfd8e382c54a8d7bda7ba4a5a61492d8e46318385e89ffeb001e3e0db"></a>SDRAM_ADDRESS_BUS_WIDTH_9_BITS&#160;</td><td class="fielddoc"><p>Address bus width 9bit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1716678cbfd8e382c54a8d7bda7ba4a5a0aabedc2065bd64d0f18b1afa5c9ed67"></a>SDRAM_ADDRESS_BUS_WIDTH_10_BITS&#160;</td><td class="fielddoc"><p>Address bus width 10bit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1716678cbfd8e382c54a8d7bda7ba4a5a23d00610dd530db6adb51fd0a34b647b"></a>SDRAM_ADDRESS_BUS_WIDTH_11_BITS&#160;</td><td class="fielddoc"><p>Address bus width 11bit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1716678cbfd8e382c54a8d7bda7ba4a5a7557da3f98343fd9a8b0a63416077ff5"></a>SDRAM_ADDRESS_BUS_WIDTH_12_BITS&#160;</td><td class="fielddoc"><p>Address bus width 12bit. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1716678cbfd8e382c54a8d7bda7ba4a5ac7e123534740f276d40ee1fb4b7f54c8"></a>SDRAM_ADDRESS_BUS_WIDTH_13_BITS&#160;</td><td class="fielddoc"><p>Address bus width 13bit. </p>
+</td></tr>
+</table>
 
 </div>
 </div>
-<a id="gaca0702d24a7e5d8df85acfdab3c95b72"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaca0702d24a7e5d8df85acfdab3c95b72">&#9670;&nbsp;</a></span>sdram_write_burst_mode</h2>
+<a id="ga1c856af32e42c6541518ffc9baedd5ed"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1c856af32e42c6541518ffc9baedd5ed">&#9670;&nbsp;</a></span>sdram_write_burst_mode_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group___s_d_r_a_m___a_p_i.html#gaca0702d24a7e5d8df85acfdab3c95b72">sdram_write_burst_mode</a></td>
+          <td class="memname">enum <a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1c856af32e42c6541518ffc9baedd5ed">sdram_write_burst_mode_t</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Write burst mode </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga1c856af32e42c6541518ffc9baedd5eda5b156cb4d159c4bfd2bdc9291bedac82"></a>SDRAM_WRITE_BURST_MODE_BURST&#160;</td><td class="fielddoc"><p>Burst write setting. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1c856af32e42c6541518ffc9baedd5eda066c0bcc16833579af46d49dfd412e04"></a>SDRAM_WRITE_BURST_MODE_SINGLE&#160;</td><td class="fielddoc"><p>Single write setting. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="ga1f0978f4b15342d88b8a8f9357152964"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1f0978f4b15342d88b8a8f9357152964">&#9670;&nbsp;</a></span>sdram_refresh_cycle_source_div_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1f0978f4b15342d88b8a8f9357152964">sdram_refresh_cycle_source_div_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>SDRAM Refresh cycle clock source divisors </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a49f9a3b37d8302df108f03a79979d87a"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_1&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a206261b389c59823373c9a82e3c700b5"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_2&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 2. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964aa905ebd781f2d892ed001f60af6ee054"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_4&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 4. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a1afbca5ca4df5d0515d9b13ee0201d95"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_8&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 8. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a157b91eef875e6e4242d0b874105a56c"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_16&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 16. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a1894df357a3710a8d29e020614a99432"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_32&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 32. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964aca2845dddfb1709a45dbe26c71dd8efa"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_64&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 64. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a3cd24cd83a69daba8ae66cb893c74368"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_128&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 128. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a0ac858e92996ea211db751cd99ffe03c"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_256&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 256. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a33eca76002a158699f8ca11644d7677f"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_512&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 512. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a3fcd593663f88daf7072983f78f3df72"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_1024&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 1024. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a4d4f9d388ae035d0ce00950824f5a890"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_2048&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 2048. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga1f0978f4b15342d88b8a8f9357152964a3628e3026c2fd63761503ba4c160085b"></a>SDRAM_REFRESH_CYCLE_SOURCE_DIV_4096&#160;</td><td class="fielddoc"><p>SDRAM Refresh cycle clock source divided by 4096. </p>
+</td></tr>
+</table>
 
 </div>
 </div>
@@ -533,7 +628,7 @@ SDRAM hardware dependent configuration. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

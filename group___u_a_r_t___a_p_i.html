@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: UART Interface</title>
+<title>RZT Flexible Software Package Documentation: UART Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___u_a_r_t___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___u_a_r_t___a_p_i.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">UART Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">UART Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___c_o_n_n_e_c_t_i_v_i_t_y___i_n_t_e_r_f_a_c_e_s.html">Connectivity</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -108,10 +176,7 @@ Summary</h1>
 <li>Callback function with returned event code</li>
 <li>Runtime baud-rate change</li>
 <li>Hardware resource locking during a transaction</li>
-<li>CTS/RTS hardware flow control support (with an associated IOPORT pin)</li>
-</ul>
-<p>Implemented by:</p><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html">Serial Communications Interface (SCI) UART (r_sci_uart)</a> </li>
+<li>CTS/RTS hardware flow control support (with an associated IOPORT pin) </li>
 </ul>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -360,14 +425,12 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <tr class="separator:aa6d5231c2b45a6479fc513d087924a50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af4aeab25d6aa83e0d47307043c053d11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#af4aeab25d6aa83e0d47307043c053d11">communicationAbort</a> )(<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, <a class="el" href="group___u_a_r_t___a_p_i.html#gac36c5a0dffa37b418fb9425a76c57740">uart_dir_t</a> communication_to_abort)</td></tr>
 <tr class="separator:af4aeab25d6aa83e0d47307043c053d11"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a51b74df27fb26e85700d9524cdfc7c01"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#a51b74df27fb26e85700d9524cdfc7c01">callbackSet</a> )(<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:a51b74df27fb26e85700d9524cdfc7c01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acfd849190deedb8f9c35bed54dccc111"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#acfd849190deedb8f9c35bed54dccc111">callbackSet</a> )(<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:acfd849190deedb8f9c35bed54dccc111"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e7e47514702ff0e3515280590dd9659"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#a4e7e47514702ff0e3515280590dd9659">close</a> )(<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:a4e7e47514702ff0e3515280590dd9659"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acb47c360a2ac4ddd36e53f0a4ad71b92"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#acb47c360a2ac4ddd36e53f0a4ad71b92">readStop</a> )(<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, uint32_t *remaining_bytes)</td></tr>
 <tr class="separator:acb47c360a2ac4ddd36e53f0a4ad71b92"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afd111f21ce7f755b470b5e5d90249768"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___u_a_r_t___a_p_i.html#afd111f21ce7f755b470b5e5d90249768">versionGet</a> )(<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *p_version)</td></tr>
-<tr class="separator:afd111f21ce7f755b470b5e5d90249768"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="a962363eebf6d497894b5ca569ebb87bb"></a>
@@ -381,10 +444,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Open UART device. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#gaef2636b50df00f5e888e833f0e6bbf6c">R_SCI_UART_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Open UART device.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. Must be declared by user. Value set here. </td></tr>
@@ -406,10 +466,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Read from UART device. The read buffer is used until the read is complete. When a transfer is complete, the callback is called with event UART_EVENT_RX_COMPLETE. Bytes received outside an active transfer are received in the callback function with event UART_EVENT_RX_CHAR. The maximum transfer size is reported by <a class="el" href="group___u_a_r_t___a_p_i.html#aa6d5231c2b45a6479fc513d087924a50">infoGet()</a>. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#gac2be874dbe37956cf84532a6ca901165">R_SCI_UART_Read()</a></li>
-</ul>
-</dd></dl>
+<p>Read from UART device. The read buffer is used until the read is complete. When a transfer is complete, the callback is called with event UART_EVENT_RX_COMPLETE. Bytes received outside an active transfer are received in the callback function with event UART_EVENT_RX_CHAR. The maximum transfer size is reported by <a class="el" href="group___u_a_r_t___a_p_i.html#aa6d5231c2b45a6479fc513d087924a50">infoGet()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block for the channel. </td></tr>
@@ -432,10 +489,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Write to UART device. The write buffer is used until write is complete. Do not overwrite write buffer contents until the write is finished. When the write is complete (all bytes are fully transmitted on the wire), the callback called with event UART_EVENT_TX_COMPLETE. The maximum transfer size is reported by <a class="el" href="group___u_a_r_t___a_p_i.html#aa6d5231c2b45a6479fc513d087924a50">infoGet()</a>. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#ga8916449e6e6de86681c04d1931645e7c">R_SCI_UART_Write()</a></li>
-</ul>
-</dd></dl>
+<p>Write to UART device. The write buffer is used until write is complete. Do not overwrite write buffer contents until the write is finished. When the write is complete (all bytes are fully transmitted on the wire), the callback called with event UART_EVENT_TX_COMPLETE. The maximum transfer size is reported by <a class="el" href="group___u_a_r_t___a_p_i.html#aa6d5231c2b45a6479fc513d087924a50">infoGet()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. </td></tr>
@@ -459,10 +513,6 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
       </table>
 </div><div class="memdoc">
 <p>Change baud rate. </p><dl class="section warning"><dt>Warning</dt><dd>Calling this API aborts any in-progress transmission and disables reception until the new baud settings have been applied.</dd></dl>
-<dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#ga3b3a6c761a66c6cbcca3c72a451b3371">R_SCI_UART_BaudSet()</a></li>
-</ul>
-</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. </td></tr>
@@ -484,10 +534,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the driver specific information. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#ga00f07c25ed95b9e1de217f34c42b9d38">R_SCI_UART_InfoGet()</a></li>
-</ul>
-</dd></dl>
+<p>Get the driver specific information.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. </td></tr>
@@ -509,10 +556,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Abort ongoing transfer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#ga816beee7f9f27113cd2d792c54c6af53">R_SCI_UART_Abort()</a></li>
-</ul>
-</dd></dl>
+<p>Abort ongoing transfer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. </td></tr>
@@ -523,21 +567,18 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 
 </div>
 </div>
-<a id="a51b74df27fb26e85700d9524cdfc7c01"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a51b74df27fb26e85700d9524cdfc7c01">&#9670;&nbsp;</a></span>callbackSet</h2>
+<a id="acfd849190deedb8f9c35bed54dccc111"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acfd849190deedb8f9c35bed54dccc111">&#9670;&nbsp;</a></span>callbackSet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  uart_api_t::callbackSet) (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *const p_callback_memory)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  uart_api_t::callbackSet) (<a class="el" href="group___u_a_r_t___a_p_i.html#gad04bd656a84140eaef1e8aa0f86564a8">uart_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___u_a_r_t___a_p_i.html#structuart__callback__args__t">uart_callback_args_t</a> *const p_callback_memory)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#gad990fe4af20d895bf37fd26721677410">R_SCI_UART_CallbackSet()</a></li>
-</ul>
-</dd></dl>
+<p>Specify callback function and optional context pointer and working memory pointer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. </td></tr>
@@ -561,10 +602,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Close UART device. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#ga49e8b74b71d1901a209a94ed4c220d4d">R_SCI_UART_Close()</a></li>
-</ul>
-</dd></dl>
+<p>Close UART device.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. </td></tr>
@@ -585,38 +623,11 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Stop ongoing read and return the number of bytes remaining in the read. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#gae084836f4ee37c2730f7a8b332d58325">R_SCI_UART_ReadStop()</a></li>
-</ul>
-</dd></dl>
+<p>Stop ongoing read and return the number of bytes remaining in the read.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the UART control block. </td></tr>
     <tr><td class="paramdir">[in,out]</td><td class="paramname">remaining_bytes</td><td>Pointer to location to store remaining bytes for read. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="afd111f21ce7f755b470b5e5d90249768"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afd111f21ce7f755b470b5e5d90249768">&#9670;&nbsp;</a></span>versionGet</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  uart_api_t::versionGet) (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *p_version)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Get version. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#ga93ce8503fe6cf6f1489f35f51e30eee2">R_SCI_UART_VersionGet()</a></li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">p_version</td><td>Pointer to the memory to store the version information. </td></tr>
   </table>
   </dd>
 </dl>
@@ -674,10 +685,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>UART control block. Allocate an instance specific control block to pass into the UART API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_c_i___u_a_r_t.html#structsci__uart__instance__ctrl__t">sci_uart_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>UART control block. Allocate an instance specific control block to pass into the UART API calls. </p>
 
 </div>
 </div>
@@ -753,6 +761,8 @@ Pointer to the API structure for this instance. </td></tr>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga6bcc37e31dd40c204b4ac6f6189e8878acdbc0c60cf74e4febad92afc44b88641"></a>UART_PARITY_OFF&#160;</td><td class="fielddoc"><p>No parity. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="gga6bcc37e31dd40c204b4ac6f6189e8878aa59d216d22b58e7d95e093c8e7ca1c84"></a>UART_PARITY_ZERO&#160;</td><td class="fielddoc"><p>Zero parity. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="gga6bcc37e31dd40c204b4ac6f6189e8878ad908a637b1dd23f93b149dd2d8bdfdb8"></a>UART_PARITY_EVEN&#160;</td><td class="fielddoc"><p>Even parity. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="gga6bcc37e31dd40c204b4ac6f6189e8878ad90cc425f5ba447773a44a75be6593e2"></a>UART_PARITY_ODD&#160;</td><td class="fielddoc"><p>Odd parity. </p>
@@ -811,7 +821,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

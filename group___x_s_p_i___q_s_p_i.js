@@ -45,17 +45,16 @@ var group___x_s_p_i___q_s_p_i =
       [ "XSPI_QSPI_PREFETCH_FUNCTION_ENABLE", "group___x_s_p_i___q_s_p_i.html#gga8c59ecaa03a56fa5db80924c81ff6fcca152b74d0c0cf97d6a36343f724a8d6ee", null ]
     ] ],
     [ "R_XSPI_QSPI_Open", "group___x_s_p_i___q_s_p_i.html#ga6e1ddbaec6b1d04c6425b3a271d9093a", null ],
+    [ "R_XSPI_QSPI_Close", "group___x_s_p_i___q_s_p_i.html#gaad19b3c8e517b9e614ee8697f8cef4e7", null ],
     [ "R_XSPI_QSPI_DirectWrite", "group___x_s_p_i___q_s_p_i.html#ga1bfceb0eafe5923f05b90899c095bd2d", null ],
     [ "R_XSPI_QSPI_DirectRead", "group___x_s_p_i___q_s_p_i.html#ga2f5bbf5d76d76c31840f4ce82d3393d2", null ],
-    [ "R_XSPI_QSPI_DirectTransfer", "group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98", null ],
+    [ "R_XSPI_QSPI_SpiProtocolSet", "group___x_s_p_i___q_s_p_i.html#gac03a7edb53183d589372bd8be1ecf870", null ],
     [ "R_XSPI_QSPI_XipEnter", "group___x_s_p_i___q_s_p_i.html#ga373731d45a2fdd625ee69b602ebc4d86", null ],
     [ "R_XSPI_QSPI_XipExit", "group___x_s_p_i___q_s_p_i.html#gaedf789bc1d1335f9b2356eaaaa58694e", null ],
     [ "R_XSPI_QSPI_Write", "group___x_s_p_i___q_s_p_i.html#gaf2619573525414afefc46ebc2fd53bec", null ],
     [ "R_XSPI_QSPI_Erase", "group___x_s_p_i___q_s_p_i.html#ga35a0c5d80a5ae30d48b46b37153f7e76", null ],
     [ "R_XSPI_QSPI_StatusGet", "group___x_s_p_i___q_s_p_i.html#gaad73cce9b2ac857fbd0423223ae3388e", null ],
     [ "R_XSPI_QSPI_BankSet", "group___x_s_p_i___q_s_p_i.html#ga384be6c60819abe2478a7b35c9a7a98e", null ],
-    [ "R_XSPI_QSPI_SpiProtocolSet", "group___x_s_p_i___q_s_p_i.html#gac03a7edb53183d589372bd8be1ecf870", null ],
-    [ "R_XSPI_QSPI_AutoCalibrate", "group___x_s_p_i___q_s_p_i.html#ga6fceaa55b924ce5ecf7a00a962b5d529", null ],
-    [ "R_XSPI_QSPI_Close", "group___x_s_p_i___q_s_p_i.html#gaad19b3c8e517b9e614ee8697f8cef4e7", null ],
-    [ "R_XSPI_QSPI_VersionGet", "group___x_s_p_i___q_s_p_i.html#ga43a6909cabda355a380ef98be9ece70f", null ]
+    [ "R_XSPI_QSPI_DirectTransfer", "group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98", null ],
+    [ "R_XSPI_QSPI_AutoCalibrate", "group___x_s_p_i___q_s_p_i.html#ga6fceaa55b924ce5ecf7a00a962b5d529", null ]
 ];

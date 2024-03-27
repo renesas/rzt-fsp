@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Expanded Serial Peripheral Interface (xSPI) QSPI (r_xspi_qspi)</title>
+<title>RZT Flexible Software Package Documentation: Expanded Serial Peripheral Interface (xSPI) QSPI (r_xspi_qspi)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___x_s_p_i___q_s_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___x_s_p_i___q_s_p_i.html','');})
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Expanded Serial Peripheral Interface (xSPI) QSPI (r_xspi_qspi)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Expanded Serial Peripheral Interface (xSPI) QSPI (r_xspi_qspi)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_t_o_r_a_g_e___m_o_d_u_l_e_s.html">Storage</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -103,12 +171,14 @@ $(document).ready(function(){initNavTree('group___x_s_p_i___q_s_p_i.html','');})
 Functions</h2></td></tr>
 <tr class="memitem:ga6e1ddbaec6b1d04c6425b3a271d9093a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga6e1ddbaec6b1d04c6425b3a271d9093a">R_XSPI_QSPI_Open</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl, <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__cfg__t">spi_flash_cfg_t</a> const *const p_cfg)</td></tr>
 <tr class="separator:ga6e1ddbaec6b1d04c6425b3a271d9093a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaad19b3c8e517b9e614ee8697f8cef4e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#gaad19b3c8e517b9e614ee8697f8cef4e7">R_XSPI_QSPI_Close</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl)</td></tr>
+<tr class="separator:gaad19b3c8e517b9e614ee8697f8cef4e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1bfceb0eafe5923f05b90899c095bd2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga1bfceb0eafe5923f05b90899c095bd2d">R_XSPI_QSPI_DirectWrite</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl, uint8_t const *const p_src, uint32_t const bytes, bool const read_after_write)</td></tr>
 <tr class="separator:ga1bfceb0eafe5923f05b90899c095bd2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2f5bbf5d76d76c31840f4ce82d3393d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga2f5bbf5d76d76c31840f4ce82d3393d2">R_XSPI_QSPI_DirectRead</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl, uint8_t *const p_dest, uint32_t const bytes)</td></tr>
 <tr class="separator:ga2f5bbf5d76d76c31840f4ce82d3393d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5e5bf2c3854fb149c7ac6f96fce9ee98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl, <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> *const p_transfer, <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga80ecf65e658f5b36bfe0bf2d88dd3ca5">spi_flash_direct_transfer_dir_t</a> direction)</td></tr>
-<tr class="separator:ga5e5bf2c3854fb149c7ac6f96fce9ee98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac03a7edb53183d589372bd8be1ecf870"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#gac03a7edb53183d589372bd8be1ecf870">R_XSPI_QSPI_SpiProtocolSet</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl, <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga17c347a498a8a9d38ffc36c0de49a535">spi_flash_protocol_t</a> spi_protocol)</td></tr>
+<tr class="separator:gac03a7edb53183d589372bd8be1ecf870"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga373731d45a2fdd625ee69b602ebc4d86"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga373731d45a2fdd625ee69b602ebc4d86">R_XSPI_QSPI_XipEnter</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl)</td></tr>
 <tr class="separator:ga373731d45a2fdd625ee69b602ebc4d86"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaedf789bc1d1335f9b2356eaaaa58694e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#gaedf789bc1d1335f9b2356eaaaa58694e">R_XSPI_QSPI_XipExit</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl)</td></tr>
@@ -121,14 +191,10 @@ Functions</h2></td></tr>
 <tr class="separator:gaad73cce9b2ac857fbd0423223ae3388e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga384be6c60819abe2478a7b35c9a7a98e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga384be6c60819abe2478a7b35c9a7a98e">R_XSPI_QSPI_BankSet</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl, uint32_t bank)</td></tr>
 <tr class="separator:ga384be6c60819abe2478a7b35c9a7a98e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac03a7edb53183d589372bd8be1ecf870"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#gac03a7edb53183d589372bd8be1ecf870">R_XSPI_QSPI_SpiProtocolSet</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl, <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga17c347a498a8a9d38ffc36c0de49a535">spi_flash_protocol_t</a> spi_protocol)</td></tr>
-<tr class="separator:gac03a7edb53183d589372bd8be1ecf870"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga5e5bf2c3854fb149c7ac6f96fce9ee98"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl, <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> *const p_transfer, <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga80ecf65e658f5b36bfe0bf2d88dd3ca5">spi_flash_direct_transfer_dir_t</a> direction)</td></tr>
+<tr class="separator:ga5e5bf2c3854fb149c7ac6f96fce9ee98"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6fceaa55b924ce5ecf7a00a962b5d529"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga6fceaa55b924ce5ecf7a00a962b5d529">R_XSPI_QSPI_AutoCalibrate</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl)</td></tr>
 <tr class="separator:ga6fceaa55b924ce5ecf7a00a962b5d529"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaad19b3c8e517b9e614ee8697f8cef4e7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#gaad19b3c8e517b9e614ee8697f8cef4e7">R_XSPI_QSPI_Close</a> (<a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *p_ctrl)</td></tr>
-<tr class="separator:gaad19b3c8e517b9e614ee8697f8cef4e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga43a6909cabda355a380ef98be9ece70f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#ga43a6909cabda355a380ef98be9ece70f">R_XSPI_QSPI_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga43a6909cabda355a380ef98be9ece70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the xSPI peripheral on RZ microprocessor. This module implements the <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html">SPI Flash Interface</a>. </p>
@@ -156,7 +222,7 @@ The following build time configurations are defined in driver/r_xspi_qspi_cfg.h:
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
 <tr>
-<td>Parameter Checking Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Parameter Checking</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Default (BSP)</li>
 <li>
@@ -165,9 +231,25 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
+<tr>
+<td>Unit 0 Prefetch Function</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enable</li>
+<li>
+Disable</li>
+</ul>
+</td><td>Disable </td><td>Enable prefetch function on memory-mapped reads of xSPI Unit 0. </td></tr>
+<tr>
+<td>Unit 1 Prefetch Function</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enable</li>
+<li>
+Disable</li>
+</ul>
+</td><td>Disable </td><td>Enable prefetch function on memory-mapped reads of xSPI Unit 1. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Storage &gt; QSPI Driver on r_xspi_qspi</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Storage &gt; QSPI Driver on r_xspi_qspi.<br />
+ <h2>Configurations for Storage &gt; QSPI (r_xspi_qspi)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Storage &gt; QSPI (r_xspi_qspi).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -206,7 +288,7 @@ Chip Select 1</li>
 <li>
 1S-1S-1S</li>
 <li>
-4D-4D-4D</li>
+4S-4D-4D</li>
 <li>
 1S-2S-2S</li>
 <li>
@@ -226,15 +308,7 @@ Chip Select 1</li>
 </ul>
 </td><td>3 </td><td>Select the number of address bytes. If 4-byte mode is selected, the application must issue the EN4B command using <a class="el" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer()</a>. </td></tr>
 <tr>
-<td>General &gt; Dummy Clocks for Read</td><td>Refer to the RZ Configuration tool for available options.</td><td>8 </td><td>Select the number of dummy clocks for read operations. </td></tr>
-<tr>
-<td>General &gt; Prefetch Function</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disable</li>
-<li>
-Enable</li>
-</ul>
-</td><td>Disable </td><td>Prefetch function settings. </td></tr>
+<td>General &gt; Dummy Clocks for Read</td><td>Refer to the RZT Configuration tool for available options.</td><td>8 </td><td>Select the number of dummy clocks for read operations. </td></tr>
 <tr>
 <td>Command Definitions &gt; Page Program Command</td><td>Must be an 8-bit QSPI command</td><td>0x02 </td><td>The command to program a page. </td></tr>
 <tr>
@@ -264,7 +338,7 @@ Enable</li>
 <tr>
 <td>Command Definitions &gt; XIP Exit M7-M0</td><td>Must be an 8-bit QSPI command</td><td>0xFF </td><td>How to set M7-M0 exit XIP mode. </td></tr>
 <tr>
-<td>Bus Timing &gt; CS minimum idle term</td><td>Refer to the RZ Configuration tool for available options.</td><td>7 CYCLES </td><td>Define the CS minimum idle term. </td></tr>
+<td>Bus Timing &gt; CS minimum idle term</td><td>Refer to the RZT Configuration tool for available options.</td><td>7 CYCLES </td><td>Define the CS minimum idle term. </td></tr>
 <tr>
 <td>Bus Timing &gt; CS asserting extension</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -331,18 +405,21 @@ xSPI_QSPI Memory Mapped Access</h2>
 </table>
 <h2><a class="anchor" id="r-xspi-qspi-limitations"></a>
 Limitations</h2>
-<p>When using the xSPI_QSPI driver, it is necessary to set the MPU with External address space xSPIn (0x60000000 - 0x6FFFFFFF) as the cacheable area and Mirror area of external address space xSPIn (0x40000000 - 0x4FFFFFFF) as the non-cacheable area.</p>
+<ul>
+<li>When using the xSPI_QSPI driver, it is necessary to set the MPU with External address space xSPIn (0x60000000 - 0x6FFFFFFF) as the cacheable area and Mirror area of external address space xSPIn (0x40000000 - 0x4FFFFFFF) as the non-cacheable area.</li>
+<li>Prefetch function support for memory-mapping access is applied to all slave devices connected xSPI0 or xSPI1. When connecting different types of devices (for example, QSPI and OSPI) to same xSPI unit, make sure that the prefetch function settings are the same.</li>
+</ul>
 <h1><a class="anchor" id="r-qspi-examples"></a>
 Examples</h1>
 <h2>Basic Example</h2>
 <p>This is a basic example of minimal use of the QSPI in an application. When using the section definition in the example below, the user must define it separately in the linker configuration file.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_DATA_LENGTH    (1024)</span></div><div class="line"></div><div class="line">uint8_t g_dest[QSPI_EXAMPLE_DATA_LENGTH];</div><div class="line"></div><div class="line"><span class="comment">/* Place data in the .qspi_flash section to flash it during programming. */</span></div><div class="line"><span class="keyword">const</span> uint8_t g_src[QSPI_EXAMPLE_DATA_LENGTH] BSP_PLACE_IN_SECTION(<span class="stringliteral">&quot;.qspi_flash&quot;</span>) = <span class="stringliteral">&quot;ABCDEFGHIJKLMNOPQRSTUVWXYZ&quot;</span>;</div><div class="line"></div><div class="line"><span class="comment">/* Place code in the .code_in_qspi section to flash it during programming. */</span></div><div class="line"><span class="keywordtype">void</span> r_qspi_example_function(<span class="keywordtype">void</span>) BSP_PLACE_IN_SECTION(<span class="stringliteral">&quot;.code_in_qspi&quot;</span>) __attribute__((noinline));</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_qspi_example_function (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Add code here. */</span></div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_qspi_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line"></div><div class="line">    <span class="comment">/* Open the QSPI instance. */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga6e1ddbaec6b1d04c6425b3a271d9093a">R_XSPI_QSPI_Open</a>(&amp;g_qspi0_ctrl, &amp;g_qspi0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Send device specific initialization commands. */</span></div><div class="line">    r_qspi_example_init();</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_QSPI_Open() and any required device specific initialization, data can be read directly from the QSPI flash. */</span></div><div class="line">    memcpy(&amp;g_dest[0], &amp;g_src[0], QSPI_EXAMPLE_DATA_LENGTH);</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_QSPI_Open() and any required device specific initialization, functions in the QSPI flash can be called. */</span></div><div class="line">    r_qspi_example_function();</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Initialization Command Structure Example</h2>
 <p>This is an example of the types of commands that can be used to initialize the QSPI.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#define QSPI_COMMAND_WRITE_ENABLE              (0x06U)</span></div><div class="line"><span class="preprocessor">#define QSPI_COMMAND_WRITE_STATUS_REGISTER     (0x01U)</span></div><div class="line"><span class="preprocessor">#define QSPI_COMMAND_ENTER_QPI_MODE            (0x35U)</span></div><div class="line"></div><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_STATUS_REGISTER           (0x40)</span></div><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_CONFIGURATION_REGISTER    (0x00)</span></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> r_qspi_example_init (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> qspi_direct_transfer =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_COMMAND_WRITE_ENABLE,</div><div class="line">        .address        = 0U,</div><div class="line">        .data           = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 0U,</div><div class="line">        .data_length    = 0U,</div><div class="line">        .dummy_cycles   = 0U</div><div class="line">    };</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Send the Write Enable (WREN) command to enable writing to the status register */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err =</div><div class="line">        <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Send the Write Status Register (WRSR) command. Values for status register and configuration register are set in</span></div><div class="line"><span class="comment">     * the data field. In the status register, set QE to 1 and other bits to their default setting.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>     = QSPI_COMMAND_WRITE_STATUS_REGISTER;</div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a52ae9ed9880e98f7a02107c2b31b673b">data</a>        = QSPI_EXAMPLE_CONFIGURATION_REGISTER &lt;&lt; 8 | QSPI_EXAMPLE_STATUS_REGISTER;</div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5e3c48eb88187944722f745231f955f3">data_length</a> = 2U;</div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for status register to update. */</span></div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__status__t">spi_flash_status_t</a> status;</div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___x_s_p_i___q_s_p_i.html#gaad73cce9b2ac857fbd0423223ae3388e">R_XSPI_QSPI_StatusGet</a>(&amp;g_qspi0_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<span class="keyword">true</span> == status.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ae20d4bed523ca4e802f5da6fdec4ca43">write_in_progress</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Execute the Enable QPI (EQPI) command to enter QSPI mode. After entering QPI mode on the device, change the SPI</span></div><div class="line"><span class="comment">     * protocol to QPI mode on the MCU peripheral. */</span></div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>     = QSPI_COMMAND_ENTER_QPI_MODE;</div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a52ae9ed9880e98f7a02107c2b31b673b">data</a>        = 0U;</div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5e3c48eb88187944722f745231f955f3">data_length</a> = 0U;</div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    (void) <a class="code" href="group___x_s_p_i___q_s_p_i.html#gac03a7edb53183d589372bd8be1ecf870">R_XSPI_QSPI_SpiProtocolSet</a>(&amp;g_qspi0_ctrl, <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535a21ac68039ffa6d214173ada7fe558a05">SPI_FLASH_PROTOCOL_4S_4S_4S</a>);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Reading Status Register Example (R_XSPI_QSPI_DirectTransfer)</h2>
+<div class="fragment"><div class="line"><span class="preprocessor">#define QSPI_COMMAND_WRITE_ENABLE              (0x06U)</span></div><div class="line"><span class="preprocessor">#define QSPI_COMMAND_WRITE_STATUS_REGISTER     (0x01U)</span></div><div class="line"><span class="preprocessor">#define QSPI_COMMAND_ENTER_QPI_MODE            (0x35U)</span></div><div class="line"></div><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_STATUS_REGISTER           (0x40)</span></div><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_CONFIGURATION_REGISTER    (0x00)</span></div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> r_qspi_example_init (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> qspi_direct_transfer =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_COMMAND_WRITE_ENABLE,</div><div class="line">        .address        = 0U,</div><div class="line">        .data           = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 0U,</div><div class="line">        .data_length    = 0U,</div><div class="line">        .dummy_cycles   = 0U</div><div class="line">    };</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Send the Write Enable (WREN) command to enable writing to the status register */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err =</div><div class="line">        <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Send the Write Status Register (WRSR) command. Values for status register and configuration register are set in</span></div><div class="line"><span class="comment">     * the data field. In the status register, set QE to 1 and other bits to their default setting.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>     = QSPI_COMMAND_WRITE_STATUS_REGISTER;</div><div class="line">    qspi_direct_transfer.data        = QSPI_EXAMPLE_CONFIGURATION_REGISTER &lt;&lt; 8 | QSPI_EXAMPLE_STATUS_REGISTER;</div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5e3c48eb88187944722f745231f955f3">data_length</a> = 2U;</div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for status register to update. */</span></div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__status__t">spi_flash_status_t</a> status;</div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___x_s_p_i___q_s_p_i.html#gaad73cce9b2ac857fbd0423223ae3388e">R_XSPI_QSPI_StatusGet</a>(&amp;g_qspi0_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<span class="keyword">true</span> == status.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ae20d4bed523ca4e802f5da6fdec4ca43">write_in_progress</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Execute the Enable QPI (EQPI) command to enter QSPI mode. After entering QPI mode on the device, change the SPI</span></div><div class="line"><span class="comment">     * protocol to QPI mode on the MCU peripheral. */</span></div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>     = QSPI_COMMAND_ENTER_QPI_MODE;</div><div class="line">    qspi_direct_transfer.data        = 0U;</div><div class="line">    qspi_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5e3c48eb88187944722f745231f955f3">data_length</a> = 0U;</div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    (void) <a class="code" href="group___x_s_p_i___q_s_p_i.html#gac03a7edb53183d589372bd8be1ecf870">R_XSPI_QSPI_SpiProtocolSet</a>(&amp;g_qspi0_ctrl, <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#gga17c347a498a8a9d38ffc36c0de49a535a21ac68039ffa6d214173ada7fe558a05">SPI_FLASH_PROTOCOL_4S_4S_4S</a>);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Reading Status Register Example (R_XSPI_QSPI_DirectTransfer)</h2>
 <p>This is an example of using R_XSPI_QSPI_DirectTransfer to send the read status register command and read back the status register from the device.</p>
 <div class="fragment"><div class="line"><span class="preprocessor">#define QSPI_COMMAND_READ_STATUS_REGISTER    (0x05U)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_qspi_direct_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> qspi_direct_transfer =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_COMMAND_READ_STATUS_REGISTER,</div><div class="line">        .address        = 0U,</div><div class="line">        .data           = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 0U,</div><div class="line">        .data_length    = 1U,</div><div class="line">        .dummy_cycles   = 0U</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Open the QSPI instance. */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga6e1ddbaec6b1d04c6425b3a271d9093a">R_XSPI_QSPI_Open</a>(&amp;g_qspi0_ctrl, &amp;g_qspi0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Read the Status Register */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Status register contents are available in variable &#39;qspi_direct_transfer.data&#39;. */</span></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Querying Device Size Example (R_XSPI_QSPI_DirectTransfer)</h2>
 <p>This is an example of using R_XSPI_QSPI_DirectTransfer to query the device size.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_COMMAND_READ_ID      (0x9F)</span></div><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_COMMAND_READ_SFDP    (0x5A)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_qspi_size_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Many QSPI devices support more than one way to query the device size. Consult the datasheet for your</span></div><div class="line"><span class="comment">     * QSPI device to determine which of these methods are supported (if any). */</span></div><div class="line">    uint32_t  device_size_bytes;</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line"></div><div class="line"><span class="preprocessor">#ifdef QSPI_EXAMPLE_COMMAND_READ_ID</span></div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> qspi_rdid_direct_transfer =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_EXAMPLE_COMMAND_READ_ID,</div><div class="line">        .address        = 0U,</div><div class="line">        .data           = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 0U,</div><div class="line">        .data_length    = 3U,</div><div class="line">        .dummy_cycles   = 0U</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* This example shows how to get the device size by reading the manufacturer ID. */</span></div><div class="line">    <span class="comment">/* Read 3 bytes. The third byte often represents the size of the QSPI, where the size of the QSPI = 2 ^ N. */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_rdid_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    device_size_bytes = 1U &lt;&lt; (qspi_rdid_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a52ae9ed9880e98f7a02107c2b31b673b">data</a> &gt;&gt; 16);</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(device_size_bytes);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line"></div><div class="line"><span class="preprocessor">#ifdef QSPI_EXAMPLE_COMMAND_READ_SFDP</span></div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> qspi_rdsfdp_direct_transfer =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_EXAMPLE_COMMAND_READ_SFDP,</div><div class="line">        .address        = 0x00000CU,</div><div class="line">        .data           = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 3U,</div><div class="line">        .data_length    = 3U,</div><div class="line">        .dummy_cycles   = 8U</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Read the Parameter Table Pointer (PTP) of 1st Parameter header to locate the JEDEC flash parameters table.</span></div><div class="line"><span class="comment">     * Reference JESD216 &quot;Serial Flash Discoverable Parameters (SFDP)&quot;. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Send the standard 0x5A command followed by 3 address bytes (1st Parameter header&#39;s PTP is at address 0xC).</span></div><div class="line"><span class="comment">     * 3 byte address of JEDEC flash parameters are read back and stored in qspi_rdsfdp_direct_transfer.data */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_rdsfdp_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Read the JEDEC flash parameters&#39; memory density. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Send the standard 0x5A command followed by 3 address bytes of Flash memory density (offset 0x04 from JEDEC</span></div><div class="line"><span class="comment">     * flash parameters address). Read 4 bytes. */</span></div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_EXAMPLE_COMMAND_READ_SFDP;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5120cdb55dcd4ce8da04eb8baa69254d">address</a>        = qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a52ae9ed9880e98f7a02107c2b31b673b">data</a> + 0x04;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a52ae9ed9880e98f7a02107c2b31b673b">data</a>           = 0U;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a521505cf1d98e638aef0e72ca5eb6463">command_length</a> = 1U;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a63de64208374fd3c6ea1db4ffb07111f">address_length</a> = 3U;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5e3c48eb88187944722f745231f955f3">data_length</a>    = 4U;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ad4a653cf90fd97dc9d0a5f8fce3c3795">dummy_cycles</a>   = 8U;</div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_rdsfdp_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate device size based on memory density */</span></div><div class="line">    uint32_t memory_density = qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a52ae9ed9880e98f7a02107c2b31b673b">data</a>;</div><div class="line">    <span class="keywordflow">if</span> ((1U &lt;&lt; 31) &amp; memory_density)</div><div class="line">    {</div><div class="line">        <span class="comment">/* For densities 4 gigabits and above, bit-31 is set to 1b.  The field 30:0 defines &#39;N&#39; where the density is</span></div><div class="line"><span class="comment">         * computed as 2^N bits (N must be &gt;= 32). This code subtracts 3 from N to divide by 8 to get the size in</span></div><div class="line"><span class="comment">         * bytes instead of bits. */</span></div><div class="line">        device_size_bytes = 1U &lt;&lt; ((memory_density &amp; ~(1U &lt;&lt; 31)) - 3U);</div><div class="line">    }</div><div class="line">    <span class="keywordflow">else</span></div><div class="line">    {</div><div class="line">        <span class="comment">/* For densities 2 gigabits or less, bit-31 is set to 0b.  The field 30:0 defines the size in bits. This</span></div><div class="line"><span class="comment">         * code divides the memory density by 8 to get the size in bytes instead of bits. */</span></div><div class="line">        device_size_bytes = (memory_density / 8) + 1;</div><div class="line">    }</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(device_size_bytes);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_COMMAND_READ_ID      (0x9F)</span></div><div class="line"><span class="preprocessor">#define QSPI_EXAMPLE_COMMAND_READ_SFDP    (0x5A)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_qspi_size_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Many QSPI devices support more than one way to query the device size. Consult the datasheet for your</span></div><div class="line"><span class="comment">     * QSPI device to determine which of these methods are supported (if any). */</span></div><div class="line">    uint32_t  device_size_bytes;</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line"></div><div class="line"><span class="preprocessor">#ifdef QSPI_EXAMPLE_COMMAND_READ_ID</span></div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> qspi_rdid_direct_transfer =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_EXAMPLE_COMMAND_READ_ID,</div><div class="line">        .address        = 0U,</div><div class="line">        .data           = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 0U,</div><div class="line">        .data_length    = 3U,</div><div class="line">        .dummy_cycles   = 0U</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* This example shows how to get the device size by reading the manufacturer ID. */</span></div><div class="line">    <span class="comment">/* Read 3 bytes. The third byte often represents the size of the QSPI, where the size of the QSPI = 2 ^ N. */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_rdid_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    device_size_bytes = 1U &lt;&lt; (qspi_rdid_direct_transfer.data &gt;&gt; 16);</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(device_size_bytes);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line"></div><div class="line"><span class="preprocessor">#ifdef QSPI_EXAMPLE_COMMAND_READ_SFDP</span></div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> qspi_rdsfdp_direct_transfer =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_EXAMPLE_COMMAND_READ_SFDP,</div><div class="line">        .address        = 0x00000CU,</div><div class="line">        .data           = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 3U,</div><div class="line">        .data_length    = 3U,</div><div class="line">        .dummy_cycles   = 8U</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Read the Parameter Table Pointer (PTP) of 1st Parameter header to locate the JEDEC flash parameters table.</span></div><div class="line"><span class="comment">     * Reference JESD216 &quot;Serial Flash Discoverable Parameters (SFDP)&quot;. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Send the standard 0x5A command followed by 3 address bytes (1st Parameter header&#39;s PTP is at address 0xC).</span></div><div class="line"><span class="comment">     * 3 byte address of JEDEC flash parameters are read back and stored in qspi_rdsfdp_direct_transfer.data */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_rdsfdp_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Read the JEDEC flash parameters&#39; memory density. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Send the standard 0x5A command followed by 3 address bytes of Flash memory density (offset 0x04 from JEDEC</span></div><div class="line"><span class="comment">     * flash parameters address). Read 4 bytes. */</span></div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = QSPI_EXAMPLE_COMMAND_READ_SFDP;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5120cdb55dcd4ce8da04eb8baa69254d">address</a>        = qspi_rdsfdp_direct_transfer.data + 0x04;</div><div class="line">    qspi_rdsfdp_direct_transfer.data           = 0U;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a521505cf1d98e638aef0e72ca5eb6463">command_length</a> = 1U;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a63de64208374fd3c6ea1db4ffb07111f">address_length</a> = 3U;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5e3c48eb88187944722f745231f955f3">data_length</a>    = 4U;</div><div class="line">    qspi_rdsfdp_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ad4a653cf90fd97dc9d0a5f8fce3c3795">dummy_cycles</a>   = 8U;</div><div class="line">    err = <a class="code" href="group___x_s_p_i___q_s_p_i.html#ga5e5bf2c3854fb149c7ac6f96fce9ee98">R_XSPI_QSPI_DirectTransfer</a>(&amp;g_qspi0_ctrl, &amp;qspi_rdsfdp_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_READ);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate device size based on memory density */</span></div><div class="line">    uint32_t memory_density = qspi_rdsfdp_direct_transfer.data;</div><div class="line">    <span class="keywordflow">if</span> ((1U &lt;&lt; 31) &amp; memory_density)</div><div class="line">    {</div><div class="line">        <span class="comment">/* For densities 4 gigabits and above, bit-31 is set to 1b.  The field 30:0 defines &#39;N&#39; where the density is</span></div><div class="line"><span class="comment">         * computed as 2^N bits (N must be &gt;= 32). This code subtracts 3 from N to divide by 8 to get the size in</span></div><div class="line"><span class="comment">         * bytes instead of bits. */</span></div><div class="line">        device_size_bytes = 1U &lt;&lt; ((memory_density &amp; ~(1U &lt;&lt; 31)) - 3U);</div><div class="line">    }</div><div class="line">    <span class="keywordflow">else</span></div><div class="line">    {</div><div class="line">        <span class="comment">/* For densities 2 gigabits or less, bit-31 is set to 0b.  The field 30:0 defines the size in bits. This</span></div><div class="line"><span class="comment">         * code divides the memory density by 8 to get the size in bytes instead of bits. */</span></div><div class="line">        device_size_bytes = (memory_density / 8) + 1;</div><div class="line">    }</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(device_size_bytes);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structxspi__qspi__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___q_s_p_i.html#structxspi__qspi__instance__ctrl__t">xspi_qspi_instance_ctrl_t</a></td></tr>
@@ -375,7 +452,7 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>Instance control block. DO NOT INITIALIZE. Initialization occurs when <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a6b8a1ae0eed7bca555c94959c1314ae3">spi_flash_api_t::open</a> is called </p>
+<div class="textblock"><p>Instance control block. DO NOT INITIALIZE. Initialization occurs when <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a75a4468493abb92f6bf484ed93718f6f">spi_flash_api_t::open</a> is called </p>
 </div>
 </div>
 </div>
@@ -565,13 +642,41 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Open the QSPI driver module. After the driver is open, the QSPI can be accessed like internal flash memory starting at address 0x60000000 or 0x40000000.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a6b8a1ae0eed7bca555c94959c1314ae3">spi_flash_api_t::open</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a75a4468493abb92f6bf484ed93718f6f">spi_flash_api_t::open</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_instance_ctrl or p_cfg is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>Driver has already been opened with the same p_instance_ctrl. </td></tr>
     <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>The requested channel does not exist on this MCU. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaad19b3c8e517b9e614ee8697f8cef4e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaad19b3c8e517b9e614ee8697f8cef4e7">&#9670;&nbsp;</a></span>R_XSPI_QSPI_Close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_XSPI_QSPI_Close </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Close the QSPI driver module.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a28bdae798428b85222739a0b9fd43a15">spi_flash_api_t::close</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_instance_ctrl is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened. </td></tr>
   </table>
   </dd>
 </dl>
@@ -616,7 +721,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Writes raw data directly to the QSPI.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a31a1d575f3d8876154d4e217caebf110">spi_flash_api_t::directWrite</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#aebfa0317034f04f53b6b788da0debe80">spi_flash_api_t::directWrite</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported. </td></tr>
@@ -658,7 +763,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Reads raw data directly from the QSPI.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a3366fdcb333cb6950ff38bb35618c401">spi_flash_api_t::directRead</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a4b3bfefb3b1ff0580fe1cce97b81c56f">spi_flash_api_t::directRead</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported. </td></tr>
@@ -668,14 +773,14 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a id="ga5e5bf2c3854fb149c7ac6f96fce9ee98"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga5e5bf2c3854fb149c7ac6f96fce9ee98">&#9670;&nbsp;</a></span>R_XSPI_QSPI_DirectTransfer()</h2>
+<a id="gac03a7edb53183d589372bd8be1ecf870"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac03a7edb53183d589372bd8be1ecf870">&#9670;&nbsp;</a></span>R_XSPI_QSPI_SpiProtocolSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_XSPI_QSPI_DirectTransfer </td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_XSPI_QSPI_SpiProtocolSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *&#160;</td>
           <td class="paramname"><em>p_ctrl</em>, </td>
@@ -683,14 +788,8 @@ Enumerations</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_transfer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga80ecf65e658f5b36bfe0bf2d88dd3ca5">spi_flash_direct_transfer_dir_t</a>&#160;</td>
-          <td class="paramname"><em>direction</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga17c347a498a8a9d38ffc36c0de49a535">spi_flash_protocol_t</a>&#160;</td>
+          <td class="paramname"><em>spi_protocol</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -699,15 +798,14 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Read/Write raw data directly with the SerialFlash.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a21da248768dd75281ea7b29f2d243afd">spi_flash_api_t::directTransfer</a>.</p>
+<p>Sets the SPI protocol.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a423e63cd15ce3984410c2f5cdf717e35">spi_flash_api_t::spiProtocolSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>The flash was programmed successfully. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>SPI protocol updated on MCU peripheral. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened. </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_MODE</td><td>This function must be called after R_XSPI_QSPI_DirectWrite with read_after_write set to true. </td></tr>
-    <tr><td class="paramname">FSP_ERR_DEVICE_BUSY</td><td>The device is busy. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Invalid SPI protocol requested. </td></tr>
   </table>
   </dd>
 </dl>
@@ -730,7 +828,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Enters XIP (execute in place) mode.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab5c6cc5c82e73038ddcef82a906b966f">spi_flash_api_t::xipEnter</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a48a9a0db1f5bcb24acc9cc1cea14f0ab">spi_flash_api_t::xipEnter</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>The flash was programmed successfully. </td></tr>
@@ -758,7 +856,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Exits XIP (execute in place) mode.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a3a7c2aae058a733f879ae294c63ce2c6">spi_flash_api_t::xipExit</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a00317079cf31b5311592d0845caa4d8a">spi_flash_api_t::xipExit</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>The flash was programmed successfully. </td></tr>
@@ -808,7 +906,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Program a page of data to the flash.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a61e667a9ae9af76c5f8fd9f1973c6838">spi_flash_api_t::write</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a35480fe077054fff8bd41c67dbce88fb">spi_flash_api_t::write</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>The flash was programmed successfully. </td></tr>
@@ -819,7 +917,9 @@ Enumerations</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>In this API, data can be written up to 64 bytes at a time. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>In this API, data can be written up to 64 bytes at a time. </dd>
+<dd>
+This API performs page program operations to the device. Writing across pages is not supported. Please set the write address and write size according to the page size of your device. </dd></dl>
 
 </div>
 </div>
@@ -855,7 +955,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Erase a block or sector of flash. The byte_count must exactly match one of the erase sizes defined in <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__cfg__t">spi_flash_cfg_t</a>. For chip erase, byte_count must be SPI_FLASH_ERASE_SIZE_CHIP_ERASE.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a0f241a48dd8f386e19a6e0fe44e8a2d9">spi_flash_api_t::erase</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a4fb48ee9af80243cf7f8f966b4c6c56e">spi_flash_api_t::erase</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>The command to erase the flash was executed successfully. </td></tr>
@@ -895,7 +995,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Gets the write or erase status of the flash.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a1eea2761178ddd8ca7ef3aacd5c80507">spi_flash_api_t::statusGet</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a36600006109effd5c9d47283a7760ce6">spi_flash_api_t::statusGet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>The write status is in p_status. </td></tr>
@@ -934,7 +1034,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Selects the bank to access.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a14581133205383b71df54a65439c0dcf">spi_flash_api_t::bankSet</a>.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ae581e587fb514ab784257d07a77d6b32">spi_flash_api_t::bankSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported. </td></tr>
@@ -944,14 +1044,14 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
-<a id="gac03a7edb53183d589372bd8be1ecf870"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac03a7edb53183d589372bd8be1ecf870">&#9670;&nbsp;</a></span>R_XSPI_QSPI_SpiProtocolSet()</h2>
+<a id="ga5e5bf2c3854fb149c7ac6f96fce9ee98"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga5e5bf2c3854fb149c7ac6f96fce9ee98">&#9670;&nbsp;</a></span>R_XSPI_QSPI_DirectTransfer()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_XSPI_QSPI_SpiProtocolSet </td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_XSPI_QSPI_DirectTransfer </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *&#160;</td>
           <td class="paramname"><em>p_ctrl</em>, </td>
@@ -959,8 +1059,14 @@ Enumerations</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga17c347a498a8a9d38ffc36c0de49a535">spi_flash_protocol_t</a>&#160;</td>
-          <td class="paramname"><em>spi_protocol</em>&#160;</td>
+          <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_transfer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga80ecf65e658f5b36bfe0bf2d88dd3ca5">spi_flash_direct_transfer_dir_t</a>&#160;</td>
+          <td class="paramname"><em>direction</em>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -969,14 +1075,15 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Sets the SPI protocol.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a3328711e7e70c8379f4373d2861d785a">spi_flash_api_t::spiProtocolSet</a>.</p>
+<p>Read/Write raw data directly with the SerialFlash.</p>
+<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a875857cdb3d6ebf0971115737b9e2989">spi_flash_api_t::directTransfer</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>SPI protocol updated on MCU peripheral. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>The flash was programmed successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened. </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Invalid SPI protocol requested. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_MODE</td><td>This function must be called after R_XSPI_QSPI_DirectWrite with read_after_write set to true. </td></tr>
+    <tr><td class="paramname">FSP_ERR_DEVICE_BUSY</td><td>The device is busy. </td></tr>
   </table>
   </dd>
 </dl>
@@ -998,65 +1105,10 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Auto-calibrate the OctaRAM device using the preamble pattern. Unsupported by XSPI_QSPI. Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ad04434e2c049da61d3389355d5961f31">spi_flash_api_t::autoCalibrate</a>.</p>
+<p>Auto-calibrate the OctaRAM device using the preamble pattern. Unsupported by XSPI_QSPI. Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ac78c55ffe2b7d99681612ce796a384c5">spi_flash_api_t::autoCalibrate</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported by XSPI_QSPI </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gaad19b3c8e517b9e614ee8697f8cef4e7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaad19b3c8e517b9e614ee8697f8cef4e7">&#9670;&nbsp;</a></span>R_XSPI_QSPI_Close()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_XSPI_QSPI_Close </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ga0f14c8b55d2948c30b99ab157e16488f">spi_flash_ctrl_t</a> *&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Close the QSPI driver module.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a16810f14e3fff6ed04f36eca44353785">spi_flash_api_t::close</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_instance_ctrl is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga43a6909cabda355a380ef98be9ece70f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga43a6909cabda355a380ef98be9ece70f">&#9670;&nbsp;</a></span>R_XSPI_QSPI_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_XSPI_QSPI_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Get the driver version based on compile time macros.</p>
-<p>Implements <a class="el" href="group___s_p_i___f_l_a_s_h___a_p_i.html#acf0f82982d8022e22796c252131063af">spi_flash_api_t::versionGet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Successful close. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1069,7 +1121,7 @@ Enumerations</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -24,6 +24,5 @@ var group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t =
       [ "ETHERCAT_SSC_PORT_TXC_DELAY_30NS", "group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t.html#ggac2a088364f320a8c31c35b0f9ebd2c3ea319312c20714eb7baaa3bde36c0b369e", null ]
     ] ],
     [ "RM_ETHERCAT_SSC_PORT_Open", "group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t.html#ga1a6b2a699f7e6b12b55be6e8fde1378a", null ],
-    [ "RM_ETHERCAT_SSC_PORT_Close", "group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t.html#ga624cf5c5dc7585c5a90be0b24285ee9c", null ],
-    [ "RM_ETHERCAT_SSC_PORT_VersionGet", "group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t.html#ga34f1523593495759ee9cfbbdf0537cd0", null ]
+    [ "RM_ETHERCAT_SSC_PORT_Close", "group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t.html#ga624cf5c5dc7585c5a90be0b24285ee9c", null ]
 ];

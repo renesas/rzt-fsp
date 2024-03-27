@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Compare Match Timer W (r_cmtw)</title>
+<title>RZT Flexible Software Package Documentation: Compare Match Timer W (r_cmtw)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___c_m_t_w.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,48 +140,63 @@ $(document).ready(function(){initNavTree('group___c_m_t_w.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Compare Match Timer W (r_cmtw)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Compare Match Timer W (r_cmtw)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___m_o_d_u_l_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga7b086a5e535460e7855000cc6141b22e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga7b086a5e535460e7855000cc6141b22e">R_CMTW_Open</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__cfg__t">timer_cfg_t</a> const *const p_cfg)</td></tr>
-<tr class="separator:ga7b086a5e535460e7855000cc6141b22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga874d0098275f48ec3c84e8587d262fce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga874d0098275f48ec3c84e8587d262fce">R_CMTW_Start</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:ga874d0098275f48ec3c84e8587d262fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga842bb3b9c5c12cdfff41dd8595defc70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga842bb3b9c5c12cdfff41dd8595defc70">R_CMTW_Stop</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:ga842bb3b9c5c12cdfff41dd8595defc70"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga10851764cdad9c5c580e146501bc4352"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga10851764cdad9c5c580e146501bc4352">R_CMTW_Reset</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:ga10851764cdad9c5c580e146501bc4352"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadba23fc3303d81ce926ba6ebe9245e6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gadba23fc3303d81ce926ba6ebe9245e6a">R_CMTW_Enable</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:gadba23fc3303d81ce926ba6ebe9245e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga414c89c292c18a33619337489cd43787"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga414c89c292c18a33619337489cd43787">R_CMTW_Disable</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:ga414c89c292c18a33619337489cd43787"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac59c2dfa9436df60eb01971c996875aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gac59c2dfa9436df60eb01971c996875aa">R_CMTW_Close</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:gac59c2dfa9436df60eb01971c996875aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa50bb9ff96b3f0e38459a7e3e65c0a18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gaa50bb9ff96b3f0e38459a7e3e65c0a18">R_CMTW_PeriodSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, uint32_t const period_counts)</td></tr>
 <tr class="separator:gaa50bb9ff96b3f0e38459a7e3e65c0a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga928fd6d8249fe9c66e870849a6975ca9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga928fd6d8249fe9c66e870849a6975ca9">R_CMTW_DutyCycleSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, uint32_t const duty_cycle_counts, uint32_t const pin)</td></tr>
 <tr class="separator:ga928fd6d8249fe9c66e870849a6975ca9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga10851764cdad9c5c580e146501bc4352"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga10851764cdad9c5c580e146501bc4352">R_CMTW_Reset</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga10851764cdad9c5c580e146501bc4352"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga874d0098275f48ec3c84e8587d262fce"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga874d0098275f48ec3c84e8587d262fce">R_CMTW_Start</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga874d0098275f48ec3c84e8587d262fce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadba23fc3303d81ce926ba6ebe9245e6a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gadba23fc3303d81ce926ba6ebe9245e6a">R_CMTW_Enable</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:gadba23fc3303d81ce926ba6ebe9245e6a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga414c89c292c18a33619337489cd43787"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga414c89c292c18a33619337489cd43787">R_CMTW_Disable</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga414c89c292c18a33619337489cd43787"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae56c5935864ef5ef23eeae25a95ab079"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gae56c5935864ef5ef23eeae25a95ab079">R_CMTW_InfoGet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__info__t">timer_info_t</a> *const p_info)</td></tr>
 <tr class="separator:gae56c5935864ef5ef23eeae25a95ab079"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacbdfc3716f8d5bd47edaa801eb50d1b7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gacbdfc3716f8d5bd47edaa801eb50d1b7">R_CMTW_StatusGet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__status__t">timer_status_t</a> *const p_status)</td></tr>
 <tr class="separator:gacbdfc3716f8d5bd47edaa801eb50d1b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga842bb3b9c5c12cdfff41dd8595defc70"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga842bb3b9c5c12cdfff41dd8595defc70">R_CMTW_Stop</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga842bb3b9c5c12cdfff41dd8595defc70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7b086a5e535460e7855000cc6141b22e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga7b086a5e535460e7855000cc6141b22e">R_CMTW_Open</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__cfg__t">timer_cfg_t</a> const *const p_cfg)</td></tr>
+<tr class="separator:ga7b086a5e535460e7855000cc6141b22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga78987d5578215cbf098221602bbbc193"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#ga78987d5578215cbf098221602bbbc193">R_CMTW_OutputEnable</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, <a class="el" href="group___c_m_t_w.html#gaf5f1958607aa6c7f52f4e47195e3a61f">cmtw_io_pin_t</a> pin)</td></tr>
 <tr class="separator:ga78987d5578215cbf098221602bbbc193"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gadd9a734062792a507971568dac4c3013"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gadd9a734062792a507971568dac4c3013">R_CMTW_OutputDisable</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, <a class="el" href="group___c_m_t_w.html#gaf5f1958607aa6c7f52f4e47195e3a61f">cmtw_io_pin_t</a> pin)</td></tr>
 <tr class="separator:gadd9a734062792a507971568dac4c3013"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabc760f97e8a609485ae6194571d41127"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gabc760f97e8a609485ae6194571d41127">R_CMTW_CallbackSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:gabc760f97e8a609485ae6194571d41127"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac59c2dfa9436df60eb01971c996875aa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gac59c2dfa9436df60eb01971c996875aa">R_CMTW_Close</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:gac59c2dfa9436df60eb01971c996875aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad6edd3c3bd30a0e9544e072059b7f31d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gad6edd3c3bd30a0e9544e072059b7f31d">R_CMTW_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:gad6edd3c3bd30a0e9544e072059b7f31d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa8a4f451d4784d3e05cfdaf5a87bedc0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_m_t_w.html#gaa8a4f451d4784d3e05cfdaf5a87bedc0">R_CMTW_CallbackSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:gaa8a4f451d4784d3e05cfdaf5a87bedc0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the CMTW peripheral on RZ microprocessor. This module implements the <a class="el" href="group___t_i_m_e_r___a_p_i.html">Timer Interface</a>. </p>
@@ -166,9 +232,17 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Timers &gt; Timer Driver on r_cmtw</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Timers &gt; Timer Driver on r_cmtw.<br />
+ <h2>Configurations for Timers &gt; Timer, Compare Match W (r_cmtw)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Timers &gt; Timer, Compare Match W (r_cmtw).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -665,55 +739,14 @@ OutputCompare 1 interrupt. </td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga7b086a5e535460e7855000cc6141b22e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga7b086a5e535460e7855000cc6141b22e">&#9670;&nbsp;</a></span>R_CMTW_Open()</h2>
+<a id="gac59c2dfa9436df60eb01971c996875aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac59c2dfa9436df60eb01971c996875aa">&#9670;&nbsp;</a></span>R_CMTW_Close()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Open </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__cfg__t">timer_cfg_t</a> const *const&#160;</td>
-          <td class="paramname"><em>p_cfg</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Initializes the CMTW module instance. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#af49a90087a53c8019d642a3f7abaa8ad">timer_api_t::open</a>.</p>
-<p>The CMTW hardware does not support one-shot functionality natively. The one-shot feature is therefore implemented in the CMTW HAL layer. For a timer configured as a one-shot timer, the timer is stopped upon the first timer expiration.</p>
-<p>The CMTW implementation of the general timer can accept an optional <a class="el" href="group___c_m_t_w.html#structcmtw__extended__cfg__t">cmtw_extended_cfg_t</a> extension parameter.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful and timer has started. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL or the period is not in the valid range of 1 to 0xFFFF in 16bit counter or 1 to 0xFFFFFFFF in 32bit counter. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>R_CMTW_Open has already been called for this p_ctrl. </td></tr>
-    <tr><td class="paramname">FSP_ERR_IRQ_BSP_DISABLED</td><td>A required interrupt has not been enabled in the vector table. </td></tr>
-    <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>Requested channel number is not available on CMTW. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga874d0098275f48ec3c84e8587d262fce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga874d0098275f48ec3c84e8587d262fce">&#9670;&nbsp;</a></span>R_CMTW_Start()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Start </td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Close </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
           <td class="paramname"><em>p_ctrl</em></td><td>)</td>
@@ -721,120 +754,12 @@ OutputCompare 1 interrupt. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Starts timer. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#afcc7e85d01c3d7dc0c6e09954631f47f">timer_api_t::start</a>.</p>
+<p>Stops counter, disables interrupts, disables output pins, and clears internal driver data. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a9e8b8140010a28082aedd758390fac97">timer_api_t::close</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Timer started. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is null. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Timer closed. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga842bb3b9c5c12cdfff41dd8595defc70"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga842bb3b9c5c12cdfff41dd8595defc70">&#9670;&nbsp;</a></span>R_CMTW_Stop()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Stop </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Stops the timer. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#aed0139dbf5102e39719ddbc51f16a21e">timer_api_t::stop</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Timer stopped. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga10851764cdad9c5c580e146501bc4352"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga10851764cdad9c5c580e146501bc4352">&#9670;&nbsp;</a></span>R_CMTW_Reset()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Reset </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Resets the counter value to 0. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#ab1c62157861ef1ea8393bb3cafd72102">timer_api_t::reset</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Counter reset. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gadba23fc3303d81ce926ba6ebe9245e6a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gadba23fc3303d81ce926ba6ebe9245e6a">&#9670;&nbsp;</a></span>R_CMTW_Enable()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Enable </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Enables external event triggers that start, stop, clear, or capture the counter. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a13cb48d1657a9eda3380c111ba33aa2a">timer_api_t::enable</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>External events successfully enabled. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga414c89c292c18a33619337489cd43787"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga414c89c292c18a33619337489cd43787">&#9670;&nbsp;</a></span>R_CMTW_Disable()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Disable </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Disables external event triggers that start, stop, clear, or capture the counter. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a8b69fad02aee5d83b941ed02fca18aca">timer_api_t::disable</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>External events successfully disabled. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
   </table>
   </dd>
 </dl>
@@ -920,6 +845,114 @@ OutputCompare 1 interrupt. </td></tr>
 
 </div>
 </div>
+<a id="ga10851764cdad9c5c580e146501bc4352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga10851764cdad9c5c580e146501bc4352">&#9670;&nbsp;</a></span>R_CMTW_Reset()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Reset </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Resets the counter value to 0. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#ab1c62157861ef1ea8393bb3cafd72102">timer_api_t::reset</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Counter reset. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga874d0098275f48ec3c84e8587d262fce"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga874d0098275f48ec3c84e8587d262fce">&#9670;&nbsp;</a></span>R_CMTW_Start()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Start </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Starts timer. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#afcc7e85d01c3d7dc0c6e09954631f47f">timer_api_t::start</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Timer started. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is null. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gadba23fc3303d81ce926ba6ebe9245e6a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadba23fc3303d81ce926ba6ebe9245e6a">&#9670;&nbsp;</a></span>R_CMTW_Enable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Enable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enables external event triggers that start, stop, clear, or capture the counter. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a13cb48d1657a9eda3380c111ba33aa2a">timer_api_t::enable</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>External events successfully enabled. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga414c89c292c18a33619337489cd43787"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga414c89c292c18a33619337489cd43787">&#9670;&nbsp;</a></span>R_CMTW_Disable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Disable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Disables external event triggers that start, stop, clear, or capture the counter. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a8b69fad02aee5d83b941ed02fca18aca">timer_api_t::disable</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>External events successfully disabled. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="gae56c5935864ef5ef23eeae25a95ab079"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gae56c5935864ef5ef23eeae25a95ab079">&#9670;&nbsp;</a></span>R_CMTW_InfoGet()</h2>
 
@@ -988,6 +1021,74 @@ OutputCompare 1 interrupt. </td></tr>
     <tr><td class="paramname">FSP_SUCCESS</td><td>Current status and counter value provided in p_status. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga842bb3b9c5c12cdfff41dd8595defc70"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga842bb3b9c5c12cdfff41dd8595defc70">&#9670;&nbsp;</a></span>R_CMTW_Stop()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Stop </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Stops the timer. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#aed0139dbf5102e39719ddbc51f16a21e">timer_api_t::stop</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Timer stopped. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga7b086a5e535460e7855000cc6141b22e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga7b086a5e535460e7855000cc6141b22e">&#9670;&nbsp;</a></span>R_CMTW_Open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Open </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__cfg__t">timer_cfg_t</a> const *const&#160;</td>
+          <td class="paramname"><em>p_cfg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initializes the CMTW module instance. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#af49a90087a53c8019d642a3f7abaa8ad">timer_api_t::open</a>.</p>
+<p>The CMTW hardware does not support one-shot functionality natively. The one-shot feature is therefore implemented in the CMTW HAL layer. For a timer configured as a one-shot timer, the timer is stopped upon the first timer expiration.</p>
+<p>The CMTW implementation of the general timer can accept an optional <a class="el" href="group___c_m_t_w.html#structcmtw__extended__cfg__t">cmtw_extended_cfg_t</a> extension parameter.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful and timer has started. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL or the period is not in the valid range of 1 to 0xFFFF in 16bit counter or 1 to 0xFFFFFFFF in 32bit counter. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>R_CMTW_Open has already been called for this p_ctrl. </td></tr>
+    <tr><td class="paramname">FSP_ERR_IRQ_BSP_DISABLED</td><td>A required interrupt has not been enabled in the vector table. </td></tr>
+    <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>Requested channel number is not available on CMTW. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1068,8 +1169,8 @@ OutputCompare 1 interrupt. </td></tr>
 
 </div>
 </div>
-<a id="gabc760f97e8a609485ae6194571d41127"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabc760f97e8a609485ae6194571d41127">&#9670;&nbsp;</a></span>R_CMTW_CallbackSet()</h2>
+<a id="gaa8a4f451d4784d3e05cfdaf5a87bedc0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa8a4f451d4784d3e05cfdaf5a87bedc0">&#9670;&nbsp;</a></span>R_CMTW_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1078,7 +1179,7 @@ OutputCompare 1 interrupt. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_CallbackSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1105,65 +1206,12 @@ OutputCompare 1 interrupt. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a1b2c51a519145c2482ca2fb6b4b3d749">timer_api_t::callbackSet</a>.</p>
+<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#ad2569f06e8034790e7b363142d93a816">timer_api_t::callbackSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gac59c2dfa9436df60eb01971c996875aa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac59c2dfa9436df60eb01971c996875aa">&#9670;&nbsp;</a></span>R_CMTW_Close()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_Close </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Stops counter, disables interrupts, disables output pins, and clears internal driver data. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a9e8b8140010a28082aedd758390fac97">timer_api_t::close</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Timer closed. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance control structure is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gad6edd3c3bd30a0e9544e072059b7f31d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad6edd3c3bd30a0e9544e072059b7f31d">&#9670;&nbsp;</a></span>R_CMTW_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CMTW_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Sets driver version based on compile time macros. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#afd486e90a2c3214bdf156ab47560d236">timer_api_t::versionGet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version in p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_version is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1176,7 +1224,7 @@ OutputCompare 1 interrupt. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

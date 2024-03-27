@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: I2C Master on IIC (r_iic_master)</title>
+<title>RZT Flexible Software Package Documentation: I2C Master on IIC (r_iic_master)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___i_i_c___m_a_s_t_e_r.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,36 +140,51 @@ $(document).ready(function(){initNavTree('group___i_i_c___m_a_s_t_e_r.html','');
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">I2C Master on IIC (r_iic_master)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">I2C Master on IIC (r_iic_master)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___c_o_n_n_e_c_t_i_v_i_t_y___m_o_d_u_l_e_s.html">Connectivity</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:gaf27ed4f61dc662c28564646bd8bf01c3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gaf27ed4f61dc662c28564646bd8bf01c3">R_IIC_MASTER_Open</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__cfg__t">i2c_master_cfg_t</a> const *const p_cfg)</td></tr>
-<tr class="separator:gaf27ed4f61dc662c28564646bd8bf01c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6147f27a169deef934b6f46a0de3652f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga6147f27a169deef934b6f46a0de3652f">R_IIC_MASTER_Read</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl, uint8_t *const p_dest, uint32_t const bytes, bool const restart)</td></tr>
-<tr class="separator:ga6147f27a169deef934b6f46a0de3652f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad6f6d1f0e12c28bf77c27941fbf18359"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gad6f6d1f0e12c28bf77c27941fbf18359">R_IIC_MASTER_Write</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl, uint8_t *const p_src, uint32_t const bytes, bool const restart)</td></tr>
-<tr class="separator:gad6f6d1f0e12c28bf77c27941fbf18359"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga85ef762ddd49f1a137ce9e24c6573059"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga85ef762ddd49f1a137ce9e24c6573059">R_IIC_MASTER_Abort</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl)</td></tr>
-<tr class="separator:ga85ef762ddd49f1a137ce9e24c6573059"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac71642b0b148f43ffb3e6b8cf2a3c949"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gac71642b0b148f43ffb3e6b8cf2a3c949">R_IIC_MASTER_SlaveAddressSet</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl, uint32_t const slave, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga6203bcd8d8127b8fd442a2d33d112940">i2c_master_addr_mode_t</a> const addr_mode)</td></tr>
-<tr class="separator:gac71642b0b148f43ffb3e6b8cf2a3c949"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga535b73426b62ef08adecfde663160133"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga535b73426b62ef08adecfde663160133">R_IIC_MASTER_CallbackSet</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t">i2c_master_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t">i2c_master_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga535b73426b62ef08adecfde663160133"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8913f214f86f2ec06b31bfd68925e050"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga8913f214f86f2ec06b31bfd68925e050">R_IIC_MASTER_StatusGet</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__status__t">i2c_master_status_t</a> *p_status)</td></tr>
-<tr class="separator:ga8913f214f86f2ec06b31bfd68925e050"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga88558649a9cf9ccd54b745457227ab7c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga88558649a9cf9ccd54b745457227ab7c">R_IIC_MASTER_Close</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_api_ctrl)</td></tr>
-<tr class="separator:ga88558649a9cf9ccd54b745457227ab7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5ff4810180163d8d57963043bc8c1bfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga5ff4810180163d8d57963043bc8c1bfa">R_IIC_MASTER_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga5ff4810180163d8d57963043bc8c1bfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8818445ab5bd51bd6b09eb588f9c60a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga8818445ab5bd51bd6b09eb588f9c60a1">R_IIC_MASTER_Open</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_ctrl, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__cfg__t">i2c_master_cfg_t</a> const *const p_cfg)</td></tr>
+<tr class="separator:ga8818445ab5bd51bd6b09eb588f9c60a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae6f2823c3bc9d08da140af598a2681f6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gae6f2823c3bc9d08da140af598a2681f6">R_IIC_MASTER_Read</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_ctrl, uint8_t *const p_dest, uint32_t const bytes, bool const restart)</td></tr>
+<tr class="separator:gae6f2823c3bc9d08da140af598a2681f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga022c0e9d187c58f165a2f350dc56012a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga022c0e9d187c58f165a2f350dc56012a">R_IIC_MASTER_Write</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_ctrl, uint8_t *const p_src, uint32_t const bytes, bool const restart)</td></tr>
+<tr class="separator:ga022c0e9d187c58f165a2f350dc56012a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga9dedab62d50f799f893c22fcd8d82c27"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga9dedab62d50f799f893c22fcd8d82c27">R_IIC_MASTER_Abort</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga9dedab62d50f799f893c22fcd8d82c27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1187b3d689b2dcce8d06ea4b35b6257d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga1187b3d689b2dcce8d06ea4b35b6257d">R_IIC_MASTER_SlaveAddressSet</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_ctrl, uint32_t const slave, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga6203bcd8d8127b8fd442a2d33d112940">i2c_master_addr_mode_t</a> const addr_mode)</td></tr>
+<tr class="separator:ga1187b3d689b2dcce8d06ea4b35b6257d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab299719e6795ecd05c773e18aa36ceab"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#gab299719e6795ecd05c773e18aa36ceab">R_IIC_MASTER_Close</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:gab299719e6795ecd05c773e18aa36ceab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga81d3183dd81ea5da0475f883106b9086"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga81d3183dd81ea5da0475f883106b9086">R_IIC_MASTER_CallbackSet</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t">i2c_master_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t">i2c_master_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga81d3183dd81ea5da0475f883106b9086"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga799c86ea4e428adf2b185c042bfdfbb2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#ga799c86ea4e428adf2b185c042bfdfbb2">R_IIC_MASTER_StatusGet</a> (<a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const p_ctrl, <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__status__t">i2c_master_status_t</a> *p_status)</td></tr>
+<tr class="separator:ga799c86ea4e428adf2b185c042bfdfbb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the IIC peripheral on RZ microprocessor. This module implements the <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html">I2C Master Interface</a>. </p>
@@ -177,9 +243,17 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Disabled </td><td>If enabled, the driver will support 10-bit slave addressing mode along with the default 7-bit slave addressing mode. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Connectivity &gt; I2C Master Driver on r_iic_master</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Connectivity &gt; I2C Master Driver on r_iic_master.<br />
+ <h2>Configurations for Connectivity &gt; I2C Master (r_iic_master)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Connectivity &gt; I2C Master (r_iic_master).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -282,10 +356,10 @@ Examples</h1>
 <h2>Basic Example</h2>
 <p>This is a basic example of minimal use of the r_iic_master in an application.</p>
 <p>This example shows how this driver can be used for basic read and write operations.</p>
-<div class="fragment"><div class="line"></div><div class="line"><a class="code" href="group___i_i_c___m_a_s_t_e_r.html#structiic__master__instance__ctrl__t">iic_master_instance_ctrl_t</a> g_i2c_device_ctrl_1;</div><div class="line"><a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__cfg__t">i2c_master_cfg_t</a>           g_i2c_device_cfg_1 =</div><div class="line">{</div><div class="line">    .<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ab51668940cafabfefc502f06fddc9ae4">channel</a>       = I2C_CHANNEL,</div><div class="line">    .rate          = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aae2e38e76a2477e68f2685b403bdeb9a9">I2C_MASTER_RATE_FAST</a>,</div><div class="line">    .slave         = I2C_SLAVE_DEVICE,</div><div class="line">    .addr_mode     = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga6203bcd8d8127b8fd442a2d33d112940ab42fbd73d951db4694494c5acfa19dd8">I2C_MASTER_ADDR_MODE_7BIT</a>,</div><div class="line">    .rxi_irq       = VECTOR_NUMBER_IIC2_RXI,</div><div class="line">    .txi_irq       = VECTOR_NUMBER_IIC2_TXI,</div><div class="line">    .tei_irq       = VECTOR_NUMBER_IIC2_TEI,</div><div class="line">    .eri_irq       = VECTOR_NUMBER_IIC2_EEI,</div><div class="line">    .ipl           = (12),</div><div class="line">    .p_callback    = i2c_callback,     <span class="comment">// Callback</span></div><div class="line">    .p_context     = &amp;g_i2c_device_ctrl_1,</div><div class="line">    .p_transfer_tx = NULL,</div><div class="line">    .p_transfer_rx = NULL,</div><div class="line">    .p_extend      = &amp;g_iic_master_cfg_extend</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> i2c_callback (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t">i2c_master_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    g_i2c_callback_event = p_args-&gt;<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#a3a8cc9e360253e44176a6d3cecb5ece8">event</a>;</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line">    uint32_t  i;</div><div class="line">    uint32_t  timeout_ms = I2C_TRANSACTION_BUSY_DELAY;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the IIC module */</span></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#gaf27ed4f61dc662c28564646bd8bf01c3">R_IIC_MASTER_Open</a>(&amp;g_i2c_device_ctrl_1, &amp;g_i2c_device_cfg_1);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Write some data to the transmit buffer */</span></div><div class="line">    <span class="keywordflow">for</span> (i = 0; i &lt; I2C_BUFFER_SIZE_BYTES; i++)</div><div class="line">    {</div><div class="line">        g_i2c_tx_buffer[i] = (uint8_t) i;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Send data to I2C slave */</span></div><div class="line">    g_i2c_callback_event = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a>;</div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#gad6f6d1f0e12c28bf77c27941fbf18359">R_IIC_MASTER_Write</a>(&amp;g_i2c_device_ctrl_1, &amp;g_i2c_tx_buffer[0], I2C_BUFFER_SIZE_BYTES, <span class="keyword">false</span>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Since there is nothing else to do, block until Callback triggers*/</span></div><div class="line">    <span class="keywordflow">while</span> ((<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa9273437457da4f6369e937d257c0211b">I2C_MASTER_EVENT_TX_COMPLETE</a> != g_i2c_callback_event) &amp;&amp; timeout_ms)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(1U, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>);</div><div class="line">        timeout_ms--;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a> == g_i2c_callback_event)</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Read data back from the I2C slave */</span></div><div class="line">    g_i2c_callback_event = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a>;</div><div class="line">    timeout_ms           = I2C_TRANSACTION_BUSY_DELAY;</div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#ga6147f27a169deef934b6f46a0de3652f">R_IIC_MASTER_Read</a>(&amp;g_i2c_device_ctrl_1, &amp;g_i2c_rx_buffer[0], I2C_BUFFER_SIZE_BYTES, <span class="keyword">false</span>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Since there is nothing else to do, block until Callback triggers*/</span></div><div class="line">    <span class="keywordflow">while</span> ((<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa1b3d50a1a4fbf045307febd9eca1521a">I2C_MASTER_EVENT_RX_COMPLETE</a> != g_i2c_callback_event) &amp;&amp; timeout_ms)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(1U, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>);</div><div class="line">        timeout_ms--;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a> == g_i2c_callback_event)</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the read data */</span></div><div class="line">    <span class="keywordflow">if</span> (0U != memcmp(g_i2c_tx_buffer, g_i2c_rx_buffer, I2C_BUFFER_SIZE_BYTES))</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Multiple Slave devices on the same channel (bus)</h2>
+<div class="fragment"><div class="line"></div><div class="line"><a class="code" href="group___i_i_c___m_a_s_t_e_r.html#structiic__master__instance__ctrl__t">iic_master_instance_ctrl_t</a> g_i2c_device_ctrl_1;</div><div class="line"><a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__cfg__t">i2c_master_cfg_t</a>           g_i2c_device_cfg_1 =</div><div class="line">{</div><div class="line">    .<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ab51668940cafabfefc502f06fddc9ae4">channel</a>       = I2C_CHANNEL,</div><div class="line">    .rate          = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aae2e38e76a2477e68f2685b403bdeb9a9">I2C_MASTER_RATE_FAST</a>,</div><div class="line">    .slave         = I2C_SLAVE_DEVICE,</div><div class="line">    .addr_mode     = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga6203bcd8d8127b8fd442a2d33d112940ab42fbd73d951db4694494c5acfa19dd8">I2C_MASTER_ADDR_MODE_7BIT</a>,</div><div class="line">    .rxi_irq       = VECTOR_NUMBER_IIC2_RXI,</div><div class="line">    .txi_irq       = VECTOR_NUMBER_IIC2_TXI,</div><div class="line">    .tei_irq       = VECTOR_NUMBER_IIC2_TEI,</div><div class="line">    .eri_irq       = VECTOR_NUMBER_IIC2_EEI,</div><div class="line">    .ipl           = (12),</div><div class="line">    .p_callback    = i2c_callback,     <span class="comment">// Callback</span></div><div class="line">    .p_context     = &amp;g_i2c_device_ctrl_1,</div><div class="line">    .p_transfer_tx = NULL,</div><div class="line">    .p_transfer_rx = NULL,</div><div class="line">    .p_extend      = &amp;g_iic_master_cfg_extend</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> i2c_callback (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__callback__args__t">i2c_master_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    g_i2c_callback_event = p_args-&gt;<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#a3a8cc9e360253e44176a6d3cecb5ece8">event</a>;</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line">    uint32_t  i;</div><div class="line">    uint32_t  timeout_ms = I2C_TRANSACTION_BUSY_DELAY;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the IIC module */</span></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#ga8818445ab5bd51bd6b09eb588f9c60a1">R_IIC_MASTER_Open</a>(&amp;g_i2c_device_ctrl_1, &amp;g_i2c_device_cfg_1);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Write some data to the transmit buffer */</span></div><div class="line">    <span class="keywordflow">for</span> (i = 0; i &lt; I2C_BUFFER_SIZE_BYTES; i++)</div><div class="line">    {</div><div class="line">        g_i2c_tx_buffer[i] = (uint8_t) i;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Send data to I2C slave */</span></div><div class="line">    g_i2c_callback_event = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a>;</div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#ga022c0e9d187c58f165a2f350dc56012a">R_IIC_MASTER_Write</a>(&amp;g_i2c_device_ctrl_1, &amp;g_i2c_tx_buffer[0], I2C_BUFFER_SIZE_BYTES, <span class="keyword">false</span>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Since there is nothing else to do, block until Callback triggers*/</span></div><div class="line">    <span class="keywordflow">while</span> ((<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa9273437457da4f6369e937d257c0211b">I2C_MASTER_EVENT_TX_COMPLETE</a> != g_i2c_callback_event) &amp;&amp; timeout_ms)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(1U, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>);</div><div class="line">        timeout_ms--;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a> == g_i2c_callback_event)</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Read data back from the I2C slave */</span></div><div class="line">    g_i2c_callback_event = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a>;</div><div class="line">    timeout_ms           = I2C_TRANSACTION_BUSY_DELAY;</div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#gae6f2823c3bc9d08da140af598a2681f6">R_IIC_MASTER_Read</a>(&amp;g_i2c_device_ctrl_1, &amp;g_i2c_rx_buffer[0], I2C_BUFFER_SIZE_BYTES, <span class="keyword">false</span>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Since there is nothing else to do, block until Callback triggers*/</span></div><div class="line">    <span class="keywordflow">while</span> ((<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa1b3d50a1a4fbf045307febd9eca1521a">I2C_MASTER_EVENT_RX_COMPLETE</a> != g_i2c_callback_event) &amp;&amp; timeout_ms)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(1U, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>);</div><div class="line">        timeout_ms--;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a> == g_i2c_callback_event)</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the read data */</span></div><div class="line">    <span class="keywordflow">if</span> (0U != memcmp(g_i2c_tx_buffer, g_i2c_rx_buffer, I2C_BUFFER_SIZE_BYTES))</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Multiple Slave devices on the same channel (bus)</h2>
 <p>This example demonstrates how a single IIC driver can be used to communicate with different slave devices which are on the same channel.</p>
 <p>Note: The callback function from the first example applies to this example as well.</p>
-<div class="fragment"><div class="line"></div><div class="line"><a class="code" href="group___i_i_c___m_a_s_t_e_r.html#structiic__master__instance__ctrl__t">iic_master_instance_ctrl_t</a> g_i2c_device_ctrl_2;</div><div class="line"><a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__cfg__t">i2c_master_cfg_t</a>           g_i2c_device_cfg_2 =</div><div class="line">{</div><div class="line">    .<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ab51668940cafabfefc502f06fddc9ae4">channel</a>       = I2C_CHANNEL,</div><div class="line">    .rate          = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aa929a32b2615c7c54efa382f06e901cc0">I2C_MASTER_RATE_STANDARD</a>,</div><div class="line">    .slave         = I2C_SLAVE_TEMP_SENSOR,</div><div class="line">    .addr_mode     = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga6203bcd8d8127b8fd442a2d33d112940ab42fbd73d951db4694494c5acfa19dd8">I2C_MASTER_ADDR_MODE_7BIT</a>,</div><div class="line">    .rxi_irq       = VECTOR_NUMBER_IIC2_RXI,</div><div class="line">    .txi_irq       = VECTOR_NUMBER_IIC2_TXI,</div><div class="line">    .tei_irq       = VECTOR_NUMBER_IIC2_TEI,</div><div class="line">    .eri_irq       = VECTOR_NUMBER_IIC2_EEI,</div><div class="line">    .ipl           = (12),</div><div class="line">    .p_callback    = i2c_callback,     <span class="comment">// Callback</span></div><div class="line">    .p_context     = &amp;g_i2c_device_ctrl_2,</div><div class="line">    .p_transfer_tx = NULL,</div><div class="line">    .p_transfer_rx = NULL,</div><div class="line">    .p_extend      = &amp;g_iic_master_cfg_extend_2</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> single_channel_multi_slave (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line">    uint32_t  timeout_ms = I2C_TRANSACTION_BUSY_DELAY;</div><div class="line"></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#gaf27ed4f61dc662c28564646bd8bf01c3">R_IIC_MASTER_Open</a>(&amp;g_i2c_device_ctrl_2, &amp;g_i2c_device_cfg_2);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Clear the receive buffer */</span></div><div class="line">    memset(g_i2c_rx_buffer, <span class="charliteral">&#39;0&#39;</span>, I2C_BUFFER_SIZE_BYTES);</div><div class="line"></div><div class="line">    <span class="comment">/* Read data from I2C slave */</span></div><div class="line">    g_i2c_callback_event = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a>;</div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#ga6147f27a169deef934b6f46a0de3652f">R_IIC_MASTER_Read</a>(&amp;g_i2c_device_ctrl_2, &amp;g_i2c_rx_buffer[0], I2C_BUFFER_SIZE_BYTES, <span class="keyword">false</span>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> ((<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa1b3d50a1a4fbf045307febd9eca1521a">I2C_MASTER_EVENT_RX_COMPLETE</a> != g_i2c_callback_event) &amp;&amp; timeout_ms)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(1U, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>);</div><div class="line">        timeout_ms--;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a> == g_i2c_callback_event)</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Send data to I2C slave on the same channel */</span></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#gac71642b0b148f43ffb3e6b8cf2a3c949">R_IIC_MASTER_SlaveAddressSet</a>(&amp;g_i2c_device_ctrl_2, I2C_SLAVE_DISPLAY_ADAPTER, <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga6203bcd8d8127b8fd442a2d33d112940ab42fbd73d951db4694494c5acfa19dd8">I2C_MASTER_ADDR_MODE_7BIT</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    g_i2c_tx_buffer[0]   = 0xAA;       <span class="comment">// NOLINT</span></div><div class="line">    g_i2c_tx_buffer[1]   = 0xBB;       <span class="comment">// NOLINT</span></div><div class="line">    g_i2c_callback_event = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a>;</div><div class="line">    timeout_ms           = I2C_TRANSACTION_BUSY_DELAY;</div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#gad6f6d1f0e12c28bf77c27941fbf18359">R_IIC_MASTER_Write</a>(&amp;g_i2c_device_ctrl_2, &amp;g_i2c_tx_buffer[0], 2U, <span class="keyword">false</span>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> ((<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa9273437457da4f6369e937d257c0211b">I2C_MASTER_EVENT_TX_COMPLETE</a> != g_i2c_callback_event) &amp;&amp; timeout_ms)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(1U, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>);</div><div class="line">        timeout_ms--;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a> == g_i2c_callback_event)</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><a class="code" href="group___i_i_c___m_a_s_t_e_r.html#structiic__master__instance__ctrl__t">iic_master_instance_ctrl_t</a> g_i2c_device_ctrl_2;</div><div class="line"><a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#structi2c__master__cfg__t">i2c_master_cfg_t</a>           g_i2c_device_cfg_2 =</div><div class="line">{</div><div class="line">    .<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ab51668940cafabfefc502f06fddc9ae4">channel</a>       = I2C_CHANNEL,</div><div class="line">    .rate          = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aa929a32b2615c7c54efa382f06e901cc0">I2C_MASTER_RATE_STANDARD</a>,</div><div class="line">    .slave         = I2C_SLAVE_TEMP_SENSOR,</div><div class="line">    .addr_mode     = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga6203bcd8d8127b8fd442a2d33d112940ab42fbd73d951db4694494c5acfa19dd8">I2C_MASTER_ADDR_MODE_7BIT</a>,</div><div class="line">    .rxi_irq       = VECTOR_NUMBER_IIC2_RXI,</div><div class="line">    .txi_irq       = VECTOR_NUMBER_IIC2_TXI,</div><div class="line">    .tei_irq       = VECTOR_NUMBER_IIC2_TEI,</div><div class="line">    .eri_irq       = VECTOR_NUMBER_IIC2_EEI,</div><div class="line">    .ipl           = (12),</div><div class="line">    .p_callback    = i2c_callback,     <span class="comment">// Callback</span></div><div class="line">    .p_context     = &amp;g_i2c_device_ctrl_2,</div><div class="line">    .p_transfer_tx = NULL,</div><div class="line">    .p_transfer_rx = NULL,</div><div class="line">    .p_extend      = &amp;g_iic_master_cfg_extend_2</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> single_channel_multi_slave (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err;</div><div class="line">    uint32_t  timeout_ms = I2C_TRANSACTION_BUSY_DELAY;</div><div class="line"></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#ga8818445ab5bd51bd6b09eb588f9c60a1">R_IIC_MASTER_Open</a>(&amp;g_i2c_device_ctrl_2, &amp;g_i2c_device_cfg_2);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Clear the receive buffer */</span></div><div class="line">    memset(g_i2c_rx_buffer, <span class="charliteral">&#39;0&#39;</span>, I2C_BUFFER_SIZE_BYTES);</div><div class="line"></div><div class="line">    <span class="comment">/* Read data from I2C slave */</span></div><div class="line">    g_i2c_callback_event = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a>;</div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#gae6f2823c3bc9d08da140af598a2681f6">R_IIC_MASTER_Read</a>(&amp;g_i2c_device_ctrl_2, &amp;g_i2c_rx_buffer[0], I2C_BUFFER_SIZE_BYTES, <span class="keyword">false</span>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> ((<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa1b3d50a1a4fbf045307febd9eca1521a">I2C_MASTER_EVENT_RX_COMPLETE</a> != g_i2c_callback_event) &amp;&amp; timeout_ms)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(1U, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>);</div><div class="line">        timeout_ms--;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a> == g_i2c_callback_event)</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Send data to I2C slave on the same channel */</span></div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#ga1187b3d689b2dcce8d06ea4b35b6257d">R_IIC_MASTER_SlaveAddressSet</a>(&amp;g_i2c_device_ctrl_2, I2C_SLAVE_DISPLAY_ADAPTER, <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga6203bcd8d8127b8fd442a2d33d112940ab42fbd73d951db4694494c5acfa19dd8">I2C_MASTER_ADDR_MODE_7BIT</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    g_i2c_tx_buffer[0]   = 0xAA;       <span class="comment">// NOLINT</span></div><div class="line">    g_i2c_tx_buffer[1]   = 0xBB;       <span class="comment">// NOLINT</span></div><div class="line">    g_i2c_callback_event = <a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a>;</div><div class="line">    timeout_ms           = I2C_TRANSACTION_BUSY_DELAY;</div><div class="line">    err = <a class="code" href="group___i_i_c___m_a_s_t_e_r.html#ga022c0e9d187c58f165a2f350dc56012a">R_IIC_MASTER_Write</a>(&amp;g_i2c_device_ctrl_2, &amp;g_i2c_tx_buffer[0], 2U, <span class="keyword">false</span>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> ((<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa9273437457da4f6369e937d257c0211b">I2C_MASTER_EVENT_TX_COMPLETE</a> != g_i2c_callback_event) &amp;&amp; timeout_ms)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(1U, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2ba59fcc4e8d51046d4a1bd63c87ac64913">BSP_DELAY_UNITS_MILLISECONDS</a>);</div><div class="line">        timeout_ms--;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d">I2C_MASTER_EVENT_ABORTED</a> == g_i2c_callback_event)</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structiic__master__clock__settings__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i_i_c___m_a_s_t_e_r.html#structiic__master__clock__settings__t">iic_master_clock_settings_t</a></td></tr>
@@ -524,8 +598,8 @@ I2C Clock settings. </td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="gaf27ed4f61dc662c28564646bd8bf01c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf27ed4f61dc662c28564646bd8bf01c3">&#9670;&nbsp;</a></span>R_IIC_MASTER_Open()</h2>
+<a id="ga8818445ab5bd51bd6b09eb588f9c60a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8818445ab5bd51bd6b09eb588f9c60a1">&#9670;&nbsp;</a></span>R_IIC_MASTER_Open()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -534,7 +608,7 @@ I2C Clock settings. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_Open </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -557,7 +631,7 @@ I2C Clock settings. </td></tr>
     <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>Channel is not available on this MCU. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Invalid input parameter. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Parameter check failure due to one or more reasons below:<ol type="1">
-<li>p_api_ctrl or p_cfg is NULL.</li>
+<li>p_ctrl or p_cfg is NULL.</li>
 <li>extended parameter is NULL.</li>
 <li>Callback parameter is NULL.</li>
 <li>Invalid IRQ number assigned </li>
@@ -569,8 +643,8 @@ I2C Clock settings. </td></tr>
 
 </div>
 </div>
-<a id="ga6147f27a169deef934b6f46a0de3652f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6147f27a169deef934b6f46a0de3652f">&#9670;&nbsp;</a></span>R_IIC_MASTER_Read()</h2>
+<a id="gae6f2823c3bc9d08da140af598a2681f6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae6f2823c3bc9d08da140af598a2681f6">&#9670;&nbsp;</a></span>R_IIC_MASTER_Read()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -579,7 +653,7 @@ I2C Clock settings. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_Read </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -610,7 +684,7 @@ I2C Clock settings. </td></tr>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Function executed without issue. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_api_ctrl, p_dest or bytes is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl, p_dest or bytes is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_IN_USE</td><td>Bus busy condition. Another transfer was in progress. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_IIC_MASTER_Open to initialize the control block. </td></tr>
   </table>
@@ -619,8 +693,8 @@ I2C Clock settings. </td></tr>
 
 </div>
 </div>
-<a id="gad6f6d1f0e12c28bf77c27941fbf18359"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad6f6d1f0e12c28bf77c27941fbf18359">&#9670;&nbsp;</a></span>R_IIC_MASTER_Write()</h2>
+<a id="ga022c0e9d187c58f165a2f350dc56012a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga022c0e9d187c58f165a2f350dc56012a">&#9670;&nbsp;</a></span>R_IIC_MASTER_Write()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -629,7 +703,7 @@ I2C Clock settings. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_Write </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -660,7 +734,7 @@ I2C Clock settings. </td></tr>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Function executed without issue. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_api_ctrl or p_src is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_src is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_IN_USE</td><td>Bus busy condition. Another transfer was in progress. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_IIC_MASTER_Open to initialize the control block. </td></tr>
   </table>
@@ -669,8 +743,8 @@ I2C Clock settings. </td></tr>
 
 </div>
 </div>
-<a id="ga85ef762ddd49f1a137ce9e24c6573059"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga85ef762ddd49f1a137ce9e24c6573059">&#9670;&nbsp;</a></span>R_IIC_MASTER_Abort()</h2>
+<a id="ga9dedab62d50f799f893c22fcd8d82c27"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga9dedab62d50f799f893c22fcd8d82c27">&#9670;&nbsp;</a></span>R_IIC_MASTER_Abort()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -679,7 +753,7 @@ I2C Clock settings. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_Abort </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em></td><td>)</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -688,7 +762,7 @@ I2C Clock settings. </td></tr>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Channel was reset successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_api_ctrl is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_IIC_MASTER_Open to initialize the control block.</td></tr>
   </table>
   </dd>
@@ -697,8 +771,8 @@ I2C Clock settings. </td></tr>
 
 </div>
 </div>
-<a id="gac71642b0b148f43ffb3e6b8cf2a3c949"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac71642b0b148f43ffb3e6b8cf2a3c949">&#9670;&nbsp;</a></span>R_IIC_MASTER_SlaveAddressSet()</h2>
+<a id="ga1187b3d689b2dcce8d06ea4b35b6257d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1187b3d689b2dcce8d06ea4b35b6257d">&#9670;&nbsp;</a></span>R_IIC_MASTER_SlaveAddressSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -707,7 +781,7 @@ I2C Clock settings. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_SlaveAddressSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -741,8 +815,36 @@ I2C Clock settings. </td></tr>
 
 </div>
 </div>
-<a id="ga535b73426b62ef08adecfde663160133"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga535b73426b62ef08adecfde663160133">&#9670;&nbsp;</a></span>R_IIC_MASTER_CallbackSet()</h2>
+<a id="gab299719e6795ecd05c773e18aa36ceab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab299719e6795ecd05c773e18aa36ceab">&#9670;&nbsp;</a></span>R_IIC_MASTER_Close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_Close </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Closes the I2C device. May power down IIC peripheral. This function will safely terminate any in-progress I2C transfers.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Device closed without issue. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_IIC_MASTER_Open to initialize the control block.</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section note"><dt>Note</dt><dd>A callback will not be invoked in case an in-progress transfer gets aborted by calling this API. </dd></dl>
+
+</div>
+</div>
+<a id="ga81d3183dd81ea5da0475f883106b9086"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga81d3183dd81ea5da0475f883106b9086">&#9670;&nbsp;</a></span>R_IIC_MASTER_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -751,7 +853,7 @@ I2C Clock settings. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_CallbackSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -778,7 +880,7 @@ I2C Clock settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#a1a0c2ac15d2c2eb6a50baed682498620">i2c_master_api_t::callbackSet</a></p>
+<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#aab666b9c130b25efdc4b354e62e91c40">i2c_master_api_t::callbackSet</a></p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
@@ -790,8 +892,8 @@ I2C Clock settings. </td></tr>
 
 </div>
 </div>
-<a id="ga8913f214f86f2ec06b31bfd68925e050"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8913f214f86f2ec06b31bfd68925e050">&#9670;&nbsp;</a></span>R_IIC_MASTER_StatusGet()</h2>
+<a id="ga799c86ea4e428adf2b185c042bfdfbb2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga799c86ea4e428adf2b185c042bfdfbb2">&#9670;&nbsp;</a></span>R_IIC_MASTER_StatusGet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -800,7 +902,7 @@ I2C Clock settings. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_StatusGet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -826,67 +928,13 @@ I2C Clock settings. </td></tr>
 
 </div>
 </div>
-<a id="ga88558649a9cf9ccd54b745457227ab7c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga88558649a9cf9ccd54b745457227ab7c">&#9670;&nbsp;</a></span>R_IIC_MASTER_Close()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_Close </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___i2_c___m_a_s_t_e_r___a_p_i.html#ga87f5194ba16044322815db81dc442138">i2c_master_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Closes the I2C device. May power down IIC peripheral. This function will safely terminate any in-progress I2C transfers.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Device closed without issue. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_api_ctrl is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_IIC_MASTER_Open to initialize the control block.</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section note"><dt>Note</dt><dd>A callback will not be invoked in case an in-progress transfer gets aborted by calling this API. </dd></dl>
-
-</div>
-</div>
-<a id="ga5ff4810180163d8d57963043bc8c1bfa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga5ff4810180163d8d57963043bc8c1bfa">&#9670;&nbsp;</a></span>R_IIC_MASTER_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_IIC_MASTER_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Gets version information and stores it in the provided version structure.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Successful version get. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version is NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

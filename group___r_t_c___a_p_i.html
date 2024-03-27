@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: RTC Interface</title>
+<title>RZT Flexible Software Package Documentation: RTC Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___r_t_c___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,23 +140,37 @@ $(document).ready(function(){initNavTree('group___r_t_c___a_p_i.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">RTC Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">RTC Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___i_n_t_e_r_f_a_c_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Interface for accessing the Realtime Clock. </p>
 <h1><a class="anchor" id="RTC_API_Summary"></a>
 Summary</h1>
-<p>The RTC Interface is for configuring Real Time Clock (RTC) functionality including alarm, periodic notification and error adjustment.</p>
-<p>The Real Time Clock Interface can be implemented by:</p><ul>
-<li><a class="el" href="group___r_t_c.html">Real Time Clock (r_rtc)</a> </li>
-</ul>
+<p>The RTC Interface is for configuring Real Time Clock (RTC) functionality including alarm, periodic notification and error adjustment. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -115,6 +180,8 @@ Data Structures</h2></td></tr>
 <tr class="separator:structrtc__error__adjustment__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structrtc__alarm__time__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#structrtc__alarm__time__t">rtc_alarm_time_t</a></td></tr>
 <tr class="separator:structrtc__alarm__time__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structrtc__time__capture__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#structrtc__time__capture__t">rtc_time_capture_t</a></td></tr>
+<tr class="separator:structrtc__time__capture__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structrtc__info__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#structrtc__info__t">rtc_info_t</a></td></tr>
 <tr class="separator:structrtc__info__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structrtc__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#structrtc__cfg__t">rtc_cfg_t</a></td></tr>
@@ -135,6 +202,8 @@ Typedefs</h2></td></tr>
 Enumerations</h2></td></tr>
 <tr class="memitem:gad2e192ed9a33b6c005c2c19ccbd6a21b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#gad2e192ed9a33b6c005c2c19ccbd6a21b">rtc_event_t</a> </td></tr>
 <tr class="separator:gad2e192ed9a33b6c005c2c19ccbd6a21b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga023e9e2043784cf17e3d3bf056ce14f1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#ga023e9e2043784cf17e3d3bf056ce14f1">rtc_alarm_channel_t</a> </td></tr>
+<tr class="separator:ga023e9e2043784cf17e3d3bf056ce14f1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gad8eef26a825fa4a0c5a417f8be08ccc6"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#gad8eef26a825fa4a0c5a417f8be08ccc6">rtc_clock_source_t</a> </td></tr>
 <tr class="separator:gad8eef26a825fa4a0c5a417f8be08ccc6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab1079685ed8a9d30f32062b3bfedd041"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#gab1079685ed8a9d30f32062b3bfedd041">rtc_status_t</a> </td></tr>
@@ -147,6 +216,10 @@ Enumerations</h2></td></tr>
 <tr class="separator:gaa9758f6f29579df6e9f5c64ff486c097"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacbf0a3d09430a65ca1b3179819183f01"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#gacbf0a3d09430a65ca1b3179819183f01">rtc_periodic_irq_select_t</a> </td></tr>
 <tr class="separator:gacbf0a3d09430a65ca1b3179819183f01"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga60a231559f89a160d0849ae222518eca"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#ga60a231559f89a160d0849ae222518eca">rtc_time_capture_source_t</a> </td></tr>
+<tr class="separator:ga60a231559f89a160d0849ae222518eca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaeaa54438f4298dee64468529c104b6a7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#gaeaa54438f4298dee64468529c104b6a7">rtc_time_capture_noise_filter_t</a> </td></tr>
+<tr class="separator:gaeaa54438f4298dee64468529c104b6a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structrtc__callback__args__t" id="structrtc__callback__args__t"></a>
@@ -325,6 +398,54 @@ Enable the alarm on Friday. </td></tr>
 saturday_match</td>
 <td class="fielddoc">
 Enable the alarm on Saturday. </td></tr>
+<tr><td class="fieldtype">
+<a id="ae9bd30168ad8a2932e542beaed85b2e1"></a><a class="el" href="group___r_t_c___a_p_i.html#ga023e9e2043784cf17e3d3bf056ce14f1">rtc_alarm_channel_t</a></td>
+<td class="fieldname">
+channel</td>
+<td class="fielddoc">
+Select alarm 0 or alarm 1. </td></tr>
+</table>
+
+</div>
+</div>
+<a name="structrtc__time__capture__t" id="structrtc__time__capture__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structrtc__time__capture__t">&#9670;&nbsp;</a></span>rtc_time_capture_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct rtc_time_capture_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Time capture configuration structure </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="ad7915eec1adda98a5740960381911c50"></a><a class="el" href="group___r_t_c___a_p_i.html#gaf7de6d99d4c7fd767ebeaabf873fe56d">rtc_time_t</a></td>
+<td class="fieldname">
+time</td>
+<td class="fielddoc">
+Time structure. </td></tr>
+<tr><td class="fieldtype">
+<a id="afe687352b349ef422a1bea06357df121"></a>uint8_t</td>
+<td class="fieldname">
+channel</td>
+<td class="fielddoc">
+Capture channel. </td></tr>
+<tr><td class="fieldtype">
+<a id="ad79be9fceab2cd8a122e5d2254fc4c90"></a><a class="el" href="group___r_t_c___a_p_i.html#ga60a231559f89a160d0849ae222518eca">rtc_time_capture_source_t</a></td>
+<td class="fieldname">
+source</td>
+<td class="fielddoc">
+Trigger source. </td></tr>
+<tr><td class="fieldtype">
+<a id="aab9203daea2e24a16626b2b40c98d3fa"></a><a class="el" href="group___r_t_c___a_p_i.html#gaeaa54438f4298dee64468529c104b6a7">rtc_time_capture_noise_filter_t</a></td>
+<td class="fieldname">
+noise_filter</td>
+<td class="fielddoc">
+Noise filter. </td></tr>
 </table>
 
 </div>
@@ -377,10 +498,10 @@ RTC run status. </td></tr>
 <a class="el" href="group___r_t_c___a_p_i.html#gad8eef26a825fa4a0c5a417f8be08ccc6">rtc_clock_source_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#a4d6b36efa20644739ef4a2697a745660">clock_source</a></td></tr>
 <tr class="memdesc:a4d6b36efa20644739ef4a2697a745660"><td class="mdescLeft">&#160;</td><td class="mdescRight">Clock source for the RTC block. <br /></td></tr>
 <tr class="separator:a4d6b36efa20644739ef4a2697a745660"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0a64ff37fefef5f044209c6f85564b70"><td class="memItemLeft" align="right" valign="top"><a id="a0a64ff37fefef5f044209c6f85564b70"></a>
-uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#a0a64ff37fefef5f044209c6f85564b70">freq_compare_value_loco</a></td></tr>
-<tr class="memdesc:a0a64ff37fefef5f044209c6f85564b70"><td class="mdescLeft">&#160;</td><td class="mdescRight">DEPRECATED - The frequency comparison value for LOCO. <br /></td></tr>
-<tr class="separator:a0a64ff37fefef5f044209c6f85564b70"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a85af136f6f557deb9c89e210c302a0a9"><td class="memItemLeft" align="right" valign="top"><a id="a85af136f6f557deb9c89e210c302a0a9"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#a85af136f6f557deb9c89e210c302a0a9">freq_compare_value</a></td></tr>
+<tr class="memdesc:a85af136f6f557deb9c89e210c302a0a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">The frequency comparison value. <br /></td></tr>
+<tr class="separator:a85af136f6f557deb9c89e210c302a0a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9c6c82e443f75c0ad7ec40b178a3972"><td class="memItemLeft" align="right" valign="top"><a id="ae9c6c82e443f75c0ad7ec40b178a3972"></a>
 <a class="el" href="group___r_t_c___a_p_i.html#structrtc__error__adjustment__cfg__t">rtc_error_adjustment_cfg_t</a> const  *const&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#ae9c6c82e443f75c0ad7ec40b178a3972">p_err_cfg</a></td></tr>
 <tr class="memdesc:ae9c6c82e443f75c0ad7ec40b178a3972"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to Error Adjustment configuration. <br /></td></tr>
@@ -461,6 +582,10 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <tr class="separator:a63a958dd039662f8d13d38a64da9b61e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7a6c940847c6f730a5c5df3355dca1eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#a7a6c940847c6f730a5c5df3355dca1eb">infoGet</a> )(<a class="el" href="group___r_t_c___a_p_i.html#ga324429d0f16e2a72abae17610d776f0e">rtc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_t_c___a_p_i.html#structrtc__info__t">rtc_info_t</a> *const p_rtc_info)</td></tr>
 <tr class="separator:a7a6c940847c6f730a5c5df3355dca1eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad94675c314c58dc82d170e37fe88c176"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#ad94675c314c58dc82d170e37fe88c176">timeCaptureSet</a> )(<a class="el" href="group___r_t_c___a_p_i.html#ga324429d0f16e2a72abae17610d776f0e">rtc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_t_c___a_p_i.html#structrtc__time__capture__t">rtc_time_capture_t</a> *const p_time_capture)</td></tr>
+<tr class="separator:ad94675c314c58dc82d170e37fe88c176"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8d7348b2c176659c6453b75f2d4d66b9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_t_c___a_p_i.html#a8d7348b2c176659c6453b75f2d4d66b9">timeCaptureGet</a> )(<a class="el" href="group___r_t_c___a_p_i.html#ga324429d0f16e2a72abae17610d776f0e">rtc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_t_c___a_p_i.html#structrtc__time__capture__t">rtc_time_capture_t</a> *const p_time_capture)</td></tr>
+<tr class="separator:a8d7348b2c176659c6453b75f2d4d66b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="aafcde8ffb1e01cccbfa0eb9d0506674a"></a>
@@ -474,10 +599,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Open the RTC driver. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#gae6b2cd0b0827d0fdef1dd148ddc354bb">R_RTC_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Open the RTC driver.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
@@ -499,10 +621,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Close the RTC driver. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#gac1135140182189d9c1defa5846a375c8">R_RTC_Close()</a></li>
-</ul>
-</dd></dl>
+<p>Close the RTC driver.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle. </td></tr>
@@ -523,10 +642,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Sets the RTC clock source. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#gaa08e35bcfca849283de15698beb6b150">R_RTC_ClockSourceSet()</a></li>
-</ul>
-</dd></dl>
+<p>Sets the RTC clock source.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
@@ -547,15 +663,11 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the calendar time and start the calendar counter </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#ga3bf6329a0ea01943e385499fcac01e1e">R_RTC_CalendarTimeSet()</a></li>
-</ul>
-</dd></dl>
+<p>Set the calendar time and start the calendar counter</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">p_time</td><td>Pointer to a time structure that contains the time to set </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">clock_start</td><td>Flag that starts the clock right after it is set </td></tr>
   </table>
   </dd>
 </dl>
@@ -573,10 +685,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the calendar time. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#gaabcfafd522c18288ac274f6b56f76366">R_RTC_CalendarTimeGet()</a></li>
-</ul>
-</dd></dl>
+<p>Get the calendar time.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
@@ -598,15 +707,11 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the calendar alarm time and enable the alarm interrupt. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#ga5c39b02432cedcb7a29ae8bdc8fcefb8">R_RTC_CalendarAlarmSet()</a></li>
-</ul>
-</dd></dl>
+<p>Set the calendar alarm time and enable the alarm interrupt.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">p_alarm</td><td>Pointer to an alarm structure that contains the alarm time to set </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">irq_enable_flag</td><td>Enable the ALARM irq if set </td></tr>
   </table>
   </dd>
 </dl>
@@ -624,10 +729,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Get the calendar alarm time. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#gacbb2641ed2236f071c001df6b025e0f2">R_RTC_CalendarAlarmGet()</a></li>
-</ul>
-</dd></dl>
+<p>Get the calendar alarm time.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
@@ -649,10 +751,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the periodic irq rate </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#ga0fd1ee1e11ed683d7509f251bbd1f282">R_RTC_PeriodicIrqRateSet()</a></li>
-</ul>
-</dd></dl>
+<p>Set the periodic irq rate</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
@@ -675,10 +774,6 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
       </table>
 </div><div class="memdoc">
 <p>Set time error adjustment.</p>
-<dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#ga6e0f357923c34057c8c938a52f6e8da8">R_RTC_ErrorAdjustmentSet()</a></li>
-</ul>
-</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control handle structure </td></tr>
@@ -700,10 +795,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#gaa6b50d916a9243792c0ea8b13744d25f">R_RTC_CallbackSet()</a></li>
-</ul>
-</dd></dl>
+<p>Specify callback function and optional context pointer and working memory pointer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to the RTC control block. </td></tr>
@@ -728,14 +820,54 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
       </table>
 </div><div class="memdoc">
 <p>Return the currently configure clock source for the RTC</p>
-<dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#ga311898f6b0ddd44d9b4c1b34defb0cf4">R_RTC_InfoGet()</a></li>
-</ul>
-</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control handle structure </td></tr>
     <tr><td class="paramdir">[out]</td><td class="paramname">p_rtc_info</td><td>Pointer to RTC information structure </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ad94675c314c58dc82d170e37fe88c176"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad94675c314c58dc82d170e37fe88c176">&#9670;&nbsp;</a></span>timeCaptureSet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rtc_api_t::timeCaptureSet) (<a class="el" href="group___r_t_c___a_p_i.html#ga324429d0f16e2a72abae17610d776f0e">rtc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_t_c___a_p_i.html#structrtc__time__capture__t">rtc_time_capture_t</a> *const p_time_capture)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Config Time capture</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_time_capture</td><td>Pointer to a time capture structure that contains the configuration </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a8d7348b2c176659c6453b75f2d4d66b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d7348b2c176659c6453b75f2d4d66b9">&#9670;&nbsp;</a></span>timeCaptureGet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rtc_api_t::timeCaptureGet) (<a class="el" href="group___r_t_c___a_p_i.html#ga324429d0f16e2a72abae17610d776f0e">rtc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_t_c___a_p_i.html#structrtc__time__capture__t">rtc_time_capture_t</a> *const p_time_capture)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get the capture time and clear bit status.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to RTC device handle </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">p_time_capture</td><td>Pointer to a time capture structure to fill up with the time capture </td></tr>
   </table>
   </dd>
 </dl>
@@ -808,10 +940,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>RTC control block. Allocate an instance specific control block to pass into the RTC API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___r_t_c.html#structrtc__instance__ctrl__t">rtc_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>RTC control block. Allocate an instance specific control block to pass into the RTC API calls. </p>
 
 </div>
 </div>
@@ -829,11 +958,28 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>Events that can trigger a callback function </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggad2e192ed9a33b6c005c2c19ccbd6a21bab2d201ffa3ef8219d41fec7009c5a3d4"></a>RTC_EVENT_ALARM_IRQ&#160;</td><td class="fielddoc"><p>Real Time Clock ALARM IRQ. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggad2e192ed9a33b6c005c2c19ccbd6a21bab2d201ffa3ef8219d41fec7009c5a3d4"></a>RTC_EVENT_ALARM_IRQ&#160;</td><td class="fielddoc"><p>Real Time Clock ALARM 0 IRQ. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggad2e192ed9a33b6c005c2c19ccbd6a21bad269f3ac02b4c6a8cd6b0be90b62ba30"></a>RTC_EVENT_ALARM1_IRQ&#160;</td><td class="fielddoc"><p>Real Time Clock ALARM 1 IRQ. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggad2e192ed9a33b6c005c2c19ccbd6a21ba32818d089c15c50d17a13dce861db7d8"></a>RTC_EVENT_PERIODIC_IRQ&#160;</td><td class="fielddoc"><p>Real Time Clock PERIODIC IRQ. </p>
 </td></tr>
 </table>
+
+</div>
+</div>
+<a id="ga023e9e2043784cf17e3d3bf056ce14f1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga023e9e2043784cf17e3d3bf056ce14f1">&#9670;&nbsp;</a></span>rtc_alarm_channel_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___r_t_c___a_p_i.html#ga023e9e2043784cf17e3d3bf056ce14f1">rtc_alarm_channel_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>RTC alarm channel </p>
 
 </div>
 </div>
@@ -854,7 +1000,7 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggad8eef26a825fa4a0c5a417f8be08ccc6abd7cdef56193166a8a680504e1f3f5fa"></a>RTC_CLOCK_SOURCE_LOCO&#160;</td><td class="fielddoc"><p>Low power On Chip Oscillator. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad8eef26a825fa4a0c5a417f8be08ccc6abc748ba58158bd17eb835558a4a73066"></a>RTC_CLOCK_SOURCE_MAINCLK&#160;</td><td class="fielddoc"><p>Main-clock oscillator. </p>
+<tr><td class="fieldname"><a id="ggad8eef26a825fa4a0c5a417f8be08ccc6abc748ba58158bd17eb835558a4a73066"></a>RTC_CLOCK_SOURCE_MAINCLK&#160;</td><td class="fielddoc"><p>Main clock oscillator. </p>
 </td></tr>
 </table>
 
@@ -944,6 +1090,8 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggaa9758f6f29579df6e9f5c64ff486c097afe53e47d736acd5bd710bc610d1fd8bc"></a>RTC_ERROR_ADJUSTMENT_PERIOD_NONE&#160;</td><td class="fielddoc"><p>Adjustment period not supported in manual mode. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ggaa9758f6f29579df6e9f5c64ff486c097aa25e82c25bba38523c95895d68fba586"></a>RTC_ERROR_ADJUSTMENT_PERIOD_20_SECOND&#160;</td><td class="fielddoc"><p>Adjustment period is set to every twenty seconds. </p>
+</td></tr>
 </table>
 
 </div>
@@ -993,13 +1141,65 @@ Pointer to the API structure for this instance. </td></tr>
 
 </div>
 </div>
+<a id="ga60a231559f89a160d0849ae222518eca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga60a231559f89a160d0849ae222518eca">&#9670;&nbsp;</a></span>rtc_time_capture_source_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___r_t_c___a_p_i.html#ga60a231559f89a160d0849ae222518eca">rtc_time_capture_source_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Time capture trigger source </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga60a231559f89a160d0849ae222518ecaadab60261dd01089e692cf2773b2d600d"></a>RTC_TIME_CAPTURE_SOURCE_DISABLED&#160;</td><td class="fielddoc"><p>Disable trigger. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga60a231559f89a160d0849ae222518ecaafea97857443fe80f89e2b32533005cd5"></a>RTC_TIME_CAPTURE_SOURCE_PIN_RISING&#160;</td><td class="fielddoc"><p>Rising edge pin trigger. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga60a231559f89a160d0849ae222518ecaa74b616ab24c70b286d37f1f01030823a"></a>RTC_TIME_CAPTURE_SOURCE_PIN_FALLING&#160;</td><td class="fielddoc"><p>Falling edge pin trigger. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga60a231559f89a160d0849ae222518ecaa3644f3972808104dc47b065116f3792e"></a>RTC_TIME_CAPTURE_SOURCE_PIN_BOTH&#160;</td><td class="fielddoc"><p>Both edges pin trigger. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="gaeaa54438f4298dee64468529c104b6a7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaeaa54438f4298dee64468529c104b6a7">&#9670;&nbsp;</a></span>rtc_time_capture_noise_filter_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___r_t_c___a_p_i.html#gaeaa54438f4298dee64468529c104b6a7">rtc_time_capture_noise_filter_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Time capture noise filter control </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaeaa54438f4298dee64468529c104b6a7a14d8d0855f067c6c2b41884bfa5db7a6"></a>RTC_TIME_CAPTURE_NOISE_FILTER_OFF&#160;</td><td class="fielddoc"><p>Turn noise filter off. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaeaa54438f4298dee64468529c104b6a7aaa2ceda3891f75b5a1a7ff8b1e175bc7"></a>RTC_TIME_CAPTURE_NOISE_FILTER_ON&#160;</td><td class="fielddoc"><p>Turn noise filter on (count source) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaeaa54438f4298dee64468529c104b6a7a7d817792d824cd55fb87845ae8fca1c7"></a>RTC_TIME_CAPTURE_NOISE_FILTER_ON_DIVIDER_32&#160;</td><td class="fielddoc"><p>Turn noise filter on (count source by divided by 32) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaeaa54438f4298dee64468529c104b6a7a1fb7318f5b0241583fb635d2e5bb7351"></a>RTC_TIME_CAPTURE_NOISE_FILTER_ON_DIVIDER_4096&#160;</td><td class="fielddoc"><p>Turn noise filter on (count source by divided by 4096) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaeaa54438f4298dee64468529c104b6a7aadad6658307f55e6340493e93c7d48df"></a>RTC_TIME_CAPTURE_NOISE_FILTER_ON_DIVIDER_8192&#160;</td><td class="fielddoc"><p>Turn noise filter on (count source by divided by 8192) </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

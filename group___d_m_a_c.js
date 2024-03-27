@@ -9,15 +9,6 @@ var group___d_m_a_c =
       [ "channel_extension_cfg", "group___d_m_a_c.html#aa78aa3a19bd0431a455971975ab43ec6", null ],
       [ "p_next_link_addr", "group___d_m_a_c.html#a50bfdd5f070eaff0092ff624a84bc706", null ]
     ] ],
-    [ "dmac_callback_args_t", "group___d_m_a_c.html#structdmac__callback__args__t", [
-      [ "event", "group___d_m_a_c.html#acbb757e2682ab3615c890c7fc1dd3203", null ],
-      [ "p_context", "group___d_m_a_c.html#a48a5473d21e29781083979724b5d930d", null ]
-    ] ],
-    [ "dmac_register_set_setting_t", "group___d_m_a_c.html#structdmac__register__set__setting__t", [
-      [ "p_src", "group___d_m_a_c.html#ac6832d8825096a36fbe1b81853a1310d", null ],
-      [ "p_dest", "group___d_m_a_c.html#a2d5210cc4f56711a91d14e29e264b440", null ],
-      [ "length", "group___d_m_a_c.html#a6234447f25f489e21f7950af87ea91e9", null ]
-    ] ],
     [ "dmac_instance_ctrl_t", "group___d_m_a_c.html#structdmac__instance__ctrl__t", null ],
     [ "dmac_extended_cfg_t", "group___d_m_a_c.html#structdmac__extended__cfg__t", [
       [ "unit", "group___d_m_a_c.html#a68b7564427a42697bd26a4c4206c2fd6", null ],
@@ -34,14 +25,8 @@ var group___d_m_a_c =
       [ "p_descriptor", "group___d_m_a_c.html#ad833a6755c7d4a233ea8243c903354a5", null ],
       [ "transfer_interval", "group___d_m_a_c.html#a3047f4912871cf9eb100800c9f296d87", null ],
       [ "channel_scheduling", "group___d_m_a_c.html#adcec47da500a02cb015f31beab5f6ddb", null ],
-      [ "p_callback", "group___d_m_a_c.html#a1aa5df5a650e272348c4bd6c71ad4392", null ],
-      [ "p_context", "group___d_m_a_c.html#a179371bb68b6d1ae0f7c1da5a2c46d34", null ],
-      [ "p_peripheral_module_handler", "group___d_m_a_c.html#a9611a793794d7bc06bf30dbc5ab59010", null ]
-    ] ],
-    [ "dmac_extended_info_t", "group___d_m_a_c.html#structdmac__extended__info__t", [
-      [ "src_size", "group___d_m_a_c.html#a4f8336fe0aa90e67cb63ecb7d827a934", null ],
-      [ "dest_size", "group___d_m_a_c.html#af1a8d4edbbe91240e8d726056eb54385", null ],
-      [ "p_next1_register_setting", "group___d_m_a_c.html#ac7be4ac26b7ff90a1c3db1d2595d3008", null ]
+      [ "p_callback", "group___d_m_a_c.html#a97ef0783415dd7cb179580d406e78ace", null ],
+      [ "p_context", "group___d_m_a_c.html#a179371bb68b6d1ae0f7c1da5a2c46d34", null ]
     ] ],
     [ "DMAC_MAX_NORMAL_TRANSFER_LENGTH", "group___d_m_a_c.html#ga1e459d63cbd5b7c819ca786a55093307", null ],
     [ "DMAC_MAX_BLOCK_TRANSFER_LENGTH", "group___d_m_a_c.html#gab4cd4e308943601114ffcafdc621c116", null ],
@@ -61,18 +46,10 @@ var group___d_m_a_c =
       [ "DMAC_LINK_INTERRUPT_MASK_DISABLE", "group___d_m_a_c.html#gga26d8829b918ac50911e94bb98affd911af70deb9b076e3ffba63b47688b009e30", null ],
       [ "DMAC_LINK_INTERRUPT_MASK_ENABLE", "group___d_m_a_c.html#gga26d8829b918ac50911e94bb98affd911aa2caaad8f67849e0323ef830dba29aed", null ]
     ] ],
-    [ "dmac_event_t", "group___d_m_a_c.html#ga18702f75ef373da38e9655e5600c2e23", [
-      [ "DMAC_EVENT_TRANSFER_END", "group___d_m_a_c.html#gga18702f75ef373da38e9655e5600c2e23a9bfc91050fd36842abc8ff0db4ecece2", null ],
-      [ "DMAC_EVENT_TRANSFER_ERROR", "group___d_m_a_c.html#gga18702f75ef373da38e9655e5600c2e23a064bd1370d8f502b9c9be63a4de6593d", null ]
-    ] ],
-    [ "dmac_transfer_size_t", "group___d_m_a_c.html#ga31ff96cf7f6259b2ce7d7f4b61f2fd68", [
-      [ "DMAC_TRANSFER_SIZE_1_BYTE", "group___d_m_a_c.html#gga31ff96cf7f6259b2ce7d7f4b61f2fd68ac8d94126bb792a9fbda42baf256c3ed6", null ],
-      [ "DMAC_TRANSFER_SIZE_2_BYTE", "group___d_m_a_c.html#gga31ff96cf7f6259b2ce7d7f4b61f2fd68a38145bcbbced5e9b66c42301e10f4111", null ],
-      [ "DMAC_TRANSFER_SIZE_4_BYTE", "group___d_m_a_c.html#gga31ff96cf7f6259b2ce7d7f4b61f2fd68a9e2f59f46e48543984238948fc4e2edb", null ],
-      [ "DMAC_TRANSFER_SIZE_8_BYTE", "group___d_m_a_c.html#gga31ff96cf7f6259b2ce7d7f4b61f2fd68a927c0e8d55f666d130a34c974c750ebb", null ],
-      [ "DMAC_TRANSFER_SIZE_16_BYTE", "group___d_m_a_c.html#gga31ff96cf7f6259b2ce7d7f4b61f2fd68a70f70e1f12d318f0f57bf037c4f8baca", null ],
-      [ "DMAC_TRANSFER_SIZE_32_BYTE", "group___d_m_a_c.html#gga31ff96cf7f6259b2ce7d7f4b61f2fd68acdc6c7ca4d747bcd6b4168ebce8bce1f", null ],
-      [ "DMAC_TRANSFER_SIZE_64_BYTE", "group___d_m_a_c.html#gga31ff96cf7f6259b2ce7d7f4b61f2fd68a3da19435c9019db1d01be4d17a8786da", null ]
+    [ "dmac_register_select_reverse_t", "group___d_m_a_c.html#ga91c9975b2193c2f4b25139573a618c61", [
+      [ "DMAC_REGISTER_SELECT_REVERSE_DISABLE", "group___d_m_a_c.html#gga91c9975b2193c2f4b25139573a618c61a72907333ed0fc8bc19a1d7ded9e30dc5", null ],
+      [ "DMAC_REGISTER_SELECT_REVERSE_ENABLE", "group___d_m_a_c.html#gga91c9975b2193c2f4b25139573a618c61a370bbc0955a015e0f64b54d61c55c73e", null ],
+      [ "DMAC_REGISTER_SELECT_REVERSE_ENABLE_PERFORM_ACCORDINGLY", "group___d_m_a_c.html#gga91c9975b2193c2f4b25139573a618c61a41b7224353ac180330421738419c8c79", null ]
     ] ],
     [ "dmac_ack_mode_t", "group___d_m_a_c.html#ga2fb65e50e49c0ffc2943c8c5085c0c0f", [
       [ "DMAC_ACK_MODE_LEVEL_MODE", "group___d_m_a_c.html#gga2fb65e50e49c0ffc2943c8c5085c0c0faaa27e4cc5082830bb252a783af5fb46c", null ],
@@ -89,11 +66,6 @@ var group___d_m_a_c =
       [ "DMAC_REQUEST_DIRECTION_SOURCE_MODULE", "group___d_m_a_c.html#ggaf701953caca92cce67e0426664b10c50a3c6b7cb060592a002539d61ce49f5354", null ],
       [ "DMAC_REQUEST_DIRECTION_DESTINATION_MODULE", "group___d_m_a_c.html#ggaf701953caca92cce67e0426664b10c50a5b12a64340c2a6e780b3976b59059533", null ]
     ] ],
-    [ "dmac_register_select_reverse_t", "group___d_m_a_c.html#ga91c9975b2193c2f4b25139573a618c61", [
-      [ "DMAC_REGISTER_SELECT_REVERSE_DISABLE", "group___d_m_a_c.html#gga91c9975b2193c2f4b25139573a618c61a72907333ed0fc8bc19a1d7ded9e30dc5", null ],
-      [ "DMAC_REGISTER_SELECT_REVERSE_ENABLE", "group___d_m_a_c.html#gga91c9975b2193c2f4b25139573a618c61a370bbc0955a015e0f64b54d61c55c73e", null ],
-      [ "DMAC_REGISTER_SELECT_REVERSE_ENABLE_PERFORM_ACCORDINGLY", "group___d_m_a_c.html#gga91c9975b2193c2f4b25139573a618c61a41b7224353ac180330421738419c8c79", null ]
-    ] ],
     [ "dmac_channel_scheduling_t", "group___d_m_a_c.html#ga81ff959e77bb3e4e37a7e4e68d23a02b", [
       [ "DMAC_CHANNEL_SCHEDULING_FIXED", "group___d_m_a_c.html#gga81ff959e77bb3e4e37a7e4e68d23a02ba31321e8bdb5deb117614b6e1f4c45269", null ],
       [ "DMAC_CHANNEL_SCHEDULING_ROUND_ROBIN", "group___d_m_a_c.html#gga81ff959e77bb3e4e37a7e4e68d23a02bad80560a675c08f023fa9f625c7d30396", null ]
@@ -102,15 +74,16 @@ var group___d_m_a_c =
       [ "DMAC_MODE_SELECT_REGISTER", "group___d_m_a_c.html#gga873499bc88e96b4626d26f6591372cc7a9c4395e96bfe849404b24faa6315b618", null ],
       [ "DMAC_MODE_SELECT_LINK", "group___d_m_a_c.html#gga873499bc88e96b4626d26f6591372cc7a8bb68933123b0a14e1324905f92f7f41", null ]
     ] ],
-    [ "R_DMAC_Open", "group___d_m_a_c.html#ga448a013ad5b91097e45833313d5df354", null ],
-    [ "R_DMAC_LinkDescriptorSet", "group___d_m_a_c.html#gab8611c711811bdf6ae170ff6084c1f45", null ],
-    [ "R_DMAC_Reconfigure", "group___d_m_a_c.html#ga5ecb4ad0414589e60ec2b8d45c88d9bf", null ],
-    [ "R_DMAC_Reset", "group___d_m_a_c.html#gaac8f15eacf61325ad50ca0778cfc7ffd", null ],
-    [ "R_DMAC_SoftwareStart", "group___d_m_a_c.html#ga476c8ffd7c603f3c298a422e4f39b571", null ],
-    [ "R_DMAC_SoftwareStop", "group___d_m_a_c.html#ga4a306937010d51313cec844047e9d622", null ],
-    [ "R_DMAC_Enable", "group___d_m_a_c.html#gaf72221183919d50cbd8ee1ca528aa20b", null ],
-    [ "R_DMAC_Disable", "group___d_m_a_c.html#ga6b64368039ad6617f091a20b5ac16206", null ],
-    [ "R_DMAC_InfoGet", "group___d_m_a_c.html#gade7f6c387756ca9728194ac15f01fc43", null ],
-    [ "R_DMAC_Close", "group___d_m_a_c.html#ga3423bb11f0d76dbe760ed01cf03ccd45", null ],
-    [ "R_DMAC_VersionGet", "group___d_m_a_c.html#gaf7874117a03dd670129ef7027ee6a392", null ]
+    [ "R_DMAC_Open", "group___d_m_a_c.html#ga7e5fda31237adb83fee8cf5a42daed48", null ],
+    [ "R_DMAC_Reconfigure", "group___d_m_a_c.html#ga6e932ab91dd283665438d06813d162bf", null ],
+    [ "R_DMAC_Reset", "group___d_m_a_c.html#gaca5dc2be3a25f6b4c9582915ec6445c0", null ],
+    [ "R_DMAC_SoftwareStart", "group___d_m_a_c.html#ga047024929094fd5306c6cd2aeb17ecb1", null ],
+    [ "R_DMAC_SoftwareStop", "group___d_m_a_c.html#gaae68c517e00cf0817dff0f96b651f7dd", null ],
+    [ "R_DMAC_Enable", "group___d_m_a_c.html#ga8d860f51f5aa6e25d3820dc2262aa15a", null ],
+    [ "R_DMAC_Disable", "group___d_m_a_c.html#ga14a3958fdb85b53cae9b11e8735b578d", null ],
+    [ "R_DMAC_InfoGet", "group___d_m_a_c.html#ga45893222e0710e310ae398c14ef47174", null ],
+    [ "R_DMAC_Close", "group___d_m_a_c.html#gabc5aef880361cff7f61b88ecf418c1de", null ],
+    [ "R_DMAC_Reload", "group___d_m_a_c.html#gae415cc72455bc260ad1c5289e3308240", null ],
+    [ "R_DMAC_CallbackSet", "group___d_m_a_c.html#ga53ef1808423dabba647a3a2eed5a4b02", null ],
+    [ "R_DMAC_LinkDescriptorSet", "group___d_m_a_c.html#gab37103a34f8b4bfb41d5adcd30ea8e95", null ]
 ];

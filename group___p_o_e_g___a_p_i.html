@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: POEG Interface</title>
+<title>RZT Flexible Software Package Documentation: POEG Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___p_o_e_g___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___p_o_e_g___a_p_i.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">POEG Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">POEG Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___i_n_t_e_r_f_a_c_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -103,8 +171,7 @@ $(document).ready(function(){initNavTree('group___p_o_e_g___a_p_i.html','');});
 <p>Defines the API and data structures for the Port Output Enable for GPT (POEG) interface.</p>
 <h1><a class="anchor" id="POEG_API_SUMMARY"></a>
 Summary</h1>
-<p>The POEG disables GPT output pins based on configurable events.</p>
-<p>Implemented by: <a class="el" href="group___p_o_e_g.html">Port Output Enable for GPT (r_poeg)</a> </p>
+<p>The POEG disables GPT output pins based on configurable events. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -216,7 +283,7 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e_g___a_p_i.ht
 <tr class="separator:a4c643319683a792e608a1331f00c0d9c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac2badeb47b925853a420e184f35074e3"><td class="memItemLeft" align="right" valign="top"><a id="ac2badeb47b925853a420e184f35074e3"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#ac2badeb47b925853a420e184f35074e3">unit</a></td></tr>
-<tr class="memdesc:ac2badeb47b925853a420e184f35074e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Three units (LLPP (POEG0), NONSAFETY (POEG1), SAFETY (POEG2)) <br /></td></tr>
+<tr class="memdesc:ac2badeb47b925853a420e184f35074e3"><td class="mdescLeft">&#160;</td><td class="mdescRight">POEG unit to be used. <br /></td></tr>
 <tr class="separator:ac2badeb47b925853a420e184f35074e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a540e9ef986cf2ad028ef51ba52454aab"><td class="memItemLeft" align="right" valign="top"><a id="a540e9ef986cf2ad028ef51ba52454aab"></a>
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#a540e9ef986cf2ad028ef51ba52454aab">channel</a></td></tr>
@@ -224,7 +291,7 @@ uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr class="separator:a540e9ef986cf2ad028ef51ba52454aab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7f90a7d598df48543335416c0a4ab1a0"><td class="memItemLeft" align="right" valign="top"><a id="a7f90a7d598df48543335416c0a4ab1a0"></a>
 IRQn_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#a7f90a7d598df48543335416c0a4ab1a0">irq</a></td></tr>
-<tr class="memdesc:a7f90a7d598df48543335416c0a4ab1a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">NVIC interrupt number assigned to this instance. <br /></td></tr>
+<tr class="memdesc:a7f90a7d598df48543335416c0a4ab1a0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interrupt number assigned to this instance. <br /></td></tr>
 <tr class="separator:a7f90a7d598df48543335416c0a4ab1a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57cfcbb853533296afebab7d58f231c2"><td class="memItemLeft" align="right" valign="top"><a id="a57cfcbb853533296afebab7d58f231c2"></a>
 uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#a57cfcbb853533296afebab7d58f231c2">ipl</a></td></tr>
@@ -283,16 +350,14 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
 <tr class="separator:a41c511a6b1b828d54f180b729ae4fe55"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab377a80211d85f8c90b578e93dfd7964"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#ab377a80211d85f8c90b578e93dfd7964">statusGet</a> )(<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl, <a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__status__t">poeg_status_t</a> *p_status)</td></tr>
 <tr class="separator:ab377a80211d85f8c90b578e93dfd7964"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7d01f09a832b9940b264b0cf10a3863c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#a7d01f09a832b9940b264b0cf10a3863c">callbackSet</a> )(<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:a7d01f09a832b9940b264b0cf10a3863c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a77b8a93a87cb6e37bd2f3213223b949b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#a77b8a93a87cb6e37bd2f3213223b949b">callbackSet</a> )(<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:a77b8a93a87cb6e37bd2f3213223b949b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afe1feb1a5288478eea8d339ffaa1c68e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#afe1feb1a5288478eea8d339ffaa1c68e">outputDisable</a> )(<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:afe1feb1a5288478eea8d339ffaa1c68e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5765dcf518892b71b73b5ae38942bd7f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#a5765dcf518892b71b73b5ae38942bd7f">reset</a> )(<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:a5765dcf518892b71b73b5ae38942bd7f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1576cf3362e4341bf14ec8ba9592abc4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#a1576cf3362e4341bf14ec8ba9592abc4">close</a> )(<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:a1576cf3362e4341bf14ec8ba9592abc4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aecb9edd3331b69522f5b519f56f20448"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g___a_p_i.html#aecb9edd3331b69522f5b519f56f20448">versionGet</a> )(<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:aecb9edd3331b69522f5b519f56f20448"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="a41c511a6b1b828d54f180b729ae4fe55"></a>
@@ -306,10 +371,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initial configuration. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e_g.html#ga84d0272a9da17941d62d264ff3a7b678">R_POEG_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Initial configuration.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block. Must be declared by user. Elements set here. </td></tr>
@@ -331,10 +393,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Gets the current driver state. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet()</a></li>
-</ul>
-</dd></dl>
+<p>Gets the current driver state.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e_g___a_p_i.html#a41c511a6b1b828d54f180b729ae4fe55">poeg_api_t::open</a> call. </td></tr>
@@ -345,21 +404,18 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
 
 </div>
 </div>
-<a id="a7d01f09a832b9940b264b0cf10a3863c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7d01f09a832b9940b264b0cf10a3863c">&#9670;&nbsp;</a></span>callbackSet</h2>
+<a id="a77b8a93a87cb6e37bd2f3213223b949b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a77b8a93a87cb6e37bd2f3213223b949b">&#9670;&nbsp;</a></span>callbackSet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  poeg_api_t::callbackSet) (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *const p_callback_memory)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  poeg_api_t::callbackSet) (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *const p_callback_memory)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e_g.html#ga299d7e0c935c5305d72077fdf1963c2d">R_POEG_CallbackSet()</a></li>
-</ul>
-</dd></dl>
+<p>Specify callback function and optional context pointer and working memory pointer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e_g___a_p_i.html#a41c511a6b1b828d54f180b729ae4fe55">poeg_api_t::open</a> call for this timer. </td></tr>
@@ -383,10 +439,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Disables GPT output pins by software request. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e_g.html#ga42b42cd05ed30c698ba2dab5a32154dd">R_POEG_OutputDisable()</a></li>
-</ul>
-</dd></dl>
+<p>Disables GPT output pins by software request.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e_g___a_p_i.html#a41c511a6b1b828d54f180b729ae4fe55">poeg_api_t::open</a> call. </td></tr>
@@ -407,10 +460,7 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Attempts to clear status flags to reenable GPT output pins. Confirm all status flags are cleared after calling this function by calling <a class="el" href="group___p_o_e_g___a_p_i.html#ab377a80211d85f8c90b578e93dfd7964">poeg_api_t::statusGet()</a>. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e_g.html#ga6713a1b99790d8e56d475bb377b5cb0c">R_POEG_Reset()</a></li>
-</ul>
-</dd></dl>
+<p>Attempts to clear status flags to reenable GPT output pins. Confirm all status flags are cleared after calling this function by calling <a class="el" href="group___p_o_e_g___a_p_i.html#ab377a80211d85f8c90b578e93dfd7964">poeg_api_t::statusGet()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e_g___a_p_i.html#a41c511a6b1b828d54f180b729ae4fe55">poeg_api_t::open</a> call. </td></tr>
@@ -431,37 +481,10 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Disables POEG interrupt. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e_g.html#ga84dddc58a538b5a7c9c22b7f4412755a">R_POEG_Close()</a></li>
-</ul>
-</dd></dl>
+<p>Disables POEG interrupt.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e_g___a_p_i.html#a41c511a6b1b828d54f180b729ae4fe55">poeg_api_t::open</a> call. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="aecb9edd3331b69522f5b519f56f20448"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aecb9edd3331b69522f5b519f56f20448">&#9670;&nbsp;</a></span>versionGet</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  poeg_api_t::versionGet) (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATRED - Get version and stores it in provided pointer p_version. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e_g.html#gaab84b2c3614514cadef5fbd3aebc9dfa">R_POEG_VersionGet()</a></li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">p_version</td><td>Code and API version used. </td></tr>
   </table>
   </dd>
 </dl>
@@ -519,10 +542,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>DOC control block. Allocate an instance specific control block to pass into the DOC API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e_g.html#structpoeg__instance__ctrl__t">poeg_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>POEG control block. Allocate an instance specific control block to pass into the POEG API calls. </p>
 
 </div>
 </div>
@@ -540,21 +560,49 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>POEG states. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga6964e3b0b8b2d32d2428d86b32dfeef2a929680a05ecd96bb24dd053fb6dcc8b5"></a>POEG_STATE_NO_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output is not disabled by POEG. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a929680a05ecd96bb24dd053fb6dcc8b5"></a>POEG_STATE_NO_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output is not disabled by POEG. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6964e3b0b8b2d32d2428d86b32dfeef2a965ed912f63e0044d9646693c909135b"></a>POEG_STATE_PIN_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to GTETRG pin level. </p>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a965ed912f63e0044d9646693c909135b"></a>POEG_STATE_PIN_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to GTETRG pin level. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6964e3b0b8b2d32d2428d86b32dfeef2a580261ea46ea6dc549e4fbfd99a8c31c"></a>POEG_STATE_GPT_OR_COMPARATOR_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to high speed analog comparator or GPT. </p>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a580261ea46ea6dc549e4fbfd99a8c31c"></a>POEG_STATE_GPT_OR_COMPARATOR_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to high speed analog comparator or GPT. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6964e3b0b8b2d32d2428d86b32dfeef2a6c587d6eeb64a3823a355199778e6a18"></a>POEG_STATE_OSCILLATION_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to main oscillator stop. </p>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a6c587d6eeb64a3823a355199778e6a18"></a>POEG_STATE_OSCILLATION_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to main oscillator stop. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6964e3b0b8b2d32d2428d86b32dfeef2ad3a9db10800397084958747e9cb2260a"></a>POEG_STATE_SOFTWARE_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to <a class="el" href="group___p_o_e_g___a_p_i.html#afe1feb1a5288478eea8d339ffaa1c68e">poeg_api_t::outputDisable()</a> </p>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2ad3a9db10800397084958747e9cb2260a"></a>POEG_STATE_SOFTWARE_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to <a class="el" href="group___p_o_e_g___a_p_i.html#afe1feb1a5288478eea8d339ffaa1c68e">poeg_api_t::outputDisable()</a> </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6964e3b0b8b2d32d2428d86b32dfeef2a1f07ec79529092ff47798e894f315adf"></a>POEG_STATE_PIN_DISABLE_REQUEST_ACTIVE&#160;</td><td class="fielddoc"><p>GPT output disable request active from the GTETRG pin. If a filter is used, this flag represents the state of the filtered input. </p>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a1f07ec79529092ff47798e894f315adf"></a>POEG_STATE_PIN_DISABLE_REQUEST_ACTIVE&#160;</td><td class="fielddoc"><p>GPT output disable request active from the GTETRG pin. If a filter is used, this flag represents the state of the filtered input. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6964e3b0b8b2d32d2428d86b32dfeef2a001aaf1661ba4f60fd7a4b25da4981ea"></a>POEG_STATE_DSMIF0_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF0 error 0. </p>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a929680a05ecd96bb24dd053fb6dcc8b5"></a>POEG_STATE_NO_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output is not disabled by POEG. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6964e3b0b8b2d32d2428d86b32dfeef2a6105b986374b38fd9705292d375901cc"></a>POEG_STATE_DSMIF1_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF1 error 0. </p>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a965ed912f63e0044d9646693c909135b"></a>POEG_STATE_PIN_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to GTETRG pin level. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a580261ea46ea6dc549e4fbfd99a8c31c"></a>POEG_STATE_GPT_OR_COMPARATOR_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to high speed analog comparator or GPT. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a6c587d6eeb64a3823a355199778e6a18"></a>POEG_STATE_OSCILLATION_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to main oscillator stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2ad3a9db10800397084958747e9cb2260a"></a>POEG_STATE_SOFTWARE_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to <a class="el" href="group___p_o_e_g___a_p_i.html#afe1feb1a5288478eea8d339ffaa1c68e">poeg_api_t::outputDisable()</a> </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a1f07ec79529092ff47798e894f315adf"></a>POEG_STATE_PIN_DISABLE_REQUEST_ACTIVE&#160;</td><td class="fielddoc"><p>GPT output disable request active from the GTETRG pin. If a filter is used, this flag represents the state of the filtered input. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a001aaf1661ba4f60fd7a4b25da4981ea"></a>POEG_STATE_DSMIF0_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF0 error 0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a6105b986374b38fd9705292d375901cc"></a>POEG_STATE_DSMIF1_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF1 error 0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a929680a05ecd96bb24dd053fb6dcc8b5"></a>POEG_STATE_NO_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output is not disabled by POEG. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a965ed912f63e0044d9646693c909135b"></a>POEG_STATE_PIN_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to GTETRG pin level. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a580261ea46ea6dc549e4fbfd99a8c31c"></a>POEG_STATE_GPT_OR_COMPARATOR_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to high speed analog comparator or GPT. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a6c587d6eeb64a3823a355199778e6a18"></a>POEG_STATE_OSCILLATION_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to main oscillator stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2ad3a9db10800397084958747e9cb2260a"></a>POEG_STATE_SOFTWARE_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to <a class="el" href="group___p_o_e_g___a_p_i.html#afe1feb1a5288478eea8d339ffaa1c68e">poeg_api_t::outputDisable()</a> </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a1f07ec79529092ff47798e894f315adf"></a>POEG_STATE_PIN_DISABLE_REQUEST_ACTIVE&#160;</td><td class="fielddoc"><p>GPT output disable request active from the GTETRG pin. If a filter is used, this flag represents the state of the filtered input. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a001aaf1661ba4f60fd7a4b25da4981ea"></a>POEG_STATE_DSMIF0_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF0 error 0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a6105b986374b38fd9705292d375901cc"></a>POEG_STATE_DSMIF1_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF1 error 0. </p>
 </td></tr>
 </table>
 
@@ -573,30 +621,75 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>Triggers that will disable GPT output pins. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a5844408e52ce8a8d819d594d4134de0b"></a>POEG_TRIGGER_SOFTWARE&#160;</td><td class="fielddoc"><p>Software disable is always supported with POEG. Select this option if no other triggers are used. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a5844408e52ce8a8d819d594d4134de0b"></a>POEG_TRIGGER_SOFTWARE&#160;</td><td class="fielddoc"><p>Software disable is always supported with POEG. Select this option if no other triggers are used. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a386ea44b929de5b16b1c459a37f866c3"></a>POEG_TRIGGER_PIN&#160;</td><td class="fielddoc"><p>Disable GPT output based on GTETRG input level(PIDE) </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a386ea44b929de5b16b1c459a37f866c3"></a>POEG_TRIGGER_PIN&#160;</td><td class="fielddoc"><p>Disable GPT output based on GTETRG input level. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9aedd4f2c94c2539026d15543c0f1457cc"></a>POEG_TRIGGER_GPT_OUTPUT_LEVEL&#160;</td><td class="fielddoc"><p>Disable GPT output based on GPT output pin levels(IOCE) </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aedd4f2c94c2539026d15543c0f1457cc"></a>POEG_TRIGGER_GPT_OUTPUT_LEVEL&#160;</td><td class="fielddoc"><p>Disable GPT output based on GPT output pin levels. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a4840d0ad9f40a09c2785be816c7e2884"></a>POEG_TRIGGER_OSCILLATION_STOP&#160;</td><td class="fielddoc"><p>Disable GPT output based on main oscillator stop(OSPTE) </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a4840d0ad9f40a09c2785be816c7e2884"></a>POEG_TRIGGER_OSCILLATION_STOP&#160;</td><td class="fielddoc"><p>Disable GPT output based on main oscillator stop. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a22c1283422f02a8c1a9c8b3aeeb9f156"></a>POEG_TRIGGER_ACMPHS0&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS0 comparator result. </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a22c1283422f02a8c1a9c8b3aeeb9f156"></a>POEG_TRIGGER_ACMPHS0&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS0 comparator result. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a4d37b4728c36a854139814813c4f1591"></a>POEG_TRIGGER_ACMPHS1&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS1 comparator result. </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a4d37b4728c36a854139814813c4f1591"></a>POEG_TRIGGER_ACMPHS1&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS1 comparator result. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9aeeaef1204479de8858543006572c56f1"></a>POEG_TRIGGER_ACMPHS2&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS2 comparator result. </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aeeaef1204479de8858543006572c56f1"></a>POEG_TRIGGER_ACMPHS2&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS2 comparator result. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a23e020fd551b49c524d0f5ae343b6df4"></a>POEG_TRIGGER_ACMPHS3&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS3 comparator result. </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a23e020fd551b49c524d0f5ae343b6df4"></a>POEG_TRIGGER_ACMPHS3&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS3 comparator result. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a38cfaa9e507532303a483369539418ce"></a>POEG_TRIGGER_ACMPHS4&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS4 comparator result. </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a38cfaa9e507532303a483369539418ce"></a>POEG_TRIGGER_ACMPHS4&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS4 comparator result. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9aa4d56aee202d76e9efdf3bcfc181a12d"></a>POEG_TRIGGER_ACMPHS5&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS5 comparator result. </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aa4d56aee202d76e9efdf3bcfc181a12d"></a>POEG_TRIGGER_ACMPHS5&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS5 comparator result. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a62f1b599e083ddf6d165a9552f2e794d"></a>POEG_TRIGGER_DERR0E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF0 error detection(DERR0E) </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a5844408e52ce8a8d819d594d4134de0b"></a>POEG_TRIGGER_SOFTWARE&#160;</td><td class="fielddoc"><p>Software disable is always supported with POEG. Select this option if no other triggers are used. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a386ea44b929de5b16b1c459a37f866c3"></a>POEG_TRIGGER_PIN&#160;</td><td class="fielddoc"><p>Disable GPT output based on GTETRG input level. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aedd4f2c94c2539026d15543c0f1457cc"></a>POEG_TRIGGER_GPT_OUTPUT_LEVEL&#160;</td><td class="fielddoc"><p>Disable GPT output based on GPT output pin levels. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a4840d0ad9f40a09c2785be816c7e2884"></a>POEG_TRIGGER_OSCILLATION_STOP&#160;</td><td class="fielddoc"><p>Disable GPT output based on main oscillator stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a22c1283422f02a8c1a9c8b3aeeb9f156"></a>POEG_TRIGGER_ACMPHS0&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS0 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a4d37b4728c36a854139814813c4f1591"></a>POEG_TRIGGER_ACMPHS1&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS1 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aeeaef1204479de8858543006572c56f1"></a>POEG_TRIGGER_ACMPHS2&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS2 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a23e020fd551b49c524d0f5ae343b6df4"></a>POEG_TRIGGER_ACMPHS3&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS3 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a38cfaa9e507532303a483369539418ce"></a>POEG_TRIGGER_ACMPHS4&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS4 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aa4d56aee202d76e9efdf3bcfc181a12d"></a>POEG_TRIGGER_ACMPHS5&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS5 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a62f1b599e083ddf6d165a9552f2e794d"></a>POEG_TRIGGER_DERR0E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF0 error detection. </p>
 <p>The GPT output pins can be disabled when DSMIF error occurs (LLPP only). </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggad3a55ae7d23b90cc2621a83116d2e7d9a7e964b6dbe80d05d0ada65421d6a96d6"></a>POEG_TRIGGER_DERR1E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF1 error detection(DERR1E) </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a7e964b6dbe80d05d0ada65421d6a96d6"></a>POEG_TRIGGER_DERR1E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF1 error detection. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a5844408e52ce8a8d819d594d4134de0b"></a>POEG_TRIGGER_SOFTWARE&#160;</td><td class="fielddoc"><p>Software disable is always supported with POEG. Select this option if no other triggers are used. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a386ea44b929de5b16b1c459a37f866c3"></a>POEG_TRIGGER_PIN&#160;</td><td class="fielddoc"><p>Disable GPT output based on GTETRG input level. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aedd4f2c94c2539026d15543c0f1457cc"></a>POEG_TRIGGER_GPT_OUTPUT_LEVEL&#160;</td><td class="fielddoc"><p>Disable GPT output based on GPT output pin levels. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a4840d0ad9f40a09c2785be816c7e2884"></a>POEG_TRIGGER_OSCILLATION_STOP&#160;</td><td class="fielddoc"><p>Disable GPT output based on main oscillator stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a22c1283422f02a8c1a9c8b3aeeb9f156"></a>POEG_TRIGGER_ACMPHS0&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS0 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a4d37b4728c36a854139814813c4f1591"></a>POEG_TRIGGER_ACMPHS1&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS1 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aeeaef1204479de8858543006572c56f1"></a>POEG_TRIGGER_ACMPHS2&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS2 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a23e020fd551b49c524d0f5ae343b6df4"></a>POEG_TRIGGER_ACMPHS3&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS3 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a38cfaa9e507532303a483369539418ce"></a>POEG_TRIGGER_ACMPHS4&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS4 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aa4d56aee202d76e9efdf3bcfc181a12d"></a>POEG_TRIGGER_ACMPHS5&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS5 comparator result. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a62f1b599e083ddf6d165a9552f2e794d"></a>POEG_TRIGGER_DERR0E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF0 error detection. </p>
+<p>The GPT output pins can be disabled when DSMIF error occurs (LLPP only). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a7e964b6dbe80d05d0ada65421d6a96d6"></a>POEG_TRIGGER_DERR1E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF1 error detection. </p>
 </td></tr>
 </table>
 
@@ -638,13 +731,13 @@ Pointer to the API structure for this instance. </td></tr>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0ba2ade356ffb1863fce2543f4b3440d526"></a>POEG_GTETRG_NOISE_FILTER_DISABLED&#160;</td><td class="fielddoc"><p>No noise filter applied to GTETRG input. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0bae06772f29902bbb819070a960ae21447"></a>POEG_GTETRG_NOISE_FILTER_PCLK_DIV_1&#160;</td><td class="fielddoc"><p>Apply noise filter with sample clock PCLK. </p>
+<tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0bae405d11807096022e95ca21196b3b31b"></a>POEG_GTETRG_NOISE_FILTER_CLK_SOURCE_DIV_1&#160;</td><td class="fielddoc"><p>Apply noise filter with sample clock equal to Clock source/1. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0ba85631cc7e2128299fab49db603115298"></a>POEG_GTETRG_NOISE_FILTER_PCLK_DIV_8&#160;</td><td class="fielddoc"><p>Apply noise filter with sample clock PCLK/8. </p>
+<tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0ba9aba7e8afb814c0cf6afb6ecde8ce56a"></a>POEG_GTETRG_NOISE_FILTER_CLK_SOURCE_DIV_8&#160;</td><td class="fielddoc"><p>Apply noise filter with sample clock equal to Clock source/8. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0ba78068f6bfc316f0368f32cf9ea345950"></a>POEG_GTETRG_NOISE_FILTER_PCLK_DIV_32&#160;</td><td class="fielddoc"><p>Apply noise filter with sample clock PCLK/32. </p>
+<tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0baddaa499f1862688b45cba87f56d698de"></a>POEG_GTETRG_NOISE_FILTER_CLK_SOURCE_DIV_32&#160;</td><td class="fielddoc"><p>Apply noise filter with sample clock equal to Clock source/32. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0baddc247c4fd41a91f08724ef1fe77d5b9"></a>POEG_GTETRG_NOISE_FILTER_PCLK_DIV_128&#160;</td><td class="fielddoc"><p>Apply noise filter with sample clock PCLK/128. </p>
+<tr><td class="fieldname"><a id="ggab482b24d14d1c94f6f4ba9f5e39f8d0bad0691487948bf5184215e6962445c58f"></a>POEG_GTETRG_NOISE_FILTER_CLK_SOURCE_DIV_128&#160;</td><td class="fielddoc"><p>Apply noise filter with sample clock equal to Clock source/128. </p>
 </td></tr>
 </table>
 
@@ -656,7 +749,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

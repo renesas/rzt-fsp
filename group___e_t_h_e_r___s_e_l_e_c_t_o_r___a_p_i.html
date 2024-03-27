@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Ethernet Selector Interface</title>
+<title>RZT Flexible Software Package Documentation: Ethernet Selector Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___e_t_h_e_r___s_e_l_e_c_t_o_r___
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Ethernet Selector Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">Ethernet Selector Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___i_n_t_e_r_f_a_c_e_s.html">Networking</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
@@ -105,11 +173,8 @@ Summary</h1>
 <p>The Ethernet Selector module (r_ether_selector) provides an API for standard Ethernet Selector communications applications that use the Ethernet Subsystem peripheral.</p>
 <p>The Ethernet Selector interface supports the following features:</p><ul>
 <li>Ethernet port select support</li>
-<li>RMII/RGMII converter control support</li>
-<li>PHY link signal polarity control support</li>
-</ul>
-<p>Implemented by:</p><ul>
-<li><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r.html">Ethernet SELECTOR (r_ether_selector)</a> </li>
+<li>Selector control support</li>
+<li>PHY link signal polarity control support </li>
 </ul>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
@@ -155,11 +220,11 @@ Enumerations</h2></td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="a0eebc3c6e8d867e38d7bf9ee1747d7e8"></a>uint8_t</td>
+<a id="a553c288b0d346833c9b9d2f12db5e4ad"></a>uint8_t</td>
 <td class="fieldname">
-port</td>
+channel</td>
 <td class="fielddoc">
-Port number. </td></tr>
+Channel number. </td></tr>
 <tr><td class="fieldtype">
 <a id="a3e809fee11bbab62cb3ab788ae95bfb5"></a><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ga1761db3c5e2eea9a0969d8d6e2cbdcc5">ether_selector_phylink_polarity_t</a></td>
 <td class="fieldname">
@@ -171,25 +236,25 @@ PHY link signal polarity. </td></tr>
 <td class="fieldname">
 interface</td>
 <td class="fielddoc">
-Converter mode. </td></tr>
+Interface mode. </td></tr>
 <tr><td class="fieldtype">
 <a id="a304264976ea91191c426a1518d557471"></a><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#gada056d5471504dc225d11ec1c6ec2b14">ether_selector_speed_t</a></td>
 <td class="fieldname">
 speed</td>
 <td class="fielddoc">
-Converter Speed. </td></tr>
+Interface speed. </td></tr>
 <tr><td class="fieldtype">
 <a id="adf8a0bed4e242bd9745f2500a45c2145"></a><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ga3db76c7b531d804078d6b414d3cef621">ether_selector_duplex_t</a></td>
 <td class="fieldname">
 duplex</td>
 <td class="fielddoc">
-Converter Duplex. </td></tr>
+Interface duplex. </td></tr>
 <tr><td class="fieldtype">
 <a id="a3147eb123befbf00dc23bc2f38954c80"></a><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ga55d5223ce76d2ee6b0704b96b87dc36e">ether_selector_ref_clock_t</a></td>
 <td class="fieldname">
 ref_clock</td>
 <td class="fielddoc">
-Converter REF_CLK. </td></tr>
+Interface REF_CLK. </td></tr>
 <tr><td class="fieldtype">
 <a id="ae68f15dfcc1cfbb676df337d0c8e297a"></a>void const  *</td>
 <td class="fieldname">
@@ -220,8 +285,6 @@ Placeholder for user extension. </td></tr>
 <tr class="separator:a68e5ff8636b251712e5f947169d1de68"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae6e21f979464b89e5a2d57cd22c304df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ae6e21f979464b89e5a2d57cd22c304df">converterSet</a> )(<a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ga1c1de2e9288b26b25694f192e2abc0de">ether_selector_ctrl_t</a> *const p_api_ctrl, <a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#gada056d5471504dc225d11ec1c6ec2b14">ether_selector_speed_t</a> speed, <a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ga3db76c7b531d804078d6b414d3cef621">ether_selector_duplex_t</a> duplex)</td></tr>
 <tr class="separator:ae6e21f979464b89e5a2d57cd22c304df"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8de451c96e04a19cf19a85d7f68227df"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a8de451c96e04a19cf19a85d7f68227df">versionGet</a> )(<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_data)</td></tr>
-<tr class="separator:a8de451c96e04a19cf19a85d7f68227df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="a0aaceb412ef15b435c6cfc725733c640"></a>
@@ -235,10 +298,7 @@ Placeholder for user extension. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Open driver. Set Ethernet mode such as Ethernet MAC or Ethernet Switch or EtherCAT for each port. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r.html#ga9a636deebaf0784ff440dffd4d19d3da">R_ETHER_SELECTOR_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Open driver. Set Ethernet mode such as Ethernet MAC or Ethernet Switch or EtherCAT for each port.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_api_ctrl</td><td>Pointer to control structure. </td></tr>
@@ -260,10 +320,7 @@ Placeholder for user extension. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Close driver. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r.html#ga5a90b850ccd7d2bf851f4c19f4935092">R_ETHER_SELECTOR_Close()</a></li>
-</ul>
-</dd></dl>
+<p>Close driver.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_api_ctrl</td><td>Pointer to control structure. </td></tr>
@@ -284,39 +341,12 @@ Placeholder for user extension. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the Converter speed and duplex in runtime. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r.html#ga2cbff318748046e96f1b1b72bfaba195">R_ETHER_SELECTOR_ConverterSet()</a></li>
-</ul>
-</dd></dl>
+<p>Set the Converter speed and duplex in runtime.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_api_ctrl</td><td>Pointer to control structure. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">speed</td><td>Converter speed. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">duplex</td><td>Converter duplex mode. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a8de451c96e04a19cf19a85d7f68227df"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8de451c96e04a19cf19a85d7f68227df">&#9670;&nbsp;</a></span>versionGet</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  ether_selector_api_t::versionGet) (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_data)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Return the version of the driver. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r.html#ga94c68c43c926eddfc662545ceb67c90e">R_ETHER_SELECTOR_VersionGet()</a></li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">p_data</td><td>Memory address to return version information to. </td></tr>
   </table>
   </dd>
 </dl>
@@ -374,10 +404,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Control block. Allocate an instance specific control block to pass into the API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r.html#structether__selector__instance__ctrl__t">ether_selector_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>Control block. Allocate an instance specific control block to pass into the API calls. </p>
 
 </div>
 </div>
@@ -414,7 +441,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>RMII/RGMII converter mode </p>
+<p>Selector mode </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga2b352da8f6a392f8a3815c8db09fede9a9f4b4f384fbfa84830863f7c4dce897d"></a>ETHER_SELECTOR_INTERFACE_MII&#160;</td><td class="fielddoc"><p>MII. </p>
 </td></tr>
@@ -439,13 +466,13 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>RMII/RGMII converter speed </p>
+<p>Selector speed </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggada056d5471504dc225d11ec1c6ec2b14ac6658976573154bd1801925cd2a71877"></a>ETHER_SELECTOR_SPEED_10MBPS&#160;</td><td class="fielddoc"><p>10Mbit/s </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggada056d5471504dc225d11ec1c6ec2b14a92839940d33bf448cf51aa35841de0ac"></a>ETHER_SELECTOR_SPEED_10_MBPS&#160;</td><td class="fielddoc"><p>10Mbit/s </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggada056d5471504dc225d11ec1c6ec2b14a7ba5b64230b75b4b12c15977be499467"></a>ETHER_SELECTOR_SPEED_100MBPS&#160;</td><td class="fielddoc"><p>100Mbit/s </p>
+<tr><td class="fieldname"><a id="ggada056d5471504dc225d11ec1c6ec2b14a4d814e6c227f09e08d35a7f2f8f8185c"></a>ETHER_SELECTOR_SPEED_100_MBPS&#160;</td><td class="fielddoc"><p>100Mbit/s </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggada056d5471504dc225d11ec1c6ec2b14a1ede13939bd3031ea74920bf9ba3c5f3"></a>ETHER_SELECTOR_SPEED_1000MBPS&#160;</td><td class="fielddoc"><p>1000Mbit/s </p>
+<tr><td class="fieldname"><a id="ggada056d5471504dc225d11ec1c6ec2b14a62fa861b4af8101cf149350bdc152e27"></a>ETHER_SELECTOR_SPEED_1000_MBPS&#160;</td><td class="fielddoc"><p>1000Mbit/s </p>
 </td></tr>
 </table>
 
@@ -462,7 +489,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>RMII/RGMII converter duplex </p>
+<p>Selector duplex </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga3db76c7b531d804078d6b414d3cef621a72202872b20eead7f0c559685eb521f7"></a>ETHER_SELECTOR_DUPLEX_HALF&#160;</td><td class="fielddoc"><p>Half-Duplex. </p>
 </td></tr>
@@ -483,11 +510,11 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>RMII/RGMII converter reference clock </p>
+<p>Selector reference clock </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga55d5223ce76d2ee6b0704b96b87dc36eae86bb488db8a07e3bfe1ab3e79cacf52"></a>ETHER_SELECTOR_REF_CLOCK_INPUT&#160;</td><td class="fielddoc"><p>REF_CLK input. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga55d5223ce76d2ee6b0704b96b87dc36ea725873a96c8302879c8b5c689fa3a957"></a>ETHER_SELECTOR_REF_CLOCK_OUTPUT&#160;</td><td class="fielddoc"><p>REF_CLK outpt. </p>
+<tr><td class="fieldname"><a id="gga55d5223ce76d2ee6b0704b96b87dc36ea725873a96c8302879c8b5c689fa3a957"></a>ETHER_SELECTOR_REF_CLOCK_OUTPUT&#160;</td><td class="fielddoc"><p>REF_CLK output. </p>
 </td></tr>
 </table>
 
@@ -499,7 +526,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

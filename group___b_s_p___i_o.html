@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: BSP I/O access</title>
+<title>RZT Flexible Software Package Documentation: BSP I/O access</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___b_s_p___i_o.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,6 +140,23 @@ $(document).ready(function(){initNavTree('group___b_s_p___i_o.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
@@ -100,10 +168,6 @@ $(document).ready(function(){initNavTree('group___b_s_p___i_o.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga6764c3fac52569cadd44b83a6d3f432d"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#ga6764c3fac52569cadd44b83a6d3f432d">R_BSP_PinRead</a> (<a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin)</td></tr>
-<tr class="separator:ga6764c3fac52569cadd44b83a6d3f432d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga33cef14f93543bcb3531b4f2e377c5c4"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#ga33cef14f93543bcb3531b4f2e377c5c4">R_BSP_PinWrite</a> (<a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin, <a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a> level)</td></tr>
-<tr class="separator:ga33cef14f93543bcb3531b4f2e377c5c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab04db1402991c8edf6103f7ef7a46043"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043">R_BSP_PinSet</a> (<a class="el" href="group___b_s_p___i_o.html#ga221c5bcf95b3081615a699272157d00d">bsp_io_region_t</a> region, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin)</td></tr>
 <tr class="separator:gab04db1402991c8edf6103f7ef7a46043"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6f6397f7883fdc9f649d359883584a7d"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#ga6f6397f7883fdc9f649d359883584a7d">R_BSP_PinClear</a> (<a class="el" href="group___b_s_p___i_o.html#ga221c5bcf95b3081615a699272157d00d">bsp_io_region_t</a> region, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin)</td></tr>
@@ -120,9 +184,11 @@ Functions</h2></td></tr>
 <tr class="separator:ga0ad2123f7a5152cf108883163581f11b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab5aab592b5fbbfa18d542c0812850b98"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#gab5aab592b5fbbfa18d542c0812850b98">R_BSP_PinAccessDisable</a> (void)</td></tr>
 <tr class="separator:gab5aab592b5fbbfa18d542c0812850b98"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabf9f15300897622d8296efa5ea0547dc"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE <a class="el" href="group___b_s_p___i_o.html#ga221c5bcf95b3081615a699272157d00d">bsp_io_region_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#gabf9f15300897622d8296efa5ea0547dc">R_BSP_IoRegionGet</a> (<a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin)</td></tr>
+<tr class="separator:gabf9f15300897622d8296efa5ea0547dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>This module provides basic read/write/toggle access to port pins. </p>
+<p>This module provides basic read/write/toggle access to port pins and read/write access to port. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -686,73 +752,6 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga6764c3fac52569cadd44b83a6d3f432d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6764c3fac52569cadd44b83a6d3f432d">&#9670;&nbsp;</a></span>R_BSP_PinRead()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">__STATIC_INLINE uint32_t R_BSP_PinRead </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a>&#160;</td>
-          <td class="paramname"><em>pin</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Read the current input level of the pin.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">pin</td><td>The pin</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">Current</td><td>input level </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga33cef14f93543bcb3531b4f2e377c5c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga33cef14f93543bcb3531b4f2e377c5c4">&#9670;&nbsp;</a></span>R_BSP_PinWrite()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">__STATIC_INLINE void R_BSP_PinWrite </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a>&#160;</td>
-          <td class="paramname"><em>pin</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#gab4ef0cc3fce421d48310f23c614aadc0">bsp_io_level_t</a>&#160;</td>
-          <td class="paramname"><em>level</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Set a pin to output and set the output level to the level provided.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">pin</td><td>The pin </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">level</td><td>The level </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="gab04db1402991c8edf6103f7ef7a46043"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gab04db1402991c8edf6103f7ef7a46043">&#9670;&nbsp;</a></span>R_BSP_PinSet()</h2>
 
@@ -886,7 +885,7 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Read the input value of the pin in the specified region.</p>
+<p>Read the input level of the pin in the specified region.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">region</td><td>The target IO region </td></tr>
@@ -934,7 +933,7 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Set the output level of the port in the specified region.</p>
+<p>Set the output value of the port in the specified region. All pins in the port must be set to the same IO region to use this function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">region</td><td>The target IO region </td></tr>
@@ -971,7 +970,7 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Read the input value of the port in the specified region.</p>
+<p>Read the input value of the port in the specified region. All pins in the port must be set to the same IO region to use this function.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">region</td><td>The target IO region </td></tr>
@@ -981,7 +980,7 @@ Enumerations</h2></td></tr>
 </dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">Current</td><td>input level </td></tr>
+    <tr><td class="paramname">Current</td><td>input value </td></tr>
   </table>
   </dd>
 </dl>
@@ -1026,13 +1025,47 @@ Enumerations</h2></td></tr>
 
 </div>
 </div>
+<a id="gabf9f15300897622d8296efa5ea0547dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabf9f15300897622d8296efa5ea0547dc">&#9670;&nbsp;</a></span>R_BSP_IoRegionGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">__STATIC_INLINE <a class="el" href="group___b_s_p___i_o.html#ga221c5bcf95b3081615a699272157d00d">bsp_io_region_t</a> R_BSP_IoRegionGet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a>&#160;</td>
+          <td class="paramname"><em>pin</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Read IO region of the pin.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">pin</td><td>The pin</td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">BSP_IO_REGION_SAFE</td><td>IO region of the pin is safety </td></tr>
+    <tr><td class="paramname">BSP_IO_REGION_NOT_SAFE</td><td>IO region of the pin is non-safety</td></tr>
+  </table>
+  </dd>
+</dl>
+<p>This function can be given as an argument to pin/port access functions described below. When used in a function starting with R_BSP_Port, any one pin in the port should be given as an argument to this function. <a class="el" href="group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043">R_BSP_PinSet()</a>, <a class="el" href="group___b_s_p___i_o.html#ga6f6397f7883fdc9f649d359883584a7d">R_BSP_PinClear()</a>, <a class="el" href="group___b_s_p___i_o.html#gac04dbcd968fe8e4a99401a9459af9a3a">R_BSP_PinToggle()</a>, <a class="el" href="group___b_s_p___i_o.html#gab124d0d8574571c1850ea044c22dc3e6">R_BSP_FastPinRead()</a>, <a class="el" href="group___b_s_p___i_o.html#gabe938c2bba070c52b7bb30be3c32f1a9">R_BSP_PortWrite()</a>, <a class="el" href="group___b_s_p___i_o.html#ga65d530a32f14198c5556f49efc2377cf">R_BSP_PortRead()</a></p>
+<dl class="section note"><dt>Note</dt><dd>This function can be used to get the region of a specified pin, but the overhead should be considered if this function is executed each time the pin is accessed. When accessing the same pin repeatedly, it is recommended that the value obtained by this function be held in a variable beforehand, and the value of the variable be used as the region argument of the pin access function. </dd></dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

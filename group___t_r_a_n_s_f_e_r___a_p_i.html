@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Transfer Interface</title>
+<title>RZT Flexible Software Package Documentation: Transfer Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___t_r_a_n_s_f_e_r___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,27 +140,42 @@ $(document).ready(function(){initNavTree('group___t_r_a_n_s_f_e_r___a_p_i.html',
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Transfer Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">Transfer Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_r_a_n_s_f_e_r___i_n_t_e_r_f_a_c_e_s.html">Transfer</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Interface for data transfer functions. </p>
 <h1><a class="anchor" id="TRANSFER_API_SUMMARY"></a>
 Summary</h1>
-<p>DEPRECATED - This transfer API header file will be replaced with newer transfer API header file in the next major release</p>
-<p>The transfer interface supports background data transfer (no CPU intervention).</p>
-<p>Implemented by:</p><ul>
-<li><a class="el" href="group___d_m_a_c.html">Direct Memory Access Controller (r_dmac)</a> </li>
-</ul>
+<p>The transfer interface supports background data transfer (no CPU intervention). </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
+<tr class="memitem:structtransfer__callback__args__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__callback__args__t">transfer_callback_args_t</a></td></tr>
+<tr class="separator:structtransfer__callback__args__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structtransfer__properties__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__properties__t">transfer_properties_t</a></td></tr>
 <tr class="separator:structtransfer__properties__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structtransfer__info__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__info__t">transfer_info_t</a></td></tr>
@@ -144,6 +210,37 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga11917a0ab2cb8b878937c97691b07fd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
+<a name="structtransfer__callback__args__t" id="structtransfer__callback__args__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structtransfer__callback__args__t">&#9670;&nbsp;</a></span>transfer_callback_args_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct transfer_callback_args_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Callback function parameter data. </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a10926d348a48457b6439701d3b8240b7"></a>void const  *</td>
+<td class="fieldname">
+p_context</td>
+<td class="fielddoc">
+Placeholder for user data. Set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> function in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__cfg__t">transfer_cfg_t</a>. <p>Placeholder for user data. Set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> function in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__cfg__t">transfer_cfg_t</a>. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a1533ff38216742b8c72284b53161a690"></a>transfer_event_t</td>
+<td class="fieldname">
+event</td>
+<td class="fielddoc">
+Event code. </td></tr>
+</table>
+
+</div>
+</div>
 <a name="structtransfer__properties__t" id="structtransfer__properties__t"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#structtransfer__properties__t">&#9670;&nbsp;</a></span>transfer_properties_t</h2>
 
@@ -197,33 +294,70 @@ Number of transfers remaining. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>This structure specifies the properties of the transfer. </p>
+<div class="textblock"><p>This structure specifies the properties of the transfer. </p><dl class="section warning"><dt>Warning</dt><dd>When using DTC, this structure corresponds to the descriptor block registers required by the DTC. The following components may be modified by the driver: p_src, p_dest, num_blocks, and length. </dd>
+<dd>
+When using DTC, do NOT reuse this structure to configure multiple transfers. Each transfer must have a unique <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__info__t">transfer_info_t</a>. </dd>
+<dd>
+When using DTC, this structure must not be allocated in a temporary location. Any instance of this structure must remain in scope until the transfer it is used for is closed. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>When using DTC, consider placing instances of this structure in a protected section of memory.</dd></dl>
+<p>This structure specifies the properties of the transfer. </p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="a78f9b13e22ed04785876b8b2b4eb2b30"></a>union <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#uniontransfer__info__t_8____unnamed____">transfer_info_t</a></td>
+<a id="a83f689d8f43b1fadc6e8dd60a417daa0"></a>union <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#uniontransfer__info__t_8____unnamed____">transfer_info_t</a></td>
 <td class="fieldname">
 __unnamed__</td>
 <td class="fielddoc">
 </td></tr>
 <tr><td class="fieldtype">
-<a id="ad264d20a1b0afc0100c2e3b1d5a1a1c8"></a>void const  *volatile</td>
+<a id="a197ef7d84898829f988dca88fc9e481c"></a>void const  *volatile</td>
 <td class="fieldname">
 p_src</td>
 <td class="fielddoc">
-Source pointer. </td></tr>
+Source pointer. <p>Source pointer. </p>
+</td></tr>
 <tr><td class="fieldtype">
-<a id="a176dc2f3d1edfc321fa248a7e4c3b549"></a>void *volatile</td>
+<a id="acc20817272cf1db573a1dbc54a9cb3bf"></a>void *volatile</td>
 <td class="fieldname">
 p_dest</td>
 <td class="fielddoc">
-Destination pointer. </td></tr>
+Destination pointer. <p>Destination pointer. </p>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="a9781e58bb7cb2ee40de446936d523814"></a>volatile uint16_t</td>
 <td class="fieldname">
 num_blocks</td>
 <td class="fielddoc">
-<p>Number of blocks to transfer. </p>
+<p>Number of blocks to transfer when using <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55">TRANSFER_MODE_BLOCK</a> (both DTC an DMAC) or <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b">TRANSFER_MODE_REPEAT</a> (DMAC only) or <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fafb43c6e62b61f0dbb9a5bcd5575e79e2">TRANSFER_MODE_REPEAT_BLOCK</a> (DMAC only), unused in other modes. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a5aba602d71a6ba4e6be056a90b5ed9e8"></a>volatile uint16_t</td>
+<td class="fieldname">
+length</td>
+<td class="fielddoc">
+<p>Length of each transfer. Range limited for <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55">TRANSFER_MODE_BLOCK</a>, <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b">TRANSFER_MODE_REPEAT</a>, and <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fafb43c6e62b61f0dbb9a5bcd5575e79e2">TRANSFER_MODE_REPEAT_BLOCK</a> see HAL driver for details.</p>
+<p>Length of each transfer. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a9e39c449b5d1f8a957b833833c7da06b"></a><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadce62e6c2407d6ffd5a94636736f7c51">transfer_addr_mode_t</a></td>
+<td class="fieldname">
+dest_addr_mode</td>
+<td class="fielddoc">
+<p>Select what happens to destination pointer after each transfer. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a1a73c1297d04667da6b2103db34f88ad"></a><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadce62e6c2407d6ffd5a94636736f7c51">transfer_addr_mode_t</a></td>
+<td class="fieldname">
+src_addr_mode</td>
+<td class="fielddoc">
+<p>Select what happens to source pointer after each transfer. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="ae3cc32eab1926d03875e2c9fa4e6190b"></a><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992f">transfer_mode_t</a></td>
+<td class="fieldname">
+mode</td>
+<td class="fielddoc">
+<p>Select mode from <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992f">transfer_mode_t</a>. </p>
 </td></tr>
 <tr><td class="fieldtype">
 <a id="a5aba602d71a6ba4e6be056a90b5ed9e8"></a>volatile uint32_t</td>
@@ -233,11 +367,38 @@ length</td>
 <p>Length of each transfer. </p>
 </td></tr>
 <tr><td class="fieldtype">
-<a id="a2f5199797424f6e54dfc71896bfccdfe"></a>void const  *</td>
+<a id="a354b4d97746d9393110fc679d466ad99"></a><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a></td>
 <td class="fieldname">
-p_extend</td>
+src_size</td>
 <td class="fielddoc">
-Extension parameter for hardware specific settings. </td></tr>
+<p>Select number of source bytes to transfer at once. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a023152eeec3dda49c43b0a5576b07881"></a><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a></td>
+<td class="fieldname">
+dest_size</td>
+<td class="fielddoc">
+<p>Select number of destination bytes to transfer at once. </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a07ff7ab703d6c6e5f3e2fdeabce7519a"></a>void const  *</td>
+<td class="fieldname">
+p_next1_src</td>
+<td class="fielddoc">
+<p>Next1 Register set settings </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a53fff59e6204660c9c1e7870f44c1e27"></a>void *</td>
+<td class="fieldname">
+p_next1_dest</td>
+<td class="fielddoc">
+</td></tr>
+<tr><td class="fieldtype">
+<a id="aad8ca56354b7e2d280eaa5243e02106e"></a>uint32_t</td>
+<td class="fieldname">
+next1_length</td>
+<td class="fielddoc">
+</td></tr>
 </table>
 
 </div>
@@ -261,7 +422,7 @@ Extension parameter for hardware specific settings. </td></tr>
 <td class="fieldname">
 p_info</td>
 <td class="fielddoc">
-<p>Pointer to transfer configuration options. </p>
+<p>Pointer to transfer configuration options. If using chain transfer (DTC only), this can be a pointer to an array of chained transfers that will be completed in order. </p>
 </td></tr>
 <tr><td class="fieldtype">
 <a id="a7dcf4353ecf5e5df7024e1a3d5db7c09"></a>void const  *</td>
@@ -305,8 +466,10 @@ Extension parameter for hardware specific settings. </td></tr>
 <tr class="separator:ad18824ffdf72b5e6a0c588289620fc84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ade5973e7a8e994f9146e0db84bee8bf4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ade5973e7a8e994f9146e0db84bee8bf4">close</a> )(<a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga665f80fc984ccf7585606be8eeccbb98">transfer_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ade5973e7a8e994f9146e0db84bee8bf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6bae349b1688e604624d76cc8294e52f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a6bae349b1688e604624d76cc8294e52f">versionGet</a> )(<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:a6bae349b1688e604624d76cc8294e52f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3af1d98295baf9bd92251f55c95f8868"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a3af1d98295baf9bd92251f55c95f8868">reload</a> )(<a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga665f80fc984ccf7585606be8eeccbb98">transfer_ctrl_t</a> *const p_ctrl, void const *p_src, void *p_dest, uint32_t const num_transfers)</td></tr>
+<tr class="separator:a3af1d98295baf9bd92251f55c95f8868"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec396dcd365f215cabfa1097e2a963de"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#aec396dcd365f215cabfa1097e2a963de">callbackSet</a> )(<a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga665f80fc984ccf7585606be8eeccbb98">transfer_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__callback__args__t">transfer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__callback__args__t">transfer_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:aec396dcd365f215cabfa1097e2a963de"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="a84d48960cdfe867ef54fd4635a85ceeb"></a>
@@ -320,10 +483,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initial configuration. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#ga448a013ad5b91097e45833313d5df354">R_DMAC_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Initial configuration.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">p_ctrl</td><td>Pointer to control block. Must be declared by user. Elements set here. </td></tr>
@@ -345,10 +505,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reconfigure the transfer. Enable the transfer if p_info is valid. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#ga5ecb4ad0414589e60ec2b8d45c88d9bf">R_DMAC_Reconfigure()</a></li>
-</ul>
-</dd></dl>
+<p>Reconfigure the transfer. Enable the transfer if p_info is valid.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in,out]</td><td class="paramname">p_ctrl</td><td>Pointer to control block. Must be declared by user. Elements set here. </td></tr>
@@ -370,16 +527,13 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reset source address pointer, destination address pointer, and/or length, keeping all other settings the same. Enable the transfer if p_src, p_dest, and length are valid. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#gaac8f15eacf61325ad50ca0778cfc7ffd">R_DMAC_Reset()</a></li>
-</ul>
-</dd></dl>
+<p>Reset source address pointer, destination address pointer, and/or length, keeping all other settings the same. Enable the transfer if p_src, p_dest, and length are valid.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">p_src</td><td>Pointer to source. Set to NULL if source pointer should not change. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">p_dest</td><td>Pointer to destination. Set to NULL if destination pointer should not change. </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">num_transfers</td><td>Transfer length in normal mode or number of blocks in block mode. In DMAC only, resets number of repeats (initially stored in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a9781e58bb7cb2ee40de446936d523814">transfer_info_t::num_blocks</a>) in repeat mode. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_transfers</td><td>Transfer length in normal mode or number of blocks in block mode. In DMAC only, resets number of repeats (initially stored in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a9781e58bb7cb2ee40de446936d523814">transfer_info_t::num_blocks</a>) in repeat mode. Not used in repeat mode for DTC. </td></tr>
   </table>
   </dd>
 </dl>
@@ -397,10 +551,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Enable transfer. Transfers occur after the activation source event (or when <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a394ddea028013153254bafa12115dce2">transfer_api_t::softwareStart</a> is called if ELC_EVENT_NONE is chosen as activation source). </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#gaf72221183919d50cbd8ee1ca528aa20b">R_DMAC_Enable()</a></li>
-</ul>
-</dd></dl>
+<p>Enable transfer. Transfers occur after the activation source event (or when <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a394ddea028013153254bafa12115dce2">transfer_api_t::softwareStart</a> is called if no peripheral event is chosen as activation source).</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
@@ -421,10 +572,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Disable transfer. Transfers do not occur after the activation source event (or when <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a394ddea028013153254bafa12115dce2">transfer_api_t::softwareStart</a> is called if ELC_EVENT_NONE is chosen as the DMAC activation source). </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#ga6b64368039ad6617f091a20b5ac16206">R_DMAC_Disable()</a></li>
-</ul>
-</dd></dl>
+<p>Disable transfer. Transfers do not occur after the activation source event (or when <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a394ddea028013153254bafa12115dce2">transfer_api_t::softwareStart</a> is called if no peripheral event is chosen as the DMAC activation source). </p><dl class="section note"><dt>Note</dt><dd>If a transfer is in progress, it will be completed. Subsequent transfer requests do not cause a transfer.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
@@ -445,10 +593,8 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Start transfer in software. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#ga476c8ffd7c603f3c298a422e4f39b571">R_DMAC_SoftwareStart()</a></li>
-</ul>
-</dd></dl>
+<p>Start transfer in software. </p><dl class="section warning"><dt>Warning</dt><dd>Only works if no peripheral event is chosen as the DMAC activation source. </dd></dl>
+<dl class="section note"><dt>Note</dt><dd>Not supported for DTC.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
@@ -470,10 +616,10 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Stop transfer in software. The transfer will stop after completion of the current transfer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#ga4a306937010d51313cec844047e9d622">R_DMAC_SoftwareStop()</a></li>
-</ul>
-</dd></dl>
+<p>Stop transfer in software. The transfer will stop after completion of the current transfer. </p><dl class="section note"><dt>Note</dt><dd>Not supported for DTC. </dd>
+<dd>
+Only applies for transfers started with TRANSFER_START_MODE_REPEAT. </dd></dl>
+<dl class="section warning"><dt>Warning</dt><dd>Only works if no peripheral event is chosen as the DMAC activation source.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
@@ -494,10 +640,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Provides information about this transfer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#gade7f6c387756ca9728194ac15f01fc43">R_DMAC_InfoGet()</a></li>
-</ul>
-</dd></dl>
+<p>Provides information about this transfer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
@@ -519,10 +662,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Releases hardware lock. This allows a transfer to be reconfigured using <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a>. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#ga3423bb11f0d76dbe760ed01cf03ccd45">R_DMAC_Close()</a> </li>
-</ul>
-</dd></dl>
+<p>Releases hardware lock. This allows a transfer to be reconfigured using <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
@@ -532,24 +672,48 @@ Extension parameter for hardware specific settings. </td></tr>
 
 </div>
 </div>
-<a id="a6bae349b1688e604624d76cc8294e52f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6bae349b1688e604624d76cc8294e52f">&#9670;&nbsp;</a></span>versionGet</h2>
+<a id="a3af1d98295baf9bd92251f55c95f8868"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3af1d98295baf9bd92251f55c95f8868">&#9670;&nbsp;</a></span>reload</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  transfer_api_t::versionGet) (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  transfer_api_t::reload) (<a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga665f80fc984ccf7585606be8eeccbb98">transfer_ctrl_t</a> *const p_ctrl, void const *p_src, void *p_dest, uint32_t const num_transfers)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>DEPRECATED Gets version and stores it in provided pointer p_version. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#gaf7874117a03dd670129ef7027ee6a392">R_DMAC_VersionGet()</a> </li>
-</ul>
-</dd></dl>
+<p>To update next transfer information without interruption during transfer. Allow further transfer continuation.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">p_version</td><td>Code and API version used. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_src</td><td>Pointer to source. Set to NULL if source pointer should not change. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_dest</td><td>Pointer to destination. Set to NULL if destination pointer should not change. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">num_transfers</td><td>Transfer length in normal mode or block mode. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="aec396dcd365f215cabfa1097e2a963de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec396dcd365f215cabfa1097e2a963de">&#9670;&nbsp;</a></span>callbackSet</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  transfer_api_t::callbackSet) (<a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga665f80fc984ccf7585606be8eeccbb98">transfer_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__callback__args__t">transfer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__callback__args__t">transfer_callback_args_t</a> *const p_callback_memory)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Specify callback function and optional context pointer and working memory pointer.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a84d48960cdfe867ef54fd4635a85ceeb">transfer_api_t::open</a> call for this transfer. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_callback</td><td>Callback function to register </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_context</td><td>Pointer to send to callback function </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_callback_memory</td><td>Pointer to volatile memory where callback structure can be allocated. Callback arguments allocated here are only valid during the callback. </td></tr>
   </table>
   </dd>
 </dl>
@@ -607,10 +771,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Transfer control block. Allocate an instance specific control block to pass into the transfer API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___d_m_a_c.html#structdmac__instance__ctrl__t">dmac_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>Transfer control block. Allocate an instance specific control block to pass into the transfer API calls. </p>
 
 </div>
 </div>
@@ -628,11 +789,21 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>Transfer mode describes what will happen when a transfer request occurs. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadfb7c2a6a73bfdf993e50505aa92992fada90d8a89f98ff82475383b14141b08d"></a>TRANSFER_MODE_NORMAL&#160;</td><td class="fielddoc"><p>Normal mode. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gadfb7c2a6a73bfdf993e50505aa92992fada90d8a89f98ff82475383b14141b08d"></a>TRANSFER_MODE_NORMAL&#160;</td><td class="fielddoc"><p>In normal mode, each transfer request causes a transfer of <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a> from the source pointer to the destination pointer. The transfer length is decremented and the source and address pointers are updated according to <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadce62e6c2407d6ffd5a94636736f7c51">transfer_addr_mode_t</a>. After the transfer length reaches 0, transfer requests will not cause any further transfers. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b"></a>TRANSFER_MODE_REPEAT&#160;</td><td class="fielddoc"><p>Repeat mode. </p>
+<tr><td class="fieldname"><a id="gadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b"></a>TRANSFER_MODE_REPEAT&#160;</td><td class="fielddoc"><p>Repeat mode is like normal mode, except that when the transfer length reaches 0, the pointer to the repeat area and the transfer length will be reset to their initial values. If DMAC is used, the transfer repeats only <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a9781e58bb7cb2ee40de446936d523814">transfer_info_t::num_blocks</a> times. After the transfer repeats <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a9781e58bb7cb2ee40de446936d523814">transfer_info_t::num_blocks</a> times, transfer requests will not cause any further transfers. If DTC is used, the transfer repeats continuously (no limit to the number of repeat transfers). </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55"></a>TRANSFER_MODE_BLOCK&#160;</td><td class="fielddoc"><p>Block mode. </p>
+<tr><td class="fieldname"><a id="gadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55"></a>TRANSFER_MODE_BLOCK&#160;</td><td class="fielddoc"><p>In block mode, each transfer request causes <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a5aba602d71a6ba4e6be056a90b5ed9e8">transfer_info_t::length</a> transfers of <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a>. After each individual transfer, the source and destination pointers are updated according to <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadce62e6c2407d6ffd5a94636736f7c51">transfer_addr_mode_t</a>. After the block transfer is complete, <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a9781e58bb7cb2ee40de446936d523814">transfer_info_t::num_blocks</a> is decremented. After the <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a9781e58bb7cb2ee40de446936d523814">transfer_info_t::num_blocks</a> reaches 0, transfer requests will not cause any further transfers. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadfb7c2a6a73bfdf993e50505aa92992fafb43c6e62b61f0dbb9a5bcd5575e79e2"></a>TRANSFER_MODE_REPEAT_BLOCK&#160;</td><td class="fielddoc"><p>In addition to block mode features, repeat-block mode supports a ring buffer of blocks and offsets within a block (to split blocks into arrays of their first data, second data, etc.) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadfb7c2a6a73bfdf993e50505aa92992fada90d8a89f98ff82475383b14141b08d"></a>TRANSFER_MODE_NORMAL&#160;</td><td class="fielddoc"><p>Normal mode. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55"></a>TRANSFER_MODE_BLOCK&#160;</td><td class="fielddoc"><p>Block mode. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadfb7c2a6a73bfdf993e50505aa92992fada90d8a89f98ff82475383b14141b08d"></a>TRANSFER_MODE_NORMAL&#160;</td><td class="fielddoc"><p>Normal mode. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55"></a>TRANSFER_MODE_BLOCK&#160;</td><td class="fielddoc"><p>Block mode. </p>
 </td></tr>
 </table>
 
@@ -649,13 +820,41 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Transfer size specifies the size of each individual transfer. </p>
+<p>Transfer size specifies the size of each individual transfer. Total transfer length = transfer_size_t * transfer_length_t </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga6c224e5afb174f3f6ea9eddbb9da8b12accfeb24892ec24e42ccf14e4d4896c21"></a>TRANSFER_SIZE_1_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 8-bit value. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12accfeb24892ec24e42ccf14e4d4896c21"></a>TRANSFER_SIZE_1_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 8-bit value. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6c224e5afb174f3f6ea9eddbb9da8b12a8b6b33a085b51ea2eeed1ef119de562f"></a>TRANSFER_SIZE_2_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 16-bit value. </p>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a8b6b33a085b51ea2eeed1ef119de562f"></a>TRANSFER_SIZE_2_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 16-bit value. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga6c224e5afb174f3f6ea9eddbb9da8b12a18482bfa86e737cde78042be4db54412"></a>TRANSFER_SIZE_4_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 32-bit value. </p>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a18482bfa86e737cde78042be4db54412"></a>TRANSFER_SIZE_4_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 32-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12accfeb24892ec24e42ccf14e4d4896c21"></a>TRANSFER_SIZE_1_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 8-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a8b6b33a085b51ea2eeed1ef119de562f"></a>TRANSFER_SIZE_2_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 16-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a18482bfa86e737cde78042be4db54412"></a>TRANSFER_SIZE_4_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 32-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a5bb02177f10ea6a06f9fdf3d8f353d6f"></a>TRANSFER_SIZE_8_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 64-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a12fac298210b545231c2c38dfafd07a0"></a>TRANSFER_SIZE_16_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 128-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a7568398002399c1e898dab6f8e8a0418"></a>TRANSFER_SIZE_32_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 256-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a4284e820735faa08a0702f0d430f2924"></a>TRANSFER_SIZE_64_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 512-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12accfeb24892ec24e42ccf14e4d4896c21"></a>TRANSFER_SIZE_1_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 8-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a8b6b33a085b51ea2eeed1ef119de562f"></a>TRANSFER_SIZE_2_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 16-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a18482bfa86e737cde78042be4db54412"></a>TRANSFER_SIZE_4_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 32-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a5bb02177f10ea6a06f9fdf3d8f353d6f"></a>TRANSFER_SIZE_8_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 64-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a12fac298210b545231c2c38dfafd07a0"></a>TRANSFER_SIZE_16_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 128-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a7568398002399c1e898dab6f8e8a0418"></a>TRANSFER_SIZE_32_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 256-bit value. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6c224e5afb174f3f6ea9eddbb9da8b12a4284e820735faa08a0702f0d430f2924"></a>TRANSFER_SIZE_64_BYTE&#160;</td><td class="fielddoc"><p>Each transfer transfers a 512-bit value. </p>
 </td></tr>
 </table>
 
@@ -674,13 +873,21 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>Address mode specifies whether to modify (increment or decrement) pointer after each transfer. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadce62e6c2407d6ffd5a94636736f7c51abf18f9b3701e9e91f44055ee47d0ca47"></a>TRANSFER_ADDR_MODE_FIXED&#160;</td><td class="fielddoc"><p>Address pointer remains fixed after each transfer. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gadce62e6c2407d6ffd5a94636736f7c51abf18f9b3701e9e91f44055ee47d0ca47"></a>TRANSFER_ADDR_MODE_FIXED&#160;</td><td class="fielddoc"><p>Address pointer remains fixed after each transfer. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggadce62e6c2407d6ffd5a94636736f7c51ab8b3f8ce28fb6f7a57a1b87db0d612c2"></a>TRANSFER_ADDR_MODE_OFFSET&#160;</td><td class="fielddoc"><p>Offset is added to the address pointer after each transfer. </p>
+<tr><td class="fieldname"><a id="gadce62e6c2407d6ffd5a94636736f7c51ab8b3f8ce28fb6f7a57a1b87db0d612c2"></a>TRANSFER_ADDR_MODE_OFFSET&#160;</td><td class="fielddoc"><p>Offset is added to the address pointer after each transfer. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggadce62e6c2407d6ffd5a94636736f7c51a7665741e25c4cc78fd24745efbd2eaad"></a>TRANSFER_ADDR_MODE_INCREMENTED&#160;</td><td class="fielddoc"><p>Address pointer is incremented by associated <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a> after each transfer. </p>
+<tr><td class="fieldname"><a id="gadce62e6c2407d6ffd5a94636736f7c51a7665741e25c4cc78fd24745efbd2eaad"></a>TRANSFER_ADDR_MODE_INCREMENTED&#160;</td><td class="fielddoc"><p>Address pointer is incremented by associated <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a> after each transfer. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggadce62e6c2407d6ffd5a94636736f7c51a56a87e1587844119831414f3d5e6d761"></a>TRANSFER_ADDR_MODE_DECREMENTED&#160;</td><td class="fielddoc"><p>Address pointer is decremented by associated <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a> after each transfer. </p>
+<tr><td class="fieldname"><a id="gadce62e6c2407d6ffd5a94636736f7c51a56a87e1587844119831414f3d5e6d761"></a>TRANSFER_ADDR_MODE_DECREMENTED&#160;</td><td class="fielddoc"><p>Address pointer is decremented by associated <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a> after each transfer. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadce62e6c2407d6ffd5a94636736f7c51a7665741e25c4cc78fd24745efbd2eaad"></a>TRANSFER_ADDR_MODE_INCREMENTED&#160;</td><td class="fielddoc"><p>Address pointer is incremented by associated <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a> after each transfer. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadce62e6c2407d6ffd5a94636736f7c51abf18f9b3701e9e91f44055ee47d0ca47"></a>TRANSFER_ADDR_MODE_FIXED&#160;</td><td class="fielddoc"><p>Address pointer remains fixed after each transfer. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadce62e6c2407d6ffd5a94636736f7c51a7665741e25c4cc78fd24745efbd2eaad"></a>TRANSFER_ADDR_MODE_INCREMENTED&#160;</td><td class="fielddoc"><p>Address pointer is incremented by associated <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12">transfer_size_t</a> after each transfer. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gadce62e6c2407d6ffd5a94636736f7c51abf18f9b3701e9e91f44055ee47d0ca47"></a>TRANSFER_ADDR_MODE_FIXED&#160;</td><td class="fielddoc"><p>Address pointer remains fixed after each transfer. </p>
 </td></tr>
 </table>
 
@@ -697,11 +904,11 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Repeat area options (source or destination). In <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ggadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b">TRANSFER_MODE_REPEAT</a>, the selected pointer returns to its original value after <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a5aba602d71a6ba4e6be056a90b5ed9e8">transfer_info_t::length</a> transfers. </p>
+<p>Repeat area options (source or destination). In <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b">TRANSFER_MODE_REPEAT</a>, the selected pointer returns to its original value after <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#a5aba602d71a6ba4e6be056a90b5ed9e8">transfer_info_t::length</a> transfers. In <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55">TRANSFER_MODE_BLOCK</a> and <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fafb43c6e62b61f0dbb9a5bcd5575e79e2">TRANSFER_MODE_REPEAT_BLOCK</a>, the selected pointer returns to its original value after each transfer. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga769464d2068881ccb44573c96167812ba77aeeab30b003de23742e40a57f19239"></a>TRANSFER_REPEAT_AREA_DESTINATION&#160;</td><td class="fielddoc"><p>Destination area repeated in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ggadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b">TRANSFER_MODE_REPEAT</a> or <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ggadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55">TRANSFER_MODE_BLOCK</a>. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga769464d2068881ccb44573c96167812ba77aeeab30b003de23742e40a57f19239"></a>TRANSFER_REPEAT_AREA_DESTINATION&#160;</td><td class="fielddoc"><p>Destination area repeated in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b">TRANSFER_MODE_REPEAT</a> or <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55">TRANSFER_MODE_BLOCK</a> or <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fafb43c6e62b61f0dbb9a5bcd5575e79e2">TRANSFER_MODE_REPEAT_BLOCK</a>. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga769464d2068881ccb44573c96167812ba2002ef7bbc49f7c9ebfac1618ba3c391"></a>TRANSFER_REPEAT_AREA_SOURCE&#160;</td><td class="fielddoc"><p>Source area repeated in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ggadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b">TRANSFER_MODE_REPEAT</a> or <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#ggadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55">TRANSFER_MODE_BLOCK</a>. </p>
+<tr><td class="fieldname"><a id="gga769464d2068881ccb44573c96167812ba2002ef7bbc49f7c9ebfac1618ba3c391"></a>TRANSFER_REPEAT_AREA_SOURCE&#160;</td><td class="fielddoc"><p>Source area repeated in <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fa607c41bfd08797c08a5ee9bd4dfb9c8b">TRANSFER_MODE_REPEAT</a> or <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992faa4f65de2d9454af406f60172ff858d55">TRANSFER_MODE_BLOCK</a> or <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992fafb43c6e62b61f0dbb9a5bcd5575e79e2">TRANSFER_MODE_REPEAT_BLOCK</a>. </p>
 </td></tr>
 </table>
 
@@ -718,7 +925,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Chain transfer mode options. </p>
+<p>Chain transfer mode options. </p><dl class="section note"><dt>Note</dt><dd>Only applies for DTC. </dd></dl>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga68f81dc8b9ca46fbe3a1e556c020436dae974453c306b4959252905e362d75067"></a>TRANSFER_CHAIN_MODE_DISABLED&#160;</td><td class="fielddoc"><p>Chain mode not used. </p>
 </td></tr>
@@ -743,7 +950,7 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>Interrupt options. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggad71bdadb7f486bb5d3ca6ff508dc0b08ada378ad830e44cc0c25d4fe2413e11de"></a>TRANSFER_IRQ_END&#160;</td><td class="fielddoc"><p>Interrupt occurs only after last transfer. If this transfer is chained to a subsequent transfer, the interrupt will occur only after subsequent chained transfer(s) are complete. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggad71bdadb7f486bb5d3ca6ff508dc0b08ada378ad830e44cc0c25d4fe2413e11de"></a>TRANSFER_IRQ_END&#160;</td><td class="fielddoc"><p>Interrupt occurs only after last transfer. If this transfer is chained to a subsequent transfer, the interrupt will occur only after subsequent chained transfer(s) are complete. </p><dl class="section warning"><dt>Warning</dt><dd>DTC triggers the interrupt of the activation source. Choosing TRANSFER_IRQ_END with DTC will prevent activation source interrupts until the transfer is complete. </dd></dl>
 </td></tr>
 <tr><td class="fieldname"><a id="ggad71bdadb7f486bb5d3ca6ff508dc0b08a0929782b61686db69e12b3cb18175b35"></a>TRANSFER_IRQ_EACH&#160;</td><td class="fielddoc"><p>Interrupt occurs after each transfer. </p><dl class="section note"><dt>Note</dt><dd>Not available in all HAL drivers. See HAL driver for details. </dd></dl>
 </td></tr>
@@ -778,7 +985,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

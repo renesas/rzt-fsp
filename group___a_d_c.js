@@ -51,8 +51,8 @@ var group___a_d_c =
       [ "ADC_ADD_FOUR", "group___a_d_c.html#ggae9ce774d7384e84ac724f5a1c6ca0d21a0c4068dac9f508406946326b31cc45cd", null ],
       [ "ADC_ADD_SIXTEEN", "group___a_d_c.html#ggae9ce774d7384e84ac724f5a1c6ca0d21a09798f7c00aef944195aa7039081f171", null ],
       [ "ADC_ADD_AVERAGE_TWO", "group___a_d_c.html#ggae9ce774d7384e84ac724f5a1c6ca0d21a6c9935940088b096683ce038643c93c8", null ],
+      [ "ADC_ADD_AVERAGE_THREE", "group___a_d_c.html#ggae9ce774d7384e84ac724f5a1c6ca0d21a3a7e0243d419140e1ae4204860befc65", null ],
       [ "ADC_ADD_AVERAGE_FOUR", "group___a_d_c.html#ggae9ce774d7384e84ac724f5a1c6ca0d21aa5551fce055385439e74076ea349ca38", null ],
-      [ "ADC_ADD_AVERAGE_EIGHT", "group___a_d_c.html#ggae9ce774d7384e84ac724f5a1c6ca0d21ad2c5445357f4973b69afbab249fc9e83", null ],
       [ "ADC_ADD_AVERAGE_SIXTEEN", "group___a_d_c.html#ggae9ce774d7384e84ac724f5a1c6ca0d21a9026625853db106940c2418a1d65226e", null ]
     ] ],
     [ "adc_clear_t", "group___a_d_c.html#ga9ddc074052e3b84fcc2defed431fe022", [
@@ -122,16 +122,16 @@ var group___a_d_c =
     ] ],
     [ "R_ADC_Open", "group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac", null ],
     [ "R_ADC_ScanCfg", "group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88", null ],
-    [ "R_ADC_CallbackSet", "group___a_d_c.html#ga9110aa7c0d36661e561641f522eeb737", null ],
+    [ "R_ADC_InfoGet", "group___a_d_c.html#ga1cc44d84e1dd1cad8fdafe1e91a3b6d0", null ],
     [ "R_ADC_ScanStart", "group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2", null ],
+    [ "R_ADC_ScanGroupStart", "group___a_d_c.html#ga12d4b4406ff0aa0c7ae8f068432a72f5", null ],
     [ "R_ADC_ScanStop", "group___a_d_c.html#ga9b5242c153c6320a564ed9ffd324f144", null ],
     [ "R_ADC_StatusGet", "group___a_d_c.html#ga676b1c7f1ccceda288cbb2ad79a14ff2", null ],
     [ "R_ADC_Read", "group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da", null ],
     [ "R_ADC_Read32", "group___a_d_c.html#ga905e1cd6ff8ca4aaf91ee63529dc0d0d", null ],
     [ "R_ADC_SampleStateCountSet", "group___a_d_c.html#gaf0701bf45818dee071cb12e979017bce", null ],
-    [ "R_ADC_InfoGet", "group___a_d_c.html#ga1cc44d84e1dd1cad8fdafe1e91a3b6d0", null ],
     [ "R_ADC_Close", "group___a_d_c.html#ga499187b3067534e42a57239ead111797", null ],
-    [ "R_ADC_VersionGet", "group___a_d_c.html#ga5ef435c2d9a890729e770e6d25c790e1", null ],
-    [ "R_ADC_Calibrate", "group___a_d_c.html#gafb2e4cd66d5bd276d05eb5fa104a2037", null ],
-    [ "R_ADC_OffsetSet", "group___a_d_c.html#gaf3bc65f19ba61612e0b7517dfd41ab61", null ]
+    [ "R_ADC_OffsetSet", "group___a_d_c.html#gaf3bc65f19ba61612e0b7517dfd41ab61", null ],
+    [ "R_ADC_Calibrate", "group___a_d_c.html#gac73578543d084faf58d17474dbaad23a", null ],
+    [ "R_ADC_CallbackSet", "group___a_d_c.html#ga0b7b4813962829f9e25731cd88f4c708", null ]
 ];

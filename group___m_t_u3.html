@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Multi-Function Timer Pulse Unit 3 (r_mtu3)</title>
+<title>RZT Flexible Software Package Documentation: Multi-Function Timer Pulse Unit 3 (r_mtu3)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___m_t_u3.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___m_t_u3.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Multi-Function Timer Pulse Unit 3 (r_mtu3)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Multi-Function Timer Pulse Unit 3 (r_mtu3)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___m_o_d_u_l_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -123,12 +191,10 @@ Functions</h2></td></tr>
 <tr class="separator:ga37213c6f09b8122f3950a5a8a83adc34"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3e16434800b5d897208039f3398acf84"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga3e16434800b5d897208039f3398acf84">R_MTU3_AdcTriggerSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, <a class="el" href="group___m_t_u3.html#ga41121fd0c747ec6e3ba93bcc94a73bdd">mtu3_adc_compare_match_t</a> which_compare_match, uint16_t compare_match_value)</td></tr>
 <tr class="separator:ga3e16434800b5d897208039f3398acf84"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4ec0ad4f10536b74374b75f2ca46f527"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga4ec0ad4f10536b74374b75f2ca46f527">R_MTU3_CallbackSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga4ec0ad4f10536b74374b75f2ca46f527"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga67c25ce037fea40c2b4c13bc75a76f87"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga67c25ce037fea40c2b4c13bc75a76f87">R_MTU3_CallbackSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga67c25ce037fea40c2b4c13bc75a76f87"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gace590734aa53fc0116c411decc0142d2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#gace590734aa53fc0116c411decc0142d2">R_MTU3_Close</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:gace590734aa53fc0116c411decc0142d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga028cd044ef35832bf78782b761e9ada2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga028cd044ef35832bf78782b761e9ada2">R_MTU3_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga028cd044ef35832bf78782b761e9ada2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the MTU3 peripherals on RZ microprocessor. This module implements the <a class="el" href="group___t_i_m_e_r___a_p_i.html">Timer Interface</a>. </p>
@@ -140,7 +206,8 @@ Overview</h1>
 Features</h2>
 <p>The MTU3 module has the following features:</p><ul>
 <li>Supports periodic mode and PWM mode.</li>
-<li>Supports count source of ELC events.<a class="anchor" id="um_mtu_event_count_elc"></a></li>
+<li>Supports phase counting mode.<a class="anchor" id="um_mtu3_phase_counting"></a></li>
+<li>Supports count source of ELC events.<a class="anchor" id="um_mtu_event_count_elc"></a><a class="anchor" id="um_mtu_event_count_restart_elc"></a><a class="anchor" id="um_mtu_event_input_capture_elc"></a></li>
 <li>Supports debounce filter on MTIOC pins.</li>
 <li>Signal can be output to a pin.</li>
 <li>Configurable period (counts per timer cycle).</li>
@@ -173,7 +240,7 @@ Selecting a Timer</h2>
 </table>
 <h1><a class="anchor" id="r-mtu3-configuration"></a>
 Configuration</h1>
-<p><a class="anchor" id="um_mtu3_open_close"></a><a class="anchor" id="um_mtu3_start_stop"></a> <h2>Build Time Configurations for r_mtu3</h2>
+<p><a class="anchor" id="um_mtu3_open_close"></a><a class="anchor" id="um_mtu3_start_stop"></a><a class="anchor" id="um_mtu3_phase_count_open_close"></a><a class="anchor" id="um_mtu3_phase_count_start_stop"></a><a class="anchor" id="um_mtu3_phase_count_callbackset"></a> <h2>Build Time Configurations for r_mtu3</h2>
 The following build time configurations are defined in fsp_cfg/r_mtu3_cfg.h:<br />
 </p><table class="doxtable">
 <tr>
@@ -206,9 +273,17 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Disabled </td><td>If selected code for UVW is included in the build. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Timers &gt; Timer Driver on r_mtu3</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Timers &gt; Timer Driver on r_mtu3.<br />
+ <h2>Configurations for Timers &gt; Timer , Multi-Function Timer Pulse Unit 3 (r_mtu3)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Timers &gt; Timer , Multi-Function Timer Pulse Unit 3 (r_mtu3).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -234,7 +309,7 @@ Triangle-Wave Asymmetric PWM: Generates asymmetric PWM waveforms with duty cycle
 <tr>
 <td>General &gt; TGRB(Output Compare or Input Capture Value)</td><td></td><td>0x0000 </td><td>Capture/Compare match B value. </td></tr>
 <tr>
-<td>General &gt; Time Prescaler</td><td>Refer to the RZ Configuration tool for available options.</td><td>PCLKH divided by 1 (common ch) </td><td>Select time prescaler. </td></tr>
+<td>General &gt; Time Prescaler</td><td>Refer to the RZT Configuration tool for available options.</td><td>PCLKH divided by 1 (common ch) </td><td>Select time prescaler. </td></tr>
 <tr>
 <td>General &gt; Clock Edge</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -256,7 +331,25 @@ TGRB</li>
 </ul>
 </td><td>Disabled </td><td>Select counter clear source. </td></tr>
 <tr>
-<td>Noise Filter &gt; Extarnal Clock &gt; Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Input &gt; Phase Count &gt; Bit Mode</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+16-bit</li>
+<li>
+32-bit</li>
+</ul>
+</td><td>16-bit </td><td>Select Bit Mode </td></tr>
+<tr>
+<td>Input &gt; Phase Count &gt; Counting Mode</td><td>Refer to the RZT Configuration tool for available options.</td><td>None </td><td>Select Counting Mode </td></tr>
+<tr>
+<td>Input &gt; Phase Count &gt; Clock Pin Select</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+MTCLKA, MTCLKB</li>
+<li>
+MTCLKC, MTCLKD</li>
+</ul>
+</td><td>MTCLKA, MTCLKB </td><td>Select Clock pin Select </td></tr>
+<tr>
+<td>Noise Filter &gt; External Clock &gt; Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 MTCLKA Enabled</li>
 <li>
@@ -268,7 +361,7 @@ MTCLKD Enabled</li>
 </ul>
 </td><td></td><td>Sets the noise filter for the external clock. Since it is a setting common to all channels, it may be overwritten by other Stacks settings. </td></tr>
 <tr>
-<td>Noise Filter &gt; Extarnal Clock &gt; Clock Select</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Noise Filter &gt; External Clock &gt; Clock Select</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 PCLK divided by 1</li>
 <li>
@@ -300,9 +393,9 @@ Clock source</li>
 </ul>
 </td><td>PCLK divided by 1 </td><td>Select noise filter clock. </td></tr>
 <tr>
-<td>Output &gt; Initial Output A</td><td>Refer to the RZ Configuration tool for available options.</td><td>No Output </td><td>Select TGRA initial output. </td></tr>
+<td>Output &gt; Initial Output A</td><td>Refer to the RZT Configuration tool for available options.</td><td>No Output </td><td>Select TGRA initial output. </td></tr>
 <tr>
-<td>Output &gt; Initial Output B</td><td>Refer to the RZ Configuration tool for available options.</td><td>No Output </td><td>Select TGRB initial output. </td></tr>
+<td>Output &gt; Initial Output B</td><td>Refer to the RZT Configuration tool for available options.</td><td>No Output </td><td>Select TGRB initial output. </td></tr>
 <tr>
 <td>Interrupts &gt; Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function can be specified here. If this callback function is provided, it will be called from the interrupt service routine (ISR) each time the timer period elapses </td></tr>
 <tr>
@@ -324,17 +417,17 @@ Clock source</li>
 <tr>
 <td>Extra Features &gt; MTU5 &gt; W Count</td><td></td><td>0x0000 </td><td>Timer W Counter. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; U Clock Select</td><td>Refer to the RZ Configuration tool for available options.</td><td>PCLKH divided by 1 </td><td>Select U time prescaler. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; U Clock Select</td><td>Refer to the RZT Configuration tool for available options.</td><td>PCLKH divided by 1 </td><td>Select U time prescaler. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; V Clock Select</td><td>Refer to the RZ Configuration tool for available options.</td><td>PCLKH divided by 1 </td><td>Select V time prescaler. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; V Clock Select</td><td>Refer to the RZT Configuration tool for available options.</td><td>PCLKH divided by 1 </td><td>Select V time prescaler. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; W Clock Select</td><td>Refer to the RZ Configuration tool for available options.</td><td>PCLKH divided by 1 </td><td>Select W time prescaler. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; W Clock Select</td><td>Refer to the RZT Configuration tool for available options.</td><td>PCLKH divided by 1 </td><td>Select W time prescaler. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; U Input Capture</td><td>Refer to the RZ Configuration tool for available options.</td><td>No func </td><td>Select U output level. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; U Input Capture</td><td>Refer to the RZT Configuration tool for available options.</td><td>No func </td><td>Select U output level. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; V Input Capture</td><td>Refer to the RZ Configuration tool for available options.</td><td>No func </td><td>Select V output level. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; V Input Capture</td><td>Refer to the RZT Configuration tool for available options.</td><td>No func </td><td>Select V output level. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; W Input Capture</td><td>Refer to the RZ Configuration tool for available options.</td><td>No func </td><td>Select W output level. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; W Input Capture</td><td>Refer to the RZT Configuration tool for available options.</td><td>No func </td><td>Select W output level. </td></tr>
 <tr>
 <td>Extra Features &gt; MTU5 &gt; UVW Noise Filter Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -523,6 +616,48 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Disabled </td><td>Select whether to enable extra features on this channel. </td></tr>
+<tr>
+<td>ELC &gt; MTU0 &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger MTU0 </td></tr>
+<tr>
+<td>ELC &gt; MTU0 &gt; Operation Select</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Count Start</li>
+<li>
+Count Restart</li>
+<li>
+Input Capture</li>
+</ul>
+</td><td>Disabled </td><td>Select operation for MTU0 </td></tr>
+<tr>
+<td>ELC &gt; MTU3 &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger MTU3 </td></tr>
+<tr>
+<td>ELC &gt; MTU3 &gt; Operation Select</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Count Start</li>
+<li>
+Count Restart</li>
+<li>
+Input Capture</li>
+</ul>
+</td><td>Disabled </td><td>Select operation for MTU3 </td></tr>
+<tr>
+<td>ELC &gt; MTU4 &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger MTU4 </td></tr>
+<tr>
+<td>ELC &gt; MTU4 &gt; Operation Select</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Count Start</li>
+<li>
+Count Restart</li>
+<li>
+Input Capture</li>
+</ul>
+</td><td>Disabled </td><td>Select operation for MTU4 </td></tr>
 </table>
 </p>
 <h2><a class="anchor" id="r-mtu3-clock-configuration"></a>
@@ -544,6 +679,21 @@ Usage Notes</h1>
 <p>The MTU3 timer can trigger the start of other peripherals. The <a class="el" href="group___e_l_c.html">Event Link Controller (r_elc)</a> guide provides a list of all available peripherals.</p>
 <h2>Interrupt Skipping</h2>
 <p>When an interrupt skipping source is selected a hardware counter will increment each time the selected event occurs. Each interrupt past the first (up to the specified skip count) will be suppressed.</p>
+<h2>Phase Counting Mode</h2>
+<p>Phase count mode is provides 16-bit or 32-bit channels used in phase counting applications. The ability to set the count value of the channel and the function to obtain the count value are possible. For this operation, configure “Phase Count” appropriately. Example of setting for phase counting mode 1 are shown below. </p><table class="doxtable">
+<tr>
+<th>Configuration</th><th>Options  </th></tr>
+<tr>
+<td>General &gt; Channel</td><td>- 1 </td></tr>
+<tr>
+<td>General &gt; Mode</td><td>- Periodic </td></tr>
+<tr>
+<td>Input &gt; Phase Count &gt; Bit Mode</td><td>- 16 bit </td></tr>
+<tr>
+<td>Input &gt; Phase Count &gt; Counting Mode</td><td>- Mode 1 </td></tr>
+<tr>
+<td>Count &gt; Phase Count &gt; Pin Clock Select</td><td>- MTCLKA, MTCLKB </td></tr>
+</table>
 <h1><a class="anchor" id="r-mtu3-examples"></a>
 Examples</h1>
 <h2>MTU3 Basic Example</h2>
@@ -554,13 +704,17 @@ Examples</h1>
 <p>To use the MTU3 as a free running counter, select periodic mode and set the the Period to 0xFFFF for a 16-bit timer.</p>
 <div class="fragment"><div class="line"></div><div class="line"><span class="keywordtype">void</span> mtu3_counter_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga0ee0beb7bd1f1773916b0c633454fe0b">R_MTU3_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___m_t_u3.html#ga57aa8e231848fe1eb00775bd722418ee">R_MTU3_Start</a>(&amp;g_timer0_ctrl);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Stop the timer. */</span></div><div class="line">    (void) <a class="code" href="group___m_t_u3.html#ga396b95f942eed8fd222c67e5bfd22800">R_MTU3_Stop</a>(&amp;g_timer0_ctrl);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Read the current counter value. Counter value is in status.counter. */</span></div><div class="line">    <a class="code" href="group___m_t_u3.html#structmtu3__status__t">mtu3_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___m_t_u3.html#ga2e03849cab601963cc6334c6b9b008db">R_MTU3_StatusGet</a>(&amp;g_timer0_ctrl, &amp;status);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>MTU3 Period Update Example</h2>
 <p>This an example of updating the period.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define MTU3_EXAMPLE_MICROSEC_PER_SEC           (1000000)</span></div><div class="line"><span class="preprocessor">#define MTU3_EXAMPLE_DESIRED_PERIOD_MICROSEC    (200)</span></div><div class="line"></div><div class="line"><span class="comment">/* This example shows how to calculate a new period value at runtime. */</span></div><div class="line"><span class="keywordtype">void</span> mtu3_period_calculation_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>      err = FSP_SUCCESS;</div><div class="line">    <a class="code" href="group___m_t_u3.html#structmtu3__counter__t">mtu3_counter_t</a> mtu3_count;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga0ee0beb7bd1f1773916b0c633454fe0b">R_MTU3_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___m_t_u3.html#ga57aa8e231848fe1eb00775bd722418ee">R_MTU3_Start</a>(&amp;g_timer0_ctrl);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Get the source clock frequency (in Hz). There are 3 ways to do this in FSP:</span></div><div class="line"><span class="comment">     *  - If the PCLKH  frequency has not changed since reset, the source clock frequency is</span></div><div class="line"><span class="comment">     *    BSP_PRV_PCLKH_FREQ_200_MHZ &gt;&gt; mtu3_extended_cfg_t::mtu3_clk_div</span></div><div class="line"><span class="comment">     *  - Use the R_MTU3_InfoGet function (it accounts for the divider).</span></div><div class="line"><span class="comment">     *  - Calculate the current PCLKH frequency using R_FSP_SystemClockHzGet(FSP_PRIV_CLOCK_PCLKH) and right shift</span></div><div class="line"><span class="comment">     *    by mtu3_extended_cfg_t::mtu3_clk_div.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * This example uses the 3rd option (R_FSP_SystemClockHzGet).</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    uint32_t pclkd_freq_hz = <a class="code" href="group___b_s_p___m_c_u.html#gaac289335b731d0bdb5cb8e6d243898ef">R_FSP_SystemClockHzGet</a>(FSP_PRIV_CLOCK_PCLKH) &gt;&gt; g_timer0_cfg.source_div;</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate the desired period based on the current clock. Note that this calculation could overflow if the</span></div><div class="line"><span class="comment">     * desired period is larger than UINT16_MAX / pclkd_freq_hz. A cast to uint64_t is used to prevent this. */</span></div><div class="line">    mtu3_count.<a class="code" href="group___m_t_u3.html#a41c0ee62e85cef78f597e2b69b438759">tgra_counts</a> =</div><div class="line">        (uint16_t) (((uint64_t) pclkd_freq_hz * MTU3_EXAMPLE_DESIRED_PERIOD_MICROSEC) / MTU3_EXAMPLE_MICROSEC_PER_SEC);</div><div class="line">    mtu3_count.<a class="code" href="group___m_t_u3.html#afa615516be9ef30e71d041c115effd3d">tgrb_counts</a> = (mtu3_count.<a class="code" href="group___m_t_u3.html#a41c0ee62e85cef78f597e2b69b438759">tgra_counts</a> / 2U);</div><div class="line"></div><div class="line">    <span class="comment">/* Set the calculated period. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga681253550336ba3656aa76117da8a3d2">R_MTU3_PeriodSet</a>(&amp;g_timer0_ctrl, &amp;mtu3_count);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define MTU3_EXAMPLE_MICROSEC_PER_SEC           (1000000)</span></div><div class="line"><span class="preprocessor">#define MTU3_EXAMPLE_DESIRED_PERIOD_MICROSEC    (200)</span></div><div class="line"></div><div class="line"><span class="comment">/* This example shows how to calculate a new period value at runtime. */</span></div><div class="line"><span class="keywordtype">void</span> mtu3_period_calculation_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>      err = FSP_SUCCESS;</div><div class="line">    <a class="code" href="group___m_t_u3.html#structmtu3__counter__t">mtu3_counter_t</a> mtu3_count;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga0ee0beb7bd1f1773916b0c633454fe0b">R_MTU3_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___m_t_u3.html#ga57aa8e231848fe1eb00775bd722418ee">R_MTU3_Start</a>(&amp;g_timer0_ctrl);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Get the source clock frequency (in Hz). There are 3 ways to do this in FSP:</span></div><div class="line"><span class="comment">     *  - If the PCLKH  frequency has not changed since reset, the source clock frequency is</span></div><div class="line"><span class="comment">     *    BSP_PRV_PCLKH_FREQ_200_MHZ &gt;&gt; mtu3_extended_cfg_t::mtu3_clk_div</span></div><div class="line"><span class="comment">     *  - Use the R_MTU3_InfoGet function (it accounts for the divider).</span></div><div class="line"><span class="comment">     *  - Calculate the current PCLKH frequency using R_FSP_SystemClockHzGet(FSP_PRIV_CLOCK_PCLKH) and right shift</span></div><div class="line"><span class="comment">     *    by mtu3_extended_cfg_t::mtu3_clk_div.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * This example uses the 3rd option (R_FSP_SystemClockHzGet).</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    uint32_t pclkd_freq_hz = <a class="code" href="group___b_s_p___m_c_u.html#gaac289335b731d0bdb5cb8e6d243898ef">R_FSP_SystemClockHzGet</a>(FSP_PRIV_CLOCK_PCLKH) &gt;&gt; g_timer0_cfg.source_div;</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate the desired period based on the current clock. Note that this calculation could overflow if the</span></div><div class="line"><span class="comment">     * desired period is larger than UINT16_MAX / pclkd_freq_hz. A cast to uint64_t is used to prevent this. */</span></div><div class="line">    mtu3_count.<a class="code" href="group___m_t_u3.html#a41c0ee62e85cef78f597e2b69b438759">tgra_counts</a> =</div><div class="line">        (uint16_t) (((uint64_t) pclkd_freq_hz * MTU3_EXAMPLE_DESIRED_PERIOD_MICROSEC) / MTU3_EXAMPLE_MICROSEC_PER_SEC);</div><div class="line">    mtu3_count.<a class="code" href="group___m_t_u3.html#afa615516be9ef30e71d041c115effd3d">tgrb_counts</a> = (mtu3_count.<a class="code" href="group___m_t_u3.html#a41c0ee62e85cef78f597e2b69b438759">tgra_counts</a> / 2U);</div><div class="line"></div><div class="line">    <span class="comment">/* Set the calculated period. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga681253550336ba3656aa76117da8a3d2">R_MTU3_PeriodSet</a>(&amp;g_timer0_ctrl, &amp;mtu3_count);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>MTU3 phase count Basic Example</h2>
+<p>This is an example of using the MTU3 to operate phase counting mode.</p>
+<div class="fragment"><div class="line"></div><div class="line"><span class="keywordtype">void</span> mtu3_phase_count_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga0ee0beb7bd1f1773916b0c633454fe0b">R_MTU3_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga57aa8e231848fe1eb00775bd722418ee">R_MTU3_Start</a>(&amp;g_timer0_ctrl);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Get phase counting information. Counter value is in status.counter. */</span></div><div class="line">    <a class="code" href="group___t_i_m_e_r___a_p_i.html#structtimer__status__t">timer_status_t</a> status;</div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga2e03849cab601963cc6334c6b9b008db">R_MTU3_StatusGet</a>(&amp;g_timer0_ctrl, &amp;status);</div><div class="line">    handle_error(err);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structmtu3__output__pin__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#structmtu3__output__pin__t">mtu3_output_pin_t</a></td></tr>
 <tr class="separator:structmtu3__output__pin__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structmtu3__status__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#structmtu3__status__t">mtu3_status_t</a></td></tr>
 <tr class="separator:structmtu3__status__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structmtu3__elc__operation__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#structmtu3__elc__operation__t">mtu3_elc_operation_t</a></td></tr>
+<tr class="separator:structmtu3__elc__operation__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structmtu3__counter__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#structmtu3__counter__t">mtu3_counter_t</a></td></tr>
 <tr class="separator:structmtu3__counter__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structmtu3__info__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#structmtu3__info__t">mtu3_info_t</a></td></tr>
@@ -590,6 +744,8 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga031ed640883cba19cb1243d46ea54709"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga8a74b8a0003ccd7602df801eb863a4ce"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga8a74b8a0003ccd7602df801eb863a4ce">mtu3_io_pin_t</a> </td></tr>
 <tr class="separator:ga8a74b8a0003ccd7602df801eb863a4ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gab5f445223b8221fbae049a99316790ca"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#gab5f445223b8221fbae049a99316790ca">mtu3_elc_operation_option_t</a> </td></tr>
+<tr class="separator:gab5f445223b8221fbae049a99316790ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3e91c6daa6b259375f4233104b2e74b9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga3e91c6daa6b259375f4233104b2e74b9">mtu3_noise_filter_setting_t</a> </td></tr>
 <tr class="separator:ga3e91c6daa6b259375f4233104b2e74b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gafc85b75bb0166c239099334298285448"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#gafc85b75bb0166c239099334298285448">mtu3_noise_filter_mtclk_setting_t</a> </td></tr>
@@ -606,6 +762,12 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga3ad32e2d3e0cebb7645750d6c0a8f692"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga41121fd0c747ec6e3ba93bcc94a73bdd"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga41121fd0c747ec6e3ba93bcc94a73bdd">mtu3_adc_compare_match_t</a> </td></tr>
 <tr class="separator:ga41121fd0c747ec6e3ba93bcc94a73bdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga483bdeddeef548cad6607a6882d01dff"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga483bdeddeef548cad6607a6882d01dff">mtu3_phase_counting_mode_t</a> </td></tr>
+<tr class="separator:ga483bdeddeef548cad6607a6882d01dff"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4a713782493bd1d5b6f558971a98b074"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga4a713782493bd1d5b6f558971a98b074">mtu3_bit_mode_t</a> </td></tr>
+<tr class="separator:ga4a713782493bd1d5b6f558971a98b074"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga336bc75269af69ae11afe375c8b627b2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ga336bc75269af69ae11afe375c8b627b2">mtu3_external_clock_t</a> </td></tr>
+<tr class="separator:ga336bc75269af69ae11afe375c8b627b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structmtu3__output__pin__t" id="structmtu3__output__pin__t"></a>
@@ -682,6 +844,42 @@ Current counter value(TGRW) </td></tr>
 state</td>
 <td class="fielddoc">
 Current timer state (running or stopped) </td></tr>
+</table>
+
+</div>
+</div>
+<a name="structmtu3__elc__operation__t" id="structmtu3__elc__operation__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structmtu3__elc__operation__t">&#9670;&nbsp;</a></span>mtu3_elc_operation_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct mtu3_elc_operation_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>MTU3 configuration for event link function </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a5a77101a93079d47856dea06d0634288"></a><a class="el" href="group___m_t_u3.html#gab5f445223b8221fbae049a99316790ca">mtu3_elc_operation_option_t</a></td>
+<td class="fieldname">
+mtu0_elc_operation</td>
+<td class="fielddoc">
+MTU0 operation select. </td></tr>
+<tr><td class="fieldtype">
+<a id="abef72f480b3988565e9f0617d954b1cb"></a><a class="el" href="group___m_t_u3.html#gab5f445223b8221fbae049a99316790ca">mtu3_elc_operation_option_t</a></td>
+<td class="fieldname">
+mtu3_elc_operation</td>
+<td class="fielddoc">
+MTU3 operation select. </td></tr>
+<tr><td class="fieldtype">
+<a id="a82dcd1387741ce5ea4d123762d255b9b"></a><a class="el" href="group___m_t_u3.html#gab5f445223b8221fbae049a99316790ca">mtu3_elc_operation_option_t</a></td>
+<td class="fieldname">
+mtu4_elc_operation</td>
+<td class="fielddoc">
+MTU4 operation select. </td></tr>
 </table>
 
 </div>
@@ -1115,6 +1313,12 @@ adc_request_enable</td>
 <td class="fielddoc">
 A/D Converter Start Request Enable(ch5 and ch8 are excluded) </td></tr>
 <tr><td class="fieldtype">
+<a id="a23b3ae8f24d552d844658c87647b1c33"></a><a class="el" href="group___m_t_u3.html#structmtu3__elc__operation__t">mtu3_elc_operation_t</a></td>
+<td class="fieldname">
+mtu3_elc_event_operation</td>
+<td class="fielddoc">
+MTU3 event link operation. </td></tr>
+<tr><td class="fieldtype">
 <a id="ae357d03fb305808acc1a5f971e9ae205"></a>uint8_t</td>
 <td class="fieldname">
 capture_a_ipl</td>
@@ -1150,6 +1354,24 @@ Advanced MTU ch5 features, optional. </td></tr>
 p_pwm_cfg</td>
 <td class="fielddoc">
 Advanced PWM features, optional. </td></tr>
+<tr><td class="fieldtype">
+<a id="a99777aa2ad3b4ad66ae63969e09cc3a3"></a><a class="el" href="group___m_t_u3.html#ga483bdeddeef548cad6607a6882d01dff">mtu3_phase_counting_mode_t</a></td>
+<td class="fieldname">
+counting_mode</td>
+<td class="fielddoc">
+Select the counting mode. </td></tr>
+<tr><td class="fieldtype">
+<a id="a88844e3354de7605a2544cc7606f4f80"></a><a class="el" href="group___m_t_u3.html#ga4a713782493bd1d5b6f558971a98b074">mtu3_bit_mode_t</a></td>
+<td class="fieldname">
+bit_mode</td>
+<td class="fielddoc">
+Select bit mode. </td></tr>
+<tr><td class="fieldtype">
+<a id="a306e03c33213a61c25ae2c5da82a02ea"></a><a class="el" href="group___m_t_u3.html#ga336bc75269af69ae11afe375c8b627b2">mtu3_external_clock_t</a></td>
+<td class="fieldname">
+external_clock</td>
+<td class="fielddoc">
+Select External Clock Input Pins. </td></tr>
 </table>
 
 </div>
@@ -1420,6 +1642,31 @@ Advanced PWM features, optional. </td></tr>
 
 </div>
 </div>
+<a id="gab5f445223b8221fbae049a99316790ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab5f445223b8221fbae049a99316790ca">&#9670;&nbsp;</a></span>mtu3_elc_operation_option_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___m_t_u3.html#gab5f445223b8221fbae049a99316790ca">mtu3_elc_operation_option_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>MTU3 event group operation </p><dl class="section note"><dt>Note</dt><dd>Event link must be configured by the ELC </dd></dl>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggab5f445223b8221fbae049a99316790caa6c67afe6ca38a3a842fd536bae91a4f0"></a>MTU3_EVENT_OPERATION_SELECT_COUNT_START&#160;</td><td class="fielddoc"><p>The MTU event operation is set to start counting. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggab5f445223b8221fbae049a99316790caac8dd39939f9705bd80cc68e5c00dcad9"></a>MTU3_EVENT_OPERATION_SELECT_COUNT_RESTART&#160;</td><td class="fielddoc"><p>The MTU event operation is set to restart counting. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggab5f445223b8221fbae049a99316790caac0478ea94e69f1ec9ddc1c7e383210b7"></a>MTU3_EVENT_OPERATION_SELECT_INPUT_CAPTURE&#160;</td><td class="fielddoc"><p>The MTU event operation is set to input capture. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggab5f445223b8221fbae049a99316790caa8cc48e6faf9f63a9d234284833f59027"></a>MTU3_EVENT_OPERATION_SELECT_DISABLE&#160;</td><td class="fielddoc"><p>The MTU event operation is set to disable. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <a id="ga3e91c6daa6b259375f4233104b2e74b9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga3e91c6daa6b259375f4233104b2e74b9">&#9670;&nbsp;</a></span>mtu3_noise_filter_setting_t</h2>
 
@@ -1618,6 +1865,84 @@ Advanced PWM features, optional. </td></tr>
 
 </div>
 </div>
+<a id="ga483bdeddeef548cad6607a6882d01dff"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga483bdeddeef548cad6607a6882d01dff">&#9670;&nbsp;</a></span>mtu3_phase_counting_mode_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___m_t_u3.html#ga483bdeddeef548cad6607a6882d01dff">mtu3_phase_counting_mode_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffa2dd91c675ba13dad32c7db349453b02a"></a>MTU3_PHASE_COUNTING_MODE_NONE&#160;</td><td class="fielddoc"><p>Disable Counting Mode. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffaacc019ea683cd47f446894ab49bcc5df"></a>MTU3_PHASE_COUNTING_MODE_1&#160;</td><td class="fielddoc"><p>Mode 1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffab7129c87b3b520ebc12fb8b8d41d01b9"></a>MTU3_PHASE_COUNTING_MODE_200&#160;</td><td class="fielddoc"><p>Mode 2 (00) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffa520ad5d440a51c74834cb08042f37447"></a>MTU3_PHASE_COUNTING_MODE_201&#160;</td><td class="fielddoc"><p>Mode 2 (01) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffa36bcb5dbca0140e35534e53dd889a389"></a>MTU3_PHASE_COUNTING_MODE_210&#160;</td><td class="fielddoc"><p>Mode 2 (1x) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffa598a0600cf17f8d6a5e9e9b2406492e7"></a>MTU3_PHASE_COUNTING_MODE_300&#160;</td><td class="fielddoc"><p>Mode 3 (00) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffafc0d9e62a626074a59774f62710204b8"></a>MTU3_PHASE_COUNTING_MODE_301&#160;</td><td class="fielddoc"><p>Mode 3 (01) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffa078f2e46633c57fee94b508c303f36bd"></a>MTU3_PHASE_COUNTING_MODE_310&#160;</td><td class="fielddoc"><p>Mode 3 (1x) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffab5d4ac1c1bdc75ca409e1bc38bf8c175"></a>MTU3_PHASE_COUNTING_MODE_4&#160;</td><td class="fielddoc"><p>Mode 4. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffac2fe0e2d753d2e99d632d6443c4daca2"></a>MTU3_PHASE_COUNTING_MODE_50&#160;</td><td class="fielddoc"><p>Mode 5 (0x) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga483bdeddeef548cad6607a6882d01dffa6e747b8626a8f0b519cecf3a5877b1f0"></a>MTU3_PHASE_COUNTING_MODE_51&#160;</td><td class="fielddoc"><p>Mode 5 (10) </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="ga4a713782493bd1d5b6f558971a98b074"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4a713782493bd1d5b6f558971a98b074">&#9670;&nbsp;</a></span>mtu3_bit_mode_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___m_t_u3.html#ga4a713782493bd1d5b6f558971a98b074">mtu3_bit_mode_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga4a713782493bd1d5b6f558971a98b074a015d32d53714a417d11ebb6a201aab0e"></a>MTU3_BIT_MODE_NORMAL_16BIT&#160;</td><td class="fielddoc"><p>normal mode(16bit mode) </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga4a713782493bd1d5b6f558971a98b074ad172b0f030792216d076ca06aa7c3286"></a>MTU3_BIT_MODE_NORMAL_32BIT&#160;</td><td class="fielddoc"><p>normal mode(32bit mode) </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="ga336bc75269af69ae11afe375c8b627b2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga336bc75269af69ae11afe375c8b627b2">&#9670;&nbsp;</a></span>mtu3_external_clock_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___m_t_u3.html#ga336bc75269af69ae11afe375c8b627b2">mtu3_external_clock_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga336bc75269af69ae11afe375c8b627b2addecf6d6a261b67a509b0f83e1eabbc0"></a>MTU3_EXTERNAL_CLOCK_MTCLKA_B&#160;</td><td class="fielddoc"><p>MTCLKA, MTCLKB. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga336bc75269af69ae11afe375c8b627b2a9d293aa2b9be19cc5fade4c78f1089a1"></a>MTU3_EXTERNAL_CLOCK_MTCLKC_D&#160;</td><td class="fielddoc"><p>MTCLKC, MTCLKD. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="ga0ee0beb7bd1f1773916b0c633454fe0b"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga0ee0beb7bd1f1773916b0c633454fe0b">&#9670;&nbsp;</a></span>R_MTU3_Open()</h2>
@@ -1646,7 +1971,7 @@ Advanced PWM features, optional. </td></tr>
 </div><div class="memdoc">
 <p>Initializes the timer module and applies configurations.</p>
 <p>The MTU3 implementation of the general timer can accept a <a class="el" href="group___m_t_u3.html#structmtu3__extended__cfg__t">mtu3_extended_cfg_t</a> extension parameter.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga0ee0beb7bd1f1773916b0c633454fe0b">R_MTU3_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful and timer has started. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL. </td></tr>
@@ -1675,7 +2000,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Stops timer.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Stop the timer. */</span></div><div class="line">    (void) <a class="code" href="group___m_t_u3.html#ga396b95f942eed8fd222c67e5bfd22800">R_MTU3_Stop</a>(&amp;g_timer0_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Timer successfully stopped. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -1702,7 +2027,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Starts timer.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___m_t_u3.html#ga57aa8e231848fe1eb00775bd722418ee">R_MTU3_Start</a>(&amp;g_timer0_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Timer successfully started. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -1767,7 +2092,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Sets period value provided. If the timer is running, the period will be updated after the next compare match. If the timer is stopped, this function resets the counter and updates the period.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Get the source clock frequency (in Hz). There are 3 ways to do this in FSP:</span></div><div class="line"><span class="comment">     *  - If the PCLKH  frequency has not changed since reset, the source clock frequency is</span></div><div class="line"><span class="comment">     *    BSP_PRV_PCLKH_FREQ_200_MHZ &gt;&gt; mtu3_extended_cfg_t::mtu3_clk_div</span></div><div class="line"><span class="comment">     *  - Use the R_MTU3_InfoGet function (it accounts for the divider).</span></div><div class="line"><span class="comment">     *  - Calculate the current PCLKH frequency using R_FSP_SystemClockHzGet(FSP_PRIV_CLOCK_PCLKH) and right shift</span></div><div class="line"><span class="comment">     *    by mtu3_extended_cfg_t::mtu3_clk_div.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * This example uses the 3rd option (R_FSP_SystemClockHzGet).</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    uint32_t pclkd_freq_hz = <a class="code" href="group___b_s_p___m_c_u.html#gaac289335b731d0bdb5cb8e6d243898ef">R_FSP_SystemClockHzGet</a>(FSP_PRIV_CLOCK_PCLKH) &gt;&gt; g_timer0_cfg.source_div;</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate the desired period based on the current clock. Note that this calculation could overflow if the</span></div><div class="line"><span class="comment">     * desired period is larger than UINT16_MAX / pclkd_freq_hz. A cast to uint64_t is used to prevent this. */</span></div><div class="line">    mtu3_count.<a class="code" href="group___m_t_u3.html#a41c0ee62e85cef78f597e2b69b438759">tgra_counts</a> =</div><div class="line">        (uint16_t) (((uint64_t) pclkd_freq_hz * MTU3_EXAMPLE_DESIRED_PERIOD_MICROSEC) / MTU3_EXAMPLE_MICROSEC_PER_SEC);</div><div class="line">    mtu3_count.<a class="code" href="group___m_t_u3.html#afa615516be9ef30e71d041c115effd3d">tgrb_counts</a> = (mtu3_count.<a class="code" href="group___m_t_u3.html#a41c0ee62e85cef78f597e2b69b438759">tgra_counts</a> / 2U);</div><div class="line"></div><div class="line">    <span class="comment">/* Set the calculated period. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3.html#ga681253550336ba3656aa76117da8a3d2">R_MTU3_PeriodSet</a>(&amp;g_timer0_ctrl, &amp;mtu3_count);</div><div class="line">    handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Period value written successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -1841,7 +2166,7 @@ Advanced PWM features, optional. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Get current timer status and store it in provided pointer p_status.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Read the current counter value. Counter value is in status.counter. */</span></div><div class="line">    <a class="code" href="group___m_t_u3.html#structmtu3__status__t">mtu3_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___m_t_u3.html#ga2e03849cab601963cc6334c6b9b008db">R_MTU3_StatusGet</a>(&amp;g_timer0_ctrl, &amp;status);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Current timer state and counter value set successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_status was NULL. </td></tr>
@@ -2009,8 +2334,8 @@ Advanced PWM features, optional. </td></tr>
 
 </div>
 </div>
-<a id="ga4ec0ad4f10536b74374b75f2ca46f527"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4ec0ad4f10536b74374b75f2ca46f527">&#9670;&nbsp;</a></span>R_MTU3_CallbackSet()</h2>
+<a id="ga67c25ce037fea40c2b4c13bc75a76f87"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga67c25ce037fea40c2b4c13bc75a76f87">&#9670;&nbsp;</a></span>R_MTU3_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2019,7 +2344,7 @@ Advanced PWM features, optional. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_MTU3_CallbackSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -2085,39 +2410,13 @@ Advanced PWM features, optional. </td></tr>
 
 </div>
 </div>
-<a id="ga028cd044ef35832bf78782b761e9ada2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga028cd044ef35832bf78782b761e9ada2">&#9670;&nbsp;</a></span>R_MTU3_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_MTU3_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Sets driver version based on compile time macros.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version stored in p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version was NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

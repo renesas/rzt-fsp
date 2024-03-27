@@ -49,17 +49,16 @@ var group___x_s_p_i___o_s_p_i =
       [ "XSPI_OSPI_BYTE_ORDER_1032", "group___x_s_p_i___o_s_p_i.html#ggae4ac87a62886f5558cb5d21cd5f2357fae1c39de0296598d4c18f1fdcc8025ad6", null ]
     ] ],
     [ "R_XSPI_OSPI_Open", "group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2", null ],
+    [ "R_XSPI_OSPI_Close", "group___x_s_p_i___o_s_p_i.html#gac4a104b286e181e85aa9f49cfd415743", null ],
     [ "R_XSPI_OSPI_DirectWrite", "group___x_s_p_i___o_s_p_i.html#ga6a078843078f56dc586961e73361d455", null ],
     [ "R_XSPI_OSPI_DirectRead", "group___x_s_p_i___o_s_p_i.html#ga1c4014dc52de5e1ea57c0ba881b85a27", null ],
-    [ "R_XSPI_OSPI_DirectTransfer", "group___x_s_p_i___o_s_p_i.html#ga33cbe6104492f4c691f5803fe345ecca", null ],
+    [ "R_XSPI_OSPI_SpiProtocolSet", "group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369", null ],
     [ "R_XSPI_OSPI_XipEnter", "group___x_s_p_i___o_s_p_i.html#ga9b4f69f9341ecb8f50b524eb389220a1", null ],
     [ "R_XSPI_OSPI_XipExit", "group___x_s_p_i___o_s_p_i.html#ga4abd514e01d09706ca12dcea9638a015", null ],
     [ "R_XSPI_OSPI_Write", "group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5", null ],
     [ "R_XSPI_OSPI_Erase", "group___x_s_p_i___o_s_p_i.html#gaa611e3a9c739cfe40fde1ea4a416f21a", null ],
     [ "R_XSPI_OSPI_StatusGet", "group___x_s_p_i___o_s_p_i.html#ga05ba32343ad208b17d950b55b33dc73b", null ],
     [ "R_XSPI_OSPI_BankSet", "group___x_s_p_i___o_s_p_i.html#ga5ccb97618f1ab68e8ab75bcb254824c5", null ],
-    [ "R_XSPI_OSPI_SpiProtocolSet", "group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369", null ],
-    [ "R_XSPI_OSPI_AutoCalibrate", "group___x_s_p_i___o_s_p_i.html#gad2b24047e009a0c99a0e9ba116304938", null ],
-    [ "R_XSPI_OSPI_Close", "group___x_s_p_i___o_s_p_i.html#gac4a104b286e181e85aa9f49cfd415743", null ],
-    [ "R_XSPI_OSPI_VersionGet", "group___x_s_p_i___o_s_p_i.html#ga2ed2faabe20ea37038144ad4ad1d1a82", null ]
+    [ "R_XSPI_OSPI_DirectTransfer", "group___x_s_p_i___o_s_p_i.html#ga33cbe6104492f4c691f5803fe345ecca", null ],
+    [ "R_XSPI_OSPI_AutoCalibrate", "group___x_s_p_i___o_s_p_i.html#gad2b24047e009a0c99a0e9ba116304938", null ]
 ];

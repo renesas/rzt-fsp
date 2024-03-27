@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Three-Phase Interface</title>
+<title>RZT Flexible Software Package Documentation: Three-Phase Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___t_h_r_e_e___p_h_a_s_e___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,23 +140,37 @@ $(document).ready(function(){initNavTree('group___t_h_r_e_e___p_h_a_s_e___a_p_i.
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Three-Phase Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">Three-Phase Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___i_n_t_e_r_f_a_c_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Interface for three-phase timer functions. </p>
 <h1><a class="anchor" id="THREE_PHASE_API_SUMMARY"></a>
 Summary</h1>
-<p>The Three-Phase interface provides functionality for synchronous start/stop/reset control of three timer channels for use in 3-phase motor control applications.</p>
-<p>Implemented by:</p><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html">General PWM Timer Three-Phase Motor Control Driver (r_gpt_three_phase)</a> </li>
-</ul>
+<p>The Three-Phase interface provides functionality for synchronous start/stop/reset control of three timer channels for use in 3-phase motor control applications. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -150,13 +215,15 @@ Enumerations</h2></td></tr>
 <td class="fieldname">
 duty[3]</td>
 <td class="fielddoc">
-Duty cycle. </td></tr>
+<p>Duty cycle. Note: When the GPT instances are configured in TIMER_MODE_TRIANGLE_WAVE_ASYMMETRIC_PWM_MODE3, this value sets the duty cycle count that is transfered to GTCCRA/B at the trough. </p>
+</td></tr>
 <tr><td class="fieldtype">
 <a id="a12e51857fcd253e9b3e35d1532e66694"></a>uint32_t</td>
 <td class="fieldname">
 duty_buffer[3]</td>
 <td class="fielddoc">
-Double-buffer for duty cycle values. </td></tr>
+<p>Double-buffer for duty cycle values. Note: When the GPT instances are configured in TIMER_MODE_TRIANGLE_WAVE_ASYMMETRIC_PWM_MODE3, this value sets the duty cycle count that is transfered to GTCCRA/B at the crest. </p>
+</td></tr>
 </table>
 
 </div>
@@ -192,7 +259,7 @@ Pointer to the timer instance structs. </td></tr>
 <td class="fieldname">
 callback_ch</td>
 <td class="fielddoc">
-Channel to enable callback when using <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ab9207f40fa1512f415d7968004a8310a">three_phase_api_t::callbackSet</a>. </td></tr>
+Channel to enable callback when using <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a554fd0df3e9a3c1e09a81daf956f2244">three_phase_api_t::callbackSet</a>. </td></tr>
 <tr><td class="fieldtype">
 <a id="aaeeda614c3c86c7619865f13b0600221"></a>uint32_t</td>
 <td class="fieldname">
@@ -240,12 +307,10 @@ Extension parameter for hardware specific settings. </td></tr>
 <tr class="separator:a7a17e3e7e2de1c1a9605a2eb34d3b82e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6b55c9d4c5fd7be3c1d4398acbce4fa7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a6b55c9d4c5fd7be3c1d4398acbce4fa7">dutyCycleSet</a> )(<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga4743a00c79aa11107190e48e8bce7c10">three_phase_ctrl_t</a> *const p_ctrl, <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#structthree__phase__duty__cycle__t">three_phase_duty_cycle_t</a> *const p_duty_cycle)</td></tr>
 <tr class="separator:a6b55c9d4c5fd7be3c1d4398acbce4fa7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9207f40fa1512f415d7968004a8310a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ab9207f40fa1512f415d7968004a8310a">callbackSet</a> )(<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga4743a00c79aa11107190e48e8bce7c10">three_phase_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ab9207f40fa1512f415d7968004a8310a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a554fd0df3e9a3c1e09a81daf956f2244"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a554fd0df3e9a3c1e09a81daf956f2244">callbackSet</a> )(<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga4743a00c79aa11107190e48e8bce7c10">three_phase_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:a554fd0df3e9a3c1e09a81daf956f2244"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aced10bd196df8bd3de4fff2bd52a2e07"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#aced10bd196df8bd3de4fff2bd52a2e07">close</a> )(<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga4743a00c79aa11107190e48e8bce7c10">three_phase_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:aced10bd196df8bd3de4fff2bd52a2e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e7304278e077e85972d4b0601a0880c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a7e7304278e077e85972d4b0601a0880c">versionGet</a> )(<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:a7e7304278e077e85972d4b0601a0880c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="a17727ce358ca8b02f4e1a060416302b1"></a>
@@ -259,10 +324,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initial configuration. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga776f6c4ff8d40a4d5c0407aa00ed05af">R_GPT_THREE_PHASE_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Initial configuration.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block. Must be declared by user. Elements set here. </td></tr>
@@ -284,10 +346,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Start all three timers synchronously. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga37d33bb736f75695d27f33a65ce4a0db">R_GPT_THREE_PHASE_Start()</a></li>
-</ul>
-</dd></dl>
+<p>Start all three timers synchronously.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a17727ce358ca8b02f4e1a060416302b1">three_phase_api_t::open</a> call for this timer. </td></tr>
@@ -308,10 +367,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Stop all three timers synchronously. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#gab8bf1f977b2cc935a07586a2472235af">R_GPT_THREE_PHASE_Stop()</a></li>
-</ul>
-</dd></dl>
+<p>Stop all three timers synchronously.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a17727ce358ca8b02f4e1a060416302b1">three_phase_api_t::open</a> call for this timer. </td></tr>
@@ -332,10 +388,7 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reset all three timers synchronously. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga4d18442f70dc7f5e314d50b5e9328c4c">R_GPT_THREE_PHASE_Reset()</a></li>
-</ul>
-</dd></dl>
+<p>Reset all three timers synchronously.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a17727ce358ca8b02f4e1a060416302b1">three_phase_api_t::open</a> call for this timer. </td></tr>
@@ -357,10 +410,6 @@ Extension parameter for hardware specific settings. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Sets the duty cycle match values. If the timer is counting, the updated duty cycle is reflected after the next timer expiration.</p>
-<dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga17a5ead483eb9c65c1c0e6aae4e968b0">R_GPT_THREE_PHASE_DutyCycleSet()</a></li>
-</ul>
-</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a17727ce358ca8b02f4e1a060416302b1">three_phase_api_t::open</a> call for this timer. </td></tr>
@@ -371,21 +420,18 @@ Extension parameter for hardware specific settings. </td></tr>
 
 </div>
 </div>
-<a id="ab9207f40fa1512f415d7968004a8310a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab9207f40fa1512f415d7968004a8310a">&#9670;&nbsp;</a></span>callbackSet</h2>
+<a id="a554fd0df3e9a3c1e09a81daf956f2244"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a554fd0df3e9a3c1e09a81daf956f2244">&#9670;&nbsp;</a></span>callbackSet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  three_phase_api_t::callbackSet) (<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga4743a00c79aa11107190e48e8bce7c10">three_phase_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  three_phase_api_t::callbackSet) (<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga4743a00c79aa11107190e48e8bce7c10">three_phase_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga594f201f422da410934d30f603b14d25">R_GPT_THREE_PHASE_CallbackSet()</a></li>
-</ul>
-</dd></dl>
+<p>Specify callback function and optional context pointer and working memory pointer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a17727ce358ca8b02f4e1a060416302b1">three_phase_api_t::open</a> call. </td></tr>
@@ -409,37 +455,10 @@ Extension parameter for hardware specific settings. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Allows driver to be reconfigured and may reduce power consumption. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga167be16a2fd664ff09a47e4bb200b175">R_GPT_THREE_PHASE_Close()</a></li>
-</ul>
-</dd></dl>
+<p>Allows driver to be reconfigured and may reduce power consumption.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a17727ce358ca8b02f4e1a060416302b1">three_phase_api_t::open</a> call for this timer. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a7e7304278e077e85972d4b0601a0880c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e7304278e077e85972d4b0601a0880c">&#9670;&nbsp;</a></span>versionGet</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  three_phase_api_t::versionGet) (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Get version and store it in provided pointer p_version. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#ga7b7215b57efb76b5eabed6a781727857">R_GPT_THREE_PHASE_VersionGet()</a></li>
-</ul>
-</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">p_version</td><td>Code and API version used. </td></tr>
   </table>
   </dd>
 </dl>
@@ -497,10 +516,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Three-Phase control block. Allocate an instance specific control block to pass into the timer API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___g_p_t___t_h_r_e_e___p_h_a_s_e.html#structgpt__three__phase__instance__ctrl__t">gpt_three_phase_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>Three-Phase control block. Allocate an instance specific control block to pass into the timer API calls. </p>
 
 </div>
 </div>
@@ -555,7 +571,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

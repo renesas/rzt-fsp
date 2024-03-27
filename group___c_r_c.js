@@ -1,8 +1,5 @@
 var group___c_r_c =
 [
-    [ "crc_extended_cfg_t", "group___c_r_c.html#structcrc__extended__cfg__t", [
-      [ "channel", "group___c_r_c.html#a7c855027a8434e5b9f2800a88e2bfed1", null ]
-    ] ],
     [ "crc_instance_ctrl_t", "group___c_r_c.html#structcrc__instance__ctrl__t", null ],
     [ "R_CRC_Open", "group___c_r_c.html#gae4cc2bba5d6aeaadd9f4d43948fca5ac", null ],
     [ "R_CRC_Close", "group___c_r_c.html#gab1ba556ab77f9f3d32ed5a448ebc7f9c", null ],

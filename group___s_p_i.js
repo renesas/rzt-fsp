@@ -12,11 +12,11 @@ var group___s_p_i =
       [ "mosi_idle", "group___s_p_i.html#ab68038f935c3fdc7c0fa921a67071b6d", null ],
       [ "parity", "group___s_p_i.html#aad6986d3ad4d3cb27f75daedd0340a2c", null ],
       [ "byte_swap", "group___s_p_i.html#aa3f17ea0c2b813af6cc166d0f58e8530", null ],
+      [ "clock_source", "group___s_p_i.html#a0d2c834435fe3377c14f44ce361586fd", null ],
       [ "spck_div", "group___s_p_i.html#af0de98ae20df43c8120d7f52fb45812b", null ],
       [ "spck_delay", "group___s_p_i.html#a8bdda055f1a900d547f922e9f4f15e26", null ],
       [ "ssl_negation_delay", "group___s_p_i.html#a7ccba130a8c80270295601d0ddee67c3", null ],
       [ "next_access_delay", "group___s_p_i.html#a60d68331597e3bce4f172ae22945aa26", null ],
-      [ "sync_bypass", "group___s_p_i.html#ad8559ec09742c8a9adb9a77dc483e480", null ],
       [ "transmit_fifo_threshold", "group___s_p_i.html#a190fd3ef8639224bb33df51dd18cb020", null ],
       [ "receive_fifo_threshold", "group___s_p_i.html#aaec4f30a0be22d7f1270c25c3a577c81", null ],
       [ "receive_data_ready_detect_adjustment", "group___s_p_i.html#ad7b4f59fbf21e9340b7f34735e8fc41d", null ]
@@ -74,16 +74,12 @@ var group___s_p_i =
       [ "SPI_DELAY_COUNT_7", "group___s_p_i.html#gga8461cfe39f136055edd0efc7a83990f5a0f72bd478dc2ba089f14454b522db55d", null ],
       [ "SPI_DELAY_COUNT_8", "group___s_p_i.html#gga8461cfe39f136055edd0efc7a83990f5ad68c3dccc8f97c7358e6b94ec5556f9a", null ]
     ] ],
-    [ "spi_synchronizer_t", "group___s_p_i.html#ga2e051b5e58408e87309d47b0d8c6865b", [
-      [ "SPI_SYNCHRONIZER_NOT_BYPASS", "group___s_p_i.html#gga2e051b5e58408e87309d47b0d8c6865bad27fd6312c59d246745ea1167e87a6d4", null ],
-      [ "SPI_SYNCHRONIZER_BYPASS", "group___s_p_i.html#gga2e051b5e58408e87309d47b0d8c6865baf1a393181759950183c8e0733b2a3fc7", null ]
-    ] ],
-    [ "R_SPI_Open", "group___s_p_i.html#ga4c30ef8817407bd4b394ee9cc8b90a0b", null ],
-    [ "R_SPI_Read", "group___s_p_i.html#ga9427801ef2c771a88fad0ab4524d7d42", null ],
-    [ "R_SPI_Write", "group___s_p_i.html#ga97b928cbe1a9df78d4ab5ff69732dbcd", null ],
-    [ "R_SPI_WriteRead", "group___s_p_i.html#ga459fb4dfcfc9ee278599ae431237f549", null ],
-    [ "R_SPI_CallbackSet", "group___s_p_i.html#ga2812fdb85312afcc52ef06c97f41fceb", null ],
-    [ "R_SPI_Close", "group___s_p_i.html#ga2130d38f52a95911a8f0cec6018ec041", null ],
-    [ "R_SPI_VersionGet", "group___s_p_i.html#ga1dab68b64b294d346c3ef3b69feba59b", null ],
-    [ "R_SPI_CalculateBitrate", "group___s_p_i.html#ga06b45c13797497f90c7ef8a20f3bff7f", null ]
+    [ "spi_clock_source_t", "group___s_p_i.html#ga7055185855bf3eb4b46fd5218ab6576a", null ],
+    [ "R_SPI_Open", "group___s_p_i.html#gadeb37176160c38ab3a4559e1ce75794b", null ],
+    [ "R_SPI_Read", "group___s_p_i.html#gaa2b6bd08f9b6e3247466a59f33058982", null ],
+    [ "R_SPI_Write", "group___s_p_i.html#ga3d063e7bf1d84a1d519d4836652b728f", null ],
+    [ "R_SPI_WriteRead", "group___s_p_i.html#gaecf92732364a285def798dfb6558c0f6", null ],
+    [ "R_SPI_Close", "group___s_p_i.html#ga5338c46a9d09b911dd65220273f81112", null ],
+    [ "R_SPI_CalculateBitrate", "group___s_p_i.html#ga668f3627ecd426d510b732ff71dd71fc", null ],
+    [ "R_SPI_CallbackSet", "group___s_p_i.html#gaee35af7ad07f6daae45cf06e89959f81", null ]
 ];

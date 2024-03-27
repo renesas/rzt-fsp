@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: General PWM Timer (r_gpt)</title>
+<title>RZT Flexible Software Package Documentation: General PWM Timer (r_gpt)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___g_p_t.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___g_p_t.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">General PWM Timer (r_gpt)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">General PWM Timer (r_gpt)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___m_o_d_u_l_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -129,12 +197,10 @@ Functions</h2></td></tr>
 <tr class="separator:gae204e5d6c9305923e98724005dcdf03d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga311c91c55f20338f7082fa4369e7c80f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_p_t.html#ga311c91c55f20338f7082fa4369e7c80f">R_GPT_AdcTriggerSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, <a class="el" href="group___g_p_t.html#ga2a838fffcbafd97778bbe3ffbfbf54b1">gpt_adc_compare_match_t</a> which_compare_match, uint32_t compare_match_value)</td></tr>
 <tr class="separator:ga311c91c55f20338f7082fa4369e7c80f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2a09de185d3b7f1c301b33330931bac4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_p_t.html#ga2a09de185d3b7f1c301b33330931bac4">R_GPT_CallbackSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga2a09de185d3b7f1c301b33330931bac4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga8d7038dbf5dabb43acbb7b74b4980e79"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_p_t.html#ga8d7038dbf5dabb43acbb7b74b4980e79">R_GPT_CallbackSet</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga8d7038dbf5dabb43acbb7b74b4980e79"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2fc5d6a737a00948802e2bb77fbe8d8c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_p_t.html#ga2fc5d6a737a00948802e2bb77fbe8d8c">R_GPT_Close</a> (<a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga2fc5d6a737a00948802e2bb77fbe8d8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga84b2245c5b4ed778ea2b220470ce69c5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_p_t.html#ga84b2245c5b4ed778ea2b220470ce69c5">R_GPT_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga84b2245c5b4ed778ea2b220470ce69c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the GPT peripherals on RZ microprocessor. This module implements the <a class="el" href="group___t_i_m_e_r___a_p_i.html">Timer Interface</a>. </p>
@@ -146,6 +212,7 @@ Overview</h1>
 Features</h2>
 <p>The GPT module has the following features:</p><ul>
 <li>Supports periodic mode, one-shot mode, and PWM mode.</li>
+<li>Supports phase counting mode.<a class="anchor" id="um_gpt_phase_counting"></a></li>
 <li>Supports count source of PCLK, GTETRG pins, GTIOC pins, or ELC events.<a class="anchor" id="um_gpt_event_count_gtetrg"></a><a class="anchor" id="um_gpt_event_count_gtioc"></a><a class="anchor" id="um_gpt_event_count_elc"></a></li>
 <li>Supports debounce filter on GTIOC pins.</li>
 <li>Signal can be output to a pin.<a class="anchor" id="um_gpt_output_disable_initialize"></a></li>
@@ -217,14 +284,24 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Disabled </td><td>If selected write protection is applied to all GPT channels. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Timers &gt; Timer Driver on r_gpt</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Timers &gt; Timer Driver on r_gpt.<br />
+ <h2>Configurations for Timers &gt; Timer, General PWM (r_gpt)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Timers &gt; Timer, General PWM (r_gpt).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
 <tr>
 <td>General &gt; Name</td><td>Name must be a valid C symbol</td><td>g_timer0 </td><td>Module name. </td></tr>
+<tr>
+<td>General &gt; Unit</td><td>Unit number must exist on this MCU</td><td>0 </td><td>Specify the hardware unit. </td></tr>
 <tr>
 <td>General &gt; Channel</td><td>Channel number must exist on this MCU</td><td>0 </td><td>Specify the hardware channel. </td></tr>
 <tr>
@@ -304,6 +381,38 @@ Pin Level High</li>
 <td>Input &gt; Count Up Source</td><td>MCU Specific Options</td><td></td><td>Select external source that will increment the counter. If any count up source is selected, the timer will count the external sources only. It will not count PCLKD cycles. </td></tr>
 <tr>
 <td>Input &gt; Count Down Source</td><td>MCU Specific Options</td><td></td><td>Select external source that will decrement the counter. If any count down source is selected, the timer will count the external sources only. It will not count PCLKD cycles. </td></tr>
+<tr>
+<td>Input &gt; Phase Count Setting Automatically Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable Phase Count Setting Automatically. </td></tr>
+<tr>
+<td>Input &gt; Counting Mode</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Mode1</li>
+<li>
+Mode2(00)</li>
+<li>
+Mode2(01)</li>
+<li>
+Mode2(1x)</li>
+<li>
+Mode3(00)</li>
+<li>
+Mode3(01)</li>
+<li>
+Mode3(1x)</li>
+<li>
+Mode4</li>
+<li>
+Mode5(0x)</li>
+<li>
+Mode5(1x)</li>
+</ul>
+</td><td>Mode1 </td><td>Phase count mode is count up or down operation mode by detecting the phase difference between the inputs on the GTIOCnA and GTIOCnB pins. </td></tr>
 <tr>
 <td>Input &gt; Start Source</td><td>MCU Specific Options</td><td></td><td>Select external source that will start the timer. <br />
 <br />
@@ -483,7 +592,7 @@ Crest and Trough (triangle)</li>
 </ul>
 </td><td>None </td><td>Interrupt source to count for interrupt skipping(GTEITC.EIVTC1) </td></tr>
 <tr>
-<td>Extra Features &gt; Extended Interrupt Skipping 1 &gt; Interrupt Skip Count</td><td>Refer to the RZ Configuration tool for available options.</td><td>0 </td><td>Number of interrupts to skip between events(GTEITC.EIVTT1) </td></tr>
+<td>Extra Features &gt; Extended Interrupt Skipping 1 &gt; Interrupt Skip Count</td><td>Refer to the RZT Configuration tool for available options.</td><td>0 </td><td>Number of interrupts to skip between events(GTEITC.EIVTT1) </td></tr>
 <tr>
 <td>Extra Features &gt; Extended Interrupt Skipping 2 &gt; Interrupt to Count</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -497,7 +606,7 @@ Crest and Trough (triangle)</li>
 </ul>
 </td><td>None </td><td>Interrupt source to count for interrupt skipping(GTEITC.EIVTC2) </td></tr>
 <tr>
-<td>Extra Features &gt; Extended Interrupt Skipping 2 &gt; Interrupt Skip Count</td><td>Refer to the RZ Configuration tool for available options.</td><td>0 </td><td>Number of interrupts to skip between events(GTEITC.EIVTT2) </td></tr>
+<td>Extra Features &gt; Extended Interrupt Skipping 2 &gt; Interrupt Skip Count</td><td>Refer to the RZT Configuration tool for available options.</td><td>0 </td><td>Number of interrupts to skip between events(GTEITC.EIVTT2) </td></tr>
 <tr>
 <td>Extra Features &gt; Input Capture Interrupt Extended Skipping Function &gt; Overflow Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -586,6 +695,38 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Enabled </td><td>Input Capture Operation Select at Count Stop. </td></tr>
+<tr>
+<td>ELC &gt; LLPP GPT event A &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger LLPP GPT event A. </td></tr>
+<tr>
+<td>ELC &gt; LLPP GPT event B &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger LLPP GPT event B. </td></tr>
+<tr>
+<td>ELC &gt; LLPP GPT event C &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger LLPP GPT event C. </td></tr>
+<tr>
+<td>ELC &gt; LLPP GPT event D &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger LLPP GPT event D. </td></tr>
+<tr>
+<td>ELC &gt; LLPP GPT event E &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger LLPP GPT event E. </td></tr>
+<tr>
+<td>ELC &gt; LLPP GPT event F &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger LLPP GPT event F. </td></tr>
+<tr>
+<td>ELC &gt; LLPP GPT event G &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger LLPP GPT event G. </td></tr>
+<tr>
+<td>ELC &gt; LLPP GPT event H &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger LLPP GPT event H. </td></tr>
+<tr>
+<td>ELC &gt; NONSAFTY GPT event A &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger NONSAFTY GPT event A. </td></tr>
+<tr>
+<td>ELC &gt; NONSAFTY GPT event B &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger NONSAFTY GPT event B. </td></tr>
+<tr>
+<td>ELC &gt; NONSAFTY GPT event C &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger NONSAFTY GPT event C. </td></tr>
+<tr>
+<td>ELC &gt; NONSAFTY GPT event D &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger NONSAFTY GPT event D. </td></tr>
+<tr>
+<td>ELC &gt; NONSAFTY GPT event E &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger NONSAFTY GPT event E. </td></tr>
+<tr>
+<td>ELC &gt; NONSAFTY GPT event F &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger NONSAFTY GPT event F. </td></tr>
+<tr>
+<td>ELC &gt; NONSAFTY GPT event G &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger NONSAFTY GPT event G. </td></tr>
+<tr>
+<td>ELC &gt; NONSAFTY GPT event H &gt; Trigger Source</td><td>MCU Specific Options</td><td></td><td>ELC source that will trigger NONSAFTY GPT event H. </td></tr>
 </table>
 </p>
 <h2><a class="anchor" id="r-gpt-clock-configuration"></a>
@@ -605,7 +746,7 @@ Usage Notes</h1>
 <h2>Updating Period and Duty Cycle</h2>
 <p>The period and duty cycle are updated after the next counter overflow after calling <a class="el" href="group___g_p_t.html#gafedbfd8bc3f534d06969588ff10a351b">R_GPT_PeriodSet()</a> or <a class="el" href="group___g_p_t.html#gad14bacf6fb7fce88f3e877160be529ea">R_GPT_DutyCycleSet()</a>. To force them to update before the next counter overflow, call <a class="el" href="group___g_p_t.html#ga5eb494add3d40775dbc48c5498e15a3a">R_GPT_Reset()</a> while the counter is running.</p>
 <h2>One-Shot Mode</h2>
-<p><a class="anchor" id="um_timer_one_shot_mode"></a> The GPT timer does not support one-shot mode natively. One-shot mode is achieved by stopping the timer in the interrupt service routine before the callback is called. If the interrupt is not serviced before the timer period expires again, the timer generates more than one event. The callback is only called once in this case, but multiple events may be generated if the timer is linked to the DTC.</p>
+<p><a class="anchor" id="um_timer_one_shot_mode"></a> The GPT timer does not support one-shot mode natively. One-shot mode is achieved by stopping the timer in the interrupt service routine before the callback is called. If the interrupt is not serviced before the timer period expires again, the timer generates more than one event. The callback is only called once in this case.</p>
 <h3>One-Shot Mode Output</h3>
 <p><a class="anchor" id="um_gpt_one_shot_output"></a> The output waveform in one-shot mode is one PCLK cycle less than the configured period. The configured period must be at least 2 counts to generate an output pulse.</p>
 <p>Examples of one-shot signals that can be generated by this module are shown below:</p>
@@ -633,7 +774,39 @@ GPT PWM Output</div></div>
 <object type="image/svg+xml" data="r_gpt_triangle_wave_pwm_output.svg">r_gpt_triangle_wave_pwm_output.svg</object>
 <div class="caption">
 GPT Triangle-Wave PWM Output</div></div>
- <h2>Event Counting</h2>
+ <h2>Phase Counting Mode</h2>
+<p>Phase count mode is count up or down operation mode by detecting the phase difference between the inputs on the GTIOCnA and GTIOCnB pins. For this operation, configure “Count Up Source” and “Count Down Source” appropriately. Example of setting for phase counting mode 1 are shown below.</p>
+<ul>
+<li>Case 1: Phase Count Setting Automatically Enable is Disabled.</li>
+</ul>
+<table class="doxtable">
+<tr>
+<th>Configuration</th><th>Options  </th></tr>
+<tr>
+<td>Input &gt; Phase Count Setting Automatically Enable</td><td>- Disabled </td></tr>
+<tr>
+<td>Input &gt; Count Up Source</td><td>- GTIOCA Rising Edge While GTIOCB Low<br />
+- GTIOCA Falling Edge While GTIOCB High<br />
+- GTIOCB Rising Edge While GTIOCA High<br />
+- GTIOCB Falling Edge While GTIOCA Low </td></tr>
+<tr>
+<td>Count &gt; Count Down Source</td><td>- GTIOCA Rising Edge While GTIOCB High<br />
+- GTIOCA Falling Edge While GTIOCB Low<br />
+- GTIOCB Rising Edge While GTIOCA Low<br />
+- GTIOCB Falling Edge While GTIOCA High </td></tr>
+</table>
+<ul>
+<li>Case 2: Phase Count Setting Automatically Enable is Enabled.</li>
+</ul>
+<table class="doxtable">
+<tr>
+<th>Configuration</th><th>Options  </th></tr>
+<tr>
+<td>Input &gt; Phase Count Setting Automatically Enable</td><td>- Enabled </td></tr>
+<tr>
+<td>Input &gt; Counting Mode</td><td>- Mode1 </td></tr>
+</table>
+<h2>Event Counting</h2>
 <p>Event counting can be done by selecting up or down counting sources from GTETRG pins, ELC events, or GTIOC pins. In event counting mode, the GPT counter is not affected by PCLK.</p>
 <dl class="section note"><dt>Note</dt><dd>In event counting mode, the application must call <a class="el" href="group___g_p_t.html#ga2769f9fda49613246bc84dba41aa4863">R_GPT_Start()</a> to enable event counting. The counter will not change after calling <a class="el" href="group___g_p_t.html#ga2769f9fda49613246bc84dba41aa4863">R_GPT_Start()</a> until an event occurs.</dd></dl>
 <h2>Pulse Measurement</h2>
@@ -674,7 +847,9 @@ Examples</h1>
 <p>This an example of updating the duty cycle.</p>
 <div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define GPT_EXAMPLE_DESIRED_DUTY_CYCLE_PERCENT    (25)</span></div><div class="line"><span class="preprocessor">#define GPT_EXAMPLE_MAX_PERCENT                   (100)</span></div><div class="line"></div><div class="line"><span class="comment">/* This example shows how to calculate a new duty cycle value at runtime. */</span></div><div class="line"><span class="keywordtype">void</span> gpt_duty_cycle_calculation_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#ga97d0a9c1a8fb6b88d1c12756dd8ce2d2">R_GPT_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___g_p_t.html#ga2769f9fda49613246bc84dba41aa4863">R_GPT_Start</a>(&amp;g_timer0_ctrl);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Get the current period setting. */</span></div><div class="line">    <a class="code" href="group___t_i_m_e_r___a_p_i.html#structtimer__info__t">timer_info_t</a> info;</div><div class="line">    (void) <a class="code" href="group___g_p_t.html#gaca62ac33de2c05918b0fc359aeaebd97">R_GPT_InfoGet</a>(&amp;g_timer0_ctrl, &amp;info);</div><div class="line">    uint32_t current_period_counts = info.<a class="code" href="group___t_i_m_e_r___a_p_i.html#a08b897cfbf2d0cefafe8d3abb1afc747">period_counts</a>;</div><div class="line"></div><div class="line">    <span class="comment">/* Calculate the desired duty cycle based on the current period. Note that if the period could be larger than</span></div><div class="line"><span class="comment">     * UINT32_MAX / 100, this calculation could overflow. A cast to uint64_t is used to prevent this. The cast is</span></div><div class="line"><span class="comment">     * not required for 16-bit timers. */</span></div><div class="line">    uint32_t duty_cycle_counts =</div><div class="line">        (uint32_t) (((uint64_t) current_period_counts * GPT_EXAMPLE_DESIRED_DUTY_CYCLE_PERCENT) /</div><div class="line">                    GPT_EXAMPLE_MAX_PERCENT);</div><div class="line"></div><div class="line">    <span class="comment">/* Set the calculated duty cycle. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#gad14bacf6fb7fce88f3e877160be529ea">R_GPT_DutyCycleSet</a>(&amp;g_timer0_ctrl, duty_cycle_counts, <a class="code" href="group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60aebd74a7b9507fb082ec4cce60ebe9369">GPT_IO_PIN_GTIOCB</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>GPT A/D Converter Start Request Example</h2>
 <p>This is an example of using the GPT to start the ADC at a configurable A/D converter compare match value.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* This example shows how to configure the GPT to generate an A/D start request at an A/D start request compare</span></div><div class="line"><span class="comment"> * match value. This example can only be used with GPT variants. */</span></div><div class="line"><span class="keywordtype">void</span> gpt_adc_start_request_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize and configure the ELC. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga35864de459d2ef45a03da4343729712f">R_ELC_Open</a>(&amp;g_elc_ctrl, &amp;g_elc_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Configure the ELC to start a scan on ADC unit 0 when GPT channel 0. Note: This is typically configured in</span></div><div class="line"><span class="comment">     * g_elc_cfg and already set during R_ELC_Open. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga4b40a4cb59194b6315cf608cd5e36bd9">R_ELC_LinkSet</a>(&amp;g_elc_ctrl, ELC_PERIPHERAL_ADC0_A, ELC_EVENT_GPT0_ADTRGA);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Globally enable ELC events. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga4bcac22edb575069ba86d87ce9aea84c">R_ELC_Enable</a>(&amp;g_elc_ctrl);</div><div class="line">    handle_error(err);</div><div class="line"><span class="preprocessor">#if 0                                  </span><span class="comment">/* TO DO VER100 */</span><span class="preprocessor"></span></div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the ADC to start a scan based on an ELC event trigger. Set adc_cfg_t::trigger to</span></div><div class="line"><span class="comment">     * ADC_TRIGGER_SYNC_ELC.  */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac">R_ADC_Open</a>(&amp;g_adc0_ctrl, &amp;g_adc0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    err = <a class="code" href="group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88">R_ADC_ScanCfg</a>(&amp;g_adc0_ctrl, &amp;g_adc0_channel_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable ELC triggers by calling R_ADC_ScanStart(). */</span></div><div class="line">    (void) <a class="code" href="group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2">R_ADC_ScanStart</a>(&amp;g_adc0_ctrl);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the GPT module. Configure gpt_extended_pwm_cfg_t::adc_trigger to set when the A/D start request</span></div><div class="line"><span class="comment">     * is generated. Set gpt_extended_pwm_cfg_t::adc_a_compare_match to set the desired compare match value. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#ga97d0a9c1a8fb6b88d1c12756dd8ce2d2">R_GPT_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. A/D converter start request events are generated each time the counter is equal to the</span></div><div class="line"><span class="comment">     * A/D start request compare match value. */</span></div><div class="line">    (void) <a class="code" href="group___g_p_t.html#ga2769f9fda49613246bc84dba41aa4863">R_GPT_Start</a>(&amp;g_timer0_ctrl);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* This example shows how to configure the GPT to generate an A/D start request at an A/D start request compare</span></div><div class="line"><span class="comment"> * match value. This example can only be used with GPT variants. */</span></div><div class="line"><span class="keywordtype">void</span> gpt_adc_start_request_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize and configure the ELC. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga35864de459d2ef45a03da4343729712f">R_ELC_Open</a>(&amp;g_elc_ctrl, &amp;g_elc_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Configure the ELC to start a scan on ADC unit 0 when GPT channel 0. Note: This is typically configured in</span></div><div class="line"><span class="comment">     * g_elc_cfg and already set during R_ELC_Open. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga4b40a4cb59194b6315cf608cd5e36bd9">R_ELC_LinkSet</a>(&amp;g_elc_ctrl, ELC_PERIPHERAL_ADC0_A, ELC_EVENT_GPT0_ADTRGA);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Globally enable ELC events. */</span></div><div class="line">    err = <a class="code" href="group___e_l_c.html#ga4bcac22edb575069ba86d87ce9aea84c">R_ELC_Enable</a>(&amp;g_elc_ctrl);</div><div class="line">    handle_error(err);</div><div class="line"><span class="preprocessor">#if 0                                  </span><span class="comment">/* TO DO VER100 */</span><span class="preprocessor"></span></div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the ADC to start a scan based on an ELC event trigger. Set adc_cfg_t::trigger to</span></div><div class="line"><span class="comment">     * ADC_TRIGGER_SYNC_ELC.  */</span></div><div class="line">    err = <a class="code" href="group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac">R_ADC_Open</a>(&amp;g_adc0_ctrl, &amp;g_adc0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    err = <a class="code" href="group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88">R_ADC_ScanCfg</a>(&amp;g_adc0_ctrl, &amp;g_adc0_channel_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable ELC triggers by calling R_ADC_ScanStart(). */</span></div><div class="line">    (void) <a class="code" href="group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2">R_ADC_ScanStart</a>(&amp;g_adc0_ctrl);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the GPT module. Configure gpt_extended_pwm_cfg_t::adc_trigger to set when the A/D start request</span></div><div class="line"><span class="comment">     * is generated. Set gpt_extended_pwm_cfg_t::adc_a_compare_match to set the desired compare match value. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#ga97d0a9c1a8fb6b88d1c12756dd8ce2d2">R_GPT_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. A/D converter start request events are generated each time the counter is equal to the</span></div><div class="line"><span class="comment">     * A/D start request compare match value. */</span></div><div class="line">    (void) <a class="code" href="group___g_p_t.html#ga2769f9fda49613246bc84dba41aa4863">R_GPT_Start</a>(&amp;g_timer0_ctrl);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>GPT phase count Basic Example</h2>
+<p>This is an example of using the GPT to operate phase counting mode.</p>
+<div class="fragment"><div class="line"></div><div class="line"><span class="keywordtype">void</span> gpt_phase_count_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#ga97d0a9c1a8fb6b88d1c12756dd8ce2d2">R_GPT_Open</a>(&amp;g_timer0_ctrl, &amp;g_timer0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    err = <a class="code" href="group___g_p_t.html#ga2769f9fda49613246bc84dba41aa4863">R_GPT_Start</a>(&amp;g_timer0_ctrl);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Get phase counting information. Counter value is in status.counter. */</span></div><div class="line">    <a class="code" href="group___t_i_m_e_r___a_p_i.html#structtimer__status__t">timer_status_t</a> status;</div><div class="line">    err = <a class="code" href="group___g_p_t.html#gaa6234faf45320a83382d7ea1923a2c49">R_GPT_StatusGet</a>(&amp;g_timer0_ctrl, &amp;status);</div><div class="line">    handle_error(err);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structgpt__output__pin__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___g_p_t.html#structgpt__output__pin__t">gpt_output_pin_t</a></td></tr>
@@ -988,13 +1163,13 @@ count_down_source</td>
 <td class="fieldname">
 capture_filter_gtioca</td>
 <td class="fielddoc">
-</td></tr>
+Debounce filter for GTIOCxA input signal pin. </td></tr>
 <tr><td class="fieldtype">
 <a id="a3ba662387c753b54c5509f283ff1857e"></a><a class="el" href="group___g_p_t.html#ga4781e2b42b2ef339318ea0a70b250cd5">gpt_capture_filter_t</a></td>
 <td class="fieldname">
 capture_filter_gtiocb</td>
 <td class="fielddoc">
-</td></tr>
+Debounce filter for GTIOCxB input signal pin. </td></tr>
 <tr><td class="fieldtype">
 <a id="a7e5402bac34e2c3d3006b68ee0b8ab2a"></a>uint8_t</td>
 <td class="fieldname">
@@ -1994,8 +2169,8 @@ Advanced PWM features, optional. </td></tr>
 
 </div>
 </div>
-<a id="ga2a09de185d3b7f1c301b33330931bac4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2a09de185d3b7f1c301b33330931bac4">&#9670;&nbsp;</a></span>R_GPT_CallbackSet()</h2>
+<a id="ga8d7038dbf5dabb43acbb7b74b4980e79"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga8d7038dbf5dabb43acbb7b74b4980e79">&#9670;&nbsp;</a></span>R_GPT_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -2004,7 +2179,7 @@ Advanced PWM features, optional. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GPT_CallbackSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___t_i_m_e_r___a_p_i.html#ga2da99b474151cb687d5882ad21b09c2a">timer_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -2031,7 +2206,7 @@ Advanced PWM features, optional. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#a1b2c51a519145c2482ca2fb6b4b3d749">timer_api_t::callbackSet</a>.</p>
+<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#ad2569f06e8034790e7b363142d93a816">timer_api_t::callbackSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
@@ -2070,39 +2245,13 @@ Advanced PWM features, optional. </td></tr>
 
 </div>
 </div>
-<a id="ga84b2245c5b4ed778ea2b220470ce69c5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga84b2245c5b4ed778ea2b220470ce69c5">&#9670;&nbsp;</a></span>R_GPT_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GPT_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Sets driver version based on compile time macros. Implements <a class="el" href="group___t_i_m_e_r___a_p_i.html#afd486e90a2c3214bdf156ab47560d236">timer_api_t::versionGet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version stored in p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version was NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

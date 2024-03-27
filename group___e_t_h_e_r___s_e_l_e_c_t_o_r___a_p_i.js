@@ -1,7 +1,7 @@
 var group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i =
 [
     [ "ether_selector_cfg_t", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#structether__selector__cfg__t", [
-      [ "port", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a0eebc3c6e8d867e38d7bf9ee1747d7e8", null ],
+      [ "channel", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a553c288b0d346833c9b9d2f12db5e4ad", null ],
       [ "phylink", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a3e809fee11bbab62cb3ab788ae95bfb5", null ],
       [ "interface", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a7a5028a8f584d92aea2cce74974612ba", null ],
       [ "speed", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a304264976ea91191c426a1518d557471", null ],
@@ -12,8 +12,7 @@ var group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i =
     [ "ether_selector_api_t", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#structether__selector__api__t", [
       [ "open", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a0aaceb412ef15b435c6cfc725733c640", null ],
       [ "close", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a68e5ff8636b251712e5f947169d1de68", null ],
-      [ "converterSet", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ae6e21f979464b89e5a2d57cd22c304df", null ],
-      [ "versionGet", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a8de451c96e04a19cf19a85d7f68227df", null ]
+      [ "converterSet", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ae6e21f979464b89e5a2d57cd22c304df", null ]
     ] ],
     [ "ether_selector_instance_t", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#structether__selector__instance__t", [
       [ "p_ctrl", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#a628df81d3947b1bc25611ec0b585ee5a", null ],
@@ -32,9 +31,9 @@ var group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i =
       [ "ETHER_SELECTOR_INTERFACE_RGMII", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#gga2b352da8f6a392f8a3815c8db09fede9a8bcbc70bdd20aa12141001ed9ad0d33f", null ]
     ] ],
     [ "ether_selector_speed_t", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#gada056d5471504dc225d11ec1c6ec2b14", [
-      [ "ETHER_SELECTOR_SPEED_10MBPS", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ggada056d5471504dc225d11ec1c6ec2b14ac6658976573154bd1801925cd2a71877", null ],
-      [ "ETHER_SELECTOR_SPEED_100MBPS", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ggada056d5471504dc225d11ec1c6ec2b14a7ba5b64230b75b4b12c15977be499467", null ],
-      [ "ETHER_SELECTOR_SPEED_1000MBPS", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ggada056d5471504dc225d11ec1c6ec2b14a1ede13939bd3031ea74920bf9ba3c5f3", null ]
+      [ "ETHER_SELECTOR_SPEED_10_MBPS", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ggada056d5471504dc225d11ec1c6ec2b14a92839940d33bf448cf51aa35841de0ac", null ],
+      [ "ETHER_SELECTOR_SPEED_100_MBPS", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ggada056d5471504dc225d11ec1c6ec2b14a4d814e6c227f09e08d35a7f2f8f8185c", null ],
+      [ "ETHER_SELECTOR_SPEED_1000_MBPS", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ggada056d5471504dc225d11ec1c6ec2b14a62fa861b4af8101cf149350bdc152e27", null ]
     ] ],
     [ "ether_selector_duplex_t", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ga3db76c7b531d804078d6b414d3cef621", [
       [ "ETHER_SELECTOR_DUPLEX_HALF", "group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#gga3db76c7b531d804078d6b414d3cef621a72202872b20eead7f0c559685eb521f7", null ],

@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Clock Generation Circuit (r_cgc)</title>
+<title>RZT Flexible Software Package Documentation: Clock Generation Circuit (r_cgc)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___c_g_c.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,29 @@ $(document).ready(function(){initNavTree('group___c_g_c.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
-<a href="#nested-classes">Data Structures</a> &#124;
-<a href="#enum-members">Enumerations</a>  </div>
+<a href="#nested-classes">Data Structures</a>  </div>
   <div class="headertitle">
-<div class="title">Clock Generation Circuit (r_cgc)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Clock Generation Circuit (r_cgc)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___m_o_d_u_l_e_s.html">System</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -109,24 +176,22 @@ Functions</h2></td></tr>
 <tr class="separator:ga9c6dbd3c1987e7b4b24c1e9a481ce24d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6f3141746cc5f5662df296769487e224"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga6f3141746cc5f5662df296769487e224">R_CGC_ClockStop</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a> clock_source)</td></tr>
 <tr class="separator:ga6f3141746cc5f5662df296769487e224"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7f14fdc1ec5733550f503bd6868f98cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga7f14fdc1ec5733550f503bd6868f98cd">R_CGC_SystemClockSet</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a> clock_source, <a class="el" href="group___c_g_c___a_p_i.html#unioncgc__divider__cfg__t">cgc_divider_cfg_t</a> const *const p_divider_cfg)</td></tr>
-<tr class="separator:ga7f14fdc1ec5733550f503bd6868f98cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga52e037474dd1e9ebd92c3e3746517557"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga52e037474dd1e9ebd92c3e3746517557">R_CGC_SystemClockGet</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a> *const p_clock_source, <a class="el" href="group___c_g_c___a_p_i.html#unioncgc__divider__cfg__t">cgc_divider_cfg_t</a> *const p_divider_cfg)</td></tr>
-<tr class="separator:ga52e037474dd1e9ebd92c3e3746517557"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga37d44db762e24e44085a7c07228acaf9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga37d44db762e24e44085a7c07228acaf9">R_CGC_ClockCheck</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a> clock_source)</td></tr>
 <tr class="separator:ga37d44db762e24e44085a7c07228acaf9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga7f14fdc1ec5733550f503bd6868f98cd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga7f14fdc1ec5733550f503bd6868f98cd">R_CGC_SystemClockSet</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a> clock_source, <a class="el" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t">cgc_divider_cfg_t</a> const *const p_divider_cfg)</td></tr>
+<tr class="separator:ga7f14fdc1ec5733550f503bd6868f98cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga52e037474dd1e9ebd92c3e3746517557"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga52e037474dd1e9ebd92c3e3746517557">R_CGC_SystemClockGet</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a> *const p_clock_source, <a class="el" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t">cgc_divider_cfg_t</a> *const p_divider_cfg)</td></tr>
+<tr class="separator:ga52e037474dd1e9ebd92c3e3746517557"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1991738554628217261f4044dea44c1b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga1991738554628217261f4044dea44c1b">R_CGC_OscStopDetectEnable</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga1991738554628217261f4044dea44c1b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1a02897dd353e879f32de19f7a4fd283"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga1a02897dd353e879f32de19f7a4fd283">R_CGC_OscStopDetectDisable</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga1a02897dd353e879f32de19f7a4fd283"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga00fa9cabb71b0cc504aa413c0d48b916"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga00fa9cabb71b0cc504aa413c0d48b916">R_CGC_OscStopStatusClear</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga00fa9cabb71b0cc504aa413c0d48b916"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga300b8011ca9bd0c77130c60c3874d7a4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga300b8011ca9bd0c77130c60c3874d7a4">R_CGC_CallbackSet</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___c_g_c___a_p_i.html#structcgc__callback__args__t">cgc_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___c_g_c___a_p_i.html#structcgc__callback__args__t">cgc_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga300b8011ca9bd0c77130c60c3874d7a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6cff359496dfa7853159b22331377607"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga6cff359496dfa7853159b22331377607">R_CGC_CallbackSet</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___c_g_c___a_p_i.html#structcgc__callback__args__t">cgc_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___c_g_c___a_p_i.html#structcgc__callback__args__t">cgc_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga6cff359496dfa7853159b22331377607"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf4a220e7ffbeb997676ba5d84a8c7983"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#gaf4a220e7ffbeb997676ba5d84a8c7983">R_CGC_Close</a> (<a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:gaf4a220e7ffbeb997676ba5d84a8c7983"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4b1b84b0479f23618f215aee9a16b587"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga4b1b84b0479f23618f215aee9a16b587">R_CGC_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga4b1b84b0479f23618f215aee9a16b587"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the CGC peripheral on RZ microprocessor. This module implements the <a class="el" href="group___c_g_c___a_p_i.html">CGC Interface</a>. </p>
@@ -192,8 +257,8 @@ Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; System &gt; CGC Driver on r_cgc</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; System &gt; CGC Driver on r_cgc.<br />
+ <h2>Configurations for System &gt; Clock Generation Circuit (r_cgc)</h2>
+This module can be added to the Stacks tab via New Stack &gt; System &gt; Clock Generation Circuit (r_cgc).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -213,220 +278,15 @@ Starting or Stopping the low-speed on-chip oscillator (LOCO).</h2>
 Examples</h1>
 <h2>Basic Example</h2>
 <p>This is a basic example of minimal use of the CGC in an application.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">void</span> cgc_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the CGC module. */</span></div><div class="line">    err = <a class="code" href="group___c_g_c.html#ga84e412218c7f8074623d521bfc331a3c">R_CGC_Open</a>(&amp;g_cgc0_ctrl, &amp;g_cgc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Set divisors for CPU0  (and CPU1) clock to run at maximum frequency at 800 MHz. */</span></div><div class="line">    <a class="code" href="group___c_g_c.html#structcgc__clock__extend__cfg__t">cgc_clock_extend_cfg_t</a> clock_extend;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#a24c9cea1aafb7af48e692fb2290f8c06">fsel0cr52</a> = <a class="code" href="group___c_g_c.html#ggaea6a34c176bc7f54fbd95b9a79dc91f9a8b430a5434b986d8eba65b740f8b489e">CGC_CPU_CLOCK_DIV_1</a>;</div><div class="line"><span class="preprocessor">#if BSP_FEATURE_BSP_CPU1_SUPPORTED</span></div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#acaad80abb4472b125d5edfca416ee2ff">fsel1cr52</a> = <a class="code" href="group___c_g_c.html#ggaea6a34c176bc7f54fbd95b9a79dc91f9a8b430a5434b986d8eba65b740f8b489e">CGC_CPU_CLOCK_DIV_1</a>;</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#a3eda25afe2279eb5f08cf6320bbc7710">div_sub_sel</a> = <a class="code" href="group___c_g_c.html#ggad49c7e4fb34817f7792071757fc43eb8a568459c38ae5b7e4f003725b26940aa1">CGC_BASECLOCK_DIV_3</a>;</div><div class="line"></div><div class="line">    <span class="comment">/* The following settings are not intended to be changed, so set the default values. */</span></div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#a9611fae3323a0e57595abd10e616fbc0">spi3_async_sel</a> = <a class="code" href="group___c_g_c.html#ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b">CGC_SPI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#a2843d084cece337bf7bafd11cb493658">sci5_async_sel</a> = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line"></div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#ad696145dc65c36f8ca2f37ea328babab">fselxspi0_div</a>  = <a class="code" href="group___c_g_c.html#gga0b75c9c87f838ed5f90062bef3a8dbd9a58d933d5d50940807520346e0a00ebee">CGC_XSPI_CLOCK_DIV_192</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#aac970d455c0b285aebb15e3d30ccb5f8">fselxspi1_div</a>  = <a class="code" href="group___c_g_c.html#gga0b75c9c87f838ed5f90062bef3a8dbd9a58d933d5d50940807520346e0a00ebee">CGC_XSPI_CLOCK_DIV_192</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a14e15929d66d010f674bb522d5ffc73b">ckio_div</a>       = <a class="code" href="group___c_g_c.html#gga2ce676f078fa818fb2b704718063808ca8a8f6d15210b36c285cbafd9be06666c">CGC_CLOCK_OUT_CLOCK_DIV_4</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a58988f4d3a5964c07f4d703127f0c633">fselcanfd_div</a>  = <a class="code" href="group___c_g_c.html#gga247a12686e928758d2572f25047758faa313a81384902525edb479971cc6096aa">CGC_CANFD_CLOCK_DIV_20</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#ab7312bdede2e12ee3b5b0ac0b44d75f3">phy_sel</a>        = <a class="code" href="group___c_g_c.html#gga4864f07ec76a0c0f126ea1a662c7f65ea3f55a9cfc7ef5bb96892e6c5cbb67b9f">CGC_PHY_CLOCK_MAIN_OSC</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#aa45755a0fb98c5f20b894675bef3eaa6">spi0_async_sel</a> = <a class="code" href="group___c_g_c.html#ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b">CGC_SPI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a378f22954a792f630167ac2ff45b6df3">spi1_async_sel</a> = <a class="code" href="group___c_g_c.html#ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b">CGC_SPI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#ae7f08e8fa2d69d80e5ee993c689491bf">spi2_async_sel</a> = <a class="code" href="group___c_g_c.html#ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b">CGC_SPI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a4c6a04c055c9e48e4cd58e844a79adc0">sci0_async_sel</a> = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#aa4198fb7063ef2cb4edd0bd699098fd4">sci1_async_sel</a> = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a2641362291d16c69b33a7033d54d4d48">sci2_async_sel</a> = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a5756545c6856175059c9ff72a80e6a60">sci3_async_sel</a> = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#ac273259f12963f8998186fd5ed7280ff">sci4_async_sel</a> = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#a9f3c7b7b2d2ecb45b31db51e79142e83">pll1_state</a>           = <a class="code" href="group___c_g_c___a_p_i.html#gga67f8525be602a7cce075f0b33d5f2ad8a4778b4e094845ab42e902ffc9a68842c">CGC_CLOCK_CHANGE_NONE</a>;</div><div class="line"></div><div class="line">    <span class="comment">/* Skip other divisors */</span></div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#unioncgc__divider__cfg__t">cgc_divider_cfg_t</a> dividers;</div><div class="line">    dividers.iclk_div  = CGC_SYS_CLOCK_DIV_UNSUPPORTED; <span class="comment">// unused by RZ microprocessor</span></div><div class="line">    dividers.pclka_div = CGC_SYS_CLOCK_DIV_UNSUPPORTED; <span class="comment">// unused by RZ microprocessor</span></div><div class="line">    dividers.pclkb_div = CGC_SYS_CLOCK_DIV_UNSUPPORTED; <span class="comment">// unused by RZ microprocessor</span></div><div class="line">    dividers.pclkc_div = CGC_SYS_CLOCK_DIV_UNSUPPORTED; <span class="comment">// unused by RZ microprocessor</span></div><div class="line">    dividers.pclkd_div = CGC_SYS_CLOCK_DIV_UNSUPPORTED; <span class="comment">// unused by RZ microprocessor</span></div><div class="line">    dividers.bclk_div  = CGC_SYS_CLOCK_DIV_UNSUPPORTED; <span class="comment">// unused by RZ microprocessor</span></div><div class="line">    dividers.fclk_div  = CGC_SYS_CLOCK_DIV_UNSUPPORTED; <span class="comment">// unused by RZ microprocessor</span></div><div class="line">    dividers.p_extend  = &amp;clock_extend;</div><div class="line"></div><div class="line">    <span class="comment">/* Apply divisors to CPU0 clock. */</span></div><div class="line">    err = <a class="code" href="group___c_g_c.html#ga7f14fdc1ec5733550f503bd6868f98cd">R_CGC_SystemClockSet</a>(&amp;g_cgc0_ctrl, <a class="code" href="group___c_g_c___a_p_i.html#gga4dcbe960cf591207eef834969b83f8a6a14141e6db3711cbc45bb67a3704b3ac3">CGC_CLOCK_PLL</a>, &amp;dividers);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Configuring Multiple Clocks</h2>
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> cgc_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the CGC module. */</span></div><div class="line">    err = <a class="code" href="group___c_g_c.html#ga84e412218c7f8074623d521bfc331a3c">R_CGC_Open</a>(&amp;g_cgc0_ctrl, &amp;g_cgc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Set divisors for CPU0  (and CPU1) clock to run at maximum frequency at 800 MHz.</span></div><div class="line"><span class="comment">     * Clock settings other than CPU are not intended to be changed, so set the default values. */</span></div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t">cgc_divider_cfg_t</a> dividers =</div><div class="line">    {</div><div class="line">        .sckcr_b.fselxspi0      = CGC_FSEL_XSPI_CLOCK_DIV_64,</div><div class="line">        .sckcr_b.divselxspi0    = CGC_DIVSEL_XSPI_CLOCK_DIV_3,</div><div class="line">        .sckcr_b.fselxspi1      = CGC_FSEL_XSPI_CLOCK_DIV_64,</div><div class="line">        .sckcr_b.divselxspi1    = CGC_DIVSEL_XSPI_CLOCK_DIV_3,</div><div class="line">        .sckcr_b.ckio_div       = CGC_CLOCK_OUT_CLOCK_DIV_4,</div><div class="line">        .sckcr_b.fselcanfd_div  = CGC_CANFD_CLOCK_DIV_20,</div><div class="line">        .sckcr_b.phy_sel        = CGC_PHY_CLOCK_MAIN_OSC,</div><div class="line">        .sckcr_b.spi0_async_sel = CGC_SPI_ASYNC_CLOCK_96MHZ,</div><div class="line">        .sckcr_b.spi1_async_sel = CGC_SPI_ASYNC_CLOCK_96MHZ,</div><div class="line">        .sckcr_b.spi2_async_sel = CGC_SPI_ASYNC_CLOCK_96MHZ,</div><div class="line">        .sckcr_b.sci0_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ,</div><div class="line">        .sckcr_b.sci1_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ,</div><div class="line">        .sckcr_b.sci2_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ,</div><div class="line">        .sckcr_b.sci3_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ,</div><div class="line">        .sckcr_b.sci4_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ,</div><div class="line"></div><div class="line">        .sckcr2_b.fsel0cr52      = CGC_CPU_CLOCK_DIV_1,</div><div class="line"><span class="preprocessor">#if 2 == BSP_FEATURE_BSP_CR52_CORE_NUM</span></div><div class="line">        .sckcr2_b.fsel1cr52      = CGC_CPU_CLOCK_DIV_1,</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line">        .sckcr2_b.div_sub_sel    = CGC_BASECLOCK_DIV_3,</div><div class="line">        .sckcr2_b.spi3_async_sel = CGC_SPI_ASYNC_CLOCK_96MHZ,</div><div class="line">        .sckcr2_b.sci5_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ,</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Apply divisors to CPU0 clock. */</span></div><div class="line">    err = <a class="code" href="group___c_g_c.html#ga7f14fdc1ec5733550f503bd6868f98cd">R_CGC_SystemClockSet</a>(&amp;g_cgc0_ctrl, <a class="code" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6a48802b93f6055b1194a32a17b867af4e">CGC_CLOCK_PLL0</a>, &amp;dividers);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Configuring Multiple Clocks</h2>
 <p>This example demonstrates configuring multiple clocks in a single function call using <a class="el" href="group___c_g_c.html#ga203fc7fb47f71f67b1ce1c17cea0ec04">R_CGC_ClocksCfg()</a>.</p>
-<div class="fragment"><div class="line"><span class="keywordtype">void</span> cgc_clocks_cfg_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the CGC module. */</span></div><div class="line">    err = <a class="code" href="group___c_g_c.html#ga84e412218c7f8074623d521bfc331a3c">R_CGC_Open</a>(&amp;g_cgc0_ctrl, &amp;g_cgc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Set divisors for CPU0 (and CPU1) clock to run at minimum frequency at 150 MHz. */</span></div><div class="line">    <a class="code" href="group___c_g_c.html#structcgc__clock__extend__cfg__t">cgc_clock_extend_cfg_t</a> clock_extend;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#a24c9cea1aafb7af48e692fb2290f8c06">fsel0cr52</a> = <a class="code" href="group___c_g_c.html#ggaea6a34c176bc7f54fbd95b9a79dc91f9ae26edd0edee9fe9623b71c5db412935b">CGC_CPU_CLOCK_DIV_4</a>;</div><div class="line"><span class="preprocessor">#if BSP_FEATURE_BSP_CPU1_SUPPORTED</span></div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#acaad80abb4472b125d5edfca416ee2ff">fsel1cr52</a> = <a class="code" href="group___c_g_c.html#ggaea6a34c176bc7f54fbd95b9a79dc91f9ae26edd0edee9fe9623b71c5db412935b">CGC_CPU_CLOCK_DIV_4</a>;</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#a3eda25afe2279eb5f08cf6320bbc7710">div_sub_sel</a> = <a class="code" href="group___c_g_c.html#ggad49c7e4fb34817f7792071757fc43eb8a94002e8f4238d38986b1e529982a11c5">CGC_BASECLOCK_DIV_4</a>;</div><div class="line"></div><div class="line">    <span class="comment">/* The following settings are not intended to be changed, so set the default values. */</span></div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#a9611fae3323a0e57595abd10e616fbc0">spi3_async_sel</a> = <a class="code" href="group___c_g_c.html#ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b">CGC_SPI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#afa62fc726f693edb6d44fd1ef6f561bc">sckcr2</a>.<a class="code" href="group___c_g_c.html#a2843d084cece337bf7bafd11cb493658">sci5_async_sel</a> = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#ad696145dc65c36f8ca2f37ea328babab">fselxspi0_div</a>   = <a class="code" href="group___c_g_c.html#gga0b75c9c87f838ed5f90062bef3a8dbd9a58d933d5d50940807520346e0a00ebee">CGC_XSPI_CLOCK_DIV_192</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#aac970d455c0b285aebb15e3d30ccb5f8">fselxspi1_div</a>   = <a class="code" href="group___c_g_c.html#gga0b75c9c87f838ed5f90062bef3a8dbd9a58d933d5d50940807520346e0a00ebee">CGC_XSPI_CLOCK_DIV_192</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a14e15929d66d010f674bb522d5ffc73b">ckio_div</a>        = <a class="code" href="group___c_g_c.html#gga2ce676f078fa818fb2b704718063808ca8a8f6d15210b36c285cbafd9be06666c">CGC_CLOCK_OUT_CLOCK_DIV_4</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a58988f4d3a5964c07f4d703127f0c633">fselcanfd_div</a>   = <a class="code" href="group___c_g_c.html#gga247a12686e928758d2572f25047758faa313a81384902525edb479971cc6096aa">CGC_CANFD_CLOCK_DIV_20</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#ab7312bdede2e12ee3b5b0ac0b44d75f3">phy_sel</a>         = <a class="code" href="group___c_g_c.html#gga4864f07ec76a0c0f126ea1a662c7f65ea3f55a9cfc7ef5bb96892e6c5cbb67b9f">CGC_PHY_CLOCK_MAIN_OSC</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#aa45755a0fb98c5f20b894675bef3eaa6">spi0_async_sel</a>  = <a class="code" href="group___c_g_c.html#ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b">CGC_SPI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a378f22954a792f630167ac2ff45b6df3">spi1_async_sel</a>  = <a class="code" href="group___c_g_c.html#ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b">CGC_SPI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#ae7f08e8fa2d69d80e5ee993c689491bf">spi2_async_sel</a>  = <a class="code" href="group___c_g_c.html#ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b">CGC_SPI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a4c6a04c055c9e48e4cd58e844a79adc0">sci0_async_sel</a>  = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#aa4198fb7063ef2cb4edd0bd699098fd4">sci1_async_sel</a>  = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a2641362291d16c69b33a7033d54d4d48">sci2_async_sel</a>  = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#a5756545c6856175059c9ff72a80e6a60">sci3_async_sel</a>  = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#aaf8e2cc385703f755109585fe818b8b9">sckcr</a>.<a class="code" href="group___c_g_c.html#ac273259f12963f8998186fd5ed7280ff">sci4_async_sel</a>  = <a class="code" href="group___c_g_c.html#ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7">CGC_SCI_ASYNC_CLOCK_96MHZ</a>;</div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#a9f3c7b7b2d2ecb45b31db51e79142e83">pll1_state</a>            = <a class="code" href="group___c_g_c___a_p_i.html#gga67f8525be602a7cce075f0b33d5f2ad8a4778b4e094845ab42e902ffc9a68842c">CGC_CLOCK_CHANGE_NONE</a>;</div><div class="line"></div><div class="line">    <span class="comment">/* Start the PLL1 clock */</span></div><div class="line">    clock_extend.<a class="code" href="group___c_g_c.html#a9f3c7b7b2d2ecb45b31db51e79142e83">pll1_state</a> = <a class="code" href="group___c_g_c___a_p_i.html#gga67f8525be602a7cce075f0b33d5f2ad8afc34723b6efeafd271fb3cfb365f8ec1">CGC_CLOCK_CHANGE_START</a>;</div><div class="line"></div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#structcgc__clocks__cfg__t">cgc_clocks_cfg_t</a> clocks_cfg;</div><div class="line"></div><div class="line">    <span class="comment">/* Start the LOCO clock */</span></div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a616ba1cfab671dc6183198ad0c6044ca">loco_state</a> = <a class="code" href="group___c_g_c___a_p_i.html#gga67f8525be602a7cce075f0b33d5f2ad8afc34723b6efeafd271fb3cfb365f8ec1">CGC_CLOCK_CHANGE_START</a>;</div><div class="line">    clocks_cfg.p_extend   = &amp;clock_extend;</div><div class="line"></div><div class="line">    <span class="comment">/* R_CGC_ClocksCfg() can be used to set clock divisors and</span></div><div class="line"><span class="comment">     * to start/stop LOCO and PLL1 clock</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    err = <a class="code" href="group___c_g_c.html#ga203fc7fb47f71f67b1ce1c17cea0ec04">R_CGC_ClocksCfg</a>(&amp;g_cgc0_ctrl, &amp;clocks_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Also, R_CGC_ClockStart() and R_CGC_ClockStop() can be used</span></div><div class="line"><span class="comment">     * to start/stop LOCO and PLL1 clock</span></div><div class="line"><span class="comment">     */</span></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"><span class="keywordtype">void</span> cgc_clocks_cfg_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the CGC module. */</span></div><div class="line">    err = <a class="code" href="group___c_g_c.html#ga84e412218c7f8074623d521bfc331a3c">R_CGC_Open</a>(&amp;g_cgc0_ctrl, &amp;g_cgc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Set divisors for CPU0 (and CPU1) clock to run at minimum frequency at 150 MHz. */</span></div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#structcgc__clocks__cfg__t">cgc_clocks_cfg_t</a> clocks_cfg;</div><div class="line"></div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.fselxspi0      = CGC_FSEL_XSPI_CLOCK_DIV_64;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.divselxspi0    = CGC_DIVSEL_XSPI_CLOCK_DIV_3;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.fselxspi1      = CGC_FSEL_XSPI_CLOCK_DIV_64;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.divselxspi1    = CGC_DIVSEL_XSPI_CLOCK_DIV_3;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.ckio_div       = CGC_CLOCK_OUT_CLOCK_DIV_4;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.fselcanfd_div  = CGC_CANFD_CLOCK_DIV_20;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.phy_sel        = CGC_PHY_CLOCK_MAIN_OSC;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.spi0_async_sel = CGC_SPI_ASYNC_CLOCK_96MHZ;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.spi1_async_sel = CGC_SPI_ASYNC_CLOCK_96MHZ;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.spi2_async_sel = CGC_SPI_ASYNC_CLOCK_96MHZ;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.sci0_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.sci1_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.sci2_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.sci3_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr_b.sci4_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ;</div><div class="line"></div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr2_b.fsel0cr52 = CGC_CPU_CLOCK_DIV_4;</div><div class="line"><span class="preprocessor">#if 2 == BSP_FEATURE_BSP_CR52_CORE_NUM</span></div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr2_b.fsel1cr52 = CGC_CPU_CLOCK_DIV_4;</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr2_b.div_sub_sel    = CGC_BASECLOCK_DIV_4;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr2_b.spi3_async_sel = CGC_SPI_ASYNC_CLOCK_96MHZ;</div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a160f655d324ea23224112f5f030a95aa">divider_cfg</a>.sckcr2_b.sci5_async_sel = CGC_SCI_ASYNC_CLOCK_96MHZ;</div><div class="line"></div><div class="line">    <span class="comment">/* Start the LOCO clock */</span></div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a616ba1cfab671dc6183198ad0c6044ca">loco_state</a> = <a class="code" href="group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8afc34723b6efeafd271fb3cfb365f8ec1">CGC_CLOCK_CHANGE_START</a>;</div><div class="line"></div><div class="line">    <span class="comment">/* Start the PLL1 clock */</span></div><div class="line">    clocks_cfg.<a class="code" href="group___c_g_c___a_p_i.html#a65576b6ec7bf7e8b29f5d493350ca153">pll1_state</a> = <a class="code" href="group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8afc34723b6efeafd271fb3cfb365f8ec1">CGC_CLOCK_CHANGE_START</a>;</div><div class="line"></div><div class="line">    <span class="comment">/* R_CGC_ClocksCfg() can be used to set clock divisors and</span></div><div class="line"><span class="comment">     * to start/stop LOCO and PLL1 clock</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    err = <a class="code" href="group___c_g_c.html#ga203fc7fb47f71f67b1ce1c17cea0ec04">R_CGC_ClocksCfg</a>(&amp;g_cgc0_ctrl, &amp;clocks_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Also, R_CGC_ClockStart() and R_CGC_ClockStop() can be used</span></div><div class="line"><span class="comment">     * to start/stop LOCO and PLL1 clock</span></div><div class="line"><span class="comment">     */</span></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
-<tr class="memitem:structcgc__sckcr__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#structcgc__sckcr__cfg__t">cgc_sckcr_cfg_t</a></td></tr>
-<tr class="separator:structcgc__sckcr__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structcgc__sckcr2__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#structcgc__sckcr2__cfg__t">cgc_sckcr2_cfg_t</a></td></tr>
-<tr class="separator:structcgc__sckcr2__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structcgc__clock__extend__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#structcgc__clock__extend__cfg__t">cgc_clock_extend_cfg_t</a></td></tr>
-<tr class="separator:structcgc__clock__extend__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structcgc__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#structcgc__instance__ctrl__t">cgc_instance_ctrl_t</a></td></tr>
 <tr class="separator:structcgc__instance__ctrl__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
-Enumerations</h2></td></tr>
-<tr class="memitem:ga0b75c9c87f838ed5f90062bef3a8dbd9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga0b75c9c87f838ed5f90062bef3a8dbd9">cgc_xspi_clock_div_t</a> </td></tr>
-<tr class="separator:ga0b75c9c87f838ed5f90062bef3a8dbd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2ce676f078fa818fb2b704718063808c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga2ce676f078fa818fb2b704718063808c">cgc_clock_out_clock_div_t</a> </td></tr>
-<tr class="separator:ga2ce676f078fa818fb2b704718063808c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga247a12686e928758d2572f25047758fa"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga247a12686e928758d2572f25047758fa">cgc_canfd_clock_div_t</a> </td></tr>
-<tr class="separator:ga247a12686e928758d2572f25047758fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4864f07ec76a0c0f126ea1a662c7f65e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#ga4864f07ec76a0c0f126ea1a662c7f65e">cgc_phy_clock_t</a> </td></tr>
-<tr class="separator:ga4864f07ec76a0c0f126ea1a662c7f65e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabc20b1903e16f086ee72631bee3ed9ce"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#gabc20b1903e16f086ee72631bee3ed9ce">cgc_spi_async_clock_t</a> </td></tr>
-<tr class="separator:gabc20b1903e16f086ee72631bee3ed9ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gace0c32141b13d35df6640b729388132e"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#gace0c32141b13d35df6640b729388132e">cgc_sci_async_clock_t</a> </td></tr>
-<tr class="separator:gace0c32141b13d35df6640b729388132e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaea6a34c176bc7f54fbd95b9a79dc91f9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#gaea6a34c176bc7f54fbd95b9a79dc91f9">cgc_cpu_clock_div_t</a> </td></tr>
-<tr class="separator:gaea6a34c176bc7f54fbd95b9a79dc91f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad49c7e4fb34817f7792071757fc43eb8"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_g_c.html#gad49c7e4fb34817f7792071757fc43eb8">cgc_baseclock_div_t</a> </td></tr>
-<tr class="separator:gad49c7e4fb34817f7792071757fc43eb8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
-<a name="structcgc__sckcr__cfg__t" id="structcgc__sckcr__cfg__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structcgc__sckcr__cfg__t">&#9670;&nbsp;</a></span>cgc_sckcr_cfg_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct cgc_sckcr_cfg_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p>DEPRECATED: Removed due to newer CGC API in the next major release. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="ad696145dc65c36f8ca2f37ea328babab"></a><a class="el" href="group___c_g_c.html#ga0b75c9c87f838ed5f90062bef3a8dbd9">cgc_xspi_clock_div_t</a></td>
-<td class="fieldname">
-fselxspi0_div</td>
-<td class="fielddoc">
-Divider value for XSPI_CLK0. </td></tr>
-<tr><td class="fieldtype">
-<a id="aac970d455c0b285aebb15e3d30ccb5f8"></a><a class="el" href="group___c_g_c.html#ga0b75c9c87f838ed5f90062bef3a8dbd9">cgc_xspi_clock_div_t</a></td>
-<td class="fieldname">
-fselxspi1_div</td>
-<td class="fielddoc">
-Divider value for XSPI_CLK1. </td></tr>
-<tr><td class="fieldtype">
-<a id="a14e15929d66d010f674bb522d5ffc73b"></a><a class="el" href="group___c_g_c.html#ga2ce676f078fa818fb2b704718063808c">cgc_clock_out_clock_div_t</a></td>
-<td class="fieldname">
-ckio_div</td>
-<td class="fielddoc">
-Divider value for CKIO. </td></tr>
-<tr><td class="fieldtype">
-<a id="a58988f4d3a5964c07f4d703127f0c633"></a><a class="el" href="group___c_g_c.html#ga247a12686e928758d2572f25047758fa">cgc_canfd_clock_div_t</a></td>
-<td class="fieldname">
-fselcanfd_div</td>
-<td class="fielddoc">
-Divider value for CANFD clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="ab7312bdede2e12ee3b5b0ac0b44d75f3"></a><a class="el" href="group___c_g_c.html#ga4864f07ec76a0c0f126ea1a662c7f65e">cgc_phy_clock_t</a></td>
-<td class="fieldname">
-phy_sel</td>
-<td class="fielddoc">
-Ethernet PHY reference clock output. </td></tr>
-<tr><td class="fieldtype">
-<a id="aa45755a0fb98c5f20b894675bef3eaa6"></a><a class="el" href="group___c_g_c.html#gabc20b1903e16f086ee72631bee3ed9ce">cgc_spi_async_clock_t</a></td>
-<td class="fieldname">
-spi0_async_sel</td>
-<td class="fielddoc">
-SPI0 asynchronous serial clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="a378f22954a792f630167ac2ff45b6df3"></a><a class="el" href="group___c_g_c.html#gabc20b1903e16f086ee72631bee3ed9ce">cgc_spi_async_clock_t</a></td>
-<td class="fieldname">
-spi1_async_sel</td>
-<td class="fielddoc">
-SPI1 asynchronous serial clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="ae7f08e8fa2d69d80e5ee993c689491bf"></a><a class="el" href="group___c_g_c.html#gabc20b1903e16f086ee72631bee3ed9ce">cgc_spi_async_clock_t</a></td>
-<td class="fieldname">
-spi2_async_sel</td>
-<td class="fielddoc">
-SPI2 asynchronous serial clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="a4c6a04c055c9e48e4cd58e844a79adc0"></a><a class="el" href="group___c_g_c.html#gace0c32141b13d35df6640b729388132e">cgc_sci_async_clock_t</a></td>
-<td class="fieldname">
-sci0_async_sel</td>
-<td class="fielddoc">
-SCI0 asynchronous serial clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="aa4198fb7063ef2cb4edd0bd699098fd4"></a><a class="el" href="group___c_g_c.html#gace0c32141b13d35df6640b729388132e">cgc_sci_async_clock_t</a></td>
-<td class="fieldname">
-sci1_async_sel</td>
-<td class="fielddoc">
-SCI1 asynchronous serial clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="a2641362291d16c69b33a7033d54d4d48"></a><a class="el" href="group___c_g_c.html#gace0c32141b13d35df6640b729388132e">cgc_sci_async_clock_t</a></td>
-<td class="fieldname">
-sci2_async_sel</td>
-<td class="fielddoc">
-SCI2 asynchronous serial clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="a5756545c6856175059c9ff72a80e6a60"></a><a class="el" href="group___c_g_c.html#gace0c32141b13d35df6640b729388132e">cgc_sci_async_clock_t</a></td>
-<td class="fieldname">
-sci3_async_sel</td>
-<td class="fielddoc">
-SCI3 asynchronous serial clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="ac273259f12963f8998186fd5ed7280ff"></a><a class="el" href="group___c_g_c.html#gace0c32141b13d35df6640b729388132e">cgc_sci_async_clock_t</a></td>
-<td class="fieldname">
-sci4_async_sel</td>
-<td class="fielddoc">
-SCI4 asynchronous serial clock. </td></tr>
-</table>
-
-</div>
-</div>
-<a name="structcgc__sckcr2__cfg__t" id="structcgc__sckcr2__cfg__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structcgc__sckcr2__cfg__t">&#9670;&nbsp;</a></span>cgc_sckcr2_cfg_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct cgc_sckcr2_cfg_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p>DEPRECATED: Removed due to newer CGC API in the next major release. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="a24c9cea1aafb7af48e692fb2290f8c06"></a><a class="el" href="group___c_g_c.html#gaea6a34c176bc7f54fbd95b9a79dc91f9">cgc_cpu_clock_div_t</a></td>
-<td class="fieldname">
-fsel0cr52</td>
-<td class="fielddoc">
-Divider value for Cortex-R52 CPU0. </td></tr>
-<tr><td class="fieldtype">
-<a id="acaad80abb4472b125d5edfca416ee2ff"></a><a class="el" href="group___c_g_c.html#gaea6a34c176bc7f54fbd95b9a79dc91f9">cgc_cpu_clock_div_t</a></td>
-<td class="fieldname">
-fsel1cr52</td>
-<td class="fielddoc">
-Divider value for Cortex-R52 CPU1. </td></tr>
-<tr><td class="fieldtype">
-<a id="a3eda25afe2279eb5f08cf6320bbc7710"></a><a class="el" href="group___c_g_c.html#gad49c7e4fb34817f7792071757fc43eb8">cgc_baseclock_div_t</a></td>
-<td class="fieldname">
-div_sub_sel</td>
-<td class="fielddoc">
-Divider value for base clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="a9611fae3323a0e57595abd10e616fbc0"></a><a class="el" href="group___c_g_c.html#gabc20b1903e16f086ee72631bee3ed9ce">cgc_spi_async_clock_t</a></td>
-<td class="fieldname">
-spi3_async_sel</td>
-<td class="fielddoc">
-SPI3 asynchronous serial clock. </td></tr>
-<tr><td class="fieldtype">
-<a id="a2843d084cece337bf7bafd11cb493658"></a><a class="el" href="group___c_g_c.html#gace0c32141b13d35df6640b729388132e">cgc_sci_async_clock_t</a></td>
-<td class="fieldname">
-sci5_async_sel</td>
-<td class="fielddoc">
-SCI5 asynchronous serial clock. </td></tr>
-</table>
-
-</div>
-</div>
-<a name="structcgc__clock__extend__cfg__t" id="structcgc__clock__extend__cfg__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structcgc__clock__extend__cfg__t">&#9670;&nbsp;</a></span>cgc_clock_extend_cfg_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct cgc_clock_extend_cfg_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p>DEPRECATED: Removed due to newer CGC API in the next major release. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="aaf8e2cc385703f755109585fe818b8b9"></a><a class="el" href="group___c_g_c.html#structcgc__sckcr__cfg__t">cgc_sckcr_cfg_t</a></td>
-<td class="fieldname">
-sckcr</td>
-<td class="fielddoc">
-System Clock Control Register Settings. </td></tr>
-<tr><td class="fieldtype">
-<a id="afa62fc726f693edb6d44fd1ef6f561bc"></a><a class="el" href="group___c_g_c.html#structcgc__sckcr2__cfg__t">cgc_sckcr2_cfg_t</a></td>
-<td class="fieldname">
-sckcr2</td>
-<td class="fielddoc">
-System Clock Control Register 2 Settings. </td></tr>
-<tr><td class="fieldtype">
-<a id="a9f3c7b7b2d2ecb45b31db51e79142e83"></a><a class="el" href="group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8">cgc_clock_change_t</a></td>
-<td class="fieldname">
-pll1_state</td>
-<td class="fielddoc">
-State of PLL1. </td></tr>
-</table>
-
-</div>
-</div>
 <a name="structcgc__instance__ctrl__t" id="structcgc__instance__ctrl__t"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#structcgc__instance__ctrl__t">&#9670;&nbsp;</a></span>cgc_instance_ctrl_t</h2>
 
@@ -440,190 +300,6 @@ State of PLL1. </td></tr>
 </div><div class="memdoc">
 <div class="textblock"><p>CGC private control block. DO NOT MODIFY. Initialization occurs when <a class="el" href="group___c_g_c.html#ga84e412218c7f8074623d521bfc331a3c">R_CGC_Open()</a> is called. </p>
 </div>
-</div>
-</div>
-<h2 class="groupheader">Enumeration Type Documentation</h2>
-<a id="ga0b75c9c87f838ed5f90062bef3a8dbd9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga0b75c9c87f838ed5f90062bef3a8dbd9">&#9670;&nbsp;</a></span>cgc_xspi_clock_div_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___c_g_c.html#ga0b75c9c87f838ed5f90062bef3a8dbd9">cgc_xspi_clock_div_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED: Removed due to newer CGC API in the next major release. </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga0b75c9c87f838ed5f90062bef3a8dbd9ac82b3212ced6ba789039244928b2704b"></a>CGC_XSPI_CLOCK_DIV_18&#160;</td><td class="fielddoc"><p>XSPI_CLKn 133.3MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga0b75c9c87f838ed5f90062bef3a8dbd9a7319cc3cc60d59cbd772ae25b85e16f7"></a>CGC_XSPI_CLOCK_DIV_24&#160;</td><td class="fielddoc"><p>XSPI_CLKn 100.0MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga0b75c9c87f838ed5f90062bef3a8dbd9a488a23ae0c1a3883651cceff6f03633e"></a>CGC_XSPI_CLOCK_DIV_48&#160;</td><td class="fielddoc"><p>XSPI_CLKn 50.0MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga0b75c9c87f838ed5f90062bef3a8dbd9ac7abc23b9e6d59fc3aae374965f0dec1"></a>CGC_XSPI_CLOCK_DIV_96&#160;</td><td class="fielddoc"><p>XSPI_CLKn 25.0MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga0b75c9c87f838ed5f90062bef3a8dbd9a58d933d5d50940807520346e0a00ebee"></a>CGC_XSPI_CLOCK_DIV_192&#160;</td><td class="fielddoc"><p>XSPI_CLKn 12.5MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga0b75c9c87f838ed5f90062bef3a8dbd9a176540ca3d2b8d40a1fb2b7eaf900a3c"></a>CGC_XSPI_CLOCK_DIV_32&#160;</td><td class="fielddoc"><p>XSPI_CLKn 75.0MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga0b75c9c87f838ed5f90062bef3a8dbd9ab86a518d3d8cd3ca4108a5cf85c640a4"></a>CGC_XSPI_CLOCK_DIV_64&#160;</td><td class="fielddoc"><p>XSPI_CLKn 37.5MHz. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga2ce676f078fa818fb2b704718063808c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga2ce676f078fa818fb2b704718063808c">&#9670;&nbsp;</a></span>cgc_clock_out_clock_div_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___c_g_c.html#ga2ce676f078fa818fb2b704718063808c">cgc_clock_out_clock_div_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga2ce676f078fa818fb2b704718063808ca7b5ae56254340d1dfcd53882ff82fa79"></a>CGC_CLOCK_OUT_CLOCK_DIV_2&#160;</td><td class="fielddoc"><p>CKIO 100.0MHz / 75.0MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga2ce676f078fa818fb2b704718063808caba01111dce686258629248ed49a157de"></a>CGC_CLOCK_OUT_CLOCK_DIV_3&#160;</td><td class="fielddoc"><p>CKIO 66.7MHz / 50.0MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga2ce676f078fa818fb2b704718063808ca8a8f6d15210b36c285cbafd9be06666c"></a>CGC_CLOCK_OUT_CLOCK_DIV_4&#160;</td><td class="fielddoc"><p>CKIO 50.0MHz / 37.5MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga2ce676f078fa818fb2b704718063808ca0d05116f9f2b00c8b468dee2d312a8d7"></a>CGC_CLOCK_OUT_CLOCK_DIV_5&#160;</td><td class="fielddoc"><p>CKIO 40.0MHz / 30.0MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga2ce676f078fa818fb2b704718063808ca76499d09853b98b4942de8a3851eebb7"></a>CGC_CLOCK_OUT_CLOCK_DIV_6&#160;</td><td class="fielddoc"><p>CKIO 33.3MHz / 25.0MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga2ce676f078fa818fb2b704718063808caf4d912e73c35fe4f8496cb48d7362a98"></a>CGC_CLOCK_OUT_CLOCK_DIV_7&#160;</td><td class="fielddoc"><p>CKIO 28.6MHz / 21.4MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga2ce676f078fa818fb2b704718063808cad78bda48921c911dd44ea1f99639bde9"></a>CGC_CLOCK_OUT_CLOCK_DIV_8&#160;</td><td class="fielddoc"><p>CKIO 25.0MHz / 18.75MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga247a12686e928758d2572f25047758fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga247a12686e928758d2572f25047758fa">&#9670;&nbsp;</a></span>cgc_canfd_clock_div_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___c_g_c.html#ga247a12686e928758d2572f25047758fa">cgc_canfd_clock_div_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga247a12686e928758d2572f25047758faaf85850497070d63e3b30f26470014330"></a>CGC_CANFD_CLOCK_DIV_10&#160;</td><td class="fielddoc"><p>CANFD clock 80.0MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga247a12686e928758d2572f25047758faa313a81384902525edb479971cc6096aa"></a>CGC_CANFD_CLOCK_DIV_20&#160;</td><td class="fielddoc"><p>CANFD clock 40.0MHz. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga4864f07ec76a0c0f126ea1a662c7f65e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4864f07ec76a0c0f126ea1a662c7f65e">&#9670;&nbsp;</a></span>cgc_phy_clock_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___c_g_c.html#ga4864f07ec76a0c0f126ea1a662c7f65e">cgc_phy_clock_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga4864f07ec76a0c0f126ea1a662c7f65eac31713b2eb6dddb881b5c7b690a26c5e"></a>CGC_PHY_CLOCK_PLL1&#160;</td><td class="fielddoc"><p>PLL1 divider clock. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga4864f07ec76a0c0f126ea1a662c7f65ea3f55a9cfc7ef5bb96892e6c5cbb67b9f"></a>CGC_PHY_CLOCK_MAIN_OSC&#160;</td><td class="fielddoc"><p>Main clock oscillator. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gabc20b1903e16f086ee72631bee3ed9ce"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabc20b1903e16f086ee72631bee3ed9ce">&#9670;&nbsp;</a></span>cgc_spi_async_clock_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___c_g_c.html#gabc20b1903e16f086ee72631bee3ed9ce">cgc_spi_async_clock_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggabc20b1903e16f086ee72631bee3ed9cea5a580219e433f53e525eb05146dd4e9e"></a>CGC_SPI_ASYNC_CLOCK_75MHZ&#160;</td><td class="fielddoc"><p>SPI asynchronous serial clock 75MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggabc20b1903e16f086ee72631bee3ed9ceaa6585ac191231fd17005df150cd0128b"></a>CGC_SPI_ASYNC_CLOCK_96MHZ&#160;</td><td class="fielddoc"><p>SPI asynchronous serial clock 96MHz. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gace0c32141b13d35df6640b729388132e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gace0c32141b13d35df6640b729388132e">&#9670;&nbsp;</a></span>cgc_sci_async_clock_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___c_g_c.html#gace0c32141b13d35df6640b729388132e">cgc_sci_async_clock_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggace0c32141b13d35df6640b729388132ea7b02e600be4f7f31cad4ca2614188963"></a>CGC_SCI_ASYNC_CLOCK_75MHZ&#160;</td><td class="fielddoc"><p>SCI asynchronous serial clock 75MHz. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggace0c32141b13d35df6640b729388132ea8380715823b942dc15f589032cf0c9e7"></a>CGC_SCI_ASYNC_CLOCK_96MHZ&#160;</td><td class="fielddoc"><p>SCI asynchronous serial clock 96MHz. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gaea6a34c176bc7f54fbd95b9a79dc91f9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaea6a34c176bc7f54fbd95b9a79dc91f9">&#9670;&nbsp;</a></span>cgc_cpu_clock_div_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___c_g_c.html#gaea6a34c176bc7f54fbd95b9a79dc91f9">cgc_cpu_clock_div_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaea6a34c176bc7f54fbd95b9a79dc91f9a8b430a5434b986d8eba65b740f8b489e"></a>CGC_CPU_CLOCK_DIV_1&#160;</td><td class="fielddoc"><p>CPU 800.0MHz / 600.0MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaea6a34c176bc7f54fbd95b9a79dc91f9a4e847055091cf0cf95a6bcce975f3aeb"></a>CGC_CPU_CLOCK_DIV_2&#160;</td><td class="fielddoc"><p>CPU 400.0MHz / 300.0MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaea6a34c176bc7f54fbd95b9a79dc91f9ae26edd0edee9fe9623b71c5db412935b"></a>CGC_CPU_CLOCK_DIV_4&#160;</td><td class="fielddoc"><p>CPU 200.0MHz / 150.0MHz (Base clock divided by 3 / divided by 4) </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gad49c7e4fb34817f7792071757fc43eb8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad49c7e4fb34817f7792071757fc43eb8">&#9670;&nbsp;</a></span>cgc_baseclock_div_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___c_g_c.html#gad49c7e4fb34817f7792071757fc43eb8">cgc_baseclock_div_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggad49c7e4fb34817f7792071757fc43eb8a568459c38ae5b7e4f003725b26940aa1"></a>CGC_BASECLOCK_DIV_3&#160;</td><td class="fielddoc"><p>Base clock divided by 3 (ICLK=200.0MHz etc.) </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggad49c7e4fb34817f7792071757fc43eb8a94002e8f4238d38986b1e529982a11c5"></a>CGC_BASECLOCK_DIV_4&#160;</td><td class="fielddoc"><p>Base clock divided by 4 (ICLK=150.0MHz etc.) </p>
-</td></tr>
-</table>
-
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
@@ -790,6 +466,45 @@ State of PLL1. </td></tr>
 
 </div>
 </div>
+<a id="ga37d44db762e24e44085a7c07228acaf9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga37d44db762e24e44085a7c07228acaf9">&#9670;&nbsp;</a></span>R_CGC_ClockCheck()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CGC_ClockCheck </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a>&#160;</td>
+          <td class="paramname"><em>clock_source</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check the specified clock for stability. Implements <a class="el" href="group___c_g_c___a_p_i.html#ac039e340cd6d3e96a6d3c4a514ca8e18">cgc_api_t::clockCheck</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Clock is running and stable. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Invalid input argument. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Module is not open. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_STABILIZED</td><td>Clock not stabilized. </td></tr>
+    <tr><td class="paramname">FSP_ERR_CLOCK_INACTIVE</td><td>Clock not turned on. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ga7f14fdc1ec5733550f503bd6868f98cd"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga7f14fdc1ec5733550f503bd6868f98cd">&#9670;&nbsp;</a></span>R_CGC_SystemClockSet()</h2>
 
@@ -811,7 +526,7 @@ State of PLL1. </td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#unioncgc__divider__cfg__t">cgc_divider_cfg_t</a> const *const&#160;</td>
+          <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t">cgc_divider_cfg_t</a> const *const&#160;</td>
           <td class="paramname"><em>p_divider_cfg</em>&#160;</td>
         </tr>
         <tr>
@@ -857,7 +572,7 @@ State of PLL1. </td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#unioncgc__divider__cfg__t">cgc_divider_cfg_t</a> *const&#160;</td>
+          <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t">cgc_divider_cfg_t</a> *const&#160;</td>
           <td class="paramname"><em>p_divider_cfg</em>&#160;</td>
         </tr>
         <tr>
@@ -873,45 +588,6 @@ State of PLL1. </td></tr>
     <tr><td class="paramname">FSP_SUCCESS</td><td>Parameters returned successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Invalid input argument. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Module is not open. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga37d44db762e24e44085a7c07228acaf9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga37d44db762e24e44085a7c07228acaf9">&#9670;&nbsp;</a></span>R_CGC_ClockCheck()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CGC_ClockCheck </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a>&#160;</td>
-          <td class="paramname"><em>clock_source</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Check the specified clock for stability. Implements <a class="el" href="group___c_g_c___a_p_i.html#ac039e340cd6d3e96a6d3c4a514ca8e18">cgc_api_t::clockCheck</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Clock is running and stable. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Invalid input argument. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Module is not open. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_STABILIZED</td><td>Clock not stabilized. </td></tr>
-    <tr><td class="paramname">FSP_ERR_CLOCK_INACTIVE</td><td>Clock not turned on. </td></tr>
   </table>
   </dd>
 </dl>
@@ -996,8 +672,8 @@ State of PLL1. </td></tr>
 
 </div>
 </div>
-<a id="ga300b8011ca9bd0c77130c60c3874d7a4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga300b8011ca9bd0c77130c60c3874d7a4">&#9670;&nbsp;</a></span>R_CGC_CallbackSet()</h2>
+<a id="ga6cff359496dfa7853159b22331377607"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6cff359496dfa7853159b22331377607">&#9670;&nbsp;</a></span>R_CGC_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1006,7 +682,7 @@ State of PLL1. </td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CGC_CallbackSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___c_g_c___a_p_i.html#ga7d46f6df6a02fa807190bc97103cb5b7">cgc_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -1033,7 +709,7 @@ State of PLL1. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___c_g_c___a_p_i.html#a9c1d9877fcd835e19c7c573218580b5b">cgc_api_t::callbackSet</a></p>
+<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___c_g_c___a_p_i.html#ae6320b1734cebe9041c65aa581ecb1c4">cgc_api_t::callbackSet</a></p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported. </td></tr>
@@ -1070,39 +746,13 @@ State of PLL1. </td></tr>
 
 </div>
 </div>
-<a id="ga4b1b84b0479f23618f215aee9a16b587"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4b1b84b0479f23618f215aee9a16b587">&#9670;&nbsp;</a></span>R_CGC_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_CGC_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Return the driver version. Implements <a class="el" href="group___c_g_c___a_p_i.html#a6fd8e37bb30b6901af9e55c9efcebf76">cgc_api_t::versionGet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Module version provided in p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Invalid input argument. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -4,6 +4,7 @@ var group___b_s_c___s_d_r_a_m =
       [ "p_context", "group___b_s_c___s_d_r_a_m.html#a2771bd400d425c2688203265007fc46e", null ]
     ] ],
     [ "bsc_sdram_extended_cfg_t", "group___b_s_c___s_d_r_a_m.html#structbsc__sdram__extended__cfg__t", [
+      [ "chip_select", "group___b_s_c___s_d_r_a_m.html#a2eba7d793caf6f269da6bef9407bb9ac", null ],
       [ "r_r_same_space_idle_cycle", "group___b_s_c___s_d_r_a_m.html#aa7ad31459c23e253a2e6aa64d26cb1ef", null ],
       [ "r_r_different_space_idle_cycle", "group___b_s_c___s_d_r_a_m.html#a34e24f2112c965451875a7d49fc7ab44", null ],
       [ "r_w_same_space_idle_cycle", "group___b_s_c___s_d_r_a_m.html#aeed11f4e435b59db141dbdac850b7567", null ],
@@ -16,6 +17,9 @@ var group___b_s_c___s_d_r_a_m =
       [ "p_context", "group___b_s_c___s_d_r_a_m.html#ae509c3fed7a7ac4dd1780a376f841adc", null ]
     ] ],
     [ "bsc_sdram_instance_ctrl_t", "group___b_s_c___s_d_r_a_m.html#structbsc__sdram__instance__ctrl__t", null ],
+    [ "bsc_sdram_chip_select_t", "group___b_s_c___s_d_r_a_m.html#ga18786329189e0979c7835a569ac7fcb1", [
+      [ "BSC_SDRAM_CHIP_SELECT_3", "group___b_s_c___s_d_r_a_m.html#gga18786329189e0979c7835a569ac7fcb1a1cfbdbb13f78fe524ef586b0942eb953", null ]
+    ] ],
     [ "bsc_sdram_idle_cycle_t", "group___b_s_c___s_d_r_a_m.html#ga159a39327eab5952ca46895345b624f4", [
       [ "BSC_SDRAM_IDLE_CYCLE_0", "group___b_s_c___s_d_r_a_m.html#gga159a39327eab5952ca46895345b624f4aa05f5ae2e4e4e7cc6c31938aa8d2b225", null ],
       [ "BSC_SDRAM_IDLE_CYCLE_1", "group___b_s_c___s_d_r_a_m.html#gga159a39327eab5952ca46895345b624f4ac85db11369fe3e86f292eeb1d6aab3ba", null ],

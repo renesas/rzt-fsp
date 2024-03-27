@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Shared Memory Interface</title>
+<title>RZT Flexible Software Package Documentation: Shared Memory Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,23 +140,37 @@ $(document).ready(function(){initNavTree('group___s_h_a_r_e_d___m_e_m_o_r_y___a_
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Shared Memory Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">Shared Memory Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___i_n_t_e_r_f_a_c_e_s.html">System</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Interface for Shared Memory. </p>
 <h1><a class="anchor" id="SHARED_MEMORY_API_Summary"></a>
 Summary</h1>
-<p>The SHARED_MEMORY interface provides Shared Memory functionality.</p>
-<p>The SHARED_MEMORY Interface can be implemented by:</p><ul>
-<li><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html">Shared Memory (r_shared_memory)</a> </li>
-</ul>
+<p>The SHARED_MEMORY interface provides Shared Memory functionality. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -298,8 +363,8 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 <tr class="separator:a7c79d9462a3d0db0676797b45f7da9d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7c9e544607d79137f3d195a3564e6920"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#a7c9e544607d79137f3d195a3564e6920">statusGet</a> )(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_ctrl, <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__status__t">shared_memory_status_t</a> *p_status)</td></tr>
 <tr class="separator:a7c9e544607d79137f3d195a3564e6920"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a9759ff64d18a23271b6a89c574c328"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#a5a9759ff64d18a23271b6a89c574c328">callbackSet</a> )(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:a5a9759ff64d18a23271b6a89c574c328"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa45f6f74c8fef707855aab5eaaca770"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#afa45f6f74c8fef707855aab5eaaca770">callbackSet</a> )(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:afa45f6f74c8fef707855aab5eaaca770"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a26aac04753c3af97cd7fd51a94718657"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#a26aac04753c3af97cd7fd51a94718657">close</a> )(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:a26aac04753c3af97cd7fd51a94718657"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -315,10 +380,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Opens the shared memory driver and initializes the hardware. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga178a52ced35c42610cc25e74c253a369">R_SHARED_MEMORY_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Opens the shared memory driver and initializes the hardware.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block. Must be declared by user. Elements are set here. </td></tr>
@@ -340,10 +402,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Performs a read operation from inter-core shared memory. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga5121208166bf470d1f8be5aa9175e003">R_SHARED_MEMORY_Read()</a></li>
-</ul>
-</dd></dl>
+<p>Performs a read operation from inter-core shared memory.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block set in <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#af5dd5002759eb36d18b9c90a0fcaa67f">shared_memory_api_t::open</a> call. </td></tr>
@@ -367,10 +426,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Performs a write operation to inter-core shared memory. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga9e1b9dfbef670952ccc4c528896d2781">R_SHARED_MEMORY_Write()</a></li>
-</ul>
-</dd></dl>
+<p>Performs a write operation to inter-core shared memory.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block set in <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#af5dd5002759eb36d18b9c90a0fcaa67f">shared_memory_api_t::open</a> call. </td></tr>
@@ -394,10 +450,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Gets the status of the shared memory. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga29111715e468d4fb8c5a89bec0fa1cf5">R_SHARED_MEMORY_StatusGet()</a></li>
-</ul>
-</dd></dl>
+<p>Gets the status of the shared memory.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block set in <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#af5dd5002759eb36d18b9c90a0fcaa67f">shared_memory_api_t::open</a> call. </td></tr>
@@ -408,27 +461,24 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
 
 </div>
 </div>
-<a id="a5a9759ff64d18a23271b6a89c574c328"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a9759ff64d18a23271b6a89c574c328">&#9670;&nbsp;</a></span>callbackSet</h2>
+<a id="afa45f6f74c8fef707855aab5eaaca770"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa45f6f74c8fef707855aab5eaaca770">&#9670;&nbsp;</a></span>callbackSet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  shared_memory_api_t::callbackSet) (<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *const p_callback_memory)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  shared_memory_api_t::callbackSet) (<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#ga86147394ad0075d6e745db4db4f4c688">shared_memory_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#structshared__memory__callback__args__t">shared_memory_callback_args_t</a> *const p_callback_memory)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Specify callback function and optional context pointer and working memory pointer. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga9e40be0bd2bb6a2296ea081046ccb8a7">R_SHARED_MEMORY_CallbackSet()</a></li>
-</ul>
-</dd></dl>
+<p>Specify callback function and optional context pointer and working memory pointer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block set in <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#af5dd5002759eb36d18b9c90a0fcaa67f">shared_memory_api_t::open</a> call. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">p_callback</td><td>Callback function </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">p_context</td><td>Pointer to send to callback function </td></tr>
-    <tr><td class="paramdir">[in]</td><td class="paramname">p_working_memory</td><td>Pointer to volatile memory where callback structure can be allocated. Callback arguments allocated here are only valid during the callback. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_callback_memory</td><td>Pointer to volatile memory where callback structure can be allocated. Callback arguments allocated here are only valid during the callback. </td></tr>
   </table>
   </dd>
 </dl>
@@ -446,10 +496,7 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Closes the driver and releases the device. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y.html#ga4b742d135513908117753fa6e6c45ce4">R_SHARED_MEMORY_Close()</a></li>
-</ul>
-</dd></dl>
+<p>Closes the driver and releases the device.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block set in <a class="el" href="group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#af5dd5002759eb36d18b9c90a0fcaa67f">shared_memory_api_t::open</a> call. </td></tr>
@@ -510,10 +557,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>SHARED_MEMORY control block. Allocate an instance specific control block to pass into the SHARED_MEMORY API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li>shared_memory_instance_ctrl_t </li>
-</ul>
-</dd></dl>
+<p>SHARED_MEMORY control block. Allocate an instance specific control block to pass into the SHARED_MEMORY API calls. </p>
 
 </div>
 </div>
@@ -531,7 +575,7 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>States of SHARED_MEMORY module </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggae7a1de421a15ededd01891a6209216dda365e7ab44c8ab4194c8c32cab5277e5e"></a>SHARED_MEMORY_STATE_NOT_READY&#160;</td><td class="fielddoc"><p>This driver has been opened. But the opposite driver has not opened. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggae7a1de421a15ededd01891a6209216dda365e7ab44c8ab4194c8c32cab5277e5e"></a>SHARED_MEMORY_STATE_NOT_READY&#160;</td><td class="fielddoc"><p>This driver has been opened. But the opposite driver has not. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggae7a1de421a15ededd01891a6209216dda6a48d9e62b10a9eb867ee4bc985624ec"></a>SHARED_MEMORY_STATE_READY_TO_WRITE&#160;</td><td class="fielddoc"><p>This driver can write data. </p>
 </td></tr>
@@ -547,7 +591,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

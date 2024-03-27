@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Temperature Sensor Unit (r_tsu)</title>
+<title>RZT Flexible Software Package Documentation: Temperature Sensor Unit (r_tsu)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___t_s_u.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,12 +140,29 @@ $(document).ready(function(){initNavTree('group___t_s_u.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a>  </div>
   <div class="headertitle">
-<div class="title">Temperature Sensor Unit (r_tsu)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Temperature Sensor Unit (r_tsu)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___a_n_a_l_o_g___m_o_d_u_l_e_s.html">Analog</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -102,30 +170,30 @@ $(document).ready(function(){initNavTree('group___t_s_u.html','');});
 Functions</h2></td></tr>
 <tr class="memitem:ga1c56a027bc265464b1739560efa90813"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga1c56a027bc265464b1739560efa90813">R_TSU_Open</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#structadc__cfg__t">adc_cfg_t</a> const *const p_cfg)</td></tr>
 <tr class="separator:ga1c56a027bc265464b1739560efa90813"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad60f764ac26bbeb327287f81fb17e10c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gad60f764ac26bbeb327287f81fb17e10c">R_TSU_ScanCfg</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, void const *const p_extend)</td></tr>
+<tr class="separator:gad60f764ac26bbeb327287f81fb17e10c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga1f6f0d81dfcae1a3c09d577fa0cc00cc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga1f6f0d81dfcae1a3c09d577fa0cc00cc">R_TSU_ScanStart</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl)</td></tr>
 <tr class="separator:ga1f6f0d81dfcae1a3c09d577fa0cc00cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gac6125c6c38bbbb8385e67ba9169b99b1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gac6125c6c38bbbb8385e67ba9169b99b1">R_TSU_ScanGroupStart</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#gaee17c30275c1c9376cc485a62ea121eb">adc_group_mask_t</a> group_mask)</td></tr>
+<tr class="separator:gac6125c6c38bbbb8385e67ba9169b99b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga7b2ce53adf08ac0c3f41e0968ed30b2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga7b2ce53adf08ac0c3f41e0968ed30b2d">R_TSU_ScanStop</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl)</td></tr>
 <tr class="separator:ga7b2ce53adf08ac0c3f41e0968ed30b2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga47b32a982d087f9d6d0e807f1b77a256"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga47b32a982d087f9d6d0e807f1b77a256">R_TSU_StatusGet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#structadc__status__t">adc_status_t</a> *p_status)</td></tr>
 <tr class="separator:ga47b32a982d087f9d6d0e807f1b77a256"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga3544708da19605b1aa1e9061d78f5294"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga3544708da19605b1aa1e9061d78f5294">R_TSU_Read</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814">adc_channel_t</a> const reg_id, uint16_t *const p_data)</td></tr>
 <tr class="separator:ga3544708da19605b1aa1e9061d78f5294"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4fc6b794901e3a2eb00ccba1cbff3c1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga4fc6b794901e3a2eb00ccba1cbff3c1f">R_TSU_Close</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl)</td></tr>
-<tr class="separator:ga4fc6b794901e3a2eb00ccba1cbff3c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga044c58503b60de3d53cf0317be88a5c0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga044c58503b60de3d53cf0317be88a5c0">R_TSU_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga044c58503b60de3d53cf0317be88a5c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad60f764ac26bbeb327287f81fb17e10c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gad60f764ac26bbeb327287f81fb17e10c">R_TSU_ScanCfg</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, void const *const p_extend)</td></tr>
-<tr class="separator:gad60f764ac26bbeb327287f81fb17e10c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacd42ad4a5532440cb02a78126fc037d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gacd42ad4a5532440cb02a78126fc037d4">R_TSU_Read32</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814">adc_channel_t</a> const reg_id, uint32_t *const p_data)</td></tr>
 <tr class="separator:gacd42ad4a5532440cb02a78126fc037d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac90373446ea0cae4433015a7edb581fb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gac90373446ea0cae4433015a7edb581fb">R_TSU_Calibrate</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, void *const p_extend)</td></tr>
-<tr class="separator:gac90373446ea0cae4433015a7edb581fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gacccdaf163ba9fb06a3d57dbe4b5afe94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gacccdaf163ba9fb06a3d57dbe4b5afe94">R_TSU_OffsetSet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814">adc_channel_t</a> const reg_id, int32_t offset)</td></tr>
-<tr class="separator:gacccdaf163ba9fb06a3d57dbe4b5afe94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4513dfd14559bfcc072ab5cf080380b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga4513dfd14559bfcc072ab5cf080380b4">R_TSU_CallbackSet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga4513dfd14559bfcc072ab5cf080380b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga4fc6b794901e3a2eb00ccba1cbff3c1f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#ga4fc6b794901e3a2eb00ccba1cbff3c1f">R_TSU_Close</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl)</td></tr>
+<tr class="separator:ga4fc6b794901e3a2eb00ccba1cbff3c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab0d51f6dd6602ecd562995ab8e577bd0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gab0d51f6dd6602ecd562995ab8e577bd0">R_TSU_InfoGet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#structadc__info__t">adc_info_t</a> *p_adc_info)</td></tr>
 <tr class="separator:gab0d51f6dd6602ecd562995ab8e577bd0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae6d0b2bf95cc618c1b7a3c04747604eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gae6d0b2bf95cc618c1b7a3c04747604eb">R_TSU_Calibrate</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, void const *p_extend)</td></tr>
+<tr class="separator:gae6d0b2bf95cc618c1b7a3c04747604eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gacccdaf163ba9fb06a3d57dbe4b5afe94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gacccdaf163ba9fb06a3d57dbe4b5afe94">R_TSU_OffsetSet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814">adc_channel_t</a> const reg_id, int32_t offset)</td></tr>
+<tr class="separator:gacccdaf163ba9fb06a3d57dbe4b5afe94"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadd56721f01b64b7b5f20856d88d237f9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#gadd56721f01b64b7b5f20856d88d237f9">R_TSU_CallbackSet</a> (<a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___a_d_c___a_p_i.html#structadc__callback__args__t">adc_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:gadd56721f01b64b7b5f20856d88d237f9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the TSU peripheral on RZ microprocessor. This module implements the <a class="el" href="group___a_d_c___a_p_i.html">ADC Interface</a>. </p>
@@ -157,8 +225,8 @@ Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Analog &gt; ADC Driver on r_tsu</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Analog &gt; ADC Driver on r_tsu.<br />
+ <h2>Configurations for Analog &gt; ADC (r_tsu)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Analog &gt; ADC (r_tsu).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -194,7 +262,7 @@ Usage Notes</h1>
 Examples</h1>
 <h2>Temperature Sensor Example</h2>
 <p>This example shows how to calculate the microprocessor temperature using the TSU.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_SCAN_COUNT          (8U)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_CONVERSION_DELAY    (20U)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_D1                  (1545)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_SLOPE_x10000        (625)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_10000               (10000)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_T1                  (25)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_LOWER_LIMIT         (0)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_UPPER_LIMIT         (50)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> tsu_temperature_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* The following example calculates the temperature on an RZ device using the data provided in the section</span></div><div class="line"><span class="comment">     * &quot;Preparation for Using the Temperature Sensor&quot; of the RZ microprocessor manual. */</span></div><div class="line"></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___t_s_u.html#ga1c56a027bc265464b1739560efa90813">R_TSU_Open</a>(&amp;g_tsu0_ctrl, &amp;g_tsu0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable temperature sensor and start scans by calling R_TSU_ScanStart(). */</span></div><div class="line">    (void) <a class="code" href="group___t_s_u.html#ga1f6f0d81dfcae1a3c09d577fa0cc00cc">R_TSU_ScanStart</a>(&amp;g_tsu0_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for conversion to complete and read converted data. To ensure accuracy, averaging the data obtained</span></div><div class="line"><span class="comment">     * at least 8 times continuously are required. */</span></div><div class="line">    uint16_t temperature_conversion_result[TSU_EXAMPLE_SCAN_COUNT];</div><div class="line">    uint16_t ds = 0;</div><div class="line">    <span class="keywordflow">for</span> (uint8_t i = 0; i &lt; TSU_EXAMPLE_SCAN_COUNT; i++)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(TSU_EXAMPLE_CONVERSION_DELAY, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2baa0312618f2508347a9a815b5887c12ae">BSP_DELAY_UNITS_MICROSECONDS</a>);</div><div class="line"></div><div class="line">        <span class="comment">/* Read converted data. */</span></div><div class="line">        err = <a class="code" href="group___t_s_u.html#ga3544708da19605b1aa1e9061d78f5294">R_TSU_Read</a>(&amp;g_tsu0_ctrl, <a class="code" href="group___a_d_c___a_p_i.html#ggaafc4060027875f8fe46242b0656d7814aff4cf0b5a9bfd1fc634f6b097e34fe73">ADC_CHANNEL_TEMPERATURE</a>, (temperature_conversion_result + i));</div><div class="line">        handle_error(err);</div><div class="line"></div><div class="line">        ds = (uint16_t) (ds + temperature_conversion_result[i]);</div><div class="line">    }</div><div class="line"></div><div class="line">    ds /= TSU_EXAMPLE_SCAN_COUNT;</div><div class="line"></div><div class="line">    <span class="comment">/* Formula for calculating temperature copied from section &quot;Preparation for Using the Temperature Sensor&quot;</span></div><div class="line"><span class="comment">     * of the RZ microprocessor manual:</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * The measured temperature can be calculated according to the following formula.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * T = (Ds - D1) / Slope + T1</span></div><div class="line"><span class="comment">     * T: Measured temperature (C)</span></div><div class="line"><span class="comment">     * Ds: Code output (TSUSAD.DOUT) by the temperature sensor at the time of temperature measurement</span></div><div class="line"><span class="comment">     * T1 = 25 C: Temperature experimentally measured at one point (C)</span></div><div class="line"><span class="comment">     * D1: Code output (TSUSAD.DOUT) by the temperature sensor at the time of measurement of T1</span></div><div class="line"><span class="comment">     * T2 = 85 C: Temperature at the experimental measurement of another point (C)</span></div><div class="line"><span class="comment">     * D2: Code output (TSUSAD.DOUT) by the temperature sensor at the time of measurement of T2</span></div><div class="line"><span class="comment">     * Slope: Temperature gradient by the temperature sensor (digit/C)</span></div><div class="line"><span class="comment">     *     For temperature more than or equal to 25 C (for example, if Ds &gt;= D1)</span></div><div class="line"><span class="comment">     *         Slope = (D2 - D1) / (T2 - T1)</span></div><div class="line"><span class="comment">     *     For temperature below 25 C (for example, if Ds &lt; D1)</span></div><div class="line"><span class="comment">     *         Slope = (D2 - D1) / (T2 - T1) x 63 / 65</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * NOTE: Characteristics vary from sensor to sensor. Therefore, the measurement at two different temperatures</span></div><div class="line"><span class="comment">     * (T1 = 25 C and T2 = 85 C) is recommended. This example uses the typical Slope and D1 provided in Table</span></div><div class="line"><span class="comment">     * &quot;Temperature sensor characteristics&quot; in the RZ microprocessor manual.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    int32_t temperature_c = ((int32_t) ds - TSU_EXAMPLE_D1) * TSU_EXAMPLE_SLOPE_x10000 / TSU_EXAMPLE_10000 +</div><div class="line">                            TSU_EXAMPLE_T1;</div><div class="line"></div><div class="line">    <span class="comment">/* Break if temperature is outside the expected range. */</span></div><div class="line">    <span class="keywordflow">if</span> ((temperature_c &lt; TSU_EXAMPLE_LOWER_LIMIT) || (temperature_c &gt; TSU_EXAMPLE_UPPER_LIMIT))</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_SCAN_COUNT          (8U)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_CONVERSION_DELAY    (20U)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_D1                  (1545)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_SLOPE_x10000        (625)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_10000               (10000)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_T1                  (25)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_LOWER_LIMIT         (0)</span></div><div class="line"><span class="preprocessor">#define TSU_EXAMPLE_UPPER_LIMIT         (50)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> tsu_temperature_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* The following example calculates the temperature on an RZ device using the data provided in the section</span></div><div class="line"><span class="comment">     * &quot;Preparation for Using the Temperature Sensor&quot; of the RZ microprocessor manual. */</span></div><div class="line"></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___t_s_u.html#ga1c56a027bc265464b1739560efa90813">R_TSU_Open</a>(&amp;g_tsu0_ctrl, &amp;g_tsu0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Enable temperature sensor and start scans by calling R_TSU_ScanStart(). */</span></div><div class="line">    (void) <a class="code" href="group___t_s_u.html#ga1f6f0d81dfcae1a3c09d577fa0cc00cc">R_TSU_ScanStart</a>(&amp;g_tsu0_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for conversion to complete and read converted data. To ensure accuracy, averaging the data obtained</span></div><div class="line"><span class="comment">     * at least 8 times continuously are required. */</span></div><div class="line">    uint16_t temperature_conversion_result[TSU_EXAMPLE_SCAN_COUNT];</div><div class="line">    uint16_t ds = 0;</div><div class="line">    <span class="keywordflow">for</span> (uint8_t i = 0; i &lt; TSU_EXAMPLE_SCAN_COUNT; i++)</div><div class="line">    {</div><div class="line">        <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(TSU_EXAMPLE_CONVERSION_DELAY, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2baa0312618f2508347a9a815b5887c12ae">BSP_DELAY_UNITS_MICROSECONDS</a>);</div><div class="line"></div><div class="line">        <span class="comment">/* Read converted data. */</span></div><div class="line">        err = <a class="code" href="group___t_s_u.html#ga3544708da19605b1aa1e9061d78f5294">R_TSU_Read</a>(&amp;g_tsu0_ctrl, <a class="code" href="group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814aff4cf0b5a9bfd1fc634f6b097e34fe73">ADC_CHANNEL_TEMPERATURE</a>, (temperature_conversion_result + i));</div><div class="line">        handle_error(err);</div><div class="line"></div><div class="line">        ds = (uint16_t) (ds + temperature_conversion_result[i]);</div><div class="line">    }</div><div class="line"></div><div class="line">    ds /= TSU_EXAMPLE_SCAN_COUNT;</div><div class="line"></div><div class="line">    <span class="comment">/* Formula for calculating temperature copied from section &quot;Preparation for Using the Temperature Sensor&quot;</span></div><div class="line"><span class="comment">     * of the RZ microprocessor manual:</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * The measured temperature can be calculated according to the following formula.</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * T = (Ds - D1) / Slope + T1</span></div><div class="line"><span class="comment">     * T: Measured temperature (C)</span></div><div class="line"><span class="comment">     * Ds: Code output (TSUSAD.DOUT) by the temperature sensor at the time of temperature measurement</span></div><div class="line"><span class="comment">     * T1 = 25 C: Temperature experimentally measured at one point (C)</span></div><div class="line"><span class="comment">     * D1: Code output (TSUSAD.DOUT) by the temperature sensor at the time of measurement of T1</span></div><div class="line"><span class="comment">     * T2 = 85 C: Temperature at the experimental measurement of another point (C)</span></div><div class="line"><span class="comment">     * D2: Code output (TSUSAD.DOUT) by the temperature sensor at the time of measurement of T2</span></div><div class="line"><span class="comment">     * Slope: Temperature gradient by the temperature sensor (digit/C)</span></div><div class="line"><span class="comment">     *     For temperature more than or equal to 25 C (for example, if Ds &gt;= D1)</span></div><div class="line"><span class="comment">     *         Slope = (D2 - D1) / (T2 - T1)</span></div><div class="line"><span class="comment">     *     For temperature below 25 C (for example, if Ds &lt; D1)</span></div><div class="line"><span class="comment">     *         Slope = (D2 - D1) / (T2 - T1) x 63 / 65</span></div><div class="line"><span class="comment">     *</span></div><div class="line"><span class="comment">     * NOTE: Characteristics vary from sensor to sensor. Therefore, the measurement at two different temperatures</span></div><div class="line"><span class="comment">     * (T1 = 25 C and T2 = 85 C) is recommended. This example uses the typical Slope and D1 provided in Table</span></div><div class="line"><span class="comment">     * &quot;Temperature sensor characteristics&quot; in the RZ microprocessor manual.</span></div><div class="line"><span class="comment">     */</span></div><div class="line">    int32_t temperature_c = ((int32_t) ds - TSU_EXAMPLE_D1) * TSU_EXAMPLE_SLOPE_x10000 / TSU_EXAMPLE_10000 +</div><div class="line">                            TSU_EXAMPLE_T1;</div><div class="line"></div><div class="line">    <span class="comment">/* Break if temperature is outside the expected range. */</span></div><div class="line">    <span class="keywordflow">if</span> ((temperature_c &lt; TSU_EXAMPLE_LOWER_LIMIT) || (temperature_c &gt; TSU_EXAMPLE_UPPER_LIMIT))</div><div class="line">    {</div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structtsu__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___t_s_u.html#structtsu__instance__ctrl__t">tsu_instance_ctrl_t</a></td></tr>
@@ -254,6 +322,41 @@ Data Structures</h2></td></tr>
 
 </div>
 </div>
+<a id="gad60f764ac26bbeb327287f81fb17e10c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad60f764ac26bbeb327287f81fb17e10c">&#9670;&nbsp;</a></span>R_TSU_ScanCfg()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_ScanCfg </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_extend</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="group___a_d_c___a_p_i.html#a44289d7822720544751eb22e3d7d38ea">adc_api_t::scanCfg</a> is not supported on the TSU.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="ga1f6f0d81dfcae1a3c09d577fa0cc00cc"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga1f6f0d81dfcae1a3c09d577fa0cc00cc">&#9670;&nbsp;</a></span>R_TSU_ScanStart()</h2>
 
@@ -277,6 +380,41 @@ Data Structures</h2></td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Unit is not open. </td></tr>
     <tr><td class="paramname">FSP_ERR_IN_USE</td><td>Another scan is still in progress. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gac6125c6c38bbbb8385e67ba9169b99b1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gac6125c6c38bbbb8385e67ba9169b99b1">&#9670;&nbsp;</a></span>R_TSU_ScanGroupStart()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_ScanGroupStart </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaee17c30275c1c9376cc485a62ea121eb">adc_group_mask_t</a>&#160;</td>
+          <td class="paramname"><em>group_mask</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="group___a_d_c___a_p_i.html#aeae126b8a09e1ec34e8e3afb4a3344ff">adc_api_t::scanGroupStart</a> is not supported on the TSU.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
   </table>
   </dd>
 </dl>
@@ -392,94 +530,6 @@ Data Structures</h2></td></tr>
 
 </div>
 </div>
-<a id="ga4fc6b794901e3a2eb00ccba1cbff3c1f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4fc6b794901e3a2eb00ccba1cbff3c1f">&#9670;&nbsp;</a></span>R_TSU_Close()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_Close </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Stop the TSU module.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Module closed. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Unit is not open. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga044c58503b60de3d53cf0317be88a5c0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga044c58503b60de3d53cf0317be88a5c0">&#9670;&nbsp;</a></span>R_TSU_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Retrieve the API version number.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version stored in the provided p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gad60f764ac26bbeb327287f81fb17e10c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad60f764ac26bbeb327287f81fb17e10c">&#9670;&nbsp;</a></span>R_TSU_ScanCfg()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_ScanCfg </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void const *const&#160;</td>
-          <td class="paramname"><em>p_extend</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p><a class="el" href="group___a_d_c___a_p_i.html#a44289d7822720544751eb22e3d7d38ea">adc_api_t::scanCfg</a> is not supported on the TSU.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="gacd42ad4a5532440cb02a78126fc037d4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gacd42ad4a5532440cb02a78126fc037d4">&#9670;&nbsp;</a></span>R_TSU_Read32()</h2>
 
@@ -521,8 +571,70 @@ Data Structures</h2></td></tr>
 
 </div>
 </div>
-<a id="gac90373446ea0cae4433015a7edb581fb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac90373446ea0cae4433015a7edb581fb">&#9670;&nbsp;</a></span>R_TSU_Calibrate()</h2>
+<a id="ga4fc6b794901e3a2eb00ccba1cbff3c1f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga4fc6b794901e3a2eb00ccba1cbff3c1f">&#9670;&nbsp;</a></span>R_TSU_Close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_Close </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Stop the TSU module.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Module closed. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input argument is invalid. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Unit is not open. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gab0d51f6dd6602ecd562995ab8e577bd0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gab0d51f6dd6602ecd562995ab8e577bd0">&#9670;&nbsp;</a></span>R_TSU_InfoGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_InfoGet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#structadc__info__t">adc_info_t</a> *&#160;</td>
+          <td class="paramname"><em>p_adc_info</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p><a class="el" href="group___a_d_c___a_p_i.html#acc68017ee284386b5d13c027bc10bf87">adc_api_t::infoGet</a> is not supported on the TSU.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gae6d0b2bf95cc618c1b7a3c04747604eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae6d0b2bf95cc618c1b7a3c04747604eb">&#9670;&nbsp;</a></span>R_TSU_Calibrate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -536,7 +648,7 @@ Data Structures</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">void *const&#160;</td>
+          <td class="paramtype">void const *&#160;</td>
           <td class="paramname"><em>p_extend</em>&#160;</td>
         </tr>
         <tr>
@@ -546,7 +658,7 @@ Data Structures</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p><a class="el" href="group___a_d_c___a_p_i.html#a1ea4b7aa41983d837edfed54fcd79b5d">adc_api_t::calibrate</a> is not supported on the TSU.</p>
+<p><a class="el" href="group___a_d_c___a_p_i.html#a1020d90e58d3bf86cee2f46a62e62fc4">adc_api_t::calibrate</a> is not supported on the TSU.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
@@ -597,8 +709,8 @@ Data Structures</h2></td></tr>
 
 </div>
 </div>
-<a id="ga4513dfd14559bfcc072ab5cf080380b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga4513dfd14559bfcc072ab5cf080380b4">&#9670;&nbsp;</a></span>R_TSU_CallbackSet()</h2>
+<a id="gadd56721f01b64b7b5f20856d88d237f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadd56721f01b64b7b5f20856d88d237f9">&#9670;&nbsp;</a></span>R_TSU_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -607,7 +719,7 @@ Data Structures</h2></td></tr>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_CallbackSet </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -634,42 +746,7 @@ Data Structures</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p><a class="el" href="group___a_d_c___a_p_i.html#a8d081aba32f84d62e7d48389b1d10b3e">adc_api_t::callbackSet</a> is not supported on the TSU.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gab0d51f6dd6602ecd562995ab8e577bd0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab0d51f6dd6602ecd562995ab8e577bd0">&#9670;&nbsp;</a></span>R_TSU_InfoGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_TSU_InfoGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#gaff9488cd90102a90e5c5cbd45394d426">adc_ctrl_t</a> *&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___a_d_c___a_p_i.html#structadc__info__t">adc_info_t</a> *&#160;</td>
-          <td class="paramname"><em>p_adc_info</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p><a class="el" href="group___a_d_c___a_p_i.html#acc68017ee284386b5d13c027bc10bf87">adc_api_t::infoGet</a> is not supported on the TSU.</p>
+<p><a class="el" href="group___a_d_c___a_p_i.html#a2cd8e8911dcf8c4c617fe62f185b4363">adc_api_t::callbackSet</a> is not supported on the TSU.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
@@ -685,7 +762,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

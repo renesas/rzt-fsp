@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Ethernet (r_gmac)</title>
+<title>RZT Flexible Software Package Documentation: Ethernet (r_gmac)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___e_t_h_e_r.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___e_t_h_e_r.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Ethernet (r_gmac)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Ethernet (r_gmac)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___m_o_d_u_l_e_s.html">Networking</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -105,24 +173,24 @@ Functions</h2></td></tr>
 <tr class="separator:gac8d170941e53c56274bb64c9a6124d3f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab285030c547f1d41da498e3fbd08687e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#gab285030c547f1d41da498e3fbd08687e">R_GMAC_Close</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:gab285030c547f1d41da498e3fbd08687e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf9be2ed5ce68a77eb387011786a93fcb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#gaf9be2ed5ce68a77eb387011786a93fcb">R_GMAC_Read</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl, void *const p_buffer, uint32_t *const length_bytes)</td></tr>
+<tr class="separator:gaf9be2ed5ce68a77eb387011786a93fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga4a4aade41773b5a42dabfbd821a8effc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga4a4aade41773b5a42dabfbd821a8effc">R_GMAC_BufferRelease</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga4a4aade41773b5a42dabfbd821a8effc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa9bf3c14cc0be8ae1d8ed0e36f1dca44"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#gaa9bf3c14cc0be8ae1d8ed0e36f1dca44">R_GMAC_RxBufferUpdate</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl, void *const p_buffer)</td></tr>
 <tr class="separator:gaa9bf3c14cc0be8ae1d8ed0e36f1dca44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6a8f60b892bd40462879d7b8a4d8cc0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga6a8f60b892bd40462879d7b8a4d8cc0a">R_GMAC_LinkProcess</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:ga6a8f60b892bd40462879d7b8a4d8cc0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga339540980a46c70157afd5d92053549a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga339540980a46c70157afd5d92053549a">R_GMAC_GetLinkStatus</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl, uint8_t port, <a class="el" href="group___e_t_h_e_r___a_p_i.html#ga98729042d1a7d3bcb8827c5ab920c6ae">ether_link_status_t</a> *p_status)</td></tr>
-<tr class="separator:ga339540980a46c70157afd5d92053549a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadd60e80d06fe353d4be812dea9b44322"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#gadd60e80d06fe353d4be812dea9b44322">R_GMAC_WakeOnLANEnable</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:gadd60e80d06fe353d4be812dea9b44322"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaf9be2ed5ce68a77eb387011786a93fcb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#gaf9be2ed5ce68a77eb387011786a93fcb">R_GMAC_Read</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl, void *const p_buffer, uint32_t *const length_bytes)</td></tr>
-<tr class="separator:gaf9be2ed5ce68a77eb387011786a93fcb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2f80d8a2cf1b39f6d57460712f46d2a1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga2f80d8a2cf1b39f6d57460712f46d2a1">R_GMAC_Write</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl, void *const p_buffer, uint32_t const frame_length)</td></tr>
 <tr class="separator:ga2f80d8a2cf1b39f6d57460712f46d2a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6a8f60b892bd40462879d7b8a4d8cc0a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga6a8f60b892bd40462879d7b8a4d8cc0a">R_GMAC_LinkProcess</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga6a8f60b892bd40462879d7b8a4d8cc0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga984055d2a9a39904079a745c38cfedb7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga984055d2a9a39904079a745c38cfedb7">R_GMAC_GetLinkStatus</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl, uint8_t port, <a class="el" href="group___e_t_h_e_r.html#ga24f3b2847af3e4c27f85924af55f5241">gmac_link_status_t</a> *p_status)</td></tr>
+<tr class="separator:ga984055d2a9a39904079a745c38cfedb7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadd60e80d06fe353d4be812dea9b44322"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#gadd60e80d06fe353d4be812dea9b44322">R_GMAC_WakeOnLANEnable</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:gadd60e80d06fe353d4be812dea9b44322"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga919bbcc7c5f7e70a4c9e450dea875f4a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga919bbcc7c5f7e70a4c9e450dea875f4a">R_GMAC_TxStatusGet</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl, void *const p_buffer_address)</td></tr>
 <tr class="separator:ga919bbcc7c5f7e70a4c9e450dea875f4a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad3f1e592fe0ff4dd49071bd4159970da"><td class="memItemLeft" align="right" valign="top">__INLINE <a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#gad3f1e592fe0ff4dd49071bd4159970da">R_GMAC_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:gad3f1e592fe0ff4dd49071bd4159970da"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga35aa2019f4ab2b0d9f4a55cc1061c473"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga35aa2019f4ab2b0d9f4a55cc1061c473">R_GMAC_CallbackSet</a> (<a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___e_t_h_e_r___a_p_i.html#structether__callback__args__t">ether_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___e_t_h_e_r___a_p_i.html#structether__callback__args__t">ether_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga35aa2019f4ab2b0d9f4a55cc1061c473"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the Ethernet peripheral on RZ microprocessor. This module implements the <a class="el" href="group___e_t_h_e_r___a_p_i.html">Ethernet Interface</a>. </p>
@@ -157,8 +225,8 @@ Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Network &gt; Ethernet Driver on r_ether</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Network &gt; Ethernet Driver on r_ether.<br />
+ <h2>Configurations for Networking &gt; Ethernet (r_gmac)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Networking &gt; Ethernet (r_gmac).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -273,6 +341,8 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga3a743e2bcb738ad6759a41747bdad1cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga57e1f65ccc0c8570c6c0f22515119001"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga57e1f65ccc0c8570c6c0f22515119001">gmac_phylink_t</a> </td></tr>
 <tr class="separator:ga57e1f65ccc0c8570c6c0f22515119001"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga24f3b2847af3e4c27f85924af55f5241"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ga24f3b2847af3e4c27f85924af55f5241">gmac_link_status_t</a> </td></tr>
+<tr class="separator:ga24f3b2847af3e4c27f85924af55f5241"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structgmac__instance__descriptor__t" id="structgmac__instance__descriptor__t"></a>
@@ -328,81 +398,57 @@ TDES3/RDES3. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>ETHER control block. DO NOT INITIALIZE. Initialization occurs when <a class="el" href="group___e_t_h_e_r___a_p_i.html#ae75458ac2a31861195b73120676d670c">ether_api_t::open</a> is called. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="a3ab0d6d7852f6989a4c71800c3157d2b"></a>uint32_t</td>
-<td class="fieldname">
-open</td>
-<td class="fielddoc">
-Used to determine if the channel is configured. </td></tr>
-<tr><td class="fieldtype">
-<a id="a35847a91f08224eb423c6087f9e037b7"></a><a class="el" href="group___e_t_h_e_r___a_p_i.html#structether__cfg__t">ether_cfg_t</a> const  *</td>
-<td class="fieldname">
-p_gmac_cfg</td>
-<td class="fielddoc">
-Pointer to initial configurations. </td></tr>
-<tr><td class="fieldtype">
-<a id="a646f0a61ce8dcbe11326c9ec77cbe1d8"></a><a class="el" href="group___e_t_h_e_r.html#structgmac__instance__descriptor__t">gmac_instance_descriptor_t</a> *</td>
-<td class="fieldname">
-p_rx_descriptor</td>
-<td class="fielddoc">
-Pointer to the currently referenced transmit descriptor. </td></tr>
-<tr><td class="fieldtype">
-<a id="ad9d323d1b83c70324f34c4f551376b65"></a><a class="el" href="group___e_t_h_e_r.html#structgmac__instance__descriptor__t">gmac_instance_descriptor_t</a> *</td>
-<td class="fieldname">
-p_tx_descriptor</td>
-<td class="fielddoc">
-Pointer to the currently referenced receive descriptor. </td></tr>
-<tr><td class="fieldtype">
-<a id="a6fda4c71cf6fe24d13510d9d4c445fc9"></a>void *</td>
-<td class="fieldname">
-p_reg_gmac</td>
-<td class="fielddoc">
-Base register of ethernet controller for this channel. </td></tr>
-<tr><td class="fieldtype">
-<a id="a3809e497e471f22a80822394a503aa2c"></a>gmac_port_mask_t</td>
-<td class="fieldname">
-link_status</td>
-<td class="fielddoc">
-link status by callback from ethsw (bit0:port0, bit1:port1,..) </td></tr>
-<tr><td class="fieldtype">
-<a id="adea817c9d56d8b36ac7373d052bd8ba4"></a>gmac_port_mask_t</td>
-<td class="fieldname">
-previous_link_status</td>
-<td class="fielddoc">
-Previous link status (bit0:port0, bit1:port1,..) </td></tr>
-<tr><td class="fieldtype">
-<a id="ab1636cae0466fa6553034cbd5788e0b5"></a>uint32_t</td>
-<td class="fieldname">
-link_speed_duplex</td>
-<td class="fielddoc">
-Link speed &amp; duplex. </td></tr>
-<tr><td class="fieldtype">
-<a id="ac347e6f179a18f132207eb0ec76d8cb1"></a><a class="el" href="group___e_t_h_e_r.html#ga3a743e2bcb738ad6759a41747bdad1cf">gmac_magic_packet_t</a></td>
-<td class="fieldname">
-magic_packet</td>
-<td class="fielddoc">
-status of magic packet detection </td></tr>
-<tr><td class="fieldtype">
-<a id="a93518eb99475ec23ba52ba79f9e3b7ac"></a>gmac_port_mask_t</td>
-<td class="fieldname">
-link_establish_status</td>
-<td class="fielddoc">
-Current Link status (bit0:port0, bit1:port1,..) </td></tr>
-<tr><td class="fieldtype">
-<a id="a83056c9722f872833569fadef561ac40"></a>uint32_t</td>
-<td class="fieldname">
-local_pause_bits</td>
-<td class="fielddoc">
-Local pause bits got from PHY. </td></tr>
-<tr><td class="fieldtype">
-<a id="af60f051b346c2615ad284db87a5f7604"></a>uint32_t</td>
-<td class="fieldname">
-partner_pause_bits</td>
-<td class="fielddoc">
-Partner pause bits got from PHY. </td></tr>
+<div class="textblock"><p>ETHER control block. DO NOT INITIALIZE. Initialization occurs when <a class="el" href="group___e_t_h_e_r___a_p_i.html#aa0c703be12efe73efdd0d47168239470">ether_api_t::open</a> is called. </p>
+</div><table class="memberdecls">
+<tr><td colspan="2"><h3>Data Fields</h3></td></tr>
+<tr class="memitem:a3ab0d6d7852f6989a4c71800c3157d2b"><td class="memItemLeft" align="right" valign="top"><a id="a3ab0d6d7852f6989a4c71800c3157d2b"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#a3ab0d6d7852f6989a4c71800c3157d2b">open</a></td></tr>
+<tr class="memdesc:a3ab0d6d7852f6989a4c71800c3157d2b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Used to determine if the channel is configured. <br /></td></tr>
+<tr class="separator:a3ab0d6d7852f6989a4c71800c3157d2b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35847a91f08224eb423c6087f9e037b7"><td class="memItemLeft" align="right" valign="top"><a id="a35847a91f08224eb423c6087f9e037b7"></a>
+<a class="el" href="group___e_t_h_e_r___a_p_i.html#structether__cfg__t">ether_cfg_t</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#a35847a91f08224eb423c6087f9e037b7">p_gmac_cfg</a></td></tr>
+<tr class="memdesc:a35847a91f08224eb423c6087f9e037b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to initial configurations. <br /></td></tr>
+<tr class="separator:a35847a91f08224eb423c6087f9e037b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a646f0a61ce8dcbe11326c9ec77cbe1d8"><td class="memItemLeft" align="right" valign="top"><a id="a646f0a61ce8dcbe11326c9ec77cbe1d8"></a>
+<a class="el" href="group___e_t_h_e_r.html#structgmac__instance__descriptor__t">gmac_instance_descriptor_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#a646f0a61ce8dcbe11326c9ec77cbe1d8">p_rx_descriptor</a></td></tr>
+<tr class="memdesc:a646f0a61ce8dcbe11326c9ec77cbe1d8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the currently referenced transmit descriptor. <br /></td></tr>
+<tr class="separator:a646f0a61ce8dcbe11326c9ec77cbe1d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad9d323d1b83c70324f34c4f551376b65"><td class="memItemLeft" align="right" valign="top"><a id="ad9d323d1b83c70324f34c4f551376b65"></a>
+<a class="el" href="group___e_t_h_e_r.html#structgmac__instance__descriptor__t">gmac_instance_descriptor_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ad9d323d1b83c70324f34c4f551376b65">p_tx_descriptor</a></td></tr>
+<tr class="memdesc:ad9d323d1b83c70324f34c4f551376b65"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to the currently referenced receive descriptor. <br /></td></tr>
+<tr class="separator:ad9d323d1b83c70324f34c4f551376b65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6fda4c71cf6fe24d13510d9d4c445fc9"><td class="memItemLeft" align="right" valign="top"><a id="a6fda4c71cf6fe24d13510d9d4c445fc9"></a>
+void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#a6fda4c71cf6fe24d13510d9d4c445fc9">p_reg_gmac</a></td></tr>
+<tr class="memdesc:a6fda4c71cf6fe24d13510d9d4c445fc9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base register of ethernet controller for this channel. <br /></td></tr>
+<tr class="separator:a6fda4c71cf6fe24d13510d9d4c445fc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3809e497e471f22a80822394a503aa2c"><td class="memItemLeft" align="right" valign="top"><a id="a3809e497e471f22a80822394a503aa2c"></a>
+gmac_port_mask_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#a3809e497e471f22a80822394a503aa2c">link_status</a></td></tr>
+<tr class="memdesc:a3809e497e471f22a80822394a503aa2c"><td class="mdescLeft">&#160;</td><td class="mdescRight">link status by callback from ethsw (bit0:port0, bit1:port1,..) <br /></td></tr>
+<tr class="separator:a3809e497e471f22a80822394a503aa2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adea817c9d56d8b36ac7373d052bd8ba4"><td class="memItemLeft" align="right" valign="top"><a id="adea817c9d56d8b36ac7373d052bd8ba4"></a>
+gmac_port_mask_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#adea817c9d56d8b36ac7373d052bd8ba4">previous_link_status</a></td></tr>
+<tr class="memdesc:adea817c9d56d8b36ac7373d052bd8ba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Previous link status (bit0:port0, bit1:port1,..) <br /></td></tr>
+<tr class="separator:adea817c9d56d8b36ac7373d052bd8ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1636cae0466fa6553034cbd5788e0b5"><td class="memItemLeft" align="right" valign="top"><a id="ab1636cae0466fa6553034cbd5788e0b5"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ab1636cae0466fa6553034cbd5788e0b5">link_speed_duplex</a></td></tr>
+<tr class="memdesc:ab1636cae0466fa6553034cbd5788e0b5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Link speed &amp; duplex. <br /></td></tr>
+<tr class="separator:ab1636cae0466fa6553034cbd5788e0b5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac347e6f179a18f132207eb0ec76d8cb1"><td class="memItemLeft" align="right" valign="top"><a id="ac347e6f179a18f132207eb0ec76d8cb1"></a>
+<a class="el" href="group___e_t_h_e_r.html#ga3a743e2bcb738ad6759a41747bdad1cf">gmac_magic_packet_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#ac347e6f179a18f132207eb0ec76d8cb1">magic_packet</a></td></tr>
+<tr class="memdesc:ac347e6f179a18f132207eb0ec76d8cb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">status of magic packet detection <br /></td></tr>
+<tr class="separator:ac347e6f179a18f132207eb0ec76d8cb1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a93518eb99475ec23ba52ba79f9e3b7ac"><td class="memItemLeft" align="right" valign="top"><a id="a93518eb99475ec23ba52ba79f9e3b7ac"></a>
+gmac_port_mask_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#a93518eb99475ec23ba52ba79f9e3b7ac">link_establish_status</a></td></tr>
+<tr class="memdesc:a93518eb99475ec23ba52ba79f9e3b7ac"><td class="mdescLeft">&#160;</td><td class="mdescRight">Current Link status (bit0:port0, bit1:port1,..) <br /></td></tr>
+<tr class="separator:a93518eb99475ec23ba52ba79f9e3b7ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a83056c9722f872833569fadef561ac40"><td class="memItemLeft" align="right" valign="top"><a id="a83056c9722f872833569fadef561ac40"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#a83056c9722f872833569fadef561ac40">local_pause_bits</a></td></tr>
+<tr class="memdesc:a83056c9722f872833569fadef561ac40"><td class="mdescLeft">&#160;</td><td class="mdescRight">Local pause bits got from PHY. <br /></td></tr>
+<tr class="separator:a83056c9722f872833569fadef561ac40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af60f051b346c2615ad284db87a5f7604"><td class="memItemLeft" align="right" valign="top"><a id="af60f051b346c2615ad284db87a5f7604"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r.html#af60f051b346c2615ad284db87a5f7604">partner_pause_bits</a></td></tr>
+<tr class="memdesc:af60f051b346c2615ad284db87a5f7604"><td class="mdescLeft">&#160;</td><td class="mdescRight">Partner pause bits got from PHY. <br /></td></tr>
+<tr class="separator:af60f051b346c2615ad284db87a5f7604"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 
 </div>
@@ -470,6 +516,29 @@ Partner pause bits got from PHY. </td></tr>
 
 </div>
 </div>
+<a id="ga24f3b2847af3e4c27f85924af55f5241"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga24f3b2847af3e4c27f85924af55f5241">&#9670;&nbsp;</a></span>gmac_link_status_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___e_t_h_e_r.html#ga24f3b2847af3e4c27f85924af55f5241">gmac_link_status_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Link status of each port </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga24f3b2847af3e4c27f85924af55f5241a25dc2232d0491997613e37d0de68fe65"></a>GMAC_LINK_STATUS_DOWN&#160;</td><td class="fielddoc"><p>Link down. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga24f3b2847af3e4c27f85924af55f5241a1a02828caa9b670b1c1ad5bb45d6c774"></a>GMAC_LINK_STATUS_UP&#160;</td><td class="fielddoc"><p>Link up. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga24f3b2847af3e4c27f85924af55f5241ab9372c56622e68ea2dd8f79b42bd54d7"></a>GMAC_LINK_STATUS_READY&#160;</td><td class="fielddoc"><p>Link establishment. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 <h2 class="groupheader">Function Documentation</h2>
 <a id="gac8d170941e53c56274bb64c9a6124d3f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gac8d170941e53c56274bb64c9a6124d3f">&#9670;&nbsp;</a></span>R_GMAC_Open()</h2>
@@ -496,7 +565,7 @@ Partner pause bits got from PHY. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>After ETHERC, EDMAC and PHY-LSI are reset in software, an auto negotiation of PHY-LSI is begun. Afterwards, the link signal change interrupt is permitted. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#ae75458ac2a31861195b73120676d670c">ether_api_t::open</a>.</p>
+<p>After ETHERC, EDMAC and PHY-LSI are reset in software, an auto negotiation of PHY-LSI is begun. Afterwards, the link signal change interrupt is permitted. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#aa0c703be12efe73efdd0d47168239470">ether_api_t::open</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Channel opened successfully. </td></tr>
@@ -528,12 +597,59 @@ Partner pause bits got from PHY. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Disables interrupts. Removes power and releases hardware lock. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a1c0bc3caef73e0a216c2fe2edc4fff4b">ether_api_t::close</a>.</p>
+<p>Disables interrupts. Removes power and releases hardware lock. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a84ae3c1816a60c8fc45ccc2084805088">ether_api_t::close</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Channel successfully closed. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaf9be2ed5ce68a77eb387011786a93fcb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf9be2ed5ce68a77eb387011786a93fcb">&#9670;&nbsp;</a></span>R_GMAC_Read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_Read </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void *const&#160;</td>
+          <td class="paramname"><em>p_buffer</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *const&#160;</td>
+          <td class="paramname"><em>length_bytes</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Receive Ethernet frame. Receives data to the location specified by the pointer to the receive buffer. In zero copy mode, the address of the receive buffer is returned. In non zero copy mode, the received data in the internal buffer is copied to the pointer passed by the argument. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a58975a11436cc5980698b6e843eea3f3">ether_api_t::read</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_NO_DATA</td><td>There is no data in receive buffer. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_LINK</td><td>Auto-negotiation is not completed, and reception is not enabled. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_MAGIC_PACKET_MODE</td><td>As a Magic Packet is being detected, transmission and reception is not enabled. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Value of the pointer is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -555,7 +671,7 @@ Partner pause bits got from PHY. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Move to the next buffer in the circular receive buffer list. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#aa38e7f82e66fd26fd8d51b11f46ae6e6">ether_api_t::bufferRelease</a>.</p>
+<p>Move to the next buffer in the circular receive buffer list. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a4f988e111dadbfab48e9eccec8d462b5">ether_api_t::bufferRelease</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
@@ -594,7 +710,7 @@ Partner pause bits got from PHY. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Change the buffer pointer of the current rx buffer descriptor. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#aa714b8287d1cef38d8442850dd9b9fb5">ether_api_t::rxBufferUpdate</a>.</p>
+<p>Change the buffer pointer of the current rx buffer descriptor. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a6d088fd3b1a5326af7bedad146491d74">ether_api_t::rxBufferUpdate</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
@@ -603,158 +719,6 @@ Partner pause bits got from PHY. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>The pointer of buffer is NULL or not aligned on a 32-bit boundary. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_MODE</td><td>Driver is configured to non zero copy mode. </td></tr>
     <tr><td class="paramname">FSP_ERR_ETHER_RECEIVE_BUFFER_ACTIVE</td><td>All descriptor is active. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga6a8f60b892bd40462879d7b8a4d8cc0a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga6a8f60b892bd40462879d7b8a4d8cc0a">&#9670;&nbsp;</a></span>R_GMAC_LinkProcess()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_LinkProcess </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The Link up processing, the Link down processing, and the magic packet detection processing are executed. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a125ca4ee69c6c63e1db42708324c0fb3">ether_api_t::linkProcess</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_PHY_COMMUNICATION</td><td>When reopening the PHY interface initialization of the PHY-LSI failed. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>When reopening the PHY interface it was already opened. </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_CHANNEL</td><td>When reopening the PHY interface an invalid channel was passed. </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>When reopening the PHY interface the MAC address pointer was NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>When reopening the PHY interface the interrupt was not enabled. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ETHER_PHY_ERROR_LINK</td><td>Initialization of the PHY-LSI failed. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga339540980a46c70157afd5d92053549a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga339540980a46c70157afd5d92053549a">&#9670;&nbsp;</a></span>R_GMAC_GetLinkStatus()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_GetLinkStatus </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint8_t&#160;</td>
-          <td class="paramname"><em>port</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#ga98729042d1a7d3bcb8827c5ab920c6ae">ether_link_status_t</a> *&#160;</td>
-          <td class="paramname"><em>p_status</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get link status of specificed port. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a3490dbcf5163ad1409fb3899aafccbfe">ether_api_t::getLinkStatus</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Value of the pointer is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>When reopening the PHY interface the interrupt was not enabled. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gadd60e80d06fe353d4be812dea9b44322"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gadd60e80d06fe353d4be812dea9b44322">&#9670;&nbsp;</a></span>R_GMAC_WakeOnLANEnable()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_WakeOnLANEnable </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>The setting of ETHERC is changed from normal sending and receiving mode to magic packet detection mode. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#afabb87ef0be65717bb7675a4a004e3ad">ether_api_t::wakeOnLANEnable</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gaf9be2ed5ce68a77eb387011786a93fcb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaf9be2ed5ce68a77eb387011786a93fcb">&#9670;&nbsp;</a></span>R_GMAC_Read()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_Read </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void *const&#160;</td>
-          <td class="paramname"><em>p_buffer</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint32_t *const&#160;</td>
-          <td class="paramname"><em>length_bytes</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Receive Ethernet frame. Receives data to the location specified by the pointer to the receive buffer. In zero copy mode, the address of the receive buffer is returned. In non zero copy mode, the received data in the internal buffer is copied to the pointer passed by the argument. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a41d56c8843a454690b1969f8f766d65a">ether_api_t::read</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_NO_DATA</td><td>There is no data in receive buffer. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_LINK</td><td>Auto-negotiation is not completed, and reception is not enabled. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_MAGIC_PACKET_MODE</td><td>As a Magic Packet is being detected, transmission and reception is not enabled. </td></tr>
-    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Value of the pointer is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -792,7 +756,7 @@ Partner pause bits got from PHY. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Transmit Ethernet frame. Transmits data from the location specified by the pointer to the transmit buffer, with the data size equal to the specified frame length. In the non zero copy mode, transmits data after being copied to the internal buffer. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a92e87f33f0a4e0ccb26464d697cdf233">ether_api_t::write</a>.</p>
+<p>Transmit Ethernet frame. Transmits data from the location specified by the pointer to the transmit buffer, with the data size equal to the specified frame length. In the non zero copy mode, transmits data after being copied to the internal buffer. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#aa61e5ba4dd1de3a50864c0b1970c3b51">ether_api_t::write</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
@@ -803,6 +767,111 @@ Partner pause bits got from PHY. </td></tr>
     <tr><td class="paramname">FSP_ERR_ETHER_ERROR_TRANSMIT_BUFFER_FULL</td><td>Transmit buffer is not empty. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Value of the pointer is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Value of the send frame size is out of range. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga6a8f60b892bd40462879d7b8a4d8cc0a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6a8f60b892bd40462879d7b8a4d8cc0a">&#9670;&nbsp;</a></span>R_GMAC_LinkProcess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_LinkProcess </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The Link up processing, the Link down processing, and the magic packet detection processing are executed. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#ae11e3e3521df4c3efe6e0dafecddee72">ether_api_t::linkProcess</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ETHER_ERROR_PHY_COMMUNICATION</td><td>When reopening the PHY interface initialization of the PHY-LSI failed. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>When reopening the PHY interface it was already opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_CHANNEL</td><td>When reopening the PHY interface an invalid channel was passed. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>When reopening the PHY interface the MAC address pointer was NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>When reopening the PHY interface the interrupt was not enabled. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ETHER_PHY_ERROR_LINK</td><td>Initialization of the PHY-LSI failed. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga984055d2a9a39904079a745c38cfedb7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga984055d2a9a39904079a745c38cfedb7">&#9670;&nbsp;</a></span>R_GMAC_GetLinkStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_GetLinkStatus </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint8_t&#160;</td>
+          <td class="paramname"><em>port</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r.html#ga24f3b2847af3e4c27f85924af55f5241">gmac_link_status_t</a> *&#160;</td>
+          <td class="paramname"><em>p_status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get link status of specificed port.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Value of the pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>When reopening the PHY interface the interrupt was not enabled. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gadd60e80d06fe353d4be812dea9b44322"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadd60e80d06fe353d4be812dea9b44322">&#9670;&nbsp;</a></span>R_GMAC_WakeOnLANEnable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_WakeOnLANEnable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The setting of ETHERC is changed from normal sending and receiving mode to magic packet detection mode. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#acde8967c0512722ca73a1596daf654ea">ether_api_t::wakeOnLANEnable</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Processing completed successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER control block is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
   </table>
   </dd>
 </dl>
@@ -834,7 +903,7 @@ Partner pause bits got from PHY. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Provides status of Ethernet driver in the user provided pointer. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a6fde51a3fef6b43ed0fada563fadfb4e">ether_api_t::txStatusGet</a>.</p>
+<p>Provides status of Ethernet driver in the user provided pointer. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#ad52cabec533efaaef3258caade1e0640">ether_api_t::txStatusGet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Transmit buffer address is stored in provided p_buffer_address. </td></tr>
@@ -848,26 +917,49 @@ Partner pause bits got from PHY. </td></tr>
 
 </div>
 </div>
-<a id="gad3f1e592fe0ff4dd49071bd4159970da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad3f1e592fe0ff4dd49071bd4159970da">&#9670;&nbsp;</a></span>R_GMAC_VersionGet()</h2>
+<a id="ga35aa2019f4ab2b0d9f4a55cc1061c473"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga35aa2019f4ab2b0d9f4a55cc1061c473">&#9670;&nbsp;</a></span>R_GMAC_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_VersionGet </td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_GMAC_CallbackSet </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#gad9e606976602503ffeb95f3e2c717e6f">ether_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___e_t_h_e_r___a_p_i.html#structether__callback__args__t">ether_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___a_p_i.html#structether__callback__args__t">ether_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>DEPRECATED Provides API and code version in the user provided pointer. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#a2d7eb9db55c87bff39494408612fe766">ether_api_t::versionGet</a>.</p>
+<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___e_t_h_e_r___a_p_i.html#aaeb0eaa99a7a62dfa5b65494db7f1ab4">ether_api_t::callbackSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version information stored in provided p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version is NULL. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
   </table>
   </dd>
 </dl>
@@ -880,7 +972,7 @@ Partner pause bits got from PHY. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

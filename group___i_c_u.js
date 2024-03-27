@@ -6,9 +6,9 @@ var group___i_c_u =
       [ "channel", "group___i_c_u.html#a2f4e264e88054dfe3689d0ec5c4c1ecb", null ],
       [ "p_context", "group___i_c_u.html#ae21fc21bfc378146b4c954884570fac3", null ]
     ] ],
-    [ "R_ICU_ExternalIrqOpen", "group___i_c_u.html#ga036e85b235d213b257cae159b9eba0a3", null ],
-    [ "R_ICU_ExternalIrqEnable", "group___i_c_u.html#ga56b7181d7a70a5b8655659d760993ad1", null ],
-    [ "R_ICU_ExternalIrqDisable", "group___i_c_u.html#gae4dc732735794d378f56552b06f6c3a9", null ],
-    [ "R_ICU_ExternalIrqCallbackSet", "group___i_c_u.html#ga4779daa90b1591254cf5535151b959a5", null ],
-    [ "R_ICU_ExternalIrqClose", "group___i_c_u.html#gad72351c30a832867210c310e1f718ca0", null ]
+    [ "R_ICU_ExternalIrqOpen", "group___i_c_u.html#ga735ab9ae7a274efd07f7329c34ad054e", null ],
+    [ "R_ICU_ExternalIrqEnable", "group___i_c_u.html#ga12c8c83e79d70e1c4d3cc3762b7b1d05", null ],
+    [ "R_ICU_ExternalIrqDisable", "group___i_c_u.html#gad61fea8fedf1944b757704eec056ad7e", null ],
+    [ "R_ICU_ExternalIrqCallbackSet", "group___i_c_u.html#ga7955517f23f15c4c34b56f5fa9b03c84", null ],
+    [ "R_ICU_ExternalIrqClose", "group___i_c_u.html#ga27d3ccbc2f765ec6bfe5ae024870a7f8", null ]
 ];

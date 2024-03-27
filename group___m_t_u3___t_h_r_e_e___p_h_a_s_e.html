@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Multi-Function Timer Pulse Unit 3 Three-Phase Motor Control Driver (r_mtu3_three_phase)</title>
+<title>RZT Flexible Software Package Documentation: Multi-Function Timer Pulse Unit 3 Three-Phase Motor Control Driver (r_mtu3_three_phase)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,13 +140,30 @@ $(document).ready(function(){initNavTree('group___m_t_u3___t_h_r_e_e___p_h_a_s_e
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Multi-Function Timer Pulse Unit 3 Three-Phase Motor Control Driver (r_mtu3_three_phase)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Multi-Function Timer Pulse Unit 3 Three-Phase Motor Control Driver (r_mtu3_three_phase)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___m_o_d_u_l_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -115,8 +183,6 @@ Functions</h2></td></tr>
 <tr class="separator:gabd88ba7d954882c76ac6a7c9795acd5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa07927e4a8a495a49445d6a35b8d67ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#gaa07927e4a8a495a49445d6a35b8d67ba">R_MTU3_THREE_PHASE_Close</a> (<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga4743a00c79aa11107190e48e8bce7c10">three_phase_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:gaa07927e4a8a495a49445d6a35b8d67ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5a818400873a7af1409c6174a5447df5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#ga5a818400873a7af1409c6174a5447df5">R_MTU3_THREE_PHASE_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga5a818400873a7af1409c6174a5447df5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for 3-phase motor control using the MTU3 peripheral on RZ microprocessor. This module implements the <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html">Three-Phase Interface</a>. </p>
@@ -151,8 +217,8 @@ Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Timers &gt; Three-Phase PWM Driver on r_mtu3_three_phase</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Timers &gt; Three-Phase PWM Driver on r_mtu3_three_phase.<br />
+ <h2>Configurations for Timers &gt; Three-Phase PWM (r_mtu3_three_phase)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Timers &gt; Three-Phase PWM (r_mtu3_three_phase).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -195,7 +261,7 @@ Double Buffer</li>
 </ul>
 </td><td>Single Buffer </td><td>When Double Buffer is selected the 'duty_buffer' array in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#structthree__phase__duty__cycle__t">three_phase_duty_cycle_t</a> is used as a buffer for the 'duty' array. This allows setting the duty cycle for the next two crest/trough events in asymmetric mode with only one call to R_MTU3_THREE_PHASE_DutyCycleSet.. </td></tr>
 <tr>
-<td>General &gt; Time Prescaler</td><td>Refer to the RZ Configuration tool for available options.</td><td>PCLKH divided by 1 (common ch) </td><td>Select time prescaler. </td></tr>
+<td>General &gt; Time Prescaler</td><td>Refer to the RZT Configuration tool for available options.</td><td>PCLKH divided by 1 (common ch) </td><td>Select time prescaler. </td></tr>
 <tr>
 <td>General &gt; Clock Edge</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -536,7 +602,7 @@ Pointer to initial configurations. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Initializes the 3-phase timer module (and associated timers) and applies configurations. Implements <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a17727ce358ca8b02f4e1a060416302b1">three_phase_api_t::open</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Initializes the module. */</span></div><div class="line">    err = <a class="code" href="group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#ga375e677b04fc34eb5fbbeb6d9738799b">R_MTU3_THREE_PHASE_Open</a>(&amp;g_mtu3_three_phase_ctrl, &amp;g_mtu3_three_phase_cfg);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL. </td></tr>
@@ -592,7 +658,7 @@ Pointer to initial configurations. </td></tr>
       </table>
 </div><div class="memdoc">
 <p>Starts all timers synchronously. Implements <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a79bcfbc70abd0445130845ff9cc81b79">three_phase_api_t::start</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Start the timer. */</span></div><div class="line">    (void) <a class="code" href="group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#ga3faaddf63d096d0e607fa656f8610197">R_MTU3_THREE_PHASE_Start</a>(&amp;g_mtu3_three_phase_ctrl);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Timers successfully started. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
@@ -659,7 +725,7 @@ Pointer to initial configurations. </td></tr>
 <p>In symmetric PWM mode duty cycle values are reflected after the next trough. In asymmetric PWM mode values are reflected at the next trough OR crest, whichever comes first.</p>
 <p>When double-buffering is enabled the values in <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a12e51857fcd253e9b3e35d1532e66694">three_phase_duty_cycle_t::duty_buffer</a> are set to the double-buffer registers. When values are reflected the first time the single buffer values (<a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a1e0c2575f75d5aed37039d04b13a757b">three_phase_duty_cycle_t::duty</a>) are used. On the second reflection the duty_buffer values are used. In asymmetric PWM mode this enables both count-up and count-down PWM values to be set at trough (or crest) exclusively.</p>
 <dl class="section note"><dt>Note</dt><dd>It is recommended to call this function in a high-priority callback to ensure that it is not interrupted and that no MTU3 events occur during setting that would result in a duty cycle buffer load operation.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">        <span class="comment">/* Update duty cycle values */</span></div><div class="line">        err = <a class="code" href="group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#gab548f1a000fe30aed9f425eb50aab328">R_MTU3_THREE_PHASE_DutyCycleSet</a>(&amp;g_mtu3_three_phase_ctrl, &amp;duty_cycle);</div><div class="line">        handle_error(err);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Duty cycle updated successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL </td></tr>
@@ -707,7 +773,7 @@ Pointer to initial configurations. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Updates the user callback for the MTU3 U-channel with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ab9207f40fa1512f415d7968004a8310a">three_phase_api_t::callbackSet</a>.</p>
+<p>Updates the user callback for the MTU3 U-channel with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a554fd0df3e9a3c1e09a81daf956f2244">three_phase_api_t::callbackSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
@@ -746,39 +812,13 @@ Pointer to initial configurations. </td></tr>
 
 </div>
 </div>
-<a id="ga5a818400873a7af1409c6174a5447df5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga5a818400873a7af1409c6174a5447df5">&#9670;&nbsp;</a></span>R_MTU3_THREE_PHASE_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_MTU3_THREE_PHASE_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Sets driver version based on compile time macros. Implements <a class="el" href="group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a7e7304278e077e85972d4b0601a0880c">three_phase_api_t::versionGet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version stored in p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version was NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

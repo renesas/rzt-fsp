@@ -52,19 +52,18 @@ var group___c_m_t_w =
       [ "CMTW_INPUT_CONTROL_DISABLED", "group___c_m_t_w.html#ggaa69aac2c20f895bd57f0d4dfa9da9c84aef9e4feabd4045f976f8b85a535a1e6e", null ],
       [ "CMTW_INPUT_CONTROL_ENABLED", "group___c_m_t_w.html#ggaa69aac2c20f895bd57f0d4dfa9da9c84a47a43fe08c66afb2854454bde1e0a235", null ]
     ] ],
-    [ "R_CMTW_Open", "group___c_m_t_w.html#ga7b086a5e535460e7855000cc6141b22e", null ],
-    [ "R_CMTW_Start", "group___c_m_t_w.html#ga874d0098275f48ec3c84e8587d262fce", null ],
-    [ "R_CMTW_Stop", "group___c_m_t_w.html#ga842bb3b9c5c12cdfff41dd8595defc70", null ],
-    [ "R_CMTW_Reset", "group___c_m_t_w.html#ga10851764cdad9c5c580e146501bc4352", null ],
-    [ "R_CMTW_Enable", "group___c_m_t_w.html#gadba23fc3303d81ce926ba6ebe9245e6a", null ],
-    [ "R_CMTW_Disable", "group___c_m_t_w.html#ga414c89c292c18a33619337489cd43787", null ],
+    [ "R_CMTW_Close", "group___c_m_t_w.html#gac59c2dfa9436df60eb01971c996875aa", null ],
     [ "R_CMTW_PeriodSet", "group___c_m_t_w.html#gaa50bb9ff96b3f0e38459a7e3e65c0a18", null ],
     [ "R_CMTW_DutyCycleSet", "group___c_m_t_w.html#ga928fd6d8249fe9c66e870849a6975ca9", null ],
+    [ "R_CMTW_Reset", "group___c_m_t_w.html#ga10851764cdad9c5c580e146501bc4352", null ],
+    [ "R_CMTW_Start", "group___c_m_t_w.html#ga874d0098275f48ec3c84e8587d262fce", null ],
+    [ "R_CMTW_Enable", "group___c_m_t_w.html#gadba23fc3303d81ce926ba6ebe9245e6a", null ],
+    [ "R_CMTW_Disable", "group___c_m_t_w.html#ga414c89c292c18a33619337489cd43787", null ],
     [ "R_CMTW_InfoGet", "group___c_m_t_w.html#gae56c5935864ef5ef23eeae25a95ab079", null ],
     [ "R_CMTW_StatusGet", "group___c_m_t_w.html#gacbdfc3716f8d5bd47edaa801eb50d1b7", null ],
+    [ "R_CMTW_Stop", "group___c_m_t_w.html#ga842bb3b9c5c12cdfff41dd8595defc70", null ],
+    [ "R_CMTW_Open", "group___c_m_t_w.html#ga7b086a5e535460e7855000cc6141b22e", null ],
     [ "R_CMTW_OutputEnable", "group___c_m_t_w.html#ga78987d5578215cbf098221602bbbc193", null ],
     [ "R_CMTW_OutputDisable", "group___c_m_t_w.html#gadd9a734062792a507971568dac4c3013", null ],
-    [ "R_CMTW_CallbackSet", "group___c_m_t_w.html#gabc760f97e8a609485ae6194571d41127", null ],
-    [ "R_CMTW_Close", "group___c_m_t_w.html#gac59c2dfa9436df60eb01971c996875aa", null ],
-    [ "R_CMTW_VersionGet", "group___c_m_t_w.html#gad6edd3c3bd30a0e9544e072059b7f31d", null ]
+    [ "R_CMTW_CallbackSet", "group___c_m_t_w.html#gaa8a4f451d4784d3e05cfdaf5a87bedc0", null ]
 ];

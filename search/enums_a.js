@@ -1,28 +1,5 @@
 var searchData=
 [
-  ['poe3_5factive_5flevel_5ft',['poe3_active_level_t',['../group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29',1,'r_poe3_api.h']]],
-  ['poe3_5fhiz_5fmode_5ft',['poe3_hiz_mode_t',['../group___p_o_e3___a_p_i.html#ga653e9db5a7623053c6282f7b6e5303e5',1,'r_poe3_api.h']]],
-  ['poe3_5fhiz_5foutput_5fenable_5ft',['poe3_hiz_output_enable_t',['../group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b',1,'r_poe3_api.h']]],
-  ['poe3_5finterrupt_5fenable_5ft',['poe3_interrupt_enable_t',['../group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc0a_5fpin_5fselect_5ft',['poe3_mtioc0a_pin_select_t',['../group___p_o_e3___a_p_i.html#gaefe3f41d0f7ec0e6faea0622d74056b1',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc0b_5fpin_5fselect_5ft',['poe3_mtioc0b_pin_select_t',['../group___p_o_e3___a_p_i.html#ga063ffecae034b9e2608183fc5200385c',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc0c_5fpin_5fselect_5ft',['poe3_mtioc0c_pin_select_t',['../group___p_o_e3___a_p_i.html#ga83c56623f83f1b03e44eb8ecb9c07f7b',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc0d_5fpin_5fselect_5ft',['poe3_mtioc0d_pin_select_t',['../group___p_o_e3___a_p_i.html#gab1ae47343e0c3ca3840e639081e1ff33',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc3b_5fpin_5fselect_5ft',['poe3_mtioc3b_pin_select_t',['../group___p_o_e3___a_p_i.html#ga712bf2d6f863cb9526d3dad24f51c417',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc3d_5fpin_5fselect_5ft',['poe3_mtioc3d_pin_select_t',['../group___p_o_e3___a_p_i.html#ga77fe003c3dda4c8039300d3399b8e842',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc4a_5fpin_5fselect_5ft',['poe3_mtioc4a_pin_select_t',['../group___p_o_e3___a_p_i.html#gad85cc1b1a9ec190066b84e52b3f92af9',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc4b_5fpin_5fselect_5ft',['poe3_mtioc4b_pin_select_t',['../group___p_o_e3___a_p_i.html#gaa493d39069339d82410d20c6ba1b2fec',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc4c_5fpin_5fselect_5ft',['poe3_mtioc4c_pin_select_t',['../group___p_o_e3___a_p_i.html#ga7c73a46488743c29365fdb99024677e0',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc4d_5fpin_5fselect_5ft',['poe3_mtioc4d_pin_select_t',['../group___p_o_e3___a_p_i.html#ga5fb665cba513bd53b7ea41cedbd5cc52',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc6b_5fpin_5fselect_5ft',['poe3_mtioc6b_pin_select_t',['../group___p_o_e3___a_p_i.html#ga70a42cad8266584e2b9ba978faa99cf4',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc6d_5fpin_5fselect_5ft',['poe3_mtioc6d_pin_select_t',['../group___p_o_e3___a_p_i.html#gadff78d5a890709e90028235346434145',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc7a_5fpin_5fselect_5ft',['poe3_mtioc7a_pin_select_t',['../group___p_o_e3___a_p_i.html#ga9ef98e7aa2248b0edf2ea9a5e214e2b0',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc7b_5fpin_5fselect_5ft',['poe3_mtioc7b_pin_select_t',['../group___p_o_e3___a_p_i.html#gaa89668835c1c63a9126ec652878dffdc',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc7c_5fpin_5fselect_5ft',['poe3_mtioc7c_pin_select_t',['../group___p_o_e3___a_p_i.html#ga093f2abe45dc24bcbf94a7bad54d4201',1,'r_poe3_api.h']]],
-  ['poe3_5fmtioc7d_5fpin_5fselect_5ft',['poe3_mtioc7d_pin_select_t',['../group___p_o_e3___a_p_i.html#gab1008c2f91bdecdceca9da0ec814c294',1,'r_poe3_api.h']]],
-  ['poe3_5fstate_5ft',['poe3_state_t',['../group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4',1,'r_poe3_api.h']]],
-  ['poeg_5fgtetrg_5fnoise_5ffilter_5ft',['poeg_gtetrg_noise_filter_t',['../group___p_o_e_g___a_p_i.html#gab482b24d14d1c94f6f4ba9f5e39f8d0b',1,'r_poeg_api.h']]],
-  ['poeg_5fgtetrg_5fpolarity_5ft',['poeg_gtetrg_polarity_t',['../group___p_o_e_g___a_p_i.html#gaab60100277a3b044c01007e6142704b9',1,'r_poeg_api.h']]],
-  ['poeg_5fstate_5ft',['poeg_state_t',['../group___p_o_e_g___a_p_i.html#ga6964e3b0b8b2d32d2428d86b32dfeef2',1,'r_poeg_api.h']]],
-  ['poeg_5ftrigger_5ft',['poeg_trigger_t',['../group___p_o_e_g___a_p_i.html#gad3a55ae7d23b90cc2621a83116d2e7d9',1,'r_poeg_api.h']]]
+  ['nor_5fflash_5fchip_5fselect_5ft',['nor_flash_chip_select_t',['../group___n_o_r___f_l_a_s_h___a_p_i.html#ga6181ea7521ae738890febc3af2ebd73b',1,'r_nor_flash_api.h']]],
+  ['nor_5fflash_5fdata_5fbus_5fwidth_5ft',['nor_flash_data_bus_width_t',['../group___n_o_r___f_l_a_s_h___a_p_i.html#ga5495f257bcbe304186ebba4af463b440',1,'r_nor_flash_api.h']]]
 ];

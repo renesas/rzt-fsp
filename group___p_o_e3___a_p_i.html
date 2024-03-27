@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: POE3 Interface</title>
+<title>RZT Flexible Software Package Documentation: POE3 Interface</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___p_o_e3___a_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,41 +140,47 @@ $(document).ready(function(){initNavTree('group___p_o_e3___a_p_i.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">POE3 Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a></div></div>  </div>
+<div class="title">POE3 Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___i_n_t_e_r_f_a_c_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<p>Interface for the Port Output Enable for MTU3. </p>
-<p>Defines the API and data structures for the Port Output Enable for MTU3 (POE3) interface.</p>
+<p>Interface for the Port Output Enable 3. </p>
+<p>Defines the API and data structures for the Port Output Enable 3 interface.</p>
 <h1><a class="anchor" id="POE3_API_SUMMARY"></a>
 Summary</h1>
-<p>The POE3 disables MTU3 output pins based on configurable events.</p>
-<p>Implemented by: <a class="el" href="group___p_o_e3.html">Port Output Enable 3 (r_poe3)</a> </p>
+<p>The POE3 disables timer output pins based on configurable events. </p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
-<tr class="memitem:structpoe3__mtioc0a__pin__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__mtioc0a__pin__setting__t">poe3_mtioc0a_pin_setting_t</a></td></tr>
-<tr class="separator:structpoe3__mtioc0a__pin__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structpoe3__mtioc3b__mtioc3d__pin__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__mtioc3b__mtioc3d__pin__setting__t">poe3_mtioc3b_mtioc3d_pin_setting_t</a></td></tr>
-<tr class="separator:structpoe3__mtioc3b__mtioc3d__pin__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structpoe3__mtioc6b__mtioc6d__pin__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__mtioc6b__mtioc6d__pin__setting__t">poe3_mtioc6b_mtioc6d_pin_setting_t</a></td></tr>
-<tr class="separator:structpoe3__mtioc6b__mtioc6d__pin__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structpoe3__poe0__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe0__setting__t">poe3_poe0_setting_t</a></td></tr>
-<tr class="separator:structpoe3__poe0__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structpoe3__poe4__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe4__setting__t">poe3_poe4_setting_t</a></td></tr>
-<tr class="separator:structpoe3__poe4__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structpoe3__poe8__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe8__setting__t">poe3_poe8_setting_t</a></td></tr>
-<tr class="separator:structpoe3__poe8__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structpoe3__poe10__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe10__setting__t">poe3_poe10_setting_t</a></td></tr>
-<tr class="separator:structpoe3__poe10__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:structpoe3__poe11__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe11__setting__t">poe3_poe11_setting_t</a></td></tr>
-<tr class="separator:structpoe3__poe11__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structpoe3__pwm__pin__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__pwm__pin__setting__t">poe3_pwm_pin_setting_t</a></td></tr>
+<tr class="separator:structpoe3__pwm__pin__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structpoe3__complementary__pwm__pin__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__complementary__pwm__pin__setting__t">poe3_complementary_pwm_pin_setting_t</a></td></tr>
+<tr class="separator:structpoe3__complementary__pwm__pin__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structpoe3__complementary__pwm__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__complementary__pwm__setting__t">poe3_complementary_pwm_setting_t</a></td></tr>
+<tr class="separator:structpoe3__complementary__pwm__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structpoe3__output__short__circuit__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__output__short__circuit__setting__t">poe3_output_short_circuit_setting_t</a></td></tr>
 <tr class="separator:structpoe3__output__short__circuit__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structpoe3__status__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a></td></tr>
@@ -148,366 +205,108 @@ Enumerations</h2></td></tr>
 <tr class="separator:gae490ab83f87c7dd38218d37b067db3a4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa58f11ffa14b81b06be9cb9b44662c29"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29">poe3_active_level_t</a> </td></tr>
 <tr class="separator:gaa58f11ffa14b81b06be9cb9b44662c29"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga653e9db5a7623053c6282f7b6e5303e5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a> </td></tr>
-<tr class="separator:ga653e9db5a7623053c6282f7b6e5303e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga520949252179f1c7e4f62efe4018ce0b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a> </td></tr>
-<tr class="separator:ga520949252179f1c7e4f62efe4018ce0b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8d85c55fe8cac6809eb1ebfe12e28f89"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89">poe3_interrupt_enable_t</a> </td></tr>
-<tr class="separator:ga8d85c55fe8cac6809eb1ebfe12e28f89"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaefe3f41d0f7ec0e6faea0622d74056b1"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#gaefe3f41d0f7ec0e6faea0622d74056b1">poe3_mtioc0a_pin_select_t</a> </td></tr>
-<tr class="separator:gaefe3f41d0f7ec0e6faea0622d74056b1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga063ffecae034b9e2608183fc5200385c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga063ffecae034b9e2608183fc5200385c">poe3_mtioc0b_pin_select_t</a> </td></tr>
-<tr class="separator:ga063ffecae034b9e2608183fc5200385c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga83c56623f83f1b03e44eb8ecb9c07f7b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga83c56623f83f1b03e44eb8ecb9c07f7b">poe3_mtioc0c_pin_select_t</a> </td></tr>
-<tr class="separator:ga83c56623f83f1b03e44eb8ecb9c07f7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab1ae47343e0c3ca3840e639081e1ff33"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#gab1ae47343e0c3ca3840e639081e1ff33">poe3_mtioc0d_pin_select_t</a> </td></tr>
-<tr class="separator:gab1ae47343e0c3ca3840e639081e1ff33"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga712bf2d6f863cb9526d3dad24f51c417"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga712bf2d6f863cb9526d3dad24f51c417">poe3_mtioc3b_pin_select_t</a> </td></tr>
-<tr class="separator:ga712bf2d6f863cb9526d3dad24f51c417"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga77fe003c3dda4c8039300d3399b8e842"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga77fe003c3dda4c8039300d3399b8e842">poe3_mtioc3d_pin_select_t</a> </td></tr>
-<tr class="separator:ga77fe003c3dda4c8039300d3399b8e842"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa493d39069339d82410d20c6ba1b2fec"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#gaa493d39069339d82410d20c6ba1b2fec">poe3_mtioc4b_pin_select_t</a> </td></tr>
-<tr class="separator:gaa493d39069339d82410d20c6ba1b2fec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5fb665cba513bd53b7ea41cedbd5cc52"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga5fb665cba513bd53b7ea41cedbd5cc52">poe3_mtioc4d_pin_select_t</a> </td></tr>
-<tr class="separator:ga5fb665cba513bd53b7ea41cedbd5cc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad85cc1b1a9ec190066b84e52b3f92af9"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#gad85cc1b1a9ec190066b84e52b3f92af9">poe3_mtioc4a_pin_select_t</a> </td></tr>
-<tr class="separator:gad85cc1b1a9ec190066b84e52b3f92af9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7c73a46488743c29365fdb99024677e0"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga7c73a46488743c29365fdb99024677e0">poe3_mtioc4c_pin_select_t</a> </td></tr>
-<tr class="separator:ga7c73a46488743c29365fdb99024677e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga70a42cad8266584e2b9ba978faa99cf4"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga70a42cad8266584e2b9ba978faa99cf4">poe3_mtioc6b_pin_select_t</a> </td></tr>
-<tr class="separator:ga70a42cad8266584e2b9ba978faa99cf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gadff78d5a890709e90028235346434145"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#gadff78d5a890709e90028235346434145">poe3_mtioc6d_pin_select_t</a> </td></tr>
-<tr class="separator:gadff78d5a890709e90028235346434145"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaa89668835c1c63a9126ec652878dffdc"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#gaa89668835c1c63a9126ec652878dffdc">poe3_mtioc7b_pin_select_t</a> </td></tr>
-<tr class="separator:gaa89668835c1c63a9126ec652878dffdc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gab1008c2f91bdecdceca9da0ec814c294"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#gab1008c2f91bdecdceca9da0ec814c294">poe3_mtioc7d_pin_select_t</a> </td></tr>
-<tr class="separator:gab1008c2f91bdecdceca9da0ec814c294"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9ef98e7aa2248b0edf2ea9a5e214e2b0"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga9ef98e7aa2248b0edf2ea9a5e214e2b0">poe3_mtioc7a_pin_select_t</a> </td></tr>
-<tr class="separator:ga9ef98e7aa2248b0edf2ea9a5e214e2b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga093f2abe45dc24bcbf94a7bad54d4201"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga093f2abe45dc24bcbf94a7bad54d4201">poe3_mtioc7c_pin_select_t</a> </td></tr>
-<tr class="separator:ga093f2abe45dc24bcbf94a7bad54d4201"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6c33170753465c0e38b9f70e430cfff2"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ga6c33170753465c0e38b9f70e430cfff2">poe3_pin_select_t</a> </td></tr>
+<tr class="separator:ga6c33170753465c0e38b9f70e430cfff2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
-<a name="structpoe3__mtioc0a__pin__setting__t" id="structpoe3__mtioc0a__pin__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__mtioc0a__pin__setting__t">&#9670;&nbsp;</a></span>poe3_mtioc0a_pin_setting_t</h2>
+<a name="structpoe3__pwm__pin__setting__t" id="structpoe3__pwm__pin__setting__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__pwm__pin__setting__t">&#9670;&nbsp;</a></span>poe3_pwm_pin_setting_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct poe3_mtioc0a_pin_setting_t</td>
+          <td class="memname">struct poe3_pwm_pin_setting_t</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>MTU0 Pin setting. </p>
+<div class="textblock"><p>Timer PWM Output pin control setting </p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="a7457c8d120572eb8d2a63eb45a06d0af"></a><a class="el" href="group___p_o_e3___a_p_i.html#gaefe3f41d0f7ec0e6faea0622d74056b1">poe3_mtioc0a_pin_select_t</a></td>
+<a id="a4c612a50190bb586c19537a64a3756a8"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga6c33170753465c0e38b9f70e430cfff2">poe3_pin_select_t</a></td>
 <td class="fieldname">
-pin_select</td>
+pwm_pin_select</td>
 <td class="fielddoc">
-MTIOC0A Pin Select. </td></tr>
+PWM Pin Select. </td></tr>
 <tr><td class="fieldtype">
-<a id="ac3c4b371b1b85e53bca657a5fbda39a8"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a></td>
+<a id="ae1b68d2fc6cea1cfc5c5e1de1cc699c9"></a>bool</td>
 <td class="fieldname">
-hiz_output</td>
+hiz_output_enable</td>
 <td class="fielddoc">
 High-impedance output enable. </td></tr>
 </table>
 
 </div>
 </div>
-<a name="structpoe3__mtioc3b__mtioc3d__pin__setting__t" id="structpoe3__mtioc3b__mtioc3d__pin__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__mtioc3b__mtioc3d__pin__setting__t">&#9670;&nbsp;</a></span>poe3_mtioc3b_mtioc3d_pin_setting_t</h2>
+<a name="structpoe3__complementary__pwm__pin__setting__t" id="structpoe3__complementary__pwm__pin__setting__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__complementary__pwm__pin__setting__t">&#9670;&nbsp;</a></span>poe3_complementary_pwm_pin_setting_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct poe3_mtioc3b_mtioc3d_pin_setting_t</td>
+          <td class="memname">struct poe3_complementary_pwm_pin_setting_t</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>MTU3 and MTU4 Pin setting. </p>
+<div class="textblock"><p>Timer Complementary PWM Output pin control setting </p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="aad88c40dfd4df7cf52bb180ec45c7f5f"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga712bf2d6f863cb9526d3dad24f51c417">poe3_mtioc3b_pin_select_t</a></td>
+<a id="a9b57c351310ab3de1b9a95715e53aaae"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga6c33170753465c0e38b9f70e430cfff2">poe3_pin_select_t</a></td>
 <td class="fieldname">
-mtioc3b_pin_select</td>
+positive_pwm_pin_select</td>
 <td class="fielddoc">
-MTIOC3B Pin Select. </td></tr>
+Positive PWM Pin Select. </td></tr>
 <tr><td class="fieldtype">
-<a id="a8688a2e98cad66974a5054d87354aca6"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga77fe003c3dda4c8039300d3399b8e842">poe3_mtioc3d_pin_select_t</a></td>
+<a id="ad492b3df038cfcabe3360baa79cab0cf"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga6c33170753465c0e38b9f70e430cfff2">poe3_pin_select_t</a></td>
 <td class="fieldname">
-mtioc3d_pin_select</td>
+negative_pwm_pin_select</td>
 <td class="fielddoc">
-MTIOC3D Pin Select. </td></tr>
+Negative PWM Pin Select. </td></tr>
 <tr><td class="fieldtype">
-<a id="abfe7fd451af1ec77506a9d342fccdaa7"></a><a class="el" href="group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29">poe3_active_level_t</a></td>
+<a id="a989a0fc580657f9656584383c49b5af2"></a><a class="el" href="group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29">poe3_active_level_t</a></td>
 <td class="fieldname">
-mtioc3b_active_level</td>
+positive_pwm_pin_active_level</td>
 <td class="fielddoc">
-Active level for short circuit detection. </td></tr>
+Active level Positive PWM pin for short circuit detection. </td></tr>
 <tr><td class="fieldtype">
-<a id="a9a661124d0a73c6ea9c8c763cc2b1cd1"></a><a class="el" href="group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29">poe3_active_level_t</a></td>
+<a id="aaeffe0d46622e28d3f5690a87c01648a"></a><a class="el" href="group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29">poe3_active_level_t</a></td>
 <td class="fieldname">
-mtioc3d_active_level</td>
+negative_pwm_pin_active_level</td>
 <td class="fielddoc">
-Active level for short circuit detection. </td></tr>
+Active level Negative PWM pin for short circuit detection. </td></tr>
 <tr><td class="fieldtype">
-<a id="aba7572698651487cf83417fca02762bc"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a></td>
+<a id="a90b5820a342b8efd38f7453404f65cd8"></a>bool</td>
 <td class="fieldname">
-hiz_output</td>
+hiz_output_enable</td>
 <td class="fielddoc">
 High-impedance output enable. </td></tr>
 </table>
 
 </div>
 </div>
-<a name="structpoe3__mtioc6b__mtioc6d__pin__setting__t" id="structpoe3__mtioc6b__mtioc6d__pin__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__mtioc6b__mtioc6d__pin__setting__t">&#9670;&nbsp;</a></span>poe3_mtioc6b_mtioc6d_pin_setting_t</h2>
+<a name="structpoe3__complementary__pwm__setting__t" id="structpoe3__complementary__pwm__setting__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__complementary__pwm__setting__t">&#9670;&nbsp;</a></span>poe3_complementary_pwm_setting_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">struct poe3_mtioc6b_mtioc6d_pin_setting_t</td>
+          <td class="memname">struct poe3_complementary_pwm_setting_t</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>MTU6 and MTU7 Pin setting. </p>
+<div class="textblock"><p>Timer Complementary PWM control setting </p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="a67ed84d89d56baf9e2ba2452c44ac599"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga70a42cad8266584e2b9ba978faa99cf4">poe3_mtioc6b_pin_select_t</a></td>
+<a id="a457691dd868dca5ddfc70262385701b6"></a><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__complementary__pwm__pin__setting__t">poe3_complementary_pwm_pin_setting_t</a></td>
 <td class="fieldname">
-mtioc6b_pin_select</td>
+pin_setting[3]</td>
 <td class="fielddoc">
-MTIOC6B Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="a53f8e8c534fb6521eb62ed021c667b2c"></a><a class="el" href="group___p_o_e3___a_p_i.html#gadff78d5a890709e90028235346434145">poe3_mtioc6d_pin_select_t</a></td>
-<td class="fieldname">
-mtioc6d_pin_select</td>
-<td class="fielddoc">
-MTIOC6D Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="a7dd0e6ac4fd5ac6d016001f242c492ec"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a></td>
-<td class="fieldname">
-hiz_output</td>
-<td class="fielddoc">
-High-impedance output enable. </td></tr>
-</table>
-
-</div>
-</div>
-<a name="structpoe3__poe0__setting__t" id="structpoe3__poe0__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__poe0__setting__t">&#9670;&nbsp;</a></span>poe3_poe0_setting_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct poe3_poe0_setting_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p>POE0# MTU3 and MTU4 setting. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="a998640c8b675bebda79a737a49049517"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a></td>
-<td class="fieldname">
-mode</td>
-<td class="fielddoc">
-High-impedance output mode. </td></tr>
-<tr><td class="fieldtype">
-<a id="a649e74888cece1b149c9fedcfae47c50"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89">poe3_interrupt_enable_t</a></td>
-<td class="fieldname">
-interrupt</td>
-<td class="fielddoc">
-Interrupt enable. </td></tr>
-<tr><td class="fieldtype">
-<a id="a5b2d092f4bd06976f38adc38a07fcf9f"></a><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__mtioc3b__mtioc3d__pin__setting__t">poe3_mtioc3b_mtioc3d_pin_setting_t</a></td>
-<td class="fieldname">
-mtioc3b_mtioc3d</td>
-<td class="fielddoc">
-MTIOC3B, MTIOC3D Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="a473cb63c9871dd4a9992df8c7461ddcf"></a>poe3_mtioc4b_mtioc4d_pin_setting_t</td>
-<td class="fieldname">
-mtioc4b_mtioc4d</td>
-<td class="fielddoc">
-MTIOC4B, MTIOC4D Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="a25fcea6f72a50602658d03a928721b92"></a>poe3_mtioc4a_mtioc4c_pin_setting_t</td>
-<td class="fieldname">
-mtioc4a_mtioc4c</td>
-<td class="fielddoc">
-MTIOC4A, MTIOC4C Pin Select. </td></tr>
-</table>
-
-</div>
-</div>
-<a name="structpoe3__poe4__setting__t" id="structpoe3__poe4__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__poe4__setting__t">&#9670;&nbsp;</a></span>poe3_poe4_setting_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct poe3_poe4_setting_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p>POE4# MTU6 and MTU7 setting. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="aa0ebc59ec74d90f095d9212728a6f358"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a></td>
-<td class="fieldname">
-mode</td>
-<td class="fielddoc">
-High-impedance output mode. </td></tr>
-<tr><td class="fieldtype">
-<a id="a025b0d0ade2aad3a5a7db4ba545eadf8"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89">poe3_interrupt_enable_t</a></td>
-<td class="fieldname">
-interrupt</td>
-<td class="fielddoc">
-Interrupt enable. </td></tr>
-<tr><td class="fieldtype">
-<a id="a7b37b0fc3b2e32f66c423519d6232495"></a><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__mtioc6b__mtioc6d__pin__setting__t">poe3_mtioc6b_mtioc6d_pin_setting_t</a></td>
-<td class="fieldname">
-mtioc6b_mtioc6d</td>
-<td class="fielddoc">
-MTIOC6B, MTIOC6D Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="aea897f523f9c8c33efee9ee9c9ed9c7b"></a>poe3_mtioc7b_mtioc7d_pin_setting_t</td>
-<td class="fieldname">
-mtioc7b_mtioc7d</td>
-<td class="fielddoc">
-MTIOC7B, MTIOC7D Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="a11ce34acc84229c5a981b4753aff1e41"></a>poe3_mtioc7a_mtioc7c_pin_setting_t</td>
-<td class="fieldname">
-mtioc7a_mtioc7c</td>
-<td class="fielddoc">
-MTIOC7A, MTIOC7C Pin Select. </td></tr>
-</table>
-
-</div>
-</div>
-<a name="structpoe3__poe8__setting__t" id="structpoe3__poe8__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__poe8__setting__t">&#9670;&nbsp;</a></span>poe3_poe8_setting_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct poe3_poe8_setting_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p>POE8# MTU0 setting. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="a45f2ce4620cba1587b6b22d4b4d2f8f5"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a></td>
-<td class="fieldname">
-mode</td>
-<td class="fielddoc">
-High-impedance output mode. </td></tr>
-<tr><td class="fieldtype">
-<a id="a29e85ae38424f876a60680d296f105ed"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89">poe3_interrupt_enable_t</a></td>
-<td class="fieldname">
-interrupt</td>
-<td class="fielddoc">
-Interrupt enable. </td></tr>
-<tr><td class="fieldtype">
-<a id="ae88a84964b967301bf0526ad5cb2682d"></a><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__mtioc0a__pin__setting__t">poe3_mtioc0a_pin_setting_t</a></td>
-<td class="fieldname">
-mtioc0a</td>
-<td class="fielddoc">
-MTIOC0A Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="a0d9e505ce94f4b942a3309c81f9e3211"></a>poe3_mtioc0b_pin_setting_t</td>
-<td class="fieldname">
-mtioc0b</td>
-<td class="fielddoc">
-MTIOC0B Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="a2158557af885769086c8571121d4e654"></a>poe3_mtioc0c_pin_setting_t</td>
-<td class="fieldname">
-mtioc0c</td>
-<td class="fielddoc">
-MTIOC0C Pin Select. </td></tr>
-<tr><td class="fieldtype">
-<a id="aeeacea9703a28fa9259662a33ba2526e"></a>poe3_mtioc0d_pin_setting_t</td>
-<td class="fieldname">
-mtioc0d</td>
-<td class="fielddoc">
-MTIOC0D Pin Select. </td></tr>
-</table>
-
-</div>
-</div>
-<a name="structpoe3__poe10__setting__t" id="structpoe3__poe10__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__poe10__setting__t">&#9670;&nbsp;</a></span>poe3_poe10_setting_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct poe3_poe10_setting_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p>POE10# setting. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="a47a89760e510905141df953876c12ce2"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a></td>
-<td class="fieldname">
-mode</td>
-<td class="fielddoc">
-High-impedance output mode. </td></tr>
-<tr><td class="fieldtype">
-<a id="af0b87e45822f2e71de4283021696b66a"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89">poe3_interrupt_enable_t</a></td>
-<td class="fieldname">
-interrupt</td>
-<td class="fielddoc">
-Interrupt enable. </td></tr>
-</table>
-
-</div>
-</div>
-<a name="structpoe3__poe11__setting__t" id="structpoe3__poe11__setting__t"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__poe11__setting__t">&#9670;&nbsp;</a></span>poe3_poe11_setting_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">struct poe3_poe11_setting_t</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<div class="textblock"><p>POE11# setting. </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="afcae98e47257b17ca1c2921f687950c8"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a></td>
-<td class="fieldname">
-mode</td>
-<td class="fielddoc">
-High-impedance output mode. </td></tr>
-<tr><td class="fieldtype">
-<a id="aa9afac84ec1cd6082c6ca9ff6c20ce51"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89">poe3_interrupt_enable_t</a></td>
-<td class="fieldname">
-interrupt</td>
-<td class="fielddoc">
-Interrupt enable. </td></tr>
+Complementary PWM pin setting. </td></tr>
 </table>
 
 </div>
@@ -527,15 +326,15 @@ Interrupt enable. </td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="ad2927c655a34389cbe07b957978e83eb"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89">poe3_interrupt_enable_t</a></td>
+<a id="a79d1dd1cc8c8617be4f68cf29d93b53c"></a>bool</td>
 <td class="fieldname">
-interrupt</td>
+interrupt_enable</td>
 <td class="fielddoc">
 Interrupt enable. </td></tr>
 <tr><td class="fieldtype">
-<a id="a8ee670e6489467b27db857533049f02b"></a><a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a></td>
+<a id="ad8ffedfd02b3f42405a8ca0d3ba179fe"></a>bool</td>
 <td class="fieldname">
-hiz_output</td>
+hiz_output_enable</td>
 <td class="fielddoc">
 High-impedance output enable. </td></tr>
 </table>
@@ -604,50 +403,42 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
 <div class="textblock"><p>User configuration structure, used in the open function. </p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h3>Data Fields</h3></td></tr>
-<tr class="memitem:a176d6395fe0882d8e3b8c20163830228"><td class="memItemLeft" align="right" valign="top"><a id="a176d6395fe0882d8e3b8c20163830228"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe0__setting__t">poe3_poe0_setting_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a176d6395fe0882d8e3b8c20163830228">poe0</a></td></tr>
-<tr class="memdesc:a176d6395fe0882d8e3b8c20163830228"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting for the POE0#. <br /></td></tr>
-<tr class="separator:a176d6395fe0882d8e3b8c20163830228"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0224b69ed4ac54fd2d82b3ec6cc6f0d2"><td class="memItemLeft" align="right" valign="top"><a id="a0224b69ed4ac54fd2d82b3ec6cc6f0d2"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe4__setting__t">poe3_poe4_setting_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a0224b69ed4ac54fd2d82b3ec6cc6f0d2">poe4</a></td></tr>
-<tr class="memdesc:a0224b69ed4ac54fd2d82b3ec6cc6f0d2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting for the POE4#. <br /></td></tr>
-<tr class="separator:a0224b69ed4ac54fd2d82b3ec6cc6f0d2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab609b9933325a215b0e1f0563975c3aa"><td class="memItemLeft" align="right" valign="top"><a id="ab609b9933325a215b0e1f0563975c3aa"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe8__setting__t">poe3_poe8_setting_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ab609b9933325a215b0e1f0563975c3aa">poe8</a></td></tr>
-<tr class="memdesc:ab609b9933325a215b0e1f0563975c3aa"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting for the POE8#. <br /></td></tr>
-<tr class="separator:ab609b9933325a215b0e1f0563975c3aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac1fbb1eec93fec52ffb7c2fea3477e82"><td class="memItemLeft" align="right" valign="top"><a id="ac1fbb1eec93fec52ffb7c2fea3477e82"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe10__setting__t">poe3_poe10_setting_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ac1fbb1eec93fec52ffb7c2fea3477e82">poe10</a></td></tr>
-<tr class="memdesc:ac1fbb1eec93fec52ffb7c2fea3477e82"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting for the POE10#. <br /></td></tr>
-<tr class="separator:ac1fbb1eec93fec52ffb7c2fea3477e82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a5873b2807f41fd94ef10d0d3fbbddc"><td class="memItemLeft" align="right" valign="top"><a id="a5a5873b2807f41fd94ef10d0d3fbbddc"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__poe10__setting__t">poe3_poe10_setting_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a5a5873b2807f41fd94ef10d0d3fbbddc">poe11</a></td></tr>
-<tr class="memdesc:a5a5873b2807f41fd94ef10d0d3fbbddc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Setting for the POE11#. <br /></td></tr>
-<tr class="separator:a5a5873b2807f41fd94ef10d0d3fbbddc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a21988d3f0ccdd62d3dc29c24ea491b5c"><td class="memItemLeft" align="right" valign="top"><a id="a21988d3f0ccdd62d3dc29c24ea491b5c"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a21988d3f0ccdd62d3dc29c24ea491b5c">oscillation_stop</a></td></tr>
-<tr class="memdesc:a21988d3f0ccdd62d3dc29c24ea491b5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">High impedance output when the oscillator is stopped. <br /></td></tr>
-<tr class="separator:a21988d3f0ccdd62d3dc29c24ea491b5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aae1e9f3096c011a4c0b94b468e9a9e8d"><td class="memItemLeft" align="right" valign="top"><a id="aae1e9f3096c011a4c0b94b468e9a9e8d"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#aae1e9f3096c011a4c0b94b468e9a9e8d">dsmif0_error</a></td></tr>
-<tr class="memdesc:aae1e9f3096c011a4c0b94b468e9a9e8d"><td class="mdescLeft">&#160;</td><td class="mdescRight">High impedance output when the DSMIF0 is error. <br /></td></tr>
-<tr class="separator:aae1e9f3096c011a4c0b94b468e9a9e8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a443e1cb11afad166e7aa6bd72f55f87b"><td class="memItemLeft" align="right" valign="top"><a id="a443e1cb11afad166e7aa6bd72f55f87b"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a443e1cb11afad166e7aa6bd72f55f87b">dsmif1_error</a></td></tr>
-<tr class="memdesc:a443e1cb11afad166e7aa6bd72f55f87b"><td class="mdescLeft">&#160;</td><td class="mdescRight">High impedance output when the DSMIF1 is error. <br /></td></tr>
-<tr class="separator:a443e1cb11afad166e7aa6bd72f55f87b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a30aa7e61608b0a8f1d8a1a75d4da816f"><td class="memItemLeft" align="right" valign="top"><a id="a30aa7e61608b0a8f1d8a1a75d4da816f"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__output__short__circuit__setting__t">poe3_output_short_circuit_setting_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a30aa7e61608b0a8f1d8a1a75d4da816f">short_circuit1</a></td></tr>
-<tr class="memdesc:a30aa7e61608b0a8f1d8a1a75d4da816f"><td class="mdescLeft">&#160;</td><td class="mdescRight">High impedance output when the output short circuit 1. <br /></td></tr>
-<tr class="separator:a30aa7e61608b0a8f1d8a1a75d4da816f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3aabb01db78b9fdff25dc4a57c8b564f"><td class="memItemLeft" align="right" valign="top"><a id="a3aabb01db78b9fdff25dc4a57c8b564f"></a>
-<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__output__short__circuit__setting__t">poe3_output_short_circuit_setting_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a3aabb01db78b9fdff25dc4a57c8b564f">short_circuit2</a></td></tr>
-<tr class="memdesc:a3aabb01db78b9fdff25dc4a57c8b564f"><td class="mdescLeft">&#160;</td><td class="mdescRight">High impedance output when the output short circuit 2. <br /></td></tr>
-<tr class="separator:a3aabb01db78b9fdff25dc4a57c8b564f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a46e573140da8d716090ab1995d36aaab"><td class="memItemLeft" align="right" valign="top"><a id="a46e573140da8d716090ab1995d36aaab"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a46e573140da8d716090ab1995d36aaab">pwm_pin</a></td></tr>
+<tr class="memdesc:a46e573140da8d716090ab1995d36aaab"><td class="mdescLeft">&#160;</td><td class="mdescRight">Length of PWM pin settings. <br /></td></tr>
+<tr class="separator:a46e573140da8d716090ab1995d36aaab"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc78c97e11ad7022f7760726db283abf"><td class="memItemLeft" align="right" valign="top"><a id="adc78c97e11ad7022f7760726db283abf"></a>
+<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__pwm__pin__setting__t">poe3_pwm_pin_setting_t</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#adc78c97e11ad7022f7760726db283abf">p_pwm_pin_setting</a></td></tr>
+<tr class="memdesc:adc78c97e11ad7022f7760726db283abf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Settings for PWM pin. <br /></td></tr>
+<tr class="separator:adc78c97e11ad7022f7760726db283abf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2a6c18dd90656505f88607a21a0eed81"><td class="memItemLeft" align="right" valign="top"><a id="a2a6c18dd90656505f88607a21a0eed81"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a2a6c18dd90656505f88607a21a0eed81">complementary_pwm_pin</a></td></tr>
+<tr class="memdesc:a2a6c18dd90656505f88607a21a0eed81"><td class="mdescLeft">&#160;</td><td class="mdescRight">Length of complementary PWM pin settings. <br /></td></tr>
+<tr class="separator:a2a6c18dd90656505f88607a21a0eed81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3288bd63c6866bf945a750960403568c"><td class="memItemLeft" align="right" valign="top"><a id="a3288bd63c6866bf945a750960403568c"></a>
+<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__complementary__pwm__setting__t">poe3_complementary_pwm_setting_t</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a3288bd63c6866bf945a750960403568c">p_complementary_pwm_pin_setting</a></td></tr>
+<tr class="memdesc:a3288bd63c6866bf945a750960403568c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Settings for complementary PWM pin. <br /></td></tr>
+<tr class="separator:a3288bd63c6866bf945a750960403568c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07ca4eb9bb58796306ae34e2c64ef15f"><td class="memItemLeft" align="right" valign="top"><a id="a07ca4eb9bb58796306ae34e2c64ef15f"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a07ca4eb9bb58796306ae34e2c64ef15f">short_circuit</a></td></tr>
+<tr class="memdesc:a07ca4eb9bb58796306ae34e2c64ef15f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Length of short circuit settings. <br /></td></tr>
+<tr class="separator:a07ca4eb9bb58796306ae34e2c64ef15f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a57a7c5dc4982e17fb01c7a43421c4fbf"><td class="memItemLeft" align="right" valign="top"><a id="a57a7c5dc4982e17fb01c7a43421c4fbf"></a>
+<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__output__short__circuit__setting__t">poe3_output_short_circuit_setting_t</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a57a7c5dc4982e17fb01c7a43421c4fbf">p_short_circuit_setting</a></td></tr>
+<tr class="memdesc:a57a7c5dc4982e17fb01c7a43421c4fbf"><td class="mdescLeft">&#160;</td><td class="mdescRight">High impedance output when the output short circuit. <br /></td></tr>
+<tr class="separator:a57a7c5dc4982e17fb01c7a43421c4fbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8392106c5333e48169ef5e1ab942c7d1"><td class="memItemLeft" align="right" valign="top"><a id="a8392106c5333e48169ef5e1ab942c7d1"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a8392106c5333e48169ef5e1ab942c7d1">oscillation_stop_hiz_output_enable</a></td></tr>
+<tr class="memdesc:a8392106c5333e48169ef5e1ab942c7d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">High-impedance output when the oscillator is stopped. <br /></td></tr>
+<tr class="separator:a8392106c5333e48169ef5e1ab942c7d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33bf105a88536c7687351fa7bb319213"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a33bf105a88536c7687351fa7bb319213">p_callback</a> )(<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *p_args)</td></tr>
 <tr class="separator:a33bf105a88536c7687351fa7bb319213"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a74479af1b18f0bb1c2d055968d954e65"><td class="memItemLeft" align="right" valign="top">void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a74479af1b18f0bb1c2d055968d954e65">p_context</a></td></tr>
 <tr class="separator:a74479af1b18f0bb1c2d055968d954e65"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac51b63835f8a7beb160010febfebe6ae"><td class="memItemLeft" align="right" valign="top"><a id="ac51b63835f8a7beb160010febfebe6ae"></a>
+void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#ac51b63835f8a7beb160010febfebe6ae">p_extend</a></td></tr>
+<tr class="memdesc:ac51b63835f8a7beb160010febfebe6ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extension parameter for hardware specific settings. <br /></td></tr>
+<tr class="separator:ac51b63835f8a7beb160010febfebe6ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="a33bf105a88536c7687351fa7bb319213"></a>
@@ -694,7 +485,7 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>Port Output Enable for MTU3 (POE3) API structure. POE3 functions implemented at the HAL layer will follow this API. </p>
+<div class="textblock"><p>Port Output Enable 3 API structure. POE3 functions implemented at the HAL layer will follow this API. </p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h3>Data Fields</h3></td></tr>
 <tr class="memitem:a398f181001e2180e5bd52525b3e6b354"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a398f181001e2180e5bd52525b3e6b354">open</a> )(<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl, <a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__cfg__t">poe3_cfg_t</a> const *const p_cfg)</td></tr>
@@ -707,8 +498,8 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
 <tr class="separator:ae87d3e21c61eed8059d6acf5b25fadc3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a77a6420e34b7e836b8551bc459d6c2f4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a77a6420e34b7e836b8551bc459d6c2f4">close</a> )(<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:a77a6420e34b7e836b8551bc459d6c2f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afc5768feada9b463f0ab92dde682b9e9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#afc5768feada9b463f0ab92dde682b9e9">versionGet</a> )(<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:afc5768feada9b463f0ab92dde682b9e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a39d6ad272130653b6d8faf9a827e97d5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3___a_p_i.html#a39d6ad272130653b6d8faf9a827e97d5">callbackSet</a> )(<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:a39d6ad272130653b6d8faf9a827e97d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="a398f181001e2180e5bd52525b3e6b354"></a>
@@ -722,10 +513,7 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Initial configuration. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e3.html#ga2fe7fcd221cb0f3dc678f80f0c0bbe5d">R_POE3_Open()</a></li>
-</ul>
-</dd></dl>
+<p>Initial configuration.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to control block. Must be declared by user. Elements set here. </td></tr>
@@ -747,10 +535,7 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Gets the current driver state. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet()</a></li>
-</ul>
-</dd></dl>
+<p>Gets the current driver state.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e3___a_p_i.html#a398f181001e2180e5bd52525b3e6b354">poe3_api_t::open</a> call. </td></tr>
@@ -772,10 +557,7 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Disables MTU3 output pins by software request. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e3.html#gaf169578aeffc1cabb19d58d3db23f11d">R_POE3_OutputDisable()</a></li>
-</ul>
-</dd></dl>
+<p>Disables timer output pins by software request.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e3___a_p_i.html#a398f181001e2180e5bd52525b3e6b354">poe3_api_t::open</a> call. </td></tr>
@@ -796,10 +578,7 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Attempts to clear status flags to reenable MTU3 output pins. Confirm all status flags are cleared after calling this function by calling <a class="el" href="group___p_o_e3___a_p_i.html#ae04c5d8df5920b7ed9a30282b40e0b70">poe3_api_t::statusGet()</a>. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e3.html#ga32e4a5797ae7f556413e02faf13847f0">R_POE3_Reset()</a></li>
-</ul>
-</dd></dl>
+<p>Attempts to clear status flags to reenable timer output pins. Confirm all status flags are cleared after calling this function by calling <a class="el" href="group___p_o_e3___a_p_i.html#ae04c5d8df5920b7ed9a30282b40e0b70">poe3_api_t::statusGet()</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e3___a_p_i.html#a398f181001e2180e5bd52525b3e6b354">poe3_api_t::open</a> call. </td></tr>
@@ -820,10 +599,7 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Disables POE3 interrupt. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e3.html#ga704dd94d4c90733a1be143c460c2865d">R_POE3_Close()</a></li>
-</ul>
-</dd></dl>
+<p>Disables POE3 interrupt.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e3___a_p_i.html#a398f181001e2180e5bd52525b3e6b354">poe3_api_t::open</a> call. </td></tr>
@@ -833,24 +609,24 @@ Placeholder for user data, set in <a class="el" href="group___p_o_e3___a_p_i.htm
 
 </div>
 </div>
-<a id="afc5768feada9b463f0ab92dde682b9e9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afc5768feada9b463f0ab92dde682b9e9">&#9670;&nbsp;</a></span>versionGet</h2>
+<a id="a39d6ad272130653b6d8faf9a827e97d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a39d6ad272130653b6d8faf9a827e97d5">&#9670;&nbsp;</a></span>callbackSet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  poe3_api_t::versionGet) (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  poe3_api_t::callbackSet) (<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *const p_callback_memory)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>DEPRECATED - Get version and stores it in provided pointer p_version. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e3.html#ga48de3d5f6bf4cbbb05a43a8c895582ad">R_POE3_VersionGet()</a></li>
-</ul>
-</dd></dl>
+<p>Specify callback function and optional context pointer and working memory pointer.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir">[out]</td><td class="paramname">p_version</td><td>Code and API version used. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Control block set in <a class="el" href="group___p_o_e3___a_p_i.html#a398f181001e2180e5bd52525b3e6b354">poe3_api_t::open</a> call for this timer. </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_callback</td><td>Callback function to register </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_context</td><td>Pointer to send to callback function </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_callback_memory</td><td>Pointer to volatile memory where callback structure can be allocated. Callback arguments allocated here are only valid during the callback. </td></tr>
   </table>
   </dd>
 </dl>
@@ -908,10 +684,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>DOC control block. Allocate an instance specific control block to pass into the DOC API calls. </p><dl class="section user"><dt>Implemented as</dt><dd><ul>
-<li><a class="el" href="group___p_o_e3.html#structpoe3__instance__ctrl__t">poe3_instance_ctrl_t</a> </li>
-</ul>
-</dd></dl>
+<p>POE3 control block. Allocate an instance specific control block to pass into the POE3 API calls. </p>
 
 </div>
 </div>
@@ -929,29 +702,77 @@ Pointer to the API structure for this instance. </td></tr>
 </div><div class="memdoc">
 <p>POE3 states. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989"></a>POE3_STATE_NO_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>MTU3 output is not disabled by POE3. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989"></a>POE3_STATE_NO_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output is not disabled by POE3. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4acb436883d8f95d235fadf11fb7d3cf01"></a>POE3_STATE_POE0_HIGH_IMPEDANCE_YES&#160;</td><td class="fielddoc"><p>POE0 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4aadb44fc2c713d026dc15469d08b7a360"></a>POE3_STATE_POE0_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE0# pin. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4add1ad6b58e144bae81d4177f30c83146"></a>POE3_STATE_POE4_HIGH_IMPEDANCE_YES&#160;</td><td class="fielddoc"><p>POE4 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4ad1b0d8697dd1e3dd311272f85149b85a"></a>POE3_STATE_POE4_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE4# pin. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4a7e7d8bcfe4bad5ffb84fb3874fa93af2"></a>POE3_STATE_POE8_HIGH_IMPEDANCE_YES&#160;</td><td class="fielddoc"><p>POE8 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a68b7fa82d9a6f9cff9c4e8e9b2fd5d1d"></a>POE3_STATE_POE8_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE8# pin. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4afbf6f20e32baa46c37bc699981b30d0a"></a>POE3_STATE_POE10_HIGH_IMPEDANCE_YES&#160;</td><td class="fielddoc"><p>POE10 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a2c87a94f9ae3f18cb21f0f9767627598"></a>POE3_STATE_POE10_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE10# pin. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4a4a228b79abe9d56abad1df2c7c8b6ce6"></a>POE3_STATE_POE11_HIGH_IMPEDANCE_YES&#160;</td><td class="fielddoc"><p>POE11 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4aa26f930f95533328faedee86a1707e51"></a>POE3_STATE_POE11_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE11# pin. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4af1ab1fc89fddf5761d1c7f0209f36c99"></a>POE3_STATE_SOFTWARE_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>SPOER Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4af1ab1fc89fddf5761d1c7f0209f36c99"></a>POE3_STATE_SOFTWARE_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to <a class="el" href="group___p_o_e3___a_p_i.html#a21edb917ae6bd2ecbf07ded7772c9361">poe3_api_t::outputDisable()</a> </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4a5b9e21e157aa6ae92c8437896137c9a5"></a>POE3_STATE_OSCILLATION_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>MTU3 output disabled due to main oscillator stop. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a5b9e21e157aa6ae92c8437896137c9a5"></a>POE3_STATE_OSCILLATION_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to main oscillator stop. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4af7751e7db56b87d70058a7839b95f3ee"></a>POE3_STATE_DSMIF0_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>ICSR7 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a1bf1863365a368bae9299747131a0b96"></a>POE3_STATE_OUTPUT_SHORT_CIRCUIT_1_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to output short circuit 1. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4a10ff02076a776d0e89ae9b7c62cc0b0c"></a>POE3_STATE_DSMIF1_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>ICSR7 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a12a0900fdff34d0cc993edc52c5bf363"></a>POE3_STATE_OUTPUT_SHORT_CIRCUIT_2_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to output short circuit 2. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4af9ae7875424e1dfeaf04518bb27fc452"></a>POE3_STATE_OSF1_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>OCSR1 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989"></a>POE3_STATE_NO_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output is not disabled by POE3. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggae490ab83f87c7dd38218d37b067db3a4a25a9da68cfcba7998ffbc8e5ae9cad83"></a>POE3_STATE_OSF2_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>OCSR2 Flag by POE3. </p>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4aadb44fc2c713d026dc15469d08b7a360"></a>POE3_STATE_POE0_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE0# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4ad1b0d8697dd1e3dd311272f85149b85a"></a>POE3_STATE_POE4_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE4# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a68b7fa82d9a6f9cff9c4e8e9b2fd5d1d"></a>POE3_STATE_POE8_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE8# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a2c87a94f9ae3f18cb21f0f9767627598"></a>POE3_STATE_POE10_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE10# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4aa26f930f95533328faedee86a1707e51"></a>POE3_STATE_POE11_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE11# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4af1ab1fc89fddf5761d1c7f0209f36c99"></a>POE3_STATE_SOFTWARE_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to <a class="el" href="group___p_o_e3___a_p_i.html#a21edb917ae6bd2ecbf07ded7772c9361">poe3_api_t::outputDisable()</a> </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a5b9e21e157aa6ae92c8437896137c9a5"></a>POE3_STATE_OSCILLATION_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to main oscillator stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4ae2bd21108a91d399dedc4e6369a5e0f3"></a>POE3_STATE_DSMIF0_0_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to DSMIF0 Error0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a0fc949758693a9440c06fdb03a584cf2"></a>POE3_STATE_DSMIF1_0_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to DSMIF1 Error0. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a1bf1863365a368bae9299747131a0b96"></a>POE3_STATE_OUTPUT_SHORT_CIRCUIT_1_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to output short circuit 1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a12a0900fdff34d0cc993edc52c5bf363"></a>POE3_STATE_OUTPUT_SHORT_CIRCUIT_2_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to output short circuit 2. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4aa1e5d2a0e8e7c25e78442c24c0a00215"></a>POE3_STATE_DSMIF0_1_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to DSMIF0 Error1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a7b94fed3867e10d53a9d707807d0d70b"></a>POE3_STATE_DSMIF1_1_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to DSMIF1 Error1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989"></a>POE3_STATE_NO_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output is not disabled by POE3. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4aadb44fc2c713d026dc15469d08b7a360"></a>POE3_STATE_POE0_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE0# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4ad1b0d8697dd1e3dd311272f85149b85a"></a>POE3_STATE_POE4_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE4# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a68b7fa82d9a6f9cff9c4e8e9b2fd5d1d"></a>POE3_STATE_POE8_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE8# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a2c87a94f9ae3f18cb21f0f9767627598"></a>POE3_STATE_POE10_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE10# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4aa26f930f95533328faedee86a1707e51"></a>POE3_STATE_POE11_HIGH_IMPEDANCE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to POE11# pin. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4af1ab1fc89fddf5761d1c7f0209f36c99"></a>POE3_STATE_SOFTWARE_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to <a class="el" href="group___p_o_e3___a_p_i.html#a21edb917ae6bd2ecbf07ded7772c9361">poe3_api_t::outputDisable()</a> </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a5b9e21e157aa6ae92c8437896137c9a5"></a>POE3_STATE_OSCILLATION_STOP_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to main oscillator stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4af7751e7db56b87d70058a7839b95f3ee"></a>POE3_STATE_DSMIF0_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to DSMIF0 error. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a10ff02076a776d0e89ae9b7c62cc0b0c"></a>POE3_STATE_DSMIF1_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to DSMIF1 error. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a1bf1863365a368bae9299747131a0b96"></a>POE3_STATE_OUTPUT_SHORT_CIRCUIT_1_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to output short circuit 1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gae490ab83f87c7dd38218d37b067db3a4a12a0900fdff34d0cc993edc52c5bf363"></a>POE3_STATE_OUTPUT_SHORT_CIRCUIT_2_ERROR_REQUEST&#160;</td><td class="fielddoc"><p>Timer output disabled due to output short circuit 2. </p>
 </td></tr>
 </table>
 
@@ -974,423 +795,40 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggaa58f11ffa14b81b06be9cb9b44662c29a70590aad38d23d8b3053aacf051d28ac"></a>POE3_ACTIVE_LEVEL_LOW&#160;</td><td class="fielddoc"><p>Low level is set as the active level to detect a short circuit. </p>
 </td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga653e9db5a7623053c6282f7b6e5303e5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga653e9db5a7623053c6282f7b6e5303e5">&#9670;&nbsp;</a></span>poe3_hiz_mode_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>High-impedance output mode </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga653e9db5a7623053c6282f7b6e5303e5a3c25c7310ae2122fa0665d6f05c25f03"></a>POE3_HIZ_MODE_FALLING_EDGE&#160;</td><td class="fielddoc"><p>Accepts a request on the falling edge of POE3 pin input. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga653e9db5a7623053c6282f7b6e5303e5ab977887df38b2cf9d702637f00976326"></a>POE3_HIZ_MODE_PCLKH_DIV_8_16_TIME_PULSE_LOW&#160;</td><td class="fielddoc"><p>Accepts a request when POE3 pin input has been sampled 16 times at PCLKH/8 clock pulses and all are low level. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga653e9db5a7623053c6282f7b6e5303e5ad14f75602cf5a3c8c8cb8d612d487be6"></a>POE3_HIZ_MODE_PCLKH_DIV_16_16_TIME_PULSE_LOW&#160;</td><td class="fielddoc"><p>Accepts a request when POE3 pin input has been sampled 16 times at PCLKH/16 clock pulses and all are low level. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga653e9db5a7623053c6282f7b6e5303e5a0a296515d4054a4c18be483f36991670"></a>POE3_HIZ_MODE_PCLKH_DIV_128_16_TIME_PULSE_LOW&#160;</td><td class="fielddoc"><p>Accepts a request when POE3 pin input has been sampled 16 times at PCLKH/128 clock pulses and all are low level. </p>
+<tr><td class="fieldname"><a id="ggaa58f11ffa14b81b06be9cb9b44662c29a250ded7ff787e01986df6c679fb4626d"></a>POE3_ACTIVE_LEVEL_SETTING_NONE&#160;</td><td class="fielddoc"><p>The active level of the pin is set by the timer peripheral side, not by POE3. </p>
 </td></tr>
 </table>
 
 </div>
 </div>
-<a id="ga520949252179f1c7e4f62efe4018ce0b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga520949252179f1c7e4f62efe4018ce0b">&#9670;&nbsp;</a></span>poe3_hiz_output_enable_t</h2>
+<a id="ga6c33170753465c0e38b9f70e430cfff2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6c33170753465c0e38b9f70e430cfff2">&#9670;&nbsp;</a></span>poe3_pin_select_t</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga520949252179f1c7e4f62efe4018ce0b">poe3_hiz_output_enable_t</a></td>
+          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga6c33170753465c0e38b9f70e430cfff2">poe3_pin_select_t</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>High-impedance output enable </p>
+<p>Timer Control Pin selection </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga520949252179f1c7e4f62efe4018ce0ba8cb9e51ae1e2a2ce19c1eae0a8ab849e"></a>POE3_HIZ_OUTPUT_ENABLE_DISABLED&#160;</td><td class="fielddoc"><p>Does not place the MTU complementary PWM output pins, or MTU output pins in highimpedance state. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga6c33170753465c0e38b9f70e430cfff2a26b82ba7af4fd848934c4731054d7b00"></a>POE3_PIN_SELECT_0&#160;</td><td class="fielddoc"><p>Select pin to control. Refer to the user's manual of each device for details. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga520949252179f1c7e4f62efe4018ce0bac60037d3b79905e89e0f02ee39ba1ab0"></a>POE3_HIZ_OUTPUT_ENABLE_ENABLED&#160;</td><td class="fielddoc"><p>Places the MTU complementary PWM output pins, and MTU output pins in highimpedance state. </p>
+<tr><td class="fieldname"><a id="gga6c33170753465c0e38b9f70e430cfff2aadbc1f933581619a9d8fe5818ba3811f"></a>POE3_PIN_SELECT_1&#160;</td><td class="fielddoc"><p>Select pin to control. Refer to the user's manual of each device for details. </p>
 </td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga8d85c55fe8cac6809eb1ebfe12e28f89"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8d85c55fe8cac6809eb1ebfe12e28f89">&#9670;&nbsp;</a></span>poe3_interrupt_enable_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga8d85c55fe8cac6809eb1ebfe12e28f89">poe3_interrupt_enable_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Interrupt enable </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga8d85c55fe8cac6809eb1ebfe12e28f89a0f5a9d4d09f247faf084171838a814d2"></a>POE3_INTERRUPT_ENABLE_DISABLED&#160;</td><td class="fielddoc"><p>Interrupt requests disabled. </p>
+<tr><td class="fieldname"><a id="gga6c33170753465c0e38b9f70e430cfff2ab0631d83153eeaccc5c287e3d1720919"></a>POE3_PIN_SELECT_2&#160;</td><td class="fielddoc"><p>Select pin to control. Refer to the user's manual of each device for details. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gga8d85c55fe8cac6809eb1ebfe12e28f89ad9f6464838e3796c3c5ae611de707a9e"></a>POE3_INTERRUPT_ENABLE_ENABLED&#160;</td><td class="fielddoc"><p>Interrupt requests enabled. </p>
+<tr><td class="fieldname"><a id="gga6c33170753465c0e38b9f70e430cfff2aad3707bc918771a9a8591b1697145a48"></a>POE3_PIN_SELECT_3&#160;</td><td class="fielddoc"><p>Select pin to control. Refer to the user's manual of each device for details. </p>
 </td></tr>
-</table>
-
-</div>
-</div>
-<a id="gaefe3f41d0f7ec0e6faea0622d74056b1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaefe3f41d0f7ec0e6faea0622d74056b1">&#9670;&nbsp;</a></span>poe3_mtioc0a_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#gaefe3f41d0f7ec0e6faea0622d74056b1">poe3_mtioc0a_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Pin select. MTU0 Pin Select </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaefe3f41d0f7ec0e6faea0622d74056b1aae7bae5b47679f30d5b1f0a67cc5727f"></a>POE3_MTIOC0A_PIN_SELECT_P13_2&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P13_2 when it is in use as the MTIOC0A pin. </p>
+<tr><td class="fieldname"><a id="gga6c33170753465c0e38b9f70e430cfff2a5ada1401c7dce48fd580b2370723bbe9"></a>POE3_PIN_SELECT_4&#160;</td><td class="fielddoc"><p>Select pin to control. Refer to the user's manual of each device for details. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggaefe3f41d0f7ec0e6faea0622d74056b1a9cac63b979799a950921b03825afa5cb"></a>POE3_MTIOC0A_PIN_SELECT_P14_3&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P14_3 when it is in use as the MTIOC0A pin. </p>
+<tr><td class="fieldname"><a id="gga6c33170753465c0e38b9f70e430cfff2ad84e49fc5e4fbe3aad899954af7e0a91"></a>POE3_PIN_SELECT_5&#160;</td><td class="fielddoc"><p>Select pin to control. Refer to the user's manual of each device for details. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="ggaefe3f41d0f7ec0e6faea0622d74056b1a73a678e34422e736088c1a1c8e5f54a3"></a>POE3_MTIOC0A_PIN_SELECT_P23_7&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P23_7 when it is in use as the MTIOC0A pin. </p>
+<tr><td class="fieldname"><a id="gga6c33170753465c0e38b9f70e430cfff2a46df20dce0e79dc17688282b0c0838af"></a>POE3_PIN_SELECT_6&#160;</td><td class="fielddoc"><p>Select pin to control. Refer to the user's manual of each device for details. </p>
 </td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga063ffecae034b9e2608183fc5200385c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga063ffecae034b9e2608183fc5200385c">&#9670;&nbsp;</a></span>poe3_mtioc0b_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga063ffecae034b9e2608183fc5200385c">poe3_mtioc0b_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga063ffecae034b9e2608183fc5200385ca932187fe927b15512b3b3e45878d597e"></a>POE3_MTIOC0B_PIN_SELECT_P11_5&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P11_5 when it is in use as the MTIOC0B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga063ffecae034b9e2608183fc5200385ca313855f299d49836688febf356415992"></a>POE3_MTIOC0B_PIN_SELECT_P14_4&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P14_4 when it is in use as the MTIOC0B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga063ffecae034b9e2608183fc5200385ca061027f4ec6fefecfa175e777bb61153"></a>POE3_MTIOC0B_PIN_SELECT_P24_0&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P24_0 when it is in use as the MTIOC0B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga063ffecae034b9e2608183fc5200385cab74d1bd10005be88941f3c8de645708b"></a>POE3_MTIOC0B_PIN_SELECT_P13_3&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P13_3 when it is in use as the MTIOC0B pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga83c56623f83f1b03e44eb8ecb9c07f7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga83c56623f83f1b03e44eb8ecb9c07f7b">&#9670;&nbsp;</a></span>poe3_mtioc0c_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga83c56623f83f1b03e44eb8ecb9c07f7b">poe3_mtioc0c_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga83c56623f83f1b03e44eb8ecb9c07f7ba2326193cee253d15a02190fc50cda580"></a>POE3_MTIOC0C_PIN_SELECT_P13_3&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P13_3 when it is in use as the MTIOC0C pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga83c56623f83f1b03e44eb8ecb9c07f7ba646e30c1a8b5b877fc42c20e9b02e1b9"></a>POE3_MTIOC0C_PIN_SELECT_P15_1&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P15_1 when it is in use as the MTIOC0C pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga83c56623f83f1b03e44eb8ecb9c07f7baf0423a7cf14b495177f955eed327330f"></a>POE3_MTIOC0C_PIN_SELECT_P24_1&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P24_1 when it is in use as the MTIOC0C pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gab1ae47343e0c3ca3840e639081e1ff33"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab1ae47343e0c3ca3840e639081e1ff33">&#9670;&nbsp;</a></span>poe3_mtioc0d_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#gab1ae47343e0c3ca3840e639081e1ff33">poe3_mtioc0d_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggab1ae47343e0c3ca3840e639081e1ff33a993b04b96cecc00314f155767b8ed82e"></a>POE3_MTIOC0D_PIN_SELECT_P13_4&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P13_4 when it is in use as the MTIOC0D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggab1ae47343e0c3ca3840e639081e1ff33ab88f9b24e94a46e95a4f54b1ae87378f"></a>POE3_MTIOC0D_PIN_SELECT_P15_2&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P15_2 when it is in use as the MTIOC0D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggab1ae47343e0c3ca3840e639081e1ff33a2adb6df4f5545c227868b251df7dd870"></a>POE3_MTIOC0D_PIN_SELECT_P24_2&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P24_2 when it is in use as the MTIOC0D pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga712bf2d6f863cb9526d3dad24f51c417"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga712bf2d6f863cb9526d3dad24f51c417">&#9670;&nbsp;</a></span>poe3_mtioc3b_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga712bf2d6f863cb9526d3dad24f51c417">poe3_mtioc3b_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>MTU3 and MTU4 Pin Select </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga712bf2d6f863cb9526d3dad24f51c417a4f898aebacf366884689ecd734bf3447"></a>POE3_MTIOC3B_PIN_SELECT_P17_6&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P17_6 when it is in use as the MTIOC3B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga712bf2d6f863cb9526d3dad24f51c417ac981ad34e23ac9db6114070e9780a3b9"></a>POE3_MTIOC3B_PIN_SELECT_P00_6&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P00_6 when it is in use as the MTIOC3B pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga77fe003c3dda4c8039300d3399b8e842"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga77fe003c3dda4c8039300d3399b8e842">&#9670;&nbsp;</a></span>poe3_mtioc3d_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga77fe003c3dda4c8039300d3399b8e842">poe3_mtioc3d_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga77fe003c3dda4c8039300d3399b8e842a31f3c7f5facd501a87c027290ff67341"></a>POE3_MTIOC3D_PIN_SELECT_P18_1&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P18_1 when it is in use as the MTIOC3D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga77fe003c3dda4c8039300d3399b8e842af78d94b9b832cb45d0b7c0584e9f6021"></a>POE3_MTIOC3D_PIN_SELECT_P01_1&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P01_1 when it is in use as the MTIOC3D pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gaa493d39069339d82410d20c6ba1b2fec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaa493d39069339d82410d20c6ba1b2fec">&#9670;&nbsp;</a></span>poe3_mtioc4b_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#gaa493d39069339d82410d20c6ba1b2fec">poe3_mtioc4b_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaa493d39069339d82410d20c6ba1b2feca99717a001fb6d141028d72799d3ec623"></a>POE3_MTIOC4B_PIN_SELECT_P18_2&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P18_2 when it is in use as the MTIOC4B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaa493d39069339d82410d20c6ba1b2fecae41e8e78b455dfa42c762c45c0fd3606"></a>POE3_MTIOC4B_PIN_SELECT_P01_2&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P01_2 when it is in use as the MTIOC4B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaa493d39069339d82410d20c6ba1b2feca2390c82a583ac58f5182bdd12e266438"></a>POE3_MTIOC4B_PIN_SELECT_P18_3&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P18_3 when it is in use as the MTIOC4B pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga5fb665cba513bd53b7ea41cedbd5cc52"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga5fb665cba513bd53b7ea41cedbd5cc52">&#9670;&nbsp;</a></span>poe3_mtioc4d_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga5fb665cba513bd53b7ea41cedbd5cc52">poe3_mtioc4d_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga5fb665cba513bd53b7ea41cedbd5cc52ac46acbe2a2d71fb943e633aad426cc94"></a>POE3_MTIOC4D_PIN_SELECT_P18_3&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P18_3 when it is in use as the MTIOC4D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga5fb665cba513bd53b7ea41cedbd5cc52af7f931e8b18b0d070b3e6aefc1c128fa"></a>POE3_MTIOC4D_PIN_SELECT_P01_3&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P01_3 when it is in use as the MTIOC4D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga5fb665cba513bd53b7ea41cedbd5cc52a9c4a16323d8d97a8dd9e1b897708a485"></a>POE3_MTIOC4D_PIN_SELECT_P18_2&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P18_2 when it is in use as the MTIOC4D pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gad85cc1b1a9ec190066b84e52b3f92af9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gad85cc1b1a9ec190066b84e52b3f92af9">&#9670;&nbsp;</a></span>poe3_mtioc4a_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#gad85cc1b1a9ec190066b84e52b3f92af9">poe3_mtioc4a_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggad85cc1b1a9ec190066b84e52b3f92af9a29f70b63b0393d80e8ba1de788fb8da9"></a>POE3_MTIOC4A_PIN_SELECT_P17_7&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P17_7 when it is in use as the MTIOC4A pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggad85cc1b1a9ec190066b84e52b3f92af9ad159d86963a0fd11d5d23ad3ffe0ddad"></a>POE3_MTIOC4A_PIN_SELECT_P18_0&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P18_0 when it is in use as the MTIOC4A pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga7c73a46488743c29365fdb99024677e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga7c73a46488743c29365fdb99024677e0">&#9670;&nbsp;</a></span>poe3_mtioc4c_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga7c73a46488743c29365fdb99024677e0">poe3_mtioc4c_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga7c73a46488743c29365fdb99024677e0ab809ebb1a814e0418faaca6e962bf15e"></a>POE3_MTIOC4C_PIN_SELECT_P18_0&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P18_0 when it is in use as the MTIOC4C pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga7c73a46488743c29365fdb99024677e0afac8207ea3ee8c1e9e4f926754fad881"></a>POE3_MTIOC4C_PIN_SELECT_P01_0&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P01_0 when it is in use as the MTIOC4C pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga7c73a46488743c29365fdb99024677e0a6e869a127f850d2b1b879e458d1a43fa"></a>POE3_MTIOC4C_PIN_SELECT_P17_7&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P17_7 when it is in use as the MTIOC4C pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga70a42cad8266584e2b9ba978faa99cf4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga70a42cad8266584e2b9ba978faa99cf4">&#9670;&nbsp;</a></span>poe3_mtioc6b_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga70a42cad8266584e2b9ba978faa99cf4">poe3_mtioc6b_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>MTU6 and MTU7 Pin Select </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga70a42cad8266584e2b9ba978faa99cf4a9ae415555804181e92f7520b30c20e76"></a>POE3_MTIOC6B_PIN_SELECT_P19_3&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P19_3 when it is in use as the MTIOC6B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga70a42cad8266584e2b9ba978faa99cf4ae348e1066ff6141dfab414f7d8986eb4"></a>POE3_MTIOC6B_PIN_SELECT_P21_2&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P21_2 when it is in use as the MTIOC6B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga70a42cad8266584e2b9ba978faa99cf4a8ca00f9af4a3df3a3b270635cf2ec9f8"></a>POE3_MTIOC6B_PIN_SELECT_P08_5&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P08_5 when it is in use as the MTIOC6B pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gadff78d5a890709e90028235346434145"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gadff78d5a890709e90028235346434145">&#9670;&nbsp;</a></span>poe3_mtioc6d_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#gadff78d5a890709e90028235346434145">poe3_mtioc6d_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadff78d5a890709e90028235346434145a02bc3b00423378ab229789e33bfcfbe0"></a>POE3_MTIOC6D_PIN_SELECT_P19_6&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P19_6 when it is in use as the MTIOC6D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggadff78d5a890709e90028235346434145a36a9cedf2cc94d2913fa07ab5607ef02"></a>POE3_MTIOC6D_PIN_SELECT_P21_4&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P21_4 when it is in use as the MTIOC6D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggadff78d5a890709e90028235346434145a8a0da2d56b4e429162819118cad091ae"></a>POE3_MTIOC6D_PIN_SELECT_P08_7&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P08_7 when it is in use as the MTIOC6D pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gaa89668835c1c63a9126ec652878dffdc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaa89668835c1c63a9126ec652878dffdc">&#9670;&nbsp;</a></span>poe3_mtioc7b_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#gaa89668835c1c63a9126ec652878dffdc">poe3_mtioc7b_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaa89668835c1c63a9126ec652878dffdcae86e6a87f15ced6ff0b511fe2020403e"></a>POE3_MTIOC7B_PIN_SELECT_P19_7&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P19_7 when it is in use as the MTIOC7B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaa89668835c1c63a9126ec652878dffdcaf8148c9d7ad1b10de56dfe37b7854834"></a>POE3_MTIOC7B_PIN_SELECT_P21_6&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P21_6 when it is in use as the MTIOC7B pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggaa89668835c1c63a9126ec652878dffdca42203af4f650472a8da563644d82e0d6"></a>POE3_MTIOC7B_PIN_SELECT_P09_1&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P09_1 when it is in use as the MTIOC7B pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gab1008c2f91bdecdceca9da0ec814c294"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gab1008c2f91bdecdceca9da0ec814c294">&#9670;&nbsp;</a></span>poe3_mtioc7d_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#gab1008c2f91bdecdceca9da0ec814c294">poe3_mtioc7d_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggab1008c2f91bdecdceca9da0ec814c294a29b4e1c68471c7c3189e03994369975c"></a>POE3_MTIOC7D_PIN_SELECT_P20_0&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P20_0 when it is in use as the MTIOC7D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggab1008c2f91bdecdceca9da0ec814c294ac0224f3abf0a617a4ea3ccb222fc38db"></a>POE3_MTIOC7D_PIN_SELECT_P22_0&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P22_0 when it is in use as the MTIOC7D pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggab1008c2f91bdecdceca9da0ec814c294a4920000114f3837e1b6e1c8a98ff6d26"></a>POE3_MTIOC7D_PIN_SELECT_P09_3&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P09_3 when it is in use as the MTIOC7D pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga9ef98e7aa2248b0edf2ea9a5e214e2b0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9ef98e7aa2248b0edf2ea9a5e214e2b0">&#9670;&nbsp;</a></span>poe3_mtioc7a_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga9ef98e7aa2248b0edf2ea9a5e214e2b0">poe3_mtioc7a_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga9ef98e7aa2248b0edf2ea9a5e214e2b0a8d80d8208a5c32d1f9556b66689033a7"></a>POE3_MTIOC7A_PIN_SELECT_P19_4&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P19_4 when it is in use as the MTIOC7A pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga9ef98e7aa2248b0edf2ea9a5e214e2b0a8f52eb71c80d24bc5ff2dd611258c43f"></a>POE3_MTIOC7A_PIN_SELECT_P21_5&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P21_5 when it is in use as the MTIOC7A pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga9ef98e7aa2248b0edf2ea9a5e214e2b0a421a60ec5b3f695eaec5e4eeed16edac"></a>POE3_MTIOC7A_PIN_SELECT_P09_0&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P09_0 when it is in use as the MTIOC7A pin. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="ga093f2abe45dc24bcbf94a7bad54d4201"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga093f2abe45dc24bcbf94a7bad54d4201">&#9670;&nbsp;</a></span>poe3_mtioc7c_pin_select_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___p_o_e3___a_p_i.html#ga093f2abe45dc24bcbf94a7bad54d4201">poe3_mtioc7c_pin_select_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga093f2abe45dc24bcbf94a7bad54d4201afa0ae51acb0ba7853483bc2e8a68b664"></a>POE3_MTIOC7C_PIN_SELECT_P19_5&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P19_5 when it is in use as the MTIOC7C pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga093f2abe45dc24bcbf94a7bad54d4201a4a3e01ab5e2fdc4a2a487ac37d09aa02"></a>POE3_MTIOC7C_PIN_SELECT_P21_7&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P21_7 when it is in use as the MTIOC7C pin. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="gga093f2abe45dc24bcbf94a7bad54d4201aab7ed2ea482ed382495ef4b51a59f499"></a>POE3_MTIOC7C_PIN_SELECT_P09_2&#160;</td><td class="fielddoc"><p>Controls the high-impedance state of P09_2 when it is in use as the MTIOC7C pin. </p>
+<tr><td class="fieldname"><a id="gga6c33170753465c0e38b9f70e430cfff2a9c6edb29ea2c4d9f8189dacf5b57b305"></a>POE3_PIN_SELECT_7&#160;</td><td class="fielddoc"><p>Select pin to control. Refer to the user's manual of each device for details. </p>
 </td></tr>
 </table>
 
@@ -1402,7 +840,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

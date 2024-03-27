@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Serial Communications Interface (SCI) SPI (r_sci_spi)</title>
+<title>RZT Flexible Software Package Documentation: Serial Communications Interface (SCI) SPI (r_sci_spi)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___s_c_i___s_p_i.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,34 +140,49 @@ $(document).ready(function(){initNavTree('group___s_c_i___s_p_i.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Serial Communications Interface (SCI) SPI (r_sci_spi)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Serial Communications Interface (SCI) SPI (r_sci_spi)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___c_o_n_n_e_c_t_i_v_i_t_y___m_o_d_u_l_e_s.html">Connectivity</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:ga9ce8ace26bb551a1ad4b320202c894ec"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga9ce8ace26bb551a1ad4b320202c894ec">R_SCI_SPI_Open</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *p_api_ctrl, <a class="el" href="group___s_p_i___a_p_i.html#structspi__cfg__t">spi_cfg_t</a> const *const p_cfg)</td></tr>
-<tr class="separator:ga9ce8ace26bb551a1ad4b320202c894ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9fdab8bddaabefc2116cc078c207bc4f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga9fdab8bddaabefc2116cc078c207bc4f">R_SCI_SPI_Read</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_api_ctrl, void *p_dest, uint32_t const length, <a class="el" href="group___s_p_i___a_p_i.html#ga6ba4a8eef274a5b227fc2ab6ee61f8fd">spi_bit_width_t</a> const bit_width)</td></tr>
-<tr class="separator:ga9fdab8bddaabefc2116cc078c207bc4f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga7f7f0fbe5dc85ac7dac6c5676965e432"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga7f7f0fbe5dc85ac7dac6c5676965e432">R_SCI_SPI_Write</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_api_ctrl, void const *p_src, uint32_t const length, <a class="el" href="group___s_p_i___a_p_i.html#ga6ba4a8eef274a5b227fc2ab6ee61f8fd">spi_bit_width_t</a> const bit_width)</td></tr>
-<tr class="separator:ga7f7f0fbe5dc85ac7dac6c5676965e432"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga061962640303cb50a61285212571a85a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga061962640303cb50a61285212571a85a">R_SCI_SPI_WriteRead</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_api_ctrl, void const *p_src, void *p_dest, uint32_t const length, <a class="el" href="group___s_p_i___a_p_i.html#ga6ba4a8eef274a5b227fc2ab6ee61f8fd">spi_bit_width_t</a> const bit_width)</td></tr>
-<tr class="separator:ga061962640303cb50a61285212571a85a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga9980c52ccbe2e8e2f4e21888ca7a0d95"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga9980c52ccbe2e8e2f4e21888ca7a0d95">R_SCI_SPI_CallbackSet</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_api_ctrl, void(*p_callback)(<a class="el" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> *const p_callback_memory)</td></tr>
-<tr class="separator:ga9980c52ccbe2e8e2f4e21888ca7a0d95"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga80b7c1f5e687731bbc3de8df267a1c15"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga80b7c1f5e687731bbc3de8df267a1c15">R_SCI_SPI_Close</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_api_ctrl)</td></tr>
-<tr class="separator:ga80b7c1f5e687731bbc3de8df267a1c15"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga5ca04d5041e7cdb94ef2655a78e11e8a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga5ca04d5041e7cdb94ef2655a78e11e8a">R_SCI_SPI_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *p_version)</td></tr>
-<tr class="separator:ga5ca04d5041e7cdb94ef2655a78e11e8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6adb1757becedc515c59a60becd6799e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga6adb1757becedc515c59a60becd6799e">R_SCI_SPI_Open</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *p_ctrl, <a class="el" href="group___s_p_i___a_p_i.html#structspi__cfg__t">spi_cfg_t</a> const *const p_cfg)</td></tr>
+<tr class="separator:ga6adb1757becedc515c59a60becd6799e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa2f2a584adabc1fc66fc2bbeef7619f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#gaa2f2a584adabc1fc66fc2bbeef7619f0">R_SCI_SPI_Read</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_ctrl, void *p_dest, uint32_t const length, <a class="el" href="group___s_p_i___a_p_i.html#ga6ba4a8eef274a5b227fc2ab6ee61f8fd">spi_bit_width_t</a> const bit_width)</td></tr>
+<tr class="separator:gaa2f2a584adabc1fc66fc2bbeef7619f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa0be2839a88675a03967344715600b9d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#gaa0be2839a88675a03967344715600b9d">R_SCI_SPI_Write</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_ctrl, void const *p_src, uint32_t const length, <a class="el" href="group___s_p_i___a_p_i.html#ga6ba4a8eef274a5b227fc2ab6ee61f8fd">spi_bit_width_t</a> const bit_width)</td></tr>
+<tr class="separator:gaa0be2839a88675a03967344715600b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaa99e80d76365e5d724a2d361b49fcc6c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#gaa99e80d76365e5d724a2d361b49fcc6c">R_SCI_SPI_WriteRead</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_ctrl, void const *p_src, void *p_dest, uint32_t const length, <a class="el" href="group___s_p_i___a_p_i.html#ga6ba4a8eef274a5b227fc2ab6ee61f8fd">spi_bit_width_t</a> const bit_width)</td></tr>
+<tr class="separator:gaa99e80d76365e5d724a2d361b49fcc6c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae6e4e80b3d7e5698ae2b48d18decce7a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#gae6e4e80b3d7e5698ae2b48d18decce7a">R_SCI_SPI_Close</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:gae6e4e80b3d7e5698ae2b48d18decce7a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga72cabeff7b81e8d7da61a7f4092d1b10"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga72cabeff7b81e8d7da61a7f4092d1b10">R_SCI_SPI_CalculateBitrate</a> (uint32_t bitrate, <a class="el" href="group___s_c_i___s_p_i.html#ga20b273db6ca4654e4eb5e8d5d414f4bd">sci_spi_clock_source_t</a> clock_source, <a class="el" href="group___s_c_i___s_p_i.html#structsci__spi__div__setting__t">sci_spi_div_setting_t</a> *sclk_div)</td></tr>
 <tr class="separator:ga72cabeff7b81e8d7da61a7f4092d1b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga69fc1f19baef785bab2178f2047ac7e2"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#ga69fc1f19baef785bab2178f2047ac7e2">R_SCI_SPI_CallbackSet</a> (<a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:ga69fc1f19baef785bab2178f2047ac7e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the SCI peripheral on RZ microprocessor. This module implements the <a class="el" href="group___s_p_i___a_p_i.html">SPI Interface</a>. </p>
@@ -173,9 +239,17 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Enabled </td><td>If support for transferring data using the DMAC will be compiled in. Even if DMAC support is enabled, DMAC is not used without adding DMAC driver. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Connectivity &gt; SPI Driver on r_sci_spi</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Connectivity &gt; SPI Driver on r_sci_spi.<br />
+ <h2>Configurations for Connectivity &gt; SPI (r_sci_spi)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Connectivity &gt; SPI (r_sci_spi).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -268,7 +342,7 @@ Usage Notes</h1>
 Examples</h1>
 <h2>Basic Example</h2>
 <p>This is a basic example of minimal use of the SCI_SPI in an application.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keywordtype">bool</span> g_transfer_complete = <span class="keyword">false</span>;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_sci_spi_callback (<a class="code" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___s_p_i___a_p_i.html#gga6e4960e8b344a8a8ec60f0c11d60f54ca2b456074a7304b0ac4be1cbe69d6dad1">SPI_EVENT_TRANSFER_COMPLETE</a> == p_args-&gt;<a class="code" href="group___s_p_i___a_p_i.html#ae1e14270178c91fb89697630627c1eee">event</a>)</div><div class="line">    {</div><div class="line">        g_transfer_complete = <span class="keyword">true</span>;</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> sci_spi_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    uint8_t tx_buffer[TRANSFER_SIZE];</div><div class="line">    uint8_t rx_buffer[TRANSFER_SIZE];</div><div class="line"></div><div class="line">    <span class="comment">/* Configure Slave Select Line 1 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga33cef14f93543bcb3531b4f2e377c5c4">R_BSP_PinWrite</a>(SLAVE_SELECT_LINE_1, <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0acf9a28559b5a18ed9b8af4c2a7df10ef">BSP_IO_LEVEL_HIGH</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Configure Slave Select Line 2 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga33cef14f93543bcb3531b4f2e377c5c4">R_BSP_PinWrite</a>(SLAVE_SELECT_LINE_2, <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0acf9a28559b5a18ed9b8af4c2a7df10ef">BSP_IO_LEVEL_HIGH</a>);</div><div class="line"></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the SPI module. */</span></div><div class="line">    err = <a class="code" href="group___s_c_i___s_p_i.html#ga9ce8ace26bb551a1ad4b320202c894ec">R_SCI_SPI_Open</a>(&amp;g_spi_ctrl, &amp;g_spi_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Assert Slave Select Line 1 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga33cef14f93543bcb3531b4f2e377c5c4">R_BSP_PinWrite</a>(SLAVE_SELECT_LINE_1, <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0abb31064742440cdbdd638330a1cf7a9f">BSP_IO_LEVEL_LOW</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Start a write/read transfer */</span></div><div class="line">    g_transfer_complete = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    err = <a class="code" href="group___s_c_i___s_p_i.html#ga061962640303cb50a61285212571a85a">R_SCI_SPI_WriteRead</a>(&amp;g_spi_ctrl, tx_buffer, rx_buffer, TRANSFER_SIZE, <a class="code" href="group___s_p_i___a_p_i.html#gga6ba4a8eef274a5b227fc2ab6ee61f8fdad6fa8af050db98465c43fd25fb8e8090">SPI_BIT_WIDTH_8_BITS</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for SPI_EVENT_TRANSFER_COMPLETE callback event. */</span></div><div class="line">    <span class="keywordflow">while</span> (<span class="keyword">false</span> == g_transfer_complete)</div><div class="line">    {</div><div class="line">        ;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* De-assert Slave Select Line 1 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga33cef14f93543bcb3531b4f2e377c5c4">R_BSP_PinWrite</a>(SLAVE_SELECT_LINE_1, <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0acf9a28559b5a18ed9b8af4c2a7df10ef">BSP_IO_LEVEL_HIGH</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for minimum time required between transfers. */</span></div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(SSL_NEXT_ACCESS_DELAY, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2baa0312618f2508347a9a815b5887c12ae">BSP_DELAY_UNITS_MICROSECONDS</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Assert Slave Select Line 2 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga33cef14f93543bcb3531b4f2e377c5c4">R_BSP_PinWrite</a>(SLAVE_SELECT_LINE_2, <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0abb31064742440cdbdd638330a1cf7a9f">BSP_IO_LEVEL_LOW</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Start a write/read transfer */</span></div><div class="line">    g_transfer_complete = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    err = <a class="code" href="group___s_c_i___s_p_i.html#ga061962640303cb50a61285212571a85a">R_SCI_SPI_WriteRead</a>(&amp;g_spi_ctrl, tx_buffer, rx_buffer, TRANSFER_SIZE, <a class="code" href="group___s_p_i___a_p_i.html#gga6ba4a8eef274a5b227fc2ab6ee61f8fdad6fa8af050db98465c43fd25fb8e8090">SPI_BIT_WIDTH_8_BITS</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for SPI_EVENT_TRANSFER_COMPLETE callback event. */</span></div><div class="line">    <span class="keywordflow">while</span> (<span class="keyword">false</span> == g_transfer_complete)</div><div class="line">    {</div><div class="line">        ;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* De-assert Slave Select Line 2 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga33cef14f93543bcb3531b4f2e377c5c4">R_BSP_PinWrite</a>(SLAVE_SELECT_LINE_2, <a class="code" href="group___b_s_p___i_o.html#ggab4ef0cc3fce421d48310f23c614aadc0acf9a28559b5a18ed9b8af4c2a7df10ef">BSP_IO_LEVEL_HIGH</a>);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keyword">volatile</span> <span class="keywordtype">bool</span> g_transfer_complete = <span class="keyword">false</span>;</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_sci_spi_callback (<a class="code" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <span class="keywordflow">if</span> (<a class="code" href="group___s_p_i___a_p_i.html#gga6e4960e8b344a8a8ec60f0c11d60f54ca2b456074a7304b0ac4be1cbe69d6dad1">SPI_EVENT_TRANSFER_COMPLETE</a> == p_args-&gt;<a class="code" href="group___s_p_i___a_p_i.html#ae1e14270178c91fb89697630627c1eee">event</a>)</div><div class="line">    {</div><div class="line">        g_transfer_complete = <span class="keyword">true</span>;</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> sci_spi_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    uint8_t tx_buffer[TRANSFER_SIZE];</div><div class="line">    uint8_t rx_buffer[TRANSFER_SIZE];</div><div class="line"></div><div class="line">    <span class="comment">/* Configure Slave Select Line 1 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043">R_BSP_PinSet</a>(<a class="code" href="group___b_s_p___i_o.html#gabf9f15300897622d8296efa5ea0547dc">R_BSP_IoRegionGet</a>(SLAVE_SELECT_LINE_1), SLAVE_SELECT_LINE_1);</div><div class="line"></div><div class="line">    <span class="comment">/* Configure Slave Select Line 2 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043">R_BSP_PinSet</a>(<a class="code" href="group___b_s_p___i_o.html#gabf9f15300897622d8296efa5ea0547dc">R_BSP_IoRegionGet</a>(SLAVE_SELECT_LINE_2), SLAVE_SELECT_LINE_2);</div><div class="line"></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initialize the SPI module. */</span></div><div class="line">    err = <a class="code" href="group___s_c_i___s_p_i.html#ga6adb1757becedc515c59a60becd6799e">R_SCI_SPI_Open</a>(&amp;g_spi_ctrl, &amp;g_spi_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;cpsie i&quot;</span>);</div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;isb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Assert Slave Select Line 1 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga6f6397f7883fdc9f649d359883584a7d">R_BSP_PinClear</a>(<a class="code" href="group___b_s_p___i_o.html#gabf9f15300897622d8296efa5ea0547dc">R_BSP_IoRegionGet</a>(SLAVE_SELECT_LINE_1), SLAVE_SELECT_LINE_1);</div><div class="line"></div><div class="line">    <span class="comment">/* Start a write/read transfer */</span></div><div class="line">    g_transfer_complete = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    err = <a class="code" href="group___s_c_i___s_p_i.html#gaa99e80d76365e5d724a2d361b49fcc6c">R_SCI_SPI_WriteRead</a>(&amp;g_spi_ctrl, tx_buffer, rx_buffer, TRANSFER_SIZE, <a class="code" href="group___s_p_i___a_p_i.html#gga6ba4a8eef274a5b227fc2ab6ee61f8fdad6fa8af050db98465c43fd25fb8e8090">SPI_BIT_WIDTH_8_BITS</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for SPI_EVENT_TRANSFER_COMPLETE callback event. */</span></div><div class="line">    <span class="keywordflow">while</span> (<span class="keyword">false</span> == g_transfer_complete)</div><div class="line">    {</div><div class="line">        ;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* De-assert Slave Select Line 1 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043">R_BSP_PinSet</a>(<a class="code" href="group___b_s_p___i_o.html#gabf9f15300897622d8296efa5ea0547dc">R_BSP_IoRegionGet</a>(SLAVE_SELECT_LINE_1), SLAVE_SELECT_LINE_1);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for minimum time required between transfers. */</span></div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#gaf3219448adfd1531cf69f68697ab184b">R_BSP_SoftwareDelay</a>(SSL_NEXT_ACCESS_DELAY, <a class="code" href="group___b_s_p___m_c_u.html#ggafd98e2a6f080d6a52a3ef72e3d731b2baa0312618f2508347a9a815b5887c12ae">BSP_DELAY_UNITS_MICROSECONDS</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Assert Slave Select Line 2 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga6f6397f7883fdc9f649d359883584a7d">R_BSP_PinClear</a>(<a class="code" href="group___b_s_p___i_o.html#gabf9f15300897622d8296efa5ea0547dc">R_BSP_IoRegionGet</a>(SLAVE_SELECT_LINE_2), SLAVE_SELECT_LINE_2);</div><div class="line"></div><div class="line">    <span class="comment">/* Start a write/read transfer */</span></div><div class="line">    g_transfer_complete = <span class="keyword">false</span>;</div><div class="line"></div><div class="line">    err = <a class="code" href="group___s_c_i___s_p_i.html#gaa99e80d76365e5d724a2d361b49fcc6c">R_SCI_SPI_WriteRead</a>(&amp;g_spi_ctrl, tx_buffer, rx_buffer, TRANSFER_SIZE, <a class="code" href="group___s_p_i___a_p_i.html#gga6ba4a8eef274a5b227fc2ab6ee61f8fdad6fa8af050db98465c43fd25fb8e8090">SPI_BIT_WIDTH_8_BITS</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for SPI_EVENT_TRANSFER_COMPLETE callback event. */</span></div><div class="line">    <span class="keywordflow">while</span> (<span class="keyword">false</span> == g_transfer_complete)</div><div class="line">    {</div><div class="line">        ;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* De-assert Slave Select Line 2 */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043">R_BSP_PinSet</a>(<a class="code" href="group___b_s_p___i_o.html#gabf9f15300897622d8296efa5ea0547dc">R_BSP_IoRegionGet</a>(SLAVE_SELECT_LINE_2), SLAVE_SELECT_LINE_2);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structsci__spi__div__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___s_c_i___s_p_i.html#structsci__spi__div__setting__t">sci_spi_div_setting_t</a></td></tr>
@@ -362,8 +436,8 @@ clock_source</td>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
-<a id="ga9ce8ace26bb551a1ad4b320202c894ec"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9ce8ace26bb551a1ad4b320202c894ec">&#9670;&nbsp;</a></span>R_SCI_SPI_Open()</h2>
+<a id="ga6adb1757becedc515c59a60becd6799e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6adb1757becedc515c59a60becd6799e">&#9670;&nbsp;</a></span>R_SCI_SPI_Open()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -372,7 +446,7 @@ clock_source</td>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_SPI_Open </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -396,7 +470,7 @@ clock_source</td>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">p_api_ctrl</td><td>Pointer to the control structure. </td></tr>
+    <tr><td class="paramname">p_ctrl</td><td>Pointer to the control structure. </td></tr>
     <tr><td class="paramname">p_cfg</td><td>Pointer to a configuration structure.</td></tr>
   </table>
   </dd>
@@ -414,8 +488,8 @@ clock_source</td>
 
 </div>
 </div>
-<a id="ga9fdab8bddaabefc2116cc078c207bc4f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9fdab8bddaabefc2116cc078c207bc4f">&#9670;&nbsp;</a></span>R_SCI_SPI_Read()</h2>
+<a id="gaa2f2a584adabc1fc66fc2bbeef7619f0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa2f2a584adabc1fc66fc2bbeef7619f0">&#9670;&nbsp;</a></span>R_SCI_SPI_Read()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -424,7 +498,7 @@ clock_source</td>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_SPI_Read </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -466,7 +540,7 @@ clock_source</td>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p_api_ctrl</td><td>Pointer to the control structure. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">p_ctrl</td><td>Pointer to the control structure. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">p_dest</td><td>Pointer to the destination buffer. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">length</td><td>The number of bytes to transfer. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bit_width</td><td>Invalid for SCI_SPI (Set to SPI_BIT_WIDTH_8_BITS).</td></tr>
@@ -477,7 +551,7 @@ clock_source</td>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Read operation successfully completed. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>One of the following invalid parameters passed:<ul>
-<li>Pointer p_api_ctrl is NULL</li>
+<li>Pointer p_ctrl is NULL</li>
 <li>Length is equal to 0</li>
 <li>Pointer to destination is NULL </li>
 </ul>
@@ -495,8 +569,8 @@ clock_source</td>
 
 </div>
 </div>
-<a id="ga7f7f0fbe5dc85ac7dac6c5676965e432"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga7f7f0fbe5dc85ac7dac6c5676965e432">&#9670;&nbsp;</a></span>R_SCI_SPI_Write()</h2>
+<a id="gaa0be2839a88675a03967344715600b9d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa0be2839a88675a03967344715600b9d">&#9670;&nbsp;</a></span>R_SCI_SPI_Write()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -505,7 +579,7 @@ clock_source</td>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_SPI_Write </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -546,7 +620,7 @@ clock_source</td>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p_api_ctrl</td><td>Pointer to the control structure. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">p_ctrl</td><td>Pointer to the control structure. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">p_src</td><td>Pointer to the source buffer. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">length</td><td>The number of bytes to transfer. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">bit_width</td><td>Invalid for SCI_SPI (Set to SPI_BIT_WIDTH_8_BITS).</td></tr>
@@ -557,7 +631,7 @@ clock_source</td>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Write operation successfully completed. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>One of the following invalid parameters passed:<ul>
-<li>Pointer p_api_ctrl is NULL</li>
+<li>Pointer p_ctrl is NULL</li>
 <li>Pointer to source is NULL</li>
 <li>Length is equal to 0 </li>
 </ul>
@@ -575,8 +649,8 @@ clock_source</td>
 
 </div>
 </div>
-<a id="ga061962640303cb50a61285212571a85a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga061962640303cb50a61285212571a85a">&#9670;&nbsp;</a></span>R_SCI_SPI_WriteRead()</h2>
+<a id="gaa99e80d76365e5d724a2d361b49fcc6c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaa99e80d76365e5d724a2d361b49fcc6c">&#9670;&nbsp;</a></span>R_SCI_SPI_WriteRead()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -585,7 +659,7 @@ clock_source</td>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_SPI_WriteRead </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -634,7 +708,7 @@ clock_source</td>
 </ul>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramdir"></td><td class="paramname">p_api_ctrl</td><td>Pointer to the control structure. </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">p_ctrl</td><td>Pointer to the control structure. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">p_src</td><td>Pointer to the source buffer. </td></tr>
     <tr><td class="paramdir"></td><td class="paramname">p_dest</td><td>Pointer to the destination buffer. </td></tr>
     <tr><td class="paramdir">[in]</td><td class="paramname">length</td><td>The number of bytes to transfer. </td></tr>
@@ -646,7 +720,7 @@ clock_source</td>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Write operation successfully completed. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>One of the following invalid parameters passed:<ul>
-<li>Pointer p_api_ctrl is NULL</li>
+<li>Pointer p_ctrl is NULL</li>
 <li>Pointer to source is NULL</li>
 <li>Pointer to destination is NULL</li>
 <li>Length is equal to 0 </li>
@@ -665,57 +739,8 @@ clock_source</td>
 
 </div>
 </div>
-<a id="ga9980c52ccbe2e8e2f4e21888ca7a0d95"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga9980c52ccbe2e8e2f4e21888ca7a0d95">&#9670;&nbsp;</a></span>R_SCI_SPI_CallbackSet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_SPI_CallbackSet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void(*)(<a class="el" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> *)&#160;</td>
-          <td class="paramname"><em>p_callback</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void const *const&#160;</td>
-          <td class="paramname"><em>p_context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___s_p_i___a_p_i.html#a01c7aacdcdf219dcfa88c2b40e7d25b1">spi_api_t::callbackSet</a></p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga80b7c1f5e687731bbc3de8df267a1c15"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga80b7c1f5e687731bbc3de8df267a1c15">&#9670;&nbsp;</a></span>R_SCI_SPI_Close()</h2>
+<a id="gae6e4e80b3d7e5698ae2b48d18decce7a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae6e4e80b3d7e5698ae2b48d18decce7a">&#9670;&nbsp;</a></span>R_SCI_SPI_Close()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -724,7 +749,7 @@ clock_source</td>
           <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_SPI_Close </td>
           <td>(</td>
           <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_api_ctrl</em></td><td>)</td>
+          <td class="paramname"><em>p_ctrl</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -732,46 +757,15 @@ clock_source</td>
 <p>Disable the SCI channel and set the instance as not open. Implements <a class="el" href="group___s_p_i___a_p_i.html#aa23ca0243886b64c90aa17744d72aee5">spi_api_t::close</a>.</p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">p_api_ctrl</td><td>Pointer to an opened instance.</td></tr>
+    <tr><td class="paramname">p_ctrl</td><td>Pointer to an opened instance.</td></tr>
   </table>
   </dd>
 </dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Channel successfully closed. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_api_ctrl is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_ctrl is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The channel has not been opened. Open the channel first. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga5ca04d5041e7cdb94ef2655a78e11e8a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga5ca04d5041e7cdb94ef2655a78e11e8a">&#9670;&nbsp;</a></span>R_SCI_SPI_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_SPI_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Get the version information of the underlying driver. Implements <a class="el" href="group___s_p_i___a_p_i.html#a0f9ed0d51f93ea3630a5f5582604f0e5">spi_api_t::versionGet</a>. </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">p_version</td><td>Pointer to version structure. </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Successful version get. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_version is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -829,13 +823,62 @@ clock_source</td>
 
 </div>
 </div>
+<a id="ga69fc1f19baef785bab2178f2047ac7e2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga69fc1f19baef785bab2178f2047ac7e2">&#9670;&nbsp;</a></span>R_SCI_SPI_CallbackSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_SCI_SPI_CallbackSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#gacb036be7f805dbb8d2092486d1aeb242">spi_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___s_p_i___a_p_i.html#structspi__callback__args__t">spi_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Updates the user callback and has option of providing memory for callback structure. Implements <a class="el" href="group___s_p_i___a_p_i.html#ad3409ec3b694f2d68043360f466c31ce">spi_api_t::callbackSet</a></p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

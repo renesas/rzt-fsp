@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Ethernet PHY (r_ether_phy)</title>
+<title>RZT Flexible Software Package Documentation: Ethernet PHY (r_ether_phy)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___e_t_h_e_r___p_h_y.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,14 +140,30 @@ $(document).ready(function(){initNavTree('group___e_t_h_e_r___p_h_y.html','');})
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Ethernet PHY (r_ether_phy)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Ethernet PHY (r_ether_phy)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___m_o_d_u_l_e_s.html">Networking</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -106,14 +173,21 @@ Functions</h2></td></tr>
 <tr class="separator:gac54aa95e5976561c6d810eb1c868048c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6a4f3bdcd321faef43008379b2065c4b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga6a4f3bdcd321faef43008379b2065c4b">R_ETHER_PHY_Close</a> (<a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga6a4f3bdcd321faef43008379b2065c4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad51162aba9bf2d8d2211923038dca099"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gad51162aba9bf2d8d2211923038dca099">R_ETHER_PHY_ChipInit</a> (<a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const p_ctrl, <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#structether__phy__cfg__t">ether_phy_cfg_t</a> const *const p_cfg)</td></tr>
+<tr class="memdesc:gad51162aba9bf2d8d2211923038dca099"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initialize Ethernet PHY device. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a2b29375fbcbb38ee52182c41e2eef170">ether_phy_api_t::chipInit</a>.  <a href="#gad51162aba9bf2d8d2211923038dca099">More...</a><br /></td></tr>
+<tr class="separator:gad51162aba9bf2d8d2211923038dca099"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf53fcc6bc22a4831299c2d54c9952c60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gaf53fcc6bc22a4831299c2d54c9952c60">R_ETHER_PHY_Read</a> (<a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const p_ctrl, uint32_t reg_addr, uint32_t *const p_data)</td></tr>
+<tr class="memdesc:gaf53fcc6bc22a4831299c2d54c9952c60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Read data from register of PHY-LSI . Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a3277c2961f534a7b8ae6c85fc4869e07">ether_phy_api_t::read</a>.  <a href="#gaf53fcc6bc22a4831299c2d54c9952c60">More...</a><br /></td></tr>
+<tr class="separator:gaf53fcc6bc22a4831299c2d54c9952c60"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6d38d3dd481943e64e45a8d24431bb49"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga6d38d3dd481943e64e45a8d24431bb49">R_ETHER_PHY_Write</a> (<a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const p_ctrl, uint32_t reg_addr, uint32_t data)</td></tr>
+<tr class="memdesc:ga6d38d3dd481943e64e45a8d24431bb49"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write data to register of PHY-LSI . Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a445821efa6ddb204376956458f0d04aa">ether_phy_api_t::write</a>.  <a href="#ga6d38d3dd481943e64e45a8d24431bb49">More...</a><br /></td></tr>
+<tr class="separator:ga6d38d3dd481943e64e45a8d24431bb49"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaca73174d76fd87100066407a8ff13147"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gaca73174d76fd87100066407a8ff13147">R_ETHER_PHY_StartAutoNegotiate</a> (<a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:gaca73174d76fd87100066407a8ff13147"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga02b4fcbbb5e863cb759b610a7dc992bd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga02b4fcbbb5e863cb759b610a7dc992bd">R_ETHER_PHY_LinkPartnerAbilityGet</a> (<a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const p_ctrl, uint32_t *const p_line_speed_duplex, uint32_t *const p_local_pause, uint32_t *const p_partner_pause)</td></tr>
 <tr class="separator:ga02b4fcbbb5e863cb759b610a7dc992bd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga13e3a39ef86ed3f62805963c55442e03"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga13e3a39ef86ed3f62805963c55442e03">R_ETHER_PHY_LinkStatusGet</a> (<a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga13e3a39ef86ed3f62805963c55442e03"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga8d0935124b8ccefcdc5a987e2ab614da"><td class="memItemLeft" align="right" valign="top">__INLINE <a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga8d0935124b8ccefcdc5a987e2ab614da">R_ETHER_PHY_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga8d0935124b8ccefcdc5a987e2ab614da"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>The Ethernet PHY module (r_ether_phy) provides an API for standard Ethernet PHY communications applications. It implements the <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html">Ethernet PHY Interface</a>. </p>
@@ -145,26 +219,56 @@ Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
 <tr>
-<td>Select PHYs to use</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>VSC8541 Target</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
-Default</li>
+Disabled</li>
 <li>
-VSC8541</li>
-<li>
-KSZ9131</li>
-<li>
-KSZ9031</li>
-<li>
-KSZ8081</li>
-<li>
-KSZ8041</li>
-<li>
-Other</li>
+Enabled</li>
 </ul>
-</td><td>config.driver.ether_phy.phy_lsi.default,config.driver.ether_phy.phy_lsi.0,config.driver.ether_phy.phy_lsi.1,config.driver.ether_phy.phy_lsi.2,config.driver.ether_phy.phy_lsi.3,config.driver.ether_phy.phy_lsi.4 </td><td>Select PHY chips to use on all ports. </td></tr>
+</td><td>Disabled </td><td>Select whether to use VSC8541 Phy LSI or not. </td></tr>
+<tr>
+<td>KSZ9131 Target</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Select whether to use KSZ9131 Phy LSI or not. </td></tr>
+<tr>
+<td>KSZ9031 Target</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Select whether to use KSZ9031 Phy LSI or not. </td></tr>
+<tr>
+<td>KSZ8081 Target</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Select whether to use KSZ8081 Phy LSI or not. </td></tr>
+<tr>
+<td>KSZ8041 Target</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Select whether to use KSZ8041 Phy LSI or not. </td></tr>
+<tr>
+<td>User Own Target</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Select whether to use User own Phy LSI or not. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Network &gt; Ethernet Driver on r_ether_phy</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Network &gt; Ethernet Driver on r_ether_phy.<br />
+ <h2>Configurations for Networking &gt; Ethernet (r_ether_phy)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Networking &gt; Ethernet (r_ether_phy).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -201,9 +305,11 @@ EtherCAT</li>
 </ul>
 </td><td>Ethernet </td><td>Specify whether to use Ethernet or EtherCAT. </td></tr>
 <tr>
-<td>Select PHY</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Phy LSI type</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
-Default</li>
+Kit Component</li>
+<li>
+DEFAULT</li>
 <li>
 VSC8541</li>
 <li>
@@ -215,9 +321,11 @@ KSZ8081</li>
 <li>
 KSZ8041</li>
 <li>
-Other</li>
+User own PHY</li>
 </ul>
-</td><td>Default </td><td>Select PHY chip to use. Selecting 'Default' will automatically choose the correct option when using a Renesas development board. </td></tr>
+</td><td>Kit Component </td><td>Select the Phy LSI target. Selecting 'Kit Component' will automatically choose the correct option when using a Renesas development board. </td></tr>
+<tr>
+<td>Port Custom Init Function</td><td>Name must be a valid C symbol</td><td>NULL </td><td>Set the initial function of the PHY-LSI, When using your own PHY-LSI. </td></tr>
 <tr>
 <td>Select MDIO type</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -259,7 +367,7 @@ FULL</li>
 </ul>
 </td><td>FULL </td><td>Select whether to HALF or FULL duplex. </td></tr>
 <tr>
-<td>Reset Port</td><td>Refer to the RZ Configuration tool for available options.</td><td>20 </td><td>Specify port number of pin control for PHY reset in the MCU. </td></tr>
+<td>Reset Port</td><td>Refer to the RZT Configuration tool for available options.</td><td>20 </td><td>Specify port number of pin control for PHY reset in the MCU. </td></tr>
 <tr>
 <td>Reset Pin</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -334,41 +442,12 @@ Data Structures</h2></td></tr>
 <tr class="memitem:structether__phy__extend__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#structether__phy__extend__cfg__t">ether_phy_extend_cfg_t</a></td></tr>
 <tr class="separator:structether__phy__extend__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="define-members"></a>
-Macros</h2></td></tr>
-<tr class="memitem:gae5c70cd934eef385539a720a7c104063"><td class="memItemLeft" align="right" valign="top"><a id="gae5c70cd934eef385539a720a7c104063"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gae5c70cd934eef385539a720a7c104063">ETHER_PHY_CHIP_VSC8541</a></td></tr>
-<tr class="memdesc:gae5c70cd934eef385539a720a7c104063"><td class="mdescLeft">&#160;</td><td class="mdescRight">VSC8541. <br /></td></tr>
-<tr class="separator:gae5c70cd934eef385539a720a7c104063"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gad857e113585f4bfddc32dd136d50b6c4"><td class="memItemLeft" align="right" valign="top"><a id="gad857e113585f4bfddc32dd136d50b6c4"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gad857e113585f4bfddc32dd136d50b6c4">ETHER_PHY_CHIP_KSZ9131</a></td></tr>
-<tr class="memdesc:gad857e113585f4bfddc32dd136d50b6c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">KSZ9131. <br /></td></tr>
-<tr class="separator:gad857e113585f4bfddc32dd136d50b6c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga854881e3d91f76bd9cc28faffe31f0f2"><td class="memItemLeft" align="right" valign="top"><a id="ga854881e3d91f76bd9cc28faffe31f0f2"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga854881e3d91f76bd9cc28faffe31f0f2">ETHER_PHY_CHIP_KSZ9031</a></td></tr>
-<tr class="memdesc:ga854881e3d91f76bd9cc28faffe31f0f2"><td class="mdescLeft">&#160;</td><td class="mdescRight">KSZ9031. <br /></td></tr>
-<tr class="separator:ga854881e3d91f76bd9cc28faffe31f0f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga431d3b387d89b947505226754ec08d27"><td class="memItemLeft" align="right" valign="top"><a id="ga431d3b387d89b947505226754ec08d27"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga431d3b387d89b947505226754ec08d27">ETHER_PHY_CHIP_KSZ8081</a></td></tr>
-<tr class="memdesc:ga431d3b387d89b947505226754ec08d27"><td class="mdescLeft">&#160;</td><td class="mdescRight">KSZ8081. <br /></td></tr>
-<tr class="separator:ga431d3b387d89b947505226754ec08d27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga2d9a5ee906477251c2e1db3f01c27c6b"><td class="memItemLeft" align="right" valign="top"><a id="ga2d9a5ee906477251c2e1db3f01c27c6b"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga2d9a5ee906477251c2e1db3f01c27c6b">ETHER_PHY_CHIP_KSZ8041</a></td></tr>
-<tr class="memdesc:ga2d9a5ee906477251c2e1db3f01c27c6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">KSZ8041. <br /></td></tr>
-<tr class="separator:ga2d9a5ee906477251c2e1db3f01c27c6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga85196d6e2a8767b4bc686cc4646d81b7"><td class="memItemLeft" align="right" valign="top"><a id="ga85196d6e2a8767b4bc686cc4646d81b7"></a>
-#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga85196d6e2a8767b4bc686cc4646d81b7">ETHER_PHY_CHIP_OTHER</a></td></tr>
-<tr class="memdesc:ga85196d6e2a8767b4bc686cc4646d81b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Other. <br /></td></tr>
-<tr class="separator:ga85196d6e2a8767b4bc686cc4646d81b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
 <tr class="memitem:ga8980d0ed39cd8aec1c24c899952a2a10"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga8980d0ed39cd8aec1c24c899952a2a10">ether_phy_port_type_t</a> </td></tr>
 <tr class="separator:ga8980d0ed39cd8aec1c24c899952a2a10"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac12ebcc88c3bc765eb1b8cdb2379824d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gac12ebcc88c3bc765eb1b8cdb2379824d">ether_phy_mdio_t</a> </td></tr>
 <tr class="separator:gac12ebcc88c3bc765eb1b8cdb2379824d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gac1ea53147062c3fd66931899f43a42cf"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gac1ea53147062c3fd66931899f43a42cf">ether_phy_chip_t</a> </td></tr>
-<tr class="separator:gac1ea53147062c3fd66931899f43a42cf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga31da5a218283f2b30053f008ece9d2c7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga31da5a218283f2b30053f008ece9d2c7">ether_phy_speed_t</a> </td></tr>
 <tr class="separator:ga31da5a218283f2b30053f008ece9d2c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac7e15fd94b78e695077edb3b2a1b73a3"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#gac7e15fd94b78e695077edb3b2a1b73a3">ether_phy_duplex_t</a> </td></tr>
@@ -388,7 +467,7 @@ Enumerations</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>ETHER PHY control block. DO NOT INITIALIZE. Initialization occurs when <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#abeae29b0ee9ded59a1737b506abdc415">ether_phy_api_t::open</a> is called. </p>
+<div class="textblock"><p>ETHER PHY control block. DO NOT INITIALIZE. Initialization occurs when <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#aa566d14c1e722f4b1abdd65bae92393e">ether_phy_api_t::open</a> is called. </p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
@@ -431,62 +510,44 @@ Capabilities bitmap for local advertising. </td></tr>
       </table>
 </div><div class="memdoc">
 <div class="textblock"><p>Extended configuration </p>
-</div><table class="fieldtable">
-<tr><th colspan="3">Data Fields</th></tr>
-<tr><td class="fieldtype">
-<a id="a1273928b1f635ce313b0c2a468b149e6"></a><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga8980d0ed39cd8aec1c24c899952a2a10">ether_phy_port_type_t</a></td>
-<td class="fieldname">
-port_type</td>
-<td class="fielddoc">
-Port type. </td></tr>
-<tr><td class="fieldtype">
-<a id="aed111c759f783943520321a272c466fc"></a><a class="el" href="group___e_t_h_e_r___p_h_y.html#gac1ea53147062c3fd66931899f43a42cf">ether_phy_chip_t</a></td>
-<td class="fieldname">
-phy_chip</td>
-<td class="fielddoc">
-PHY chip type. </td></tr>
-<tr><td class="fieldtype">
-<a id="afc07055e3eaca851ad29e9b9bea9559f"></a><a class="el" href="group___e_t_h_e_r___p_h_y.html#gac12ebcc88c3bc765eb1b8cdb2379824d">ether_phy_mdio_t</a></td>
-<td class="fieldname">
-mdio_type</td>
-<td class="fielddoc">
-MDIO type. </td></tr>
-<tr><td class="fieldtype">
-<a id="a462b53a0d42ab3e008625846dbc713b7"></a><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga31da5a218283f2b30053f008ece9d2c7">ether_phy_speed_t</a></td>
-<td class="fieldname">
-bps</td>
-<td class="fielddoc">
-PHY Speed. </td></tr>
-<tr><td class="fieldtype">
-<a id="afbdf061541bf8ab157e86f096ed3f5a2"></a><a class="el" href="group___e_t_h_e_r___p_h_y.html#gac7e15fd94b78e695077edb3b2a1b73a3">ether_phy_duplex_t</a></td>
-<td class="fieldname">
-duplex</td>
-<td class="fielddoc">
-PHY Duplex. </td></tr>
-<tr><td class="fieldtype">
-<a id="a03fdea837620dae91ad018ce5ff7d84e"></a><a class="el" href="group___e_t_h_e_r___p_h_y.html#ga62623cd3d6fd230145174c883f725631">ether_phy_auto_negotiation_t</a></td>
-<td class="fieldname">
-auto_negotiation</td>
-<td class="fielddoc">
-Auto Negotiation ON/OFF. </td></tr>
-<tr><td class="fieldtype">
-<a id="a7cc3101e94bf29b3d651843f181d702f"></a><a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a></td>
-<td class="fieldname">
-phy_reset_pin</td>
-<td class="fielddoc">
-PHY reset pin. </td></tr>
-<tr><td class="fieldtype">
-<a id="aefcd50086be1dbf21a6ebc18108d74e2"></a>uint32_t</td>
-<td class="fieldname">
-phy_reset_time</td>
-<td class="fielddoc">
-PHY reset assert time in millsecond. </td></tr>
-<tr><td class="fieldtype">
-<a id="a536aab016b410eeacbf8240db5f0cc5e"></a><a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#structether__selector__instance__t">ether_selector_instance_t</a> *</td>
-<td class="fieldname">
-p_selector_instance</td>
-<td class="fielddoc">
-Instance of selector driver. </td></tr>
+</div><table class="memberdecls">
+<tr><td colspan="2"><h3>Data Fields</h3></td></tr>
+<tr class="memitem:a1273928b1f635ce313b0c2a468b149e6"><td class="memItemLeft" align="right" valign="top"><a id="a1273928b1f635ce313b0c2a468b149e6"></a>
+<a class="el" href="group___e_t_h_e_r___p_h_y.html#ga8980d0ed39cd8aec1c24c899952a2a10">ether_phy_port_type_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#a1273928b1f635ce313b0c2a468b149e6">port_type</a></td></tr>
+<tr class="memdesc:a1273928b1f635ce313b0c2a468b149e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Port type. <br /></td></tr>
+<tr class="separator:a1273928b1f635ce313b0c2a468b149e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc07055e3eaca851ad29e9b9bea9559f"><td class="memItemLeft" align="right" valign="top"><a id="afc07055e3eaca851ad29e9b9bea9559f"></a>
+<a class="el" href="group___e_t_h_e_r___p_h_y.html#gac12ebcc88c3bc765eb1b8cdb2379824d">ether_phy_mdio_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#afc07055e3eaca851ad29e9b9bea9559f">mdio_type</a></td></tr>
+<tr class="memdesc:afc07055e3eaca851ad29e9b9bea9559f"><td class="mdescLeft">&#160;</td><td class="mdescRight">MDIO type. <br /></td></tr>
+<tr class="separator:afc07055e3eaca851ad29e9b9bea9559f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a462b53a0d42ab3e008625846dbc713b7"><td class="memItemLeft" align="right" valign="top"><a id="a462b53a0d42ab3e008625846dbc713b7"></a>
+<a class="el" href="group___e_t_h_e_r___p_h_y.html#ga31da5a218283f2b30053f008ece9d2c7">ether_phy_speed_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#a462b53a0d42ab3e008625846dbc713b7">bps</a></td></tr>
+<tr class="memdesc:a462b53a0d42ab3e008625846dbc713b7"><td class="mdescLeft">&#160;</td><td class="mdescRight">PHY Speed. <br /></td></tr>
+<tr class="separator:a462b53a0d42ab3e008625846dbc713b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afbdf061541bf8ab157e86f096ed3f5a2"><td class="memItemLeft" align="right" valign="top"><a id="afbdf061541bf8ab157e86f096ed3f5a2"></a>
+<a class="el" href="group___e_t_h_e_r___p_h_y.html#gac7e15fd94b78e695077edb3b2a1b73a3">ether_phy_duplex_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#afbdf061541bf8ab157e86f096ed3f5a2">duplex</a></td></tr>
+<tr class="memdesc:afbdf061541bf8ab157e86f096ed3f5a2"><td class="mdescLeft">&#160;</td><td class="mdescRight">PHY Duplex. <br /></td></tr>
+<tr class="separator:afbdf061541bf8ab157e86f096ed3f5a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03fdea837620dae91ad018ce5ff7d84e"><td class="memItemLeft" align="right" valign="top"><a id="a03fdea837620dae91ad018ce5ff7d84e"></a>
+<a class="el" href="group___e_t_h_e_r___p_h_y.html#ga62623cd3d6fd230145174c883f725631">ether_phy_auto_negotiation_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#a03fdea837620dae91ad018ce5ff7d84e">auto_negotiation</a></td></tr>
+<tr class="memdesc:a03fdea837620dae91ad018ce5ff7d84e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Auto Negotiation ON/OFF. <br /></td></tr>
+<tr class="separator:a03fdea837620dae91ad018ce5ff7d84e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cc3101e94bf29b3d651843f181d702f"><td class="memItemLeft" align="right" valign="top"><a id="a7cc3101e94bf29b3d651843f181d702f"></a>
+<a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#a7cc3101e94bf29b3d651843f181d702f">phy_reset_pin</a></td></tr>
+<tr class="memdesc:a7cc3101e94bf29b3d651843f181d702f"><td class="mdescLeft">&#160;</td><td class="mdescRight">PHY reset pin. <br /></td></tr>
+<tr class="separator:a7cc3101e94bf29b3d651843f181d702f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aefcd50086be1dbf21a6ebc18108d74e2"><td class="memItemLeft" align="right" valign="top"><a id="aefcd50086be1dbf21a6ebc18108d74e2"></a>
+uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#aefcd50086be1dbf21a6ebc18108d74e2">phy_reset_time</a></td></tr>
+<tr class="memdesc:aefcd50086be1dbf21a6ebc18108d74e2"><td class="mdescLeft">&#160;</td><td class="mdescRight">PHY reset assert time in millsecond. <br /></td></tr>
+<tr class="separator:aefcd50086be1dbf21a6ebc18108d74e2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a536aab016b410eeacbf8240db5f0cc5e"><td class="memItemLeft" align="right" valign="top"><a id="a536aab016b410eeacbf8240db5f0cc5e"></a>
+<a class="el" href="group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#structether__selector__instance__t">ether_selector_instance_t</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#a536aab016b410eeacbf8240db5f0cc5e">p_selector_instance</a></td></tr>
+<tr class="memdesc:a536aab016b410eeacbf8240db5f0cc5e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Instance of selector driver. <br /></td></tr>
+<tr class="separator:a536aab016b410eeacbf8240db5f0cc5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0f8fe5986b840fe66fd691d5e09aee0"><td class="memItemLeft" align="right" valign="top"><a id="ab0f8fe5986b840fe66fd691d5e09aee0"></a>
+void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___p_h_y.html#ab0f8fe5986b840fe66fd691d5e09aee0">p_target_init</a> )(<a class="el" href="group___e_t_h_e_r___p_h_y.html#structether__phy__instance__ctrl__t">ether_phy_instance_ctrl_t</a> *p_instance_ctrl)</td></tr>
+<tr class="memdesc:ab0f8fe5986b840fe66fd691d5e09aee0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to callback that is called to initialize the target. <br /></td></tr>
+<tr class="separator:ab0f8fe5986b840fe66fd691d5e09aee0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 
 </div>
@@ -531,35 +592,6 @@ Instance of selector driver. </td></tr>
 <tr><td class="fieldname"><a id="ggac12ebcc88c3bc765eb1b8cdb2379824da1e3d9f7536a59d28360c9d699858e8da"></a>ETHER_PHY_MDIO_ETHSW&#160;</td><td class="fielddoc"><p>Ether switch. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggac12ebcc88c3bc765eb1b8cdb2379824daeae999a2ecad23e28aad7d7099db41b5"></a>ETHER_PHY_MDIO_ESC&#160;</td><td class="fielddoc"><p>EtherCAT. </p>
-</td></tr>
-</table>
-
-</div>
-</div>
-<a id="gac1ea53147062c3fd66931899f43a42cf"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gac1ea53147062c3fd66931899f43a42cf">&#9670;&nbsp;</a></span>ether_phy_chip_t</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">enum <a class="el" href="group___e_t_h_e_r___p_h_y.html#gac1ea53147062c3fd66931899f43a42cf">ether_phy_chip_t</a></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Identify PHY-LSI </p>
-<table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa5260433494f3e984d7ecc76fbf6b4923"></a>ETHER_PHY_CHIP_VSC8541_TYPE&#160;</td><td class="fielddoc"><p>VSC8541. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa0401f6a635180fd30af62f8097fe2e9b"></a>ETHER_PHY_CHIP_KSZ9131_TYPE&#160;</td><td class="fielddoc"><p>KSZ9131. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfade0de25cee66902db44372e6896b1023"></a>ETHER_PHY_CHIP_KSZ9031_TYPE&#160;</td><td class="fielddoc"><p>KSZ9031. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa004e79ce7ebd80926acf79e506602779"></a>ETHER_PHY_CHIP_KSZ8081_TYPE&#160;</td><td class="fielddoc"><p>KSZ8081. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa204f5b8e0aa0c9c136723384e7dcbdc2"></a>ETHER_PHY_CHIP_KSZ8041_TYPE&#160;</td><td class="fielddoc"><p>KSZ8041. </p>
-</td></tr>
-<tr><td class="fieldname"><a id="ggac1ea53147062c3fd66931899f43a42cfa82fc5e40db8667612fb03dcd37902be7"></a>ETHER_PHY_CHIP_OTHER_TYPE&#160;</td><td class="fielddoc"><p>Other. </p>
 </td></tr>
 </table>
 
@@ -660,7 +692,7 @@ Instance of selector driver. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Resets Ethernet PHY device. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#abeae29b0ee9ded59a1737b506abdc415">ether_phy_api_t::open</a>.</p>
+<p>Resets Ethernet PHY device. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#aa566d14c1e722f4b1abdd65bae92393e">ether_phy_api_t::open</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Channel opened successfully. </td></tr>
@@ -669,6 +701,7 @@ Instance of selector driver. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_CHANNEL</td><td>Invalid channel number is given. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Invalid arguments. </td></tr>
     <tr><td class="paramname">FSP_ERR_TIMEOUT</td><td>PHY-LSI Reset wait timeout. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Pointer to p_cfg is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -690,12 +723,137 @@ Instance of selector driver. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Close Ethernet PHY device. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a43859adb62f78f2ffd46622ee33bf3b3">ether_phy_api_t::close</a>.</p>
+<p>Close Ethernet PHY device. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a2b473db67f11af9cfafc790727c0660a">ether_phy_api_t::close</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Channel successfully closed. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER_PHY control block is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gad51162aba9bf2d8d2211923038dca099"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad51162aba9bf2d8d2211923038dca099">&#9670;&nbsp;</a></span>R_ETHER_PHY_ChipInit()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ETHER_PHY_ChipInit </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#structether__phy__cfg__t">ether_phy_cfg_t</a> const *const&#160;</td>
+          <td class="paramname"><em>p_cfg</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Initialize Ethernet PHY device. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a2b29375fbcbb38ee52182c41e2eef170">ether_phy_api_t::chipInit</a>. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Initialize Ethernet PHY device is not supported. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gaf53fcc6bc22a4831299c2d54c9952c60"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf53fcc6bc22a4831299c2d54c9952c60">&#9670;&nbsp;</a></span>R_ETHER_PHY_Read()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ETHER_PHY_Read </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>reg_addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t *const&#160;</td>
+          <td class="paramname"><em>p_data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Read data from register of PHY-LSI . Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a3277c2961f534a7b8ae6c85fc4869e07">ether_phy_api_t::read</a>. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>ETHER_PHY successfully read data. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER_PHY control block is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Pointer to read buffer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Address is not a valid size </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga6d38d3dd481943e64e45a8d24431bb49"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6d38d3dd481943e64e45a8d24431bb49">&#9670;&nbsp;</a></span>R_ETHER_PHY_Write()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ETHER_PHY_Write </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ga3896c518dba03a28855c9a86f747e03c">ether_phy_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>reg_addr</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint32_t&#160;</td>
+          <td class="paramname"><em>data</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Write data to register of PHY-LSI . Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a445821efa6ddb204376956458f0d04aa">ether_phy_api_t::write</a>. </p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>ETHER_PHY successfully write data. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER_PHY control block is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Address or data is not a valid size </td></tr>
   </table>
   </dd>
 </dl>
@@ -717,13 +875,15 @@ Instance of selector driver. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Starts auto-negotiate. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a7c47b46e3ac5c47080332d6e940395a3">ether_phy_api_t::startAutoNegotiate</a>.</p>
+<p>Starts auto-negotiate. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ae7f449454459fc8ec9a3c14c0c6238ea">ether_phy_api_t::startAutoNegotiate</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>ETHER_PHY successfully starts auto-negotiate. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER_PHY control block is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_MODE</td><td>It was aborted the process because it is not auto-negotiation mode. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Register address is incorrect </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Pointer to read buffer is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -767,7 +927,7 @@ Instance of selector driver. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reports the other side's physical capability. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ad508caaca41fbabfe2ec5bdae28d790d">ether_phy_api_t::linkPartnerAbilityGet</a>.</p>
+<p>Reports the other side's physical capability. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a0dd6047b8aa7ad85139ec4f4e6abb3fc">ether_phy_api_t::linkPartnerAbilityGet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>ETHER_PHY successfully get link partner ability. </td></tr>
@@ -776,6 +936,7 @@ Instance of selector driver. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened </td></tr>
     <tr><td class="paramname">FSP_ERR_ETHER_PHY_ERROR_LINK</td><td>PHY-LSI is not link up. </td></tr>
     <tr><td class="paramname">FSP_ERR_ETHER_PHY_NOT_READY</td><td>The auto-negotiation isn't completed </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Status register address is incorrect </td></tr>
   </table>
   </dd>
 </dl>
@@ -797,45 +958,15 @@ Instance of selector driver. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Returns the status of the physical link. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#aa2afea5d0c6c80b55cfd49f249612991">ether_phy_api_t::linkStatusGet</a>.</p>
+<p>Returns the status of the physical link. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#ae2dabb88baba5326509f297e44b35f92">ether_phy_api_t::linkStatusGet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>ETHER_PHY successfully get link partner ability. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to ETHER_PHY control block is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened </td></tr>
     <tr><td class="paramname">FSP_ERR_ETHER_PHY_ERROR_LINK</td><td>PHY-LSI is not link up. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga8d0935124b8ccefcdc5a987e2ab614da"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga8d0935124b8ccefcdc5a987e2ab614da">&#9670;&nbsp;</a></span>R_ETHER_PHY_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_ETHER_PHY_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Provides API and code version in the user provided pointer. Implements <a class="el" href="group___e_t_h_e_r___p_h_y___a_p_i.html#a535dc7c9158b79d2ec577f216523f8c5">ether_phy_api_t::versionGet</a>.</p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramdir">[in]</td><td class="paramname">p_version</td><td>Version number set here</td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version information stored in provided p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Status register address is incorrect </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_POINTER</td><td>Pointer to read buffer is NULL. </td></tr>
   </table>
   </dd>
 </dl>
@@ -848,7 +979,7 @@ Instance of selector driver. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

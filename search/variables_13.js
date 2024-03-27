@@ -1,22 +1,8 @@
 var searchData=
 [
-  ['w_5fr_5fw_5fw_5fidle_5fcycle',['w_r_w_w_idle_cycle',['../group___b_s_c___n_o_r.html#a27ee0642accb7410f004792b328a0dae',1,'bsc_nor_extended_cfg_t::w_r_w_w_idle_cycle()'],['../group___b_s_c.html#a770eb68f00518b8a6a6b4d7ae50eff22',1,'bsc_extended_cfg_t::w_r_w_w_idle_cycle()'],['../group___b_s_c___s_d_r_a_m.html#adaf5b9c5313887ca5a789cdcde580cdc',1,'bsc_sdram_extended_cfg_t::w_r_w_w_idle_cycle()']]],
-  ['wakeonlanenable',['wakeOnLANEnable',['../group___e_t_h_e_r___a_p_i.html#afabb87ef0be65717bb7675a4a004e3ad',1,'ether_api_t']]],
-  ['wednesday_5fmatch',['wednesday_match',['../group___r_t_c___a_p_i.html#a45c6bc225e92af21904eefe07614b611',1,'rtc_alarm_time_t']]],
-  ['window_5fend',['window_end',['../group___w_d_t___a_p_i.html#a5f9d35ace3a2cca8b1b8ae834aae70cb',1,'wdt_cfg_t']]],
-  ['window_5fstart',['window_start',['../group___w_d_t___a_p_i.html#a9616c365a4d3f1d374fb5a7125cef0e5',1,'wdt_cfg_t']]],
-  ['wlength',['wlength',['../group___u_s_b___h_c_d_c___a_p_i.html#a9cb983aa7fdde4fe1cc83ab5da8f80b5',1,'usb_hcdc_encapsulated_t']]],
-  ['word',['word',['../group___u_s_b___p_c_d_c___a_p_i.html#a05446d3da8609d7ffcf12e2306ca11e5',1,'usb_sci_serialstate_t']]],
-  ['write',['write',['../group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#a108ef8243422a2ed8b3bea6cb67dbb6a',1,'rm_block_media_api_t::write()'],['../group___c_a_n___a_p_i.html#a0dcc61e0202ace6d5b91665464415adc',1,'can_api_t::write()'],['../group___d_o_c___a_p_i.html#ae2544a78047cbd0f852d24da5d3f1050',1,'doc_api_t::write()'],['../group___e_t_h_e_r___a_p_i.html#a92e87f33f0a4e0ccb26464d697cdf233',1,'ether_api_t::write()'],['../group___i2_c___m_a_s_t_e_r___a_p_i.html#ab2ca2f7ee7e55628bcdd9e3492d7dfd2',1,'i2c_master_api_t::write()'],['../group___i2_c___s_l_a_v_e___a_p_i.html#a8a7c8ec91840338adbabcea5b5400f19',1,'i2c_slave_api_t::write()'],['../group___n_o_r___f_l_a_s_h___a_p_i.html#ae5858e3207acbeab1d09bbfb8492aa8e',1,'nor_flash_api_t::write()'],['../group___s_p_i___f_l_a_s_h___a_p_i.html#a61e667a9ae9af76c5f8fd9f1973c6838',1,'spi_flash_api_t::write()'],['../group___s_p_i___a_p_i.html#af053cb19a14773a51d1e060c5a624555',1,'spi_api_t::write()'],['../group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#a7c79d9462a3d0db0676797b45f7da9d5',1,'shared_memory_api_t::write()'],['../group___u_a_r_t___a_p_i.html#a9a87e8764518ac3268cf1c9df3b6aad3',1,'uart_api_t::write()'],['../group___u_s_b___a_p_i.html#a6eb4c329c32333e7475202b7f5825bce',1,'usb_api_t::write()']]],
-  ['write_5faccess_5fwait_5fcycle',['write_access_wait_cycle',['../group___b_s_c___n_o_r.html#a7cf6e080f0c1a06340bf05629e2c5472',1,'bsc_nor_extended_cfg_t::write_access_wait_cycle()'],['../group___b_s_c.html#a33da24ce7bcafd99dce0216afaf872f5',1,'bsc_extended_cfg_t::write_access_wait_cycle()']]],
-  ['write_5fburst_5fmode',['write_burst_mode',['../group___s_d_r_a_m___a_p_i.html#a51a882273572a89905b6d0cb0e699996',1,'sdram_cfg_t']]],
-  ['write_5fbytes_5fmax',['write_bytes_max',['../group___u_a_r_t___a_p_i.html#a0f61af63801e663a8401a9af9c890522',1,'uart_info_t']]],
-  ['write_5fenable_5fbit',['write_enable_bit',['../group___s_p_i___f_l_a_s_h___a_p_i.html#a6db8c831a8c3ef08a0f511c7229a503e',1,'spi_flash_cfg_t']]],
-  ['write_5fenable_5fcommand',['write_enable_command',['../group___s_p_i___f_l_a_s_h___a_p_i.html#ae5c4c2c2b0cebe9a54e530cbc2554b6e',1,'spi_flash_cfg_t']]],
-  ['write_5fin_5fprogress',['write_in_progress',['../group___n_o_r___f_l_a_s_h___a_p_i.html#a74bba831057000bd3a8ec0e8089253c1',1,'nor_flash_status_t::write_in_progress()'],['../group___s_p_i___f_l_a_s_h___a_p_i.html#ae20d4bed523ca4e802f5da6fdec4ca43',1,'spi_flash_status_t::write_in_progress()']]],
-  ['write_5fprotected',['write_protected',['../group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#ac3a707be8444f429d772e1f0f3346326',1,'rm_block_media_info_t']]],
-  ['write_5frecovery_5fcycle',['write_recovery_cycle',['../group___s_d_r_a_m___a_p_i.html#a8fbae3cb700b07e25a9a990ea1ad8d60',1,'sdram_cfg_t']]],
-  ['write_5fstatus_5fbit',['write_status_bit',['../group___s_p_i___f_l_a_s_h___a_p_i.html#a72bf5b8dca157ef7a4a2c66b12c945e9',1,'spi_flash_cfg_t']]],
-  ['writeread',['writeRead',['../group___s_p_i___a_p_i.html#a6ed153d8e5e54e417fda95b044ac2fd6',1,'spi_api_t']]],
-  ['wtime_5fms',['wtime_ms',['../group___u_s_b___h_c_d_c___a_p_i.html#a5b61f0a1261321788aece9da9606dda5',1,'usb_hcdc_breakduration_t']]]
+  ['unit',['unit',['../group___a_d_c___a_p_i.html#a3756c0cebdc1c304d48db67a5bcd16a6',1,'adc_callback_args_t::unit()'],['../group___a_d_c___a_p_i.html#a5da30f972881cd9d64f3a7add1ccd522',1,'adc_cfg_t::unit()'],['../group___p_o_e_g___a_p_i.html#ac2badeb47b925853a420e184f35074e3',1,'poeg_cfg_t::unit()'],['../group___d_m_a_c.html#a68b7564427a42697bd26a4c4206c2fd6',1,'dmac_extended_cfg_t::unit()']]],
+  ['usb_5fmode',['usb_mode',['../group___u_s_b___a_p_i.html#a8fe5427a9e577252b78e2e336b5f17fb',1,'usb_cfg_t']]],
+  ['usb_5fspeed',['usb_speed',['../group___u_s_b___a_p_i.html#aa919f6650429527890059d928fc01ef5',1,'usb_cfg_t']]],
+  ['use_5fsop',['use_sop',['../group___e_t_h_e_r___s_w_i_t_c_h.html#af9ff31c5c8adac71dafb1b21ac608843',1,'ethsw_cqf_enable_t']]],
+  ['usedpipesget',['usedPipesGet',['../group___u_s_b___a_p_i.html#a656774b2567e8e2fa2a4a8232b4d6f83',1,'usb_api_t']]]
 ];

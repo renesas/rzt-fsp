@@ -39,6 +39,8 @@ var group___g_p_t =
       [ "capture_b_source", "group___g_p_t.html#aca22811f5aebe0ee236214b53f9f6bbd", null ],
       [ "count_up_source", "group___g_p_t.html#ae96b1fce9515b779078f947aa3885618", null ],
       [ "count_down_source", "group___g_p_t.html#a2ecf880963c441f20c3c8a2ac7a854ea", null ],
+      [ "capture_filter_gtioca", "group___g_p_t.html#ac51fec5c943957b888ffa9be91f33615", null ],
+      [ "capture_filter_gtiocb", "group___g_p_t.html#a3ba662387c753b54c5509f283ff1857e", null ],
       [ "capture_a_ipl", "group___g_p_t.html#a7e5402bac34e2c3d3006b68ee0b8ab2a", null ],
       [ "capture_b_ipl", "group___g_p_t.html#aae4ebebdd346531add1c9ce3bee52106", null ],
       [ "dead_time_ipl", "group___g_p_t.html#af0ca97f849a3dbbee00c59d75acb4bb0", null ],
@@ -193,7 +195,6 @@ var group___g_p_t =
     [ "R_GPT_OutputEnable", "group___g_p_t.html#ga0e6638508ec1d5441713195c877bb7a7", null ],
     [ "R_GPT_OutputDisable", "group___g_p_t.html#gae204e5d6c9305923e98724005dcdf03d", null ],
     [ "R_GPT_AdcTriggerSet", "group___g_p_t.html#ga311c91c55f20338f7082fa4369e7c80f", null ],
-    [ "R_GPT_CallbackSet", "group___g_p_t.html#ga2a09de185d3b7f1c301b33330931bac4", null ],
-    [ "R_GPT_Close", "group___g_p_t.html#ga2fc5d6a737a00948802e2bb77fbe8d8c", null ],
-    [ "R_GPT_VersionGet", "group___g_p_t.html#ga84b2245c5b4ed778ea2b220470ce69c5", null ]
+    [ "R_GPT_CallbackSet", "group___g_p_t.html#ga8d7038dbf5dabb43acbb7b74b4980e79", null ],
+    [ "R_GPT_Close", "group___g_p_t.html#ga2fc5d6a737a00948802e2bb77fbe8d8c", null ]
 ];

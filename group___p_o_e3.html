@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Port Output Enable 3 (r_poe3)</title>
+<title>RZT Flexible Software Package Documentation: Port Output Enable 3 (r_poe3)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___p_o_e3.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,12 +140,30 @@ $(document).ready(function(){initNavTree('group___p_o_e3.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
-<a href="#nested-classes">Data Structures</a>  </div>
+<a href="#nested-classes">Data Structures</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Port Output Enable 3 (r_poe3)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Port Output Enable 3 (r_poe3)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___m_o_d_u_l_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -102,16 +171,16 @@ $(document).ready(function(){initNavTree('group___p_o_e3.html','');});
 Functions</h2></td></tr>
 <tr class="memitem:ga2fe7fcd221cb0f3dc678f80f0c0bbe5d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#ga2fe7fcd221cb0f3dc678f80f0c0bbe5d">R_POE3_Open</a> (<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl, <a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__cfg__t">poe3_cfg_t</a> const *const p_cfg)</td></tr>
 <tr class="separator:ga2fe7fcd221cb0f3dc678f80f0c0bbe5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gabb46c196b0189d150ef84215377ff0d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a> (<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl, <a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a> *const p_status)</td></tr>
+<tr class="separator:gabb46c196b0189d150ef84215377ff0d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaf169578aeffc1cabb19d58d3db23f11d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#gaf169578aeffc1cabb19d58d3db23f11d">R_POE3_OutputDisable</a> (<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:gaf169578aeffc1cabb19d58d3db23f11d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga32e4a5797ae7f556413e02faf13847f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#ga32e4a5797ae7f556413e02faf13847f0">R_POE3_Reset</a> (<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga32e4a5797ae7f556413e02faf13847f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gabb46c196b0189d150ef84215377ff0d4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a> (<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl, <a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a> *const p_status)</td></tr>
-<tr class="separator:gabb46c196b0189d150ef84215377ff0d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga704dd94d4c90733a1be143c460c2865d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#ga704dd94d4c90733a1be143c460c2865d">R_POE3_Close</a> (<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga704dd94d4c90733a1be143c460c2865d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga48de3d5f6bf4cbbb05a43a8c895582ad"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#ga48de3d5f6bf4cbbb05a43a8c895582ad">R_POE3_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:ga48de3d5f6bf4cbbb05a43a8c895582ad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gae142f1ce6fe4ef3d0b4555ad3397c3be"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#gae142f1ce6fe4ef3d0b4555ad3397c3be">R_POE3_CallbackSet</a> (<a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *const p_callback_memory)</td></tr>
+<tr class="separator:gae142f1ce6fe4ef3d0b4555ad3397c3be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the POE3 peripheral on RZ microprocessor. This module implements the <a class="el" href="group___p_o_e3___a_p_i.html">POE3 Interface</a>. </p>
@@ -144,170 +213,36 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Timers &gt; Port Output Enable for MTU3 on r_poe3</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Timers &gt; Port Output Enable for MTU3 on r_poe3.<br />
+ <h2>Configurations for Timers &gt; Port Output Enable 3 for MTU3 (r_poe3)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Timers &gt; Port Output Enable 3 for MTU3 (r_poe3).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
 <tr>
-<td>General &gt; Output &gt; DSMIF Error Interrupt &gt; Error 0 &gt; DSMIF0 Error Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Setting high impedance on DSMIF0 error0. </td></tr>
+<td>General &gt; Name</td><td>Name must be a valid C symbol</td><td>g_poe30 </td><td>Module name. </td></tr>
 <tr>
-<td>General &gt; Output &gt; DSMIF Error Interrupt &gt; Error 0 &gt; DSMIF1 Error Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Setting high impedance on DSMIF1 error0. </td></tr>
-<tr>
-<td>General &gt; Output &gt; DSMIF Error Interrupt &gt; Error 1 &gt; DSMIF0 Error Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF0 error1.Unsupported devices show disabled. </td></tr>
-<tr>
-<td>General &gt; Output &gt; DSMIF Error Interrupt &gt; Error 1 &gt; DSMIF1 Error Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF1 error1.Unsupported devices show disabled. </td></tr>
-<tr>
-<td>General &gt; Output &gt; Output Short Circuit1(MTU3 and MTU4) &gt; Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Generates an interrupt when the output of MTU3 or MTU4 is short-circuited. </td></tr>
-<tr>
-<td>General &gt; Output &gt; Output Short Circuit1(MTU3 and MTU4) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Setting high impedance when the output of MTU3 or MTU4 is short-circuited. </td></tr>
-<tr>
-<td>General &gt; Output &gt; Output Short Circuit2(MTU6 and MTU7) &gt; Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Generates an interrupt when the output of MTU6 or MTU7 is short-circuited. </td></tr>
-<tr>
-<td>General &gt; Output &gt; Output Short Circuit2(MTU6 and MTU7) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Setting high impedance when the output of MTU6 or MTU7 is short-circuited. </td></tr>
-<tr>
-<td>General &gt; Output &gt; Oscillation Stop High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Setting high impedance when the oscillator is stopped. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC3B. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC3D. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3B Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Active High</li>
-<li>
-Active Low</li>
-</ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC3B output. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3D Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Active High</li>
-<li>
-Active Low</li>
-</ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC3D output. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC3B or MTIOC3D matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4B. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4D. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4B Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Active High</li>
-<li>
-Active Low</li>
-</ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC4B output. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4D Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Active High</li>
-<li>
-Active Low</li>
-</ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC4D output. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC4B or MTIOC4D matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4A Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4A. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4C Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4C. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4A Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Active High</li>
-<li>
-Active Low</li>
-</ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC4A output. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4C Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Active High</li>
-<li>
-Active Low</li>
-</ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC4C output. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; MTU3 and MTU4 &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC4A or MTIOC4C matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE0# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Input &gt; POE0# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Falling edge</li>
 <li>
-Sampling 16 times with PCLKH / 8 clock All low level.</li>
+Sampling 16 times with PCLK / 8 clock All low level.</li>
 <li>
-Sampling 16 times with PCLKH / 16 clock All low level.</li>
+Sampling 16 times with PCLK / 16 clock All low level.</li>
 <li>
-Sampling 16 times with PCLKH / 128 clock All low level.</li>
+Sampling 16 times with PCLK / 128 clock All low level.</li>
 </ul>
 </td><td>Falling edge </td><td>Select the trigger that POE0# sets to high impedance. </td></tr>
 <tr>
-<td>General &gt; POE0# &gt; Interrupts</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Input &gt; POE0# &gt; Interrupts</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Disabled</li>
 <li>
@@ -315,55 +250,19 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Generates an interrupt when the POE0# matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC6B. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC6D. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC6B or MTIOC6D matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; MTIOC7B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7B. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; MTIOC7D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7D. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC7B or MTIOC7D matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; MTIOC7A Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7A. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; MTIOC7C Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7C. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; MTU6 and MTU7 &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC7A or MTIOC7C matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE4# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Input &gt; POE4# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Falling edge</li>
 <li>
-Sampling 16 times with PCLKH / 8 clock All low level.</li>
+Sampling 16 times with PCLK / 8 clock All low level.</li>
 <li>
-Sampling 16 times with PCLKH / 16 clock All low level.</li>
+Sampling 16 times with PCLK / 16 clock All low level.</li>
 <li>
-Sampling 16 times with PCLKH / 128 clock All low level.</li>
+Sampling 16 times with PCLK / 128 clock All low level.</li>
 </ul>
 </td><td>Falling edge </td><td>Select the trigger that POE4# sets to high impedance. </td></tr>
 <tr>
-<td>General &gt; POE4# &gt; Interrupts</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Input &gt; POE4# &gt; Interrupts</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Disabled</li>
 <li>
@@ -371,59 +270,19 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Generates an interrupt when the POE4# matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-A (MTIOC0A) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0A. </td></tr>
-<tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-A (MTIOC0A) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC0A matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-B (MTIOC0B) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0B. </td></tr>
-<tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-B (MTIOC0B) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC0B matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-C (MTIOC0C) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0C. </td></tr>
-<tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-C (MTIOC0C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC0C matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-D (MTIOC0D) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0D. </td></tr>
-<tr>
-<td>General &gt; POE8# &gt; MTU0 &gt; MTU0-D (MTIOC0D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-Disabled</li>
-<li>
-Enabled</li>
-</ul>
-</td><td>Disabled </td><td>Set the high impedance if the MTIOC0D matches the mode conditions. </td></tr>
-<tr>
-<td>General &gt; POE8# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Input &gt; POE8# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Falling edge</li>
 <li>
-Sampling 16 times with PCLKH / 8 clock All low level.</li>
+Sampling 16 times with PCLK / 8 clock All low level.</li>
 <li>
-Sampling 16 times with PCLKH / 16 clock All low level.</li>
+Sampling 16 times with PCLK / 16 clock All low level.</li>
 <li>
-Sampling 16 times with PCLKH / 128 clock All low level.</li>
+Sampling 16 times with PCLK / 128 clock All low level.</li>
 </ul>
 </td><td>Falling edge </td><td>Select the trigger that POE8# sets to high impedance. </td></tr>
 <tr>
-<td>General &gt; POE8# &gt; Interrupts</td><td><ul style="margin-top:0;margin-bottom:0;">
+<td>Input &gt; POE8# &gt; Interrupts</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Disabled</li>
 <li>
@@ -431,7 +290,281 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Generates an interrupt when the POE8# matches the mode conditions. </td></tr>
 <tr>
-<td>General &gt; Name</td><td>Name must be a valid C symbol</td><td>g_poe30 </td><td>Module name. </td></tr>
+<td>Input &gt; POE10# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Falling edge</li>
+<li>
+Sampling 16 times with PCLK / 8 clock All low level.</li>
+<li>
+Sampling 16 times with PCLK / 16 clock All low level.</li>
+<li>
+Sampling 16 times with PCLK / 128 clock All low level.</li>
+</ul>
+</td><td>Falling edge </td><td>Select the trigger that POE10# sets to high impedance. </td></tr>
+<tr>
+<td>Input &gt; POE10# &gt; Interrupts</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Generates an interrupt when the POE10# matches the mode conditions. </td></tr>
+<tr>
+<td>Input &gt; POE11# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Falling edge</li>
+<li>
+Sampling 16 times with PCLK / 8 clock All low level.</li>
+<li>
+Sampling 16 times with PCLK / 16 clock All low level.</li>
+<li>
+Sampling 16 times with PCLK / 128 clock All low level.</li>
+</ul>
+</td><td>Falling edge </td><td>Select the trigger that POE11# sets to high impedance. </td></tr>
+<tr>
+<td>Input &gt; POE11# &gt; Interrupts</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Generates an interrupt when the POE11# matches the mode conditions. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 0 &gt; DSMIF0 Error 0 Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Setting high impedance on DSMIF0 error0. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 0 &gt; DSMIF0 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF0 error1.Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 1 &gt; DSMIF1 Error 0 Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Setting high impedance on DSMIF1 error0. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 1 &gt; DSMIF1 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF1 error1.Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; Output Short Circuit MTU3/4 &gt; Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Generates an interrupt when the output of MTU3 or MTU4 is short-circuited. </td></tr>
+<tr>
+<td>Output &gt; Output Short Circuit MTU3/4 &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Setting high impedance when the output of MTU3 or MTU4 is short-circuited. </td></tr>
+<tr>
+<td>Output &gt; Output Short Circuit MTU6/7 &gt; Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Generates an interrupt when the output of MTU6 or MTU7 is short-circuited. </td></tr>
+<tr>
+<td>Output &gt; Output Short Circuit MTU6/7 &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Setting high impedance when the output of MTU6 or MTU7 is short-circuited. </td></tr>
+<tr>
+<td>Output &gt; Oscillation Stop High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Setting high impedance when the oscillator is stopped. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; MTU0-A (MTIOC0A) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0A. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; MTU0-A (MTIOC0A) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC0A matches the mode conditions. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; MTU0-B (MTIOC0B) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0B. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; MTU0-B (MTIOC0B) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC0B matches the mode conditions. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; MTU0-C (MTIOC0C) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0C. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; MTU0-C (MTIOC0C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC0C matches the mode conditions. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; MTU0-D (MTIOC0D) &gt; Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC0D. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; MTU0-D (MTIOC0D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC0D matches the mode conditions. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; Additional MTU0 pin control request condition (Always enable POE8# Input)</td><td>MCU Specific Options</td><td></td><td>Select the additional pin control request for MTU0 (Always enable POE8# Input). </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC3B. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC3D. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3B Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Active High</li>
+<li>
+Active Low</li>
+</ul>
+</td><td>Active High </td><td>Sets the active level of the MTIOC3B output. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3D Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Active High</li>
+<li>
+Active Low</li>
+</ul>
+</td><td>Active High </td><td>Sets the active level of the MTIOC3D output. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC3B or MTIOC3D matches the mode conditions. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4B. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4D. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4B Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Active High</li>
+<li>
+Active Low</li>
+</ul>
+</td><td>Active High </td><td>Sets the active level of the MTIOC4B output. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4D Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Active High</li>
+<li>
+Active Low</li>
+</ul>
+</td><td>Active High </td><td>Sets the active level of the MTIOC4D output. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC4B or MTIOC4D matches the mode conditions. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4A Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4A. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4C Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC4C. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4A Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Active High</li>
+<li>
+Active Low</li>
+</ul>
+</td><td>Active High </td><td>Sets the active level of the MTIOC4A output. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4C Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Active High</li>
+<li>
+Active Low</li>
+</ul>
+</td><td>Active High </td><td>Sets the active level of the MTIOC4C output. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC4A or MTIOC4C matches the mode conditions. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; Additional MTU3/4 pin control request condition (Always enable POE0# Input)</td><td>MCU Specific Options</td><td></td><td>Select the additional pin control request for MTU3/4 (Always enable POE0# Input). </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC6B. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC6D. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC6B or MTIOC6D matches the mode conditions. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; MTIOC7B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7B. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; MTIOC7D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7D. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU7-B (MTIOC7B) and MTU7-D (MTIOC7D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC7B or MTIOC7D matches the mode conditions. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; MTIOC7A Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7A. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; MTIOC7C Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC7C. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; MTU7-A (MTIOC7A) and MTU7-C (MTIOC7C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if the MTIOC7A or MTIOC7C matches the mode conditions. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; Additional MTU6/7 pin control request condition (Always enable POE4# Input)</td><td>MCU Specific Options</td><td></td><td>Select the additional pin control request for MTU6/7 (Always enable POE4# Input). </td></tr>
+<tr>
+<td>Interrupts &gt; Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function can be provided. If this callback function is provided, it will be called from the interrupt service routine (ISR). </td></tr>
+<tr>
+<td>Interrupts &gt; POE0# Input, Output Short Circuit MTU3/4 Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Set the POE0# Input, Output Short Circuit MTU3/4 Input interrupt priority. </td></tr>
+<tr>
+<td>Interrupts &gt; POE4# Input, Output Short Circuit MTU6/7 Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Set the POE4# Input, Output Short Circuit MTU6/7 interrupt priority. </td></tr>
+<tr>
+<td>Interrupts &gt; POE8# Input Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Set the POE8# Input interrupt priority. </td></tr>
+<tr>
+<td>Interrupts &gt; POE10#/11# Input, DSMIF0/1 Error Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Set the POE10#/11# Input, DSMIF0/1 Error interrupt priority. </td></tr>
 </table>
 </p>
 <h2><a class="anchor" id="r-poe3-clock-configuration"></a>
@@ -456,13 +589,52 @@ Examples</h1>
 <p>This is a basic example of minimal use of the POE3 in an application.</p>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span> poe3_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the POE3. */</span></div><div class="line">    err = <a class="code" href="group___p_o_e3.html#ga2fe7fcd221cb0f3dc678f80f0c0bbe5d">R_POE3_Open</a>(&amp;g_poe30_ctrl, &amp;g_poe30_cfg);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>POE3 Operation Check Example</h2>
 <p>This is an example of checking the status of POE3 after POE3 has disabled the MTU3 output pin.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* An example,Check the status of POE3 after POE3 disables the MTU3 output pin. */</span></div><div class="line"><span class="keywordtype">void</span> poe3_operation_check_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the POE3. */</span></div><div class="line">    err = <a class="code" href="group___p_o_e3.html#ga2fe7fcd221cb0f3dc678f80f0c0bbe5d">R_POE3_Open</a>(&amp;g_poe30_ctrl, &amp;g_poe30_cfg);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Determine the cause of the POE3 event. */</span></div><div class="line">    <a class="code" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a>(&amp;g_poe30_ctrl, &amp;status);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Correct the cause of the POE3 event before resetting POE3. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Reset the POE3 before exiting this routine. */</span></div><div class="line">    (void) <a class="code" href="group___p_o_e3.html#ga32e4a5797ae7f556413e02faf13847f0">R_POE3_Reset</a>(&amp;g_poe30_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* After performing the reset, verify that the status is cleared. */</span></div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a>(&amp;g_poe30_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<a class="code" href="group___p_o_e3___a_p_i.html#ggae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989">POE3_STATE_NO_DISABLE_REQUEST</a> != status.<a class="code" href="group___p_o_e3___a_p_i.html#a64cbbaa64dec5d50ca378dd906d4b91c">state</a>);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* An example,Check the status of POE3 after POE3 disables the MTU3 output pin. */</span></div><div class="line"><span class="keywordtype">void</span> poe3_operation_check_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the POE3. */</span></div><div class="line">    err = <a class="code" href="group___p_o_e3.html#ga2fe7fcd221cb0f3dc678f80f0c0bbe5d">R_POE3_Open</a>(&amp;g_poe30_ctrl, &amp;g_poe30_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Determine the cause of the POE3 event. */</span></div><div class="line">    <a class="code" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a>(&amp;g_poe30_ctrl, &amp;status);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Correct the cause of the POE3 event before resetting POE3. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Reset the POE3 before exiting this routine. */</span></div><div class="line">    (void) <a class="code" href="group___p_o_e3.html#ga32e4a5797ae7f556413e02faf13847f0">R_POE3_Reset</a>(&amp;g_poe30_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* After performing the reset, verify that the status is cleared. */</span></div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a>(&amp;g_poe30_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<a class="code" href="group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989">POE3_STATE_NO_DISABLE_REQUEST</a> != status.<a class="code" href="group___p_o_e3___a_p_i.html#a64cbbaa64dec5d50ca378dd906d4b91c">state</a>);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>POE3 Callback Example</h2>
+<p>This is an example of a using the POE3 callback check the status of POE3 and restore MTU3 output operation.</p>
+<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* Example callback called when POE3 disables MTU3 output pins. */</span></div><div class="line"><span class="keywordtype">void</span> poe3_callback (<a class="code" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(p_args);</div><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Determine the cause of the POE3 event. */</span></div><div class="line">    <a class="code" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a>(&amp;g_poe30_ctrl, &amp;status);</div><div class="line"></div><div class="line">    <span class="comment">/* Correct the cause of the POE3 event before resetting POE3. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Reset the POE3 before exiting the callback. */</span></div><div class="line">    (void) <a class="code" href="group___p_o_e3.html#ga32e4a5797ae7f556413e02faf13847f0">R_POE3_Reset</a>(&amp;g_poe30_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for the status to clear after reset before exiting the callback to ensure the interrupt does not fire</span></div><div class="line"><span class="comment">     * again. */</span></div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a>(&amp;g_poe30_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<a class="code" href="group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989">POE3_STATE_NO_DISABLE_REQUEST</a> != status.<a class="code" href="group___p_o_e3___a_p_i.html#a64cbbaa64dec5d50ca378dd906d4b91c">state</a>);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
+<tr class="memitem:structpoe3__poe__input__setting__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#structpoe3__poe__input__setting__t">poe3_poe_input_setting_t</a></td></tr>
+<tr class="separator:structpoe3__poe__input__setting__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structpoe3__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#structpoe3__instance__ctrl__t">poe3_instance_ctrl_t</a></td></tr>
 <tr class="separator:structpoe3__instance__ctrl__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:ga653e9db5a7623053c6282f7b6e5303e5"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e3.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a> </td></tr>
+<tr class="separator:ga653e9db5a7623053c6282f7b6e5303e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
+<a name="structpoe3__poe__input__setting__t" id="structpoe3__poe__input__setting__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structpoe3__poe__input__setting__t">&#9670;&nbsp;</a></span>poe3_poe_input_setting_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct poe3_poe_input_setting_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>POEn# input signal setting </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a2e8bca5fcc1226a25e4be1e2797f2251"></a><a class="el" href="group___p_o_e3.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a></td>
+<td class="fieldname">
+mode</td>
+<td class="fielddoc">
+High-impedance output mode. </td></tr>
+<tr><td class="fieldtype">
+<a id="add0151025d95c061671ced11e286737e"></a>bool</td>
+<td class="fieldname">
+interrupt_enable</td>
+<td class="fielddoc">
+Interrupt enable. </td></tr>
+</table>
+
+</div>
+</div>
 <a name="structpoe3__instance__ctrl__t" id="structpoe3__instance__ctrl__t"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#structpoe3__instance__ctrl__t">&#9670;&nbsp;</a></span>poe3_instance_ctrl_t</h2>
 
@@ -476,6 +648,32 @@ Data Structures</h2></td></tr>
 </div><div class="memdoc">
 <div class="textblock"><p>Channel control block. DO NOT INITIALIZE. Initialization occurs when <a class="el" href="group___p_o_e3___a_p_i.html#a398f181001e2180e5bd52525b3e6b354">poe3_api_t::open</a> is called. </p>
 </div>
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="ga653e9db5a7623053c6282f7b6e5303e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga653e9db5a7623053c6282f7b6e5303e5">&#9670;&nbsp;</a></span>poe3_hiz_mode_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___p_o_e3.html#ga653e9db5a7623053c6282f7b6e5303e5">poe3_hiz_mode_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>High-impedance output mode </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga653e9db5a7623053c6282f7b6e5303e5a3c25c7310ae2122fa0665d6f05c25f03"></a>POE3_HIZ_MODE_FALLING_EDGE&#160;</td><td class="fielddoc"><p>Accepts a request on the falling edge of POE3 pin input. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga653e9db5a7623053c6282f7b6e5303e5a4ce67eaeb4b6cf90fa8a90426b128676"></a>POE3_HIZ_MODE_CLOCK_SOURCE_DIV_8_16_TIME_PULSE_LOW&#160;</td><td class="fielddoc"><p>Accepts a request when POE3 pin input has been sampled 16 times at clock source divided by 8 clock pulses and all are low level. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga653e9db5a7623053c6282f7b6e5303e5abe316bc0db64bbfb3d9212a8e455adce"></a>POE3_HIZ_MODE_CLOCK_SOURCE_DIV_16_16_TIME_PULSE_LOW&#160;</td><td class="fielddoc"><p>Accepts a request when POE3 pin input has been sampled 16 times at clock source divided by 16 clock pulses and all are low level. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga653e9db5a7623053c6282f7b6e5303e5aae60ee00a2ff19662eca12315c405b23"></a>POE3_HIZ_MODE_CLOCK_SOURCE_DIV_128_16_TIME_PULSE_LOW&#160;</td><td class="fielddoc"><p>Accepts a request when POE3 pin input has been sampled 16 times at clock source divided by 128 clock pulses and all are low level. </p>
+</td></tr>
+</table>
+
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
@@ -506,11 +704,48 @@ Data Structures</h2></td></tr>
 </div><div class="memdoc">
 <p>Initializes the POE3 module and applies configurations. Implements <a class="el" href="group___p_o_e3___a_p_i.html#a398f181001e2180e5bd52525b3e6b354">poe3_api_t::open</a>.</p>
 <dl class="section note"><dt>Note</dt><dd>POE0, POE4 and POE8 Mode Select setting can only be configured once after reset. Reopening with a different mode configuration is not possible.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Initializes the POE3. */</span></div><div class="line">    err = <a class="code" href="group___p_o_e3.html#ga2fe7fcd221cb0f3dc678f80f0c0bbe5d">R_POE3_Open</a>(&amp;g_poe30_ctrl, &amp;g_poe30_cfg);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>Module is already open. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gabb46c196b0189d150ef84215377ff0d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gabb46c196b0189d150ef84215377ff0d4">&#9670;&nbsp;</a></span>R_POE3_StatusGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POE3_StatusGet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get current POE3 status and store it in provided pointer p_status. Implements <a class="el" href="group___p_o_e3___a_p_i.html#ae04c5d8df5920b7ed9a30282b40e0b70">poe3_api_t::statusGet</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Current POE3 state stored successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_status was NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
   </table>
   </dd>
 </dl>
@@ -561,47 +796,10 @@ Data Structures</h2></td></tr>
 </div><div class="memdoc">
 <p>Resets status flags. Implements <a class="el" href="group___p_o_e3___a_p_i.html#ae87d3e21c61eed8059d6acf5b25fadc3">poe3_api_t::reset</a>.</p>
 <dl class="section note"><dt>Note</dt><dd>Status flags are only reset if the original POE3 trigger is resolved. Check the status using <a class="el" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a> after calling this function to verify the status is cleared.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Correct the cause of the POE3 event before resetting POE3. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Reset the POE3 before exiting this routine. */</span></div><div class="line">    (void) <a class="code" href="group___p_o_e3.html#ga32e4a5797ae7f556413e02faf13847f0">R_POE3_Reset</a>(&amp;g_poe30_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* After performing the reset, verify that the status is cleared. */</span></div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a>(&amp;g_poe30_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<a class="code" href="group___p_o_e3___a_p_i.html#ggae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989">POE3_STATE_NO_DISABLE_REQUEST</a> != status.<a class="code" href="group___p_o_e3___a_p_i.html#a64cbbaa64dec5d50ca378dd906d4b91c">state</a>);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Function attempted to clear status flags. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gabb46c196b0189d150ef84215377ff0d4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gabb46c196b0189d150ef84215377ff0d4">&#9670;&nbsp;</a></span>R_POE3_StatusGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POE3_StatusGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_status</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current POE3 status and store it in provided pointer p_status. Implements <a class="el" href="group___p_o_e3___a_p_i.html#ae04c5d8df5920b7ed9a30282b40e0b70">poe3_api_t::statusGet</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Determine the cause of the POE3 event. */</span></div><div class="line">    <a class="code" href="group___p_o_e3___a_p_i.html#structpoe3__status__t">poe3_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___p_o_e3.html#gabb46c196b0189d150ef84215377ff0d4">R_POE3_StatusGet</a>(&amp;g_poe30_ctrl, &amp;status);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Current POE3 state stored successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_status was NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
   </table>
   </dd>
@@ -637,26 +835,49 @@ Data Structures</h2></td></tr>
 
 </div>
 </div>
-<a id="ga48de3d5f6bf4cbbb05a43a8c895582ad"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga48de3d5f6bf4cbbb05a43a8c895582ad">&#9670;&nbsp;</a></span>R_POE3_VersionGet()</h2>
+<a id="gae142f1ce6fe4ef3d0b4555ad3397c3be"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gae142f1ce6fe4ef3d0b4555ad3397c3be">&#9670;&nbsp;</a></span>R_POE3_CallbackSet()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POE3_VersionGet </td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POE3_CallbackSet </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
+          <td class="paramtype"><a class="el" href="group___p_o_e3___a_p_i.html#ga5c62c3abecd3c78846707500fc57a402">poe3_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___p_o_e3___a_p_i.html#structpoe3__callback__args__t">poe3_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>DEPRECATED Sets driver version based on compile time macros. Implements <a class="el" href="group___p_o_e3___a_p_i.html#afc5768feada9b463f0ab92dde682b9e9">poe3_api_t::versionGet</a>.</p>
+<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___p_o_e3___a_p_i.html#a39d6ad272130653b6d8faf9a827e97d5">poe3_api_t::callbackSet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version stored in p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version was NULL. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
   </table>
   </dd>
 </dl>
@@ -669,7 +890,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

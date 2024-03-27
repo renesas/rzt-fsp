@@ -45,9 +45,9 @@ var group___c_a_n___a_p_i =
       [ "write", "group___c_a_n___a_p_i.html#a0dcc61e0202ace6d5b91665464415adc", null ],
       [ "read", "group___c_a_n___a_p_i.html#af6c0a7c4a078f852e7c332369f8de9e2", null ],
       [ "close", "group___c_a_n___a_p_i.html#a32ec8d31d80a709bae881f2e28d36d6c", null ],
-      [ "modeTransition", "group___c_a_n___a_p_i.html#afb37a7735c6ac61a151a083b2d25153b", null ],
+      [ "modeTransition", "group___c_a_n___a_p_i.html#a2271560e45069383ec6da7fdf738e5a8", null ],
       [ "infoGet", "group___c_a_n___a_p_i.html#aba27908c89442250d365d4a44304e3c1", null ],
-      [ "callbackSet", "group___c_a_n___a_p_i.html#a0eeb3995e651ce4b77e8860ab50597a9", null ]
+      [ "callbackSet", "group___c_a_n___a_p_i.html#aaaa249bba4ab5dffc6bf5655432eac85", null ]
     ] ],
     [ "can_instance_t", "group___c_a_n___a_p_i.html#structcan__instance__t", [
       [ "p_ctrl", "group___c_a_n___a_p_i.html#ae4d4d032f3e4f0688879027286ae4dbe", null ],
@@ -67,7 +67,8 @@ var group___c_a_n___a_p_i =
       [ "CAN_EVENT_RX_COMPLETE", "group___c_a_n___a_p_i.html#ggacc2e5bc68e8b707c069ca27f521695dbaa0bc5e15cee037a1d102b517ef63e161", null ],
       [ "CAN_EVENT_TX_COMPLETE", "group___c_a_n___a_p_i.html#ggacc2e5bc68e8b707c069ca27f521695dbac169b4940b7cb76562efd7439fc76949", null ],
       [ "CAN_EVENT_ERR_GLOBAL", "group___c_a_n___a_p_i.html#ggacc2e5bc68e8b707c069ca27f521695dba8adaa142ed94841f5f282232ce414333", null ],
-      [ "CAN_EVENT_TX_FIFO_EMPTY", "group___c_a_n___a_p_i.html#ggacc2e5bc68e8b707c069ca27f521695dba838c3a494516ccd0326bc1dad93e35d8", null ]
+      [ "CAN_EVENT_TX_FIFO_EMPTY", "group___c_a_n___a_p_i.html#ggacc2e5bc68e8b707c069ca27f521695dba838c3a494516ccd0326bc1dad93e35d8", null ],
+      [ "CAN_EVENT_FIFO_MESSAGE_LOST", "group___c_a_n___a_p_i.html#ggacc2e5bc68e8b707c069ca27f521695dba4b9bfbf96c82d53ce3dd47e9a3237359", null ]
     ] ],
     [ "can_operation_mode_t", "group___c_a_n___a_p_i.html#gac29bd7d00b06d7457ae786471c296ba7", [
       [ "CAN_OPERATION_MODE_NORMAL", "group___c_a_n___a_p_i.html#ggac29bd7d00b06d7457ae786471c296ba7abde5d9e8f5711b6fe8374671c96e6f72", null ],

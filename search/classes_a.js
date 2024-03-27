@@ -1,24 +1,6 @@
 var searchData=
 [
-  ['poe3_5fapi_5ft',['poe3_api_t',['../group___p_o_e3___a_p_i.html#structpoe3__api__t',1,'']]],
-  ['poe3_5fcallback_5fargs_5ft',['poe3_callback_args_t',['../group___p_o_e3___a_p_i.html#structpoe3__callback__args__t',1,'']]],
-  ['poe3_5fcfg_5ft',['poe3_cfg_t',['../group___p_o_e3___a_p_i.html#structpoe3__cfg__t',1,'']]],
-  ['poe3_5finstance_5fctrl_5ft',['poe3_instance_ctrl_t',['../group___p_o_e3.html#structpoe3__instance__ctrl__t',1,'']]],
-  ['poe3_5finstance_5ft',['poe3_instance_t',['../group___p_o_e3___a_p_i.html#structpoe3__instance__t',1,'']]],
-  ['poe3_5fmtioc0a_5fpin_5fsetting_5ft',['poe3_mtioc0a_pin_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__mtioc0a__pin__setting__t',1,'']]],
-  ['poe3_5fmtioc3b_5fmtioc3d_5fpin_5fsetting_5ft',['poe3_mtioc3b_mtioc3d_pin_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__mtioc3b__mtioc3d__pin__setting__t',1,'']]],
-  ['poe3_5fmtioc6b_5fmtioc6d_5fpin_5fsetting_5ft',['poe3_mtioc6b_mtioc6d_pin_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__mtioc6b__mtioc6d__pin__setting__t',1,'']]],
-  ['poe3_5foutput_5fshort_5fcircuit_5fsetting_5ft',['poe3_output_short_circuit_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__output__short__circuit__setting__t',1,'']]],
-  ['poe3_5fpoe0_5fsetting_5ft',['poe3_poe0_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__poe0__setting__t',1,'']]],
-  ['poe3_5fpoe10_5fsetting_5ft',['poe3_poe10_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__poe10__setting__t',1,'']]],
-  ['poe3_5fpoe11_5fsetting_5ft',['poe3_poe11_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__poe11__setting__t',1,'']]],
-  ['poe3_5fpoe4_5fsetting_5ft',['poe3_poe4_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__poe4__setting__t',1,'']]],
-  ['poe3_5fpoe8_5fsetting_5ft',['poe3_poe8_setting_t',['../group___p_o_e3___a_p_i.html#structpoe3__poe8__setting__t',1,'']]],
-  ['poe3_5fstatus_5ft',['poe3_status_t',['../group___p_o_e3___a_p_i.html#structpoe3__status__t',1,'']]],
-  ['poeg_5fapi_5ft',['poeg_api_t',['../group___p_o_e_g___a_p_i.html#structpoeg__api__t',1,'']]],
-  ['poeg_5fcallback_5fargs_5ft',['poeg_callback_args_t',['../group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t',1,'']]],
-  ['poeg_5fcfg_5ft',['poeg_cfg_t',['../group___p_o_e_g___a_p_i.html#structpoeg__cfg__t',1,'']]],
-  ['poeg_5finstance_5fctrl_5ft',['poeg_instance_ctrl_t',['../group___p_o_e_g.html#structpoeg__instance__ctrl__t',1,'']]],
-  ['poeg_5finstance_5ft',['poeg_instance_t',['../group___p_o_e_g___a_p_i.html#structpoeg__instance__t',1,'']]],
-  ['poeg_5fstatus_5ft',['poeg_status_t',['../group___p_o_e_g___a_p_i.html#structpoeg__status__t',1,'']]]
+  ['nor_5fflash_5fapi_5ft',['nor_flash_api_t',['../group___n_o_r___f_l_a_s_h___a_p_i.html#structnor__flash__api__t',1,'']]],
+  ['nor_5fflash_5fcfg_5ft',['nor_flash_cfg_t',['../group___n_o_r___f_l_a_s_h___a_p_i.html#structnor__flash__cfg__t',1,'']]],
+  ['nor_5fflash_5fstatus_5ft',['nor_flash_status_t',['../group___n_o_r___f_l_a_s_h___a_p_i.html#structnor__flash__status__t',1,'']]]
 ];

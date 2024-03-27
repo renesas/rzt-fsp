@@ -1,9 +1,6 @@
 var searchData=
 [
-  ['phase_20count_20interface',['Phase count Interface',['../group___g_p_t___p_h_a_s_e___c_o_u_n_t___a_p_i.html',1,'']]],
-  ['phase_20count_20interface',['Phase count Interface',['../group___m_t_u3___p_h_a_s_e___c_o_u_n_t___a_p_i.html',1,'']]],
-  ['port_20output_20enable_203_20_28r_5fpoe3_29',['Port Output Enable 3 (r_poe3)',['../group___p_o_e3.html',1,'']]],
-  ['poe3_20interface',['POE3 Interface',['../group___p_o_e3___a_p_i.html',1,'']]],
-  ['port_20output_20enable_20for_20gpt_20_28r_5fpoeg_29',['Port Output Enable for GPT (r_poeg)',['../group___p_o_e_g.html',1,'']]],
-  ['poeg_20interface',['POEG Interface',['../group___p_o_e_g___a_p_i.html',1,'']]]
+  ['nor_20flash_20interface',['NOR Flash Interface',['../group___n_o_r___f_l_a_s_h___a_p_i.html',1,'']]],
+  ['networking',['Networking',['../group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___i_n_t_e_r_f_a_c_e_s.html',1,'']]],
+  ['networking',['Networking',['../group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___m_o_d_u_l_e_s.html',1,'']]]
 ];

@@ -18,9 +18,8 @@ var group___t_h_r_e_e___p_h_a_s_e___a_p_i =
       [ "stop", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a769ed088f638d4379dfd6a959f72741e", null ],
       [ "reset", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a7a17e3e7e2de1c1a9605a2eb34d3b82e", null ],
       [ "dutyCycleSet", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a6b55c9d4c5fd7be3c1d4398acbce4fa7", null ],
-      [ "callbackSet", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ab9207f40fa1512f415d7968004a8310a", null ],
-      [ "close", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#aced10bd196df8bd3de4fff2bd52a2e07", null ],
-      [ "versionGet", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a7e7304278e077e85972d4b0601a0880c", null ]
+      [ "callbackSet", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a554fd0df3e9a3c1e09a81daf956f2244", null ],
+      [ "close", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#aced10bd196df8bd3de4fff2bd52a2e07", null ]
     ] ],
     [ "three_phase_instance_t", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#structthree__phase__instance__t", [
       [ "p_ctrl", "group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a9c2decfcb8860f0481513ab9e75ee505", null ],

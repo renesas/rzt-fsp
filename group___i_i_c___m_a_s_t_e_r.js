@@ -42,13 +42,12 @@ var group___i_i_c___m_a_s_t_e_r =
       [ "IIC_MASTER_TIMEOUT_SCL_LOW_DISABLED", "group___i_i_c___m_a_s_t_e_r.html#gga9789e54472d093bd5348f202205d28eca0773c9356e560a84576f1d5498234a09", null ],
       [ "IIC_MASTER_TIMEOUT_SCL_LOW_ENABLED", "group___i_i_c___m_a_s_t_e_r.html#gga9789e54472d093bd5348f202205d28eca62238f63df0d06f25af5b158bbfb2169", null ]
     ] ],
-    [ "R_IIC_MASTER_Open", "group___i_i_c___m_a_s_t_e_r.html#gaf27ed4f61dc662c28564646bd8bf01c3", null ],
-    [ "R_IIC_MASTER_Read", "group___i_i_c___m_a_s_t_e_r.html#ga6147f27a169deef934b6f46a0de3652f", null ],
-    [ "R_IIC_MASTER_Write", "group___i_i_c___m_a_s_t_e_r.html#gad6f6d1f0e12c28bf77c27941fbf18359", null ],
-    [ "R_IIC_MASTER_Abort", "group___i_i_c___m_a_s_t_e_r.html#ga85ef762ddd49f1a137ce9e24c6573059", null ],
-    [ "R_IIC_MASTER_SlaveAddressSet", "group___i_i_c___m_a_s_t_e_r.html#gac71642b0b148f43ffb3e6b8cf2a3c949", null ],
-    [ "R_IIC_MASTER_CallbackSet", "group___i_i_c___m_a_s_t_e_r.html#ga535b73426b62ef08adecfde663160133", null ],
-    [ "R_IIC_MASTER_StatusGet", "group___i_i_c___m_a_s_t_e_r.html#ga8913f214f86f2ec06b31bfd68925e050", null ],
-    [ "R_IIC_MASTER_Close", "group___i_i_c___m_a_s_t_e_r.html#ga88558649a9cf9ccd54b745457227ab7c", null ],
-    [ "R_IIC_MASTER_VersionGet", "group___i_i_c___m_a_s_t_e_r.html#ga5ff4810180163d8d57963043bc8c1bfa", null ]
+    [ "R_IIC_MASTER_Open", "group___i_i_c___m_a_s_t_e_r.html#ga8818445ab5bd51bd6b09eb588f9c60a1", null ],
+    [ "R_IIC_MASTER_Read", "group___i_i_c___m_a_s_t_e_r.html#gae6f2823c3bc9d08da140af598a2681f6", null ],
+    [ "R_IIC_MASTER_Write", "group___i_i_c___m_a_s_t_e_r.html#ga022c0e9d187c58f165a2f350dc56012a", null ],
+    [ "R_IIC_MASTER_Abort", "group___i_i_c___m_a_s_t_e_r.html#ga9dedab62d50f799f893c22fcd8d82c27", null ],
+    [ "R_IIC_MASTER_SlaveAddressSet", "group___i_i_c___m_a_s_t_e_r.html#ga1187b3d689b2dcce8d06ea4b35b6257d", null ],
+    [ "R_IIC_MASTER_Close", "group___i_i_c___m_a_s_t_e_r.html#gab299719e6795ecd05c773e18aa36ceab", null ],
+    [ "R_IIC_MASTER_CallbackSet", "group___i_i_c___m_a_s_t_e_r.html#ga81d3183dd81ea5da0475f883106b9086", null ],
+    [ "R_IIC_MASTER_StatusGet", "group___i_i_c___m_a_s_t_e_r.html#ga799c86ea4e428adf2b185c042bfdfbb2", null ]
 ];

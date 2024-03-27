@@ -12,7 +12,6 @@ var group___c_m_t =
     [ "R_CMT_InfoGet", "group___c_m_t.html#ga6dc30214b65a112efd2b41de3bac50cb", null ],
     [ "R_CMT_StatusGet", "group___c_m_t.html#ga721e3133aeb356538010ef8c6f45d026", null ],
     [ "R_CMT_CounterSet", "group___c_m_t.html#ga7e8b185343222e6e6606ccb6182a3623", null ],
-    [ "R_CMT_CallbackSet", "group___c_m_t.html#ga71c6dc8312f29970b92c72a83516e8ca", null ],
-    [ "R_CMT_Close", "group___c_m_t.html#gae952d81458a39ec6ebc2bddc6afa1252", null ],
-    [ "R_CMT_VersionGet", "group___c_m_t.html#gabe54003b5dcf264ed558ff9b76cda59e", null ]
+    [ "R_CMT_CallbackSet", "group___c_m_t.html#ga90e3caf351f14db585df9c6d7426d7d5", null ],
+    [ "R_CMT_Close", "group___c_m_t.html#gae952d81458a39ec6ebc2bddc6afa1252", null ]
 ];

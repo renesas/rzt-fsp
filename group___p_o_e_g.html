@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZ/T2 Flexible Software Package Documentation: Port Output Enable for GPT (r_poeg)</title>
+<title>RZT Flexible Software Package Documentation: Port Output Enable for GPT (r_poeg)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -19,6 +19,10 @@
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
 <script type="text/javascript" src="search/search.js"></script>
+    <script type="text/javascript" src="search/lunr.js"></script>
+    <link href="search/lunrsearch.css" rel="stylesheet" type="text/css">
+    <script src="search/lunr_index.js"></script>
+    <script src="search/lunrclient.js"></script>
 <script type="text/javascript">
   $(document).ready(function() { init_search(); });
 </script>
@@ -32,24 +36,24 @@
  <tr style="height: 56px;">
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
-   <div id="projectname">RZ/T2 Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v1.3.0</span>
+   <div id="projectname">RZT Flexible Software Package Documentation
+   &#160;<span id="projectnumber">Release v2.0.0</span>
    </div>
   </td>
-   <td>        <div id="MSearchBox" class="MSearchBoxInactive">
-        <span class="left">
+   <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
+ 
+    <form id="lunrSearchForm" name="lunrSearchForm">
+      <span class="left" >
           <img id="MSearchSelect" src="search/mag_sel.png"
-               onmouseover="return searchBox.OnSearchSelectShow()"
-               onmouseout="return searchBox.OnSearchSelectHide()"
                alt=""/>
-          <input type="text" id="MSearchField" value="Search" accesskey="S"
-               onfocus="searchBox.OnSearchFieldFocus(true)" 
-               onblur="searchBox.OnSearchFieldFocus(false)" 
-               onkeyup="searchBox.OnSearchFieldChange(event)"/>
-          </span><span class="right">
-            <a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
-          </span>
-        </div>
+         <input class="search-input" id="MSearchField" name="q" placeholder="Search" type="text"> 
+      </span>
+      <span class="right">
+          &nbsp; 
+      </span>
+        <!--<input type="submit" value="Search">-->
+    </form>
+</div>
 </td>
  </tr>
  </tbody>
@@ -74,6 +78,53 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 <script type="text/javascript">
 $(document).ready(function(){initNavTree('group___p_o_e_g.html','');});
 </script>
+
+<script src="search/mark.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function() { 
+    var options = {         // allows highlighting across element boundaries.
+      "acrossElements": true
+    };
+    var bodyText = $("div.contents").text(); // try contents instead of body. 
+    // If using body: Problem may be that text inside <script> tags is included in .text() - but not in cheerio?
+    // If using div.contents - works 
+    var fullURL = $(location).attr('href');
+    var splitURL = fullURL.split("?");  // Get param string: content after "?" in URL
+    if (splitURL.length > 1) {          // If any content after "?"
+      var paramStr = splitURL[1];
+      var params = paramStr.split("&"); // Split params on "&"
+      for (i = 0; i < params.length; i++) {
+        var paramPair = params[i].split("=");
+        if (paramPair[0] == "pos") {     // If any param starts "pos", get the content after "="
+          posStr = paramPair[1];
+          var splitPos = posStr.split(",");
+          var termArray = [];
+        // termArray will have the search terms
+            for (i=0; i < splitPos.length; i += 2) {
+            start = splitPos[i];
+            len = splitPos[i+1]; // Needs error detection! Vulnerable if non-even # of pos entries
+            term = bodyText.substr(start,len);
+            if (termArray.includes(term) == false) {     // List all unique terms
+                termArray.push(bodyText.substr(start,len)); 
+            }
+          } 
+    //      console.log(termArray);
+          var context = document.querySelector("div.contents");
+          var instance = new Mark(context);
+          for(i=0;i<termArray.length; i+=1) {
+            instance.mark(termArray[i],options);  // Use Mark.js to mark all terms in termArray
+            }    
+          var firstMark = document.querySelector("mark");
+          firstMark.scrollIntoView(true);
+          //      console.log($("mark").first().text()); // Trying to scroll to first Mark element. 
+        }
+            }
+    }
+  });
+</script>
+
+<link href="fsp_customdoxygen.css" rel="stylesheet" type="text/css" />
+
 <div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
@@ -89,12 +140,29 @@ $(document).ready(function(){initNavTree('group___p_o_e_g.html','');});
 </iframe>
 </div>
 
+
+<!-- Lunr search results -->
+<div id="lunrResultBox" style="
+        position: fixed;
+        border: 1px solid black;
+        background-color: WhiteSmoke;  
+        padding: 10px;
+        width: 500px;
+        height: 500px;
+        top: 30;
+        right: 0;
+        overflow: auto;
+        display: none">
+    <button onclick="closeLunrResults()" style="float: right;">X</button>
+    <div class="resultCount" id="resultCount"></div>
+    <div id="searchResults"></div>
+</div>
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a>  </div>
   <div class="headertitle">
-<div class="title">Port Output Enable for GPT (r_poeg)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a></div></div>  </div>
+<div class="title">Port Output Enable for GPT (r_poeg)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_i_m_e_r_s___m_o_d_u_l_e_s.html">Timers</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -102,18 +170,16 @@ $(document).ready(function(){initNavTree('group___p_o_e_g.html','');});
 Functions</h2></td></tr>
 <tr class="memitem:ga84d0272a9da17941d62d264ff3a7b678"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#ga84d0272a9da17941d62d264ff3a7b678">R_POEG_Open</a> (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl, <a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__cfg__t">poeg_cfg_t</a> const *const p_cfg)</td></tr>
 <tr class="separator:ga84d0272a9da17941d62d264ff3a7b678"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga42b42cd05ed30c698ba2dab5a32154dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#ga42b42cd05ed30c698ba2dab5a32154dd">R_POEG_OutputDisable</a> (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:ga42b42cd05ed30c698ba2dab5a32154dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga6713a1b99790d8e56d475bb377b5cb0c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#ga6713a1b99790d8e56d475bb377b5cb0c">R_POEG_Reset</a> (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl)</td></tr>
-<tr class="separator:ga6713a1b99790d8e56d475bb377b5cb0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gacc13125edbed3049ff434195ed6dc66e"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet</a> (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl, <a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__status__t">poeg_status_t</a> *const p_status)</td></tr>
 <tr class="separator:gacc13125edbed3049ff434195ed6dc66e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga299d7e0c935c5305d72077fdf1963c2d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#ga299d7e0c935c5305d72077fdf1963c2d">R_POEG_CallbackSet</a> (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl, void(*p_callback)(<a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *), void const *const p_context, <a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *const p_callback_memory)</td></tr>
 <tr class="separator:ga299d7e0c935c5305d72077fdf1963c2d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga42b42cd05ed30c698ba2dab5a32154dd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#ga42b42cd05ed30c698ba2dab5a32154dd">R_POEG_OutputDisable</a> (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga42b42cd05ed30c698ba2dab5a32154dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga6713a1b99790d8e56d475bb377b5cb0c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#ga6713a1b99790d8e56d475bb377b5cb0c">R_POEG_Reset</a> (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:ga6713a1b99790d8e56d475bb377b5cb0c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga84dddc58a538b5a7c9c22b7f4412755a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#ga84dddc58a538b5a7c9c22b7f4412755a">R_POEG_Close</a> (<a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ga84dddc58a538b5a7c9c22b7f4412755a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:gaab84b2c3614514cadef5fbd3aebc9dfa"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#gaab84b2c3614514cadef5fbd3aebc9dfa">R_POEG_VersionGet</a> (<a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const p_version)</td></tr>
-<tr class="separator:gaab84b2c3614514cadef5fbd3aebc9dfa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <p>Driver for the POEG peripheral on RZ microprocessor. This module implements the <a class="el" href="group___p_o_e_g___a_p_i.html">POEG Interface</a>. </p>
@@ -147,9 +213,17 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
+<tr>
+<td>Multiplex Interrupt</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enabled</li>
+<li>
+Disabled</li>
+</ul>
+</td><td>Disabled </td><td>Enable multiplex interrupt for a single driver. </td></tr>
 </table>
- <h2>Configurations for Driver &gt; Timers &gt; Port Output Enable for GPT on r_poeg</h2>
-This module can be added to the Stacks tab via New Stack &gt; Driver &gt; Timers &gt; Port Output Enable for GPT on r_poeg.<br />
+ <h2>Configurations for Timers &gt; Port Output Enable for GPT (r_poeg)</h2>
+This module can be added to the Stacks tab via New Stack &gt; Timers &gt; Port Output Enable for GPT (r_poeg).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
@@ -222,7 +296,7 @@ Examples</h1>
 <p>This is a basic example of minimal use of the POEG in an application.</p>
 <div class="fragment"><div class="line"><span class="keywordtype">void</span> poeg_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = FSP_SUCCESS;</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Initializes the POEG. */</span></div><div class="line">    err = <a class="code" href="group___p_o_e_g.html#ga84d0272a9da17941d62d264ff3a7b678">R_POEG_Open</a>(&amp;g_poeg0_ctrl, &amp;g_poeg0_cfg);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Handle any errors. This function should be defined by the user. */</span></div><div class="line">    handle_error(err);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>POEG Callback Example</h2>
 <p>This is an example of a using the POEG callback to restore GPT output operation.</p>
-<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* Example callback called when POEG disables GPT output pins. */</span></div><div class="line"><span class="keywordtype">void</span> poeg_callback (<a class="code" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(p_args);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Determine the cause of the POEG event. */</span></div><div class="line">    <a class="code" href="group___p_o_e_g___a_p_i.html#structpoeg__status__t">poeg_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet</a>(&amp;g_poeg0_ctrl, &amp;status);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Correct the cause of the POEG event before resetting POEG. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Reset the POEG before exiting the callback. */</span></div><div class="line">    (void) <a class="code" href="group___p_o_e_g.html#ga6713a1b99790d8e56d475bb377b5cb0c">R_POEG_Reset</a>(&amp;g_poeg0_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for the status to clear after reset before exiting the callback to ensure the interrupt does not fire</span></div><div class="line"><span class="comment">     * again. */</span></div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet</a>(&amp;g_poeg0_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<a class="code" href="group___p_o_e_g___a_p_i.html#gga6964e3b0b8b2d32d2428d86b32dfeef2a929680a05ecd96bb24dd053fb6dcc8b5">POEG_STATE_NO_DISABLE_REQUEST</a> != status.<a class="code" href="group___p_o_e_g___a_p_i.html#aeae55874b243b6034a81711e3494bc6d">state</a>);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"></div><div class="line"><span class="comment">/* Example callback called when POEG disables GPT output pins. */</span></div><div class="line"><span class="keywordtype">void</span> poeg_callback (<a class="code" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> * p_args)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gaf0afcbc9a110ac9366a811d96ee06029">FSP_PARAMETER_NOT_USED</a>(p_args);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Determine the cause of the POEG event. */</span></div><div class="line">    <a class="code" href="group___p_o_e_g___a_p_i.html#structpoeg__status__t">poeg_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet</a>(&amp;g_poeg0_ctrl, &amp;status);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Correct the cause of the POEG event before resetting POEG. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Reset the POEG before exiting the callback. */</span></div><div class="line">    (void) <a class="code" href="group___p_o_e_g.html#ga6713a1b99790d8e56d475bb377b5cb0c">R_POEG_Reset</a>(&amp;g_poeg0_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for the status to clear after reset before exiting the callback to ensure the interrupt does not fire</span></div><div class="line"><span class="comment">     * again. */</span></div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet</a>(&amp;g_poeg0_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<a class="code" href="group___p_o_e_g___a_p_i.html#ga6964e3b0b8b2d32d2428d86b32dfeef2a929680a05ecd96bb24dd053fb6dcc8b5">POEG_STATE_NO_DISABLE_REQUEST</a> != status.<a class="code" href="group___p_o_e_g___a_p_i.html#aeae55874b243b6034a81711e3494bc6d">state</a>);</div><div class="line"></div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structpoeg__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___p_o_e_g.html#structpoeg__instance__ctrl__t">poeg_instance_ctrl_t</a></td></tr>
@@ -272,7 +346,7 @@ Data Structures</h2></td></tr>
 </div><div class="memdoc">
 <p>Initializes the POEG module and applies configurations. Implements <a class="el" href="group___p_o_e_g___a_p_i.html#a41c511a6b1b828d54f180b729ae4fe55">poeg_api_t::open</a>.</p>
 <dl class="section note"><dt>Note</dt><dd>The <a class="el" href="group___p_o_e_g___a_p_i.html#ace17b160cb26724e59f6aa82e39ed80b">poeg_cfg_t::trigger</a> setting can only be configured once after reset. Reopening with a different trigger configuration is not possible.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Initializes the POEG. */</span></div><div class="line">    err = <a class="code" href="group___p_o_e_g.html#ga84d0272a9da17941d62d264ff3a7b678">R_POEG_Open</a>(&amp;g_poeg0_ctrl, &amp;g_poeg0_cfg);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL. </td></tr>
@@ -280,6 +354,92 @@ Data Structures</h2></td></tr>
     <tr><td class="paramname">FSP_ERR_IRQ_BSP_DISABLED</td><td><a class="el" href="group___p_o_e_g___a_p_i.html#a70ca0636c969217533571c505f2e68ca">poeg_cfg_t::p_callback</a> is not NULL, but ISR is not enabled. ISR must be enabled to use callback. </td></tr>
     <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>The channel requested in the p_cfg parameter is not available on this device. </td></tr>
     <tr><td class="paramname">FSP_ERR_IP_UNIT_NOT_PRESENT</td><td>The Unit requested in the p_cfg parameter is not available on this device. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="gacc13125edbed3049ff434195ed6dc66e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gacc13125edbed3049ff434195ed6dc66e">&#9670;&nbsp;</a></span>R_POEG_StatusGet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POEG_StatusGet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__status__t">poeg_status_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_status</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Get current POEG status and store it in provided pointer p_status. Implements <a class="el" href="group___p_o_e_g___a_p_i.html#ab377a80211d85f8c90b578e93dfd7964">poeg_api_t::statusGet</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Current POEG state stored successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_status was NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga299d7e0c935c5305d72077fdf1963c2d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga299d7e0c935c5305d72077fdf1963c2d">&#9670;&nbsp;</a></span>R_POEG_CallbackSet()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POEG_CallbackSet </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void(*)(<a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *)&#160;</td>
+          <td class="paramname"><em>p_callback</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">void const *const&#160;</td>
+          <td class="paramname"><em>p_context</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___p_o_e_g___a_p_i.html#a77b8a93a87cb6e37bd2f3213223b949b">poeg_api_t::callbackSet</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
   </table>
   </dd>
 </dl>
@@ -330,97 +490,11 @@ Data Structures</h2></td></tr>
 </div><div class="memdoc">
 <p>Resets status flags. Implements <a class="el" href="group___p_o_e_g___a_p_i.html#a5765dcf518892b71b73b5ae38942bd7f">poeg_api_t::reset</a>.</p>
 <dl class="section note"><dt>Note</dt><dd>Status flags are only reset if the original POEG trigger is resolved. Check the status using <a class="el" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet</a> after calling this function to verify the status is cleared.</dd></dl>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Correct the cause of the POEG event before resetting POEG. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Reset the POEG before exiting the callback. */</span></div><div class="line">    (void) <a class="code" href="group___p_o_e_g.html#ga6713a1b99790d8e56d475bb377b5cb0c">R_POEG_Reset</a>(&amp;g_poeg0_ctrl);</div><div class="line"></div><div class="line">    <span class="comment">/* Wait for the status to clear after reset before exiting the callback to ensure the interrupt does not fire</span></div><div class="line"><span class="comment">     * again. */</span></div><div class="line">    <span class="keywordflow">do</span></div><div class="line">    {</div><div class="line">        (void) <a class="code" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet</a>(&amp;g_poeg0_ctrl, &amp;status);</div><div class="line">    } <span class="keywordflow">while</span> (<a class="code" href="group___p_o_e_g___a_p_i.html#gga6964e3b0b8b2d32d2428d86b32dfeef2a929680a05ecd96bb24dd053fb6dcc8b5">POEG_STATE_NO_DISABLE_REQUEST</a> != status.<a class="code" href="group___p_o_e_g___a_p_i.html#aeae55874b243b6034a81711e3494bc6d">state</a>);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
+<dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Function attempted to clear status flags. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="gacc13125edbed3049ff434195ed6dc66e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gacc13125edbed3049ff434195ed6dc66e">&#9670;&nbsp;</a></span>R_POEG_StatusGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POEG_StatusGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__status__t">poeg_status_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_status</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Get current POEG status and store it in provided pointer p_status. Implements <a class="el" href="group___p_o_e_g___a_p_i.html#ab377a80211d85f8c90b578e93dfd7964">poeg_api_t::statusGet</a>.</p>
-<p>Example: </p><div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* (Optional) Determine the cause of the POEG event. */</span></div><div class="line">    <a class="code" href="group___p_o_e_g___a_p_i.html#structpoeg__status__t">poeg_status_t</a> status;</div><div class="line">    (void) <a class="code" href="group___p_o_e_g.html#gacc13125edbed3049ff434195ed6dc66e">R_POEG_StatusGet</a>(&amp;g_poeg0_ctrl, &amp;status);</div><div class="line"></div></div><!-- fragment --> <dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Current POEG state stored successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_status was NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ga299d7e0c935c5305d72077fdf1963c2d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ga299d7e0c935c5305d72077fdf1963c2d">&#9670;&nbsp;</a></span>R_POEG_CallbackSet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POEG_CallbackSet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___p_o_e_g___a_p_i.html#ga092fdb789d4a41f502e902a7a8e88ac7">poeg_ctrl_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_ctrl</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void(*)(<a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *)&#160;</td>
-          <td class="paramname"><em>p_callback</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">void const *const&#160;</td>
-          <td class="paramname"><em>p_context</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype"><a class="el" href="group___p_o_e_g___a_p_i.html#structpoeg__callback__args__t">poeg_callback_args_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_callback_memory</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Updates the user callback with the option to provide memory for the callback argument structure. Implements <a class="el" href="group___p_o_e_g___a_p_i.html#a7d01f09a832b9940b264b0cf10a3863c">poeg_api_t::callbackSet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Callback updated successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The control block has not been opened. </td></tr>
   </table>
   </dd>
 </dl>
@@ -455,39 +529,13 @@ Data Structures</h2></td></tr>
 
 </div>
 </div>
-<a id="gaab84b2c3614514cadef5fbd3aebc9dfa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#gaab84b2c3614514cadef5fbd3aebc9dfa">&#9670;&nbsp;</a></span>R_POEG_VersionGet()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_POEG_VersionGet </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#unionfsp__version__t">fsp_version_t</a> *const&#160;</td>
-          <td class="paramname"><em>p_version</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>DEPRECATED Sets driver version based on compile time macros. Implements <a class="el" href="group___p_o_e_g___a_p_i.html#aecb9edd3331b69522f5b519f56f20448">poeg_api_t::versionGet</a>.</p>
-<dl class="retval"><dt>Return values</dt><dd>
-  <table class="retval">
-    <tr><td class="paramname">FSP_SUCCESS</td><td>Version stored in p_version. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_version was NULL. </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v1.3.0 User's Manual Copyright © (2023) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

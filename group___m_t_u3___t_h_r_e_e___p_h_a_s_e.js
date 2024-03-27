@@ -46,6 +46,5 @@ var group___m_t_u3___t_h_r_e_e___p_h_a_s_e =
     [ "R_MTU3_THREE_PHASE_Reset", "group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#gabb8398306114e9954890e047ff75ca65", null ],
     [ "R_MTU3_THREE_PHASE_DutyCycleSet", "group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#gab548f1a000fe30aed9f425eb50aab328", null ],
     [ "R_MTU3_THREE_PHASE_CallbackSet", "group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#gabd88ba7d954882c76ac6a7c9795acd5c", null ],
-    [ "R_MTU3_THREE_PHASE_Close", "group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#gaa07927e4a8a495a49445d6a35b8d67ba", null ],
-    [ "R_MTU3_THREE_PHASE_VersionGet", "group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#ga5a818400873a7af1409c6174a5447df5", null ]
+    [ "R_MTU3_THREE_PHASE_Close", "group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#gaa07927e4a8a495a49445d6a35b8d67ba", null ]
 ];

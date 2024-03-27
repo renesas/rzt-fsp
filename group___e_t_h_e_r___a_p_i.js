@@ -5,9 +5,9 @@ var group___e_t_h_e_r___a_p_i =
       [ "event", "group___e_t_h_e_r___a_p_i.html#aa28fdd797448d1ed0d56604ec87b349a", null ],
       [ "status_ecsr", "group___e_t_h_e_r___a_p_i.html#af3841da2d8c5298a41614fd264f429b3", null ],
       [ "status_eesr", "group___e_t_h_e_r___a_p_i.html#abf2b41c4e54e2e99bab4e00b131f8a7e", null ],
+      [ "p_context", "group___e_t_h_e_r___a_p_i.html#a26ef28b9663110544d6e0910d7f56dbc", null ],
       [ "status_ether", "group___e_t_h_e_r___a_p_i.html#a5712cf7ecaf43944d6ca2990d531ce21", null ],
-      [ "status_link", "group___e_t_h_e_r___a_p_i.html#a0c6ed2748c0737fb308e42d948c19640", null ],
-      [ "p_context", "group___e_t_h_e_r___a_p_i.html#a2bd7c2f49c32654e803bf44001aacfb4", null ]
+      [ "status_link", "group___e_t_h_e_r___a_p_i.html#a0c6ed2748c0737fb308e42d948c19640", null ]
     ] ],
     [ "ether_cfg_t", "group___e_t_h_e_r___a_p_i.html#structether__cfg__t", [
       [ "channel", "group___e_t_h_e_r___a_p_i.html#a39981c364879be25298a5c7656338af3", null ],
@@ -31,17 +31,16 @@ var group___e_t_h_e_r___a_p_i =
       [ "p_extend", "group___e_t_h_e_r___a_p_i.html#a2d76a15c4de55427a96f762727816558", null ]
     ] ],
     [ "ether_api_t", "group___e_t_h_e_r___a_p_i.html#structether__api__t", [
-      [ "open", "group___e_t_h_e_r___a_p_i.html#ae75458ac2a31861195b73120676d670c", null ],
-      [ "close", "group___e_t_h_e_r___a_p_i.html#a1c0bc3caef73e0a216c2fe2edc4fff4b", null ],
-      [ "read", "group___e_t_h_e_r___a_p_i.html#a41d56c8843a454690b1969f8f766d65a", null ],
-      [ "bufferRelease", "group___e_t_h_e_r___a_p_i.html#aa38e7f82e66fd26fd8d51b11f46ae6e6", null ],
-      [ "rxBufferUpdate", "group___e_t_h_e_r___a_p_i.html#aa714b8287d1cef38d8442850dd9b9fb5", null ],
-      [ "write", "group___e_t_h_e_r___a_p_i.html#a92e87f33f0a4e0ccb26464d697cdf233", null ],
-      [ "linkProcess", "group___e_t_h_e_r___a_p_i.html#a125ca4ee69c6c63e1db42708324c0fb3", null ],
-      [ "getLinkStatus", "group___e_t_h_e_r___a_p_i.html#a3490dbcf5163ad1409fb3899aafccbfe", null ],
-      [ "wakeOnLANEnable", "group___e_t_h_e_r___a_p_i.html#afabb87ef0be65717bb7675a4a004e3ad", null ],
-      [ "txStatusGet", "group___e_t_h_e_r___a_p_i.html#a6fde51a3fef6b43ed0fada563fadfb4e", null ],
-      [ "versionGet", "group___e_t_h_e_r___a_p_i.html#a2d7eb9db55c87bff39494408612fe766", null ]
+      [ "open", "group___e_t_h_e_r___a_p_i.html#aa0c703be12efe73efdd0d47168239470", null ],
+      [ "close", "group___e_t_h_e_r___a_p_i.html#a84ae3c1816a60c8fc45ccc2084805088", null ],
+      [ "read", "group___e_t_h_e_r___a_p_i.html#a58975a11436cc5980698b6e843eea3f3", null ],
+      [ "bufferRelease", "group___e_t_h_e_r___a_p_i.html#a4f988e111dadbfab48e9eccec8d462b5", null ],
+      [ "rxBufferUpdate", "group___e_t_h_e_r___a_p_i.html#a6d088fd3b1a5326af7bedad146491d74", null ],
+      [ "write", "group___e_t_h_e_r___a_p_i.html#aa61e5ba4dd1de3a50864c0b1970c3b51", null ],
+      [ "linkProcess", "group___e_t_h_e_r___a_p_i.html#ae11e3e3521df4c3efe6e0dafecddee72", null ],
+      [ "wakeOnLANEnable", "group___e_t_h_e_r___a_p_i.html#acde8967c0512722ca73a1596daf654ea", null ],
+      [ "txStatusGet", "group___e_t_h_e_r___a_p_i.html#ad52cabec533efaaef3258caade1e0640", null ],
+      [ "callbackSet", "group___e_t_h_e_r___a_p_i.html#aaeb0eaa99a7a62dfa5b65494db7f1ab4", null ]
     ] ],
     [ "ether_instance_t", "group___e_t_h_e_r___a_p_i.html#structether__instance__t", [
       [ "p_ctrl", "group___e_t_h_e_r___a_p_i.html#a013ed407826d291e797c6b5eb44eb5ba", null ],
@@ -69,16 +68,20 @@ var group___e_t_h_e_r___a_p_i =
       [ "ETHER_ZEROCOPY_DISABLE", "group___e_t_h_e_r___a_p_i.html#ggad3c9ba84cbe05cc1ff9b37d25318dd07ae3254b33ef0db1c641546d4c70909cf1", null ],
       [ "ETHER_ZEROCOPY_ENABLE", "group___e_t_h_e_r___a_p_i.html#ggad3c9ba84cbe05cc1ff9b37d25318dd07ae6b9b9b112795b5334d6198f088692ac", null ]
     ] ],
-    [ "ether_link_status_t", "group___e_t_h_e_r___a_p_i.html#ga98729042d1a7d3bcb8827c5ab920c6ae", [
-      [ "ETHER_LINK_STATUS_DOWN", "group___e_t_h_e_r___a_p_i.html#gga98729042d1a7d3bcb8827c5ab920c6aea859c2dd6370b7fcd02ba01ce168401c1", null ],
-      [ "ETHER_LINK_STATUS_UP", "group___e_t_h_e_r___a_p_i.html#gga98729042d1a7d3bcb8827c5ab920c6aea2775bb63eb4e694a6fbe87f00a5e1116", null ],
-      [ "ETHER_LINK_STATUS_READY", "group___e_t_h_e_r___a_p_i.html#gga98729042d1a7d3bcb8827c5ab920c6aeae738cd7fbb8659298c8bc6a098fe73de", null ]
-    ] ],
     [ "ether_event_t", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973", [
-      [ "ETHER_EVENT_WAKEON_LAN", "group___e_t_h_e_r___a_p_i.html#ggad029483e98651bf40e3e3439ed6d1973a11318f9e3ab9d48c75dacd4b1ec0b9de", null ],
-      [ "ETHER_EVENT_LINK_ON", "group___e_t_h_e_r___a_p_i.html#ggad029483e98651bf40e3e3439ed6d1973ae80e4569638a5a44618fa437270b0e7d", null ],
-      [ "ETHER_EVENT_LINK_OFF", "group___e_t_h_e_r___a_p_i.html#ggad029483e98651bf40e3e3439ed6d1973a910e3b1bc2c7ad6d12ed9851f995dd20", null ],
-      [ "ETHER_EVENT_SBD_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#ggad029483e98651bf40e3e3439ed6d1973a2a925e315e43a690df754d77e34d3068", null ],
-      [ "ETHER_EVENT_PMT_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#ggad029483e98651bf40e3e3439ed6d1973a1069dacea322847fda538b2bd5065c93", null ]
+      [ "ETHER_EVENT_WAKEON_LAN", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a11318f9e3ab9d48c75dacd4b1ec0b9de", null ],
+      [ "ETHER_EVENT_LINK_ON", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973ae80e4569638a5a44618fa437270b0e7d", null ],
+      [ "ETHER_EVENT_LINK_OFF", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a910e3b1bc2c7ad6d12ed9851f995dd20", null ],
+      [ "ETHER_EVENT_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a1d528f77a7fdfb14f6fe93179ac2b5ee", null ],
+      [ "ETHER_EVENT_WAKEON_LAN", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a11318f9e3ab9d48c75dacd4b1ec0b9de", null ],
+      [ "ETHER_EVENT_LINK_ON", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973ae80e4569638a5a44618fa437270b0e7d", null ],
+      [ "ETHER_EVENT_LINK_OFF", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a910e3b1bc2c7ad6d12ed9851f995dd20", null ],
+      [ "ETHER_EVENT_SBD_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a2a925e315e43a690df754d77e34d3068", null ],
+      [ "ETHER_EVENT_PMT_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a1069dacea322847fda538b2bd5065c93", null ],
+      [ "ETHER_EVENT_WAKEON_LAN", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a11318f9e3ab9d48c75dacd4b1ec0b9de", null ],
+      [ "ETHER_EVENT_LINK_ON", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973ae80e4569638a5a44618fa437270b0e7d", null ],
+      [ "ETHER_EVENT_LINK_OFF", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a910e3b1bc2c7ad6d12ed9851f995dd20", null ],
+      [ "ETHER_EVENT_SBD_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a2a925e315e43a690df754d77e34d3068", null ],
+      [ "ETHER_EVENT_PMT_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a1069dacea322847fda538b2bd5065c93", null ]
     ] ]
 ];
