@@ -68,6 +68,9 @@ var group___c_g_c___a_p_i =
       [ "CGC_CLOCK_PLL1", "group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6ae8c02b01bca2fef787845ef7728d3f59", null ],
       [ "CGC_CLOCK_LOCO", "group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6ac8e8533716349cdc1396bdb313ec2651", null ],
       [ "CGC_CLOCK_PLL0", "group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6a48802b93f6055b1194a32a17b867af4e", null ],
+      [ "CGC_CLOCK_PLL1", "group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6ae8c02b01bca2fef787845ef7728d3f59", null ],
+      [ "CGC_CLOCK_LOCO", "group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6ac8e8533716349cdc1396bdb313ec2651", null ],
+      [ "CGC_CLOCK_PLL0", "group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6a48802b93f6055b1194a32a17b867af4e", null ],
       [ "CGC_CLOCK_PLL1", "group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6ae8c02b01bca2fef787845ef7728d3f59", null ]
     ] ],
     [ "cgc_pll_div_t", "group___c_g_c___a_p_i.html#gaba4cdc2e548dc20fb3800c3d1adcc315", [
@@ -107,6 +110,9 @@ var group___c_g_c___a_p_i =
       [ "CGC_USB_CLOCK_DIV_5", "group___c_g_c___a_p_i.html#gga7499fcdfd9aafe4ca695e26e2d69175da5c77b4e770cff2b1c0806afb099b506b", null ]
     ] ],
     [ "cgc_clock_change_t", "group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8", [
+      [ "CGC_CLOCK_CHANGE_START", "group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8afc34723b6efeafd271fb3cfb365f8ec1", null ],
+      [ "CGC_CLOCK_CHANGE_STOP", "group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8ab254feb9ce2b8227de97b93ab5ea4de5", null ],
+      [ "CGC_CLOCK_CHANGE_NONE", "group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8a4778b4e094845ab42e902ffc9a68842c", null ],
       [ "CGC_CLOCK_CHANGE_START", "group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8afc34723b6efeafd271fb3cfb365f8ec1", null ],
       [ "CGC_CLOCK_CHANGE_STOP", "group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8ab254feb9ce2b8227de97b93ab5ea4de5", null ],
       [ "CGC_CLOCK_CHANGE_NONE", "group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8a4778b4e094845ab42e902ffc9a68842c", null ],

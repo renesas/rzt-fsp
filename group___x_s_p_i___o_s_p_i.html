@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.0.0</span>
+   &#160;<span id="projectnumber">Release v2.1.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -227,6 +227,24 @@ The following build time configurations are defined in driver/r_xspi_ospi_cfg.h:
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
+<tr>
+<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; Start Address</td><td>Unit0 CS0 start address should be constant</td><td>0x60000000 </td><td>Start address of xSPI Unit0 CS0 in memory mapping mode. </td></tr>
+<tr>
+<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x600FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
+<tr>
+<td>Custom Address Space &gt; Unit0 &gt; CS1 &gt; Start Address</td><td>Address should be within xspi unit0 external address space</td><td>0x64000000 </td><td>Start address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
+<tr>
+<td>Custom Address Space &gt; Unit0 &gt; CS1 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x640FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
+<tr>
+<td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; Start Address</td><td>Unit1 CS0 start address should be constant</td><td>0x68000000 </td><td>Start address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
+<tr>
+<td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit1 external address space</td><td>0x680FFFFF </td><td>End address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
+<tr>
+<td>Custom Address Space &gt; Unit1 &gt; CS1 &gt; Start Address</td><td>Address should be within xspi unit1 external address space</td><td>0x6C000000 </td><td>Start address of xSPI Unit1 CS1 in memory mapping mode. </td></tr>
+<tr>
+<td>Custom Address Space &gt; Unit1 &gt; CS1 &gt; End Address</td><td>Address should be within xspi unit1 external address space</td><td>0x6C0FFFFF </td><td>End address of xSPI Unit1 CS1 in memory mapping mode. </td></tr>
+<tr>
+<td>Custom Address Space &gt; Custom Address Space Enable</td><td>MCU Specific Options</td><td></td><td>When disabled, Custom Address Space is not applied and address space is set according to Flash Size. When enabled, Flash Size is disabled and Custom Address Space settings are applied. </td></tr>
 <tr>
 <td>Parameter Checking</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -421,6 +439,25 @@ OSPI Memory Mapped Access</h2>
 <tr>
 <td>0x6C000000 to 0x6FFFFFFF </td><td>CS1 </td></tr>
 </table>
+<p>The address map for the external address space xSPI unit 0 in RZ/T2ME is as follows:</p>
+<table class="doxtable">
+<tr>
+<th>Address </th><th>Space  </th></tr>
+<tr>
+<td>0x40000000 to 0x47FFFFFF </td><td>CS0 mirror space + CS1 mirror space </td></tr>
+<tr>
+<td>0x60000000 to 0x67FFFFFF </td><td>CS0 + CS1 </td></tr>
+</table>
+<p>The address map for the external address space xSPI unit 1 in RZ/T2ME is as follows:</p>
+<table class="doxtable">
+<tr>
+<th>Address </th><th>Space  </th></tr>
+<tr>
+<td>0x48000000 to 0x4FFFFFFF </td><td>CS0 mirror space + CS1 mirror space </td></tr>
+<tr>
+<td>0x68000000 to 0x6FFFFFFF </td><td>CS0 + CS1 </td></tr>
+</table>
+<dl class="section note"><dt>Note</dt><dd>When Custom Address Space Enable configuration setting is Enable, start address of CS1 space depends on the CS1 start address set in Custom Address Space configuration. When Disable, the start address of CS1 space is the same as that of RZ/T2L and RZ/T2M.</dd></dl>
 <h2><a class="anchor" id="r-xspi-ospi-auto-calibration"></a>
 Auto-calibration</h2>
 <p>Auto-calibration procedure is triggered automatically when the 'Data latching delay' field in the configurator properties is set to 0. The user application is responsible for setting the appropriate preamble pattern before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a> with 8D-8D-8D(OPI) mode or changing the SPI protocol to 8D-8D-8D(OPI) using <a class="el" href="group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369">R_XSPI_OSPI_SpiProtocolSet()</a> API. The appropriate preamble pattern can be written to the desired address using the <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5">R_XSPI_OSPI_Write()</a> API while in the 1S-1S-1S(SPI) mode. Ensure that the same address is passed through the configurator. If the OctaFlash chip is already in 8D-8D-8D(OPI) mode, the preamble pattern must be programmed using the debugger before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a>.</p>
@@ -440,6 +477,7 @@ Limitations</h2>
 <ul>
 <li>When using the xSPI_OSPI driver, it is necessary to set the MPU with External address space xSPIn (0x60000000 - 0x6FFFFFFF) as the cacheable area and Mirror area of external address space xSPIn (0x40000000 - 0x4FFFFFFF) as the non-cacheable area.</li>
 <li>Prefetch function support for memory-mapping access is applied to all slave devices connected xSPI0 or xSPI1. When connecting different types of devices (for example, QSPI and OSPI) to same xSPI unit, make sure that the prefetch function settings are the same.</li>
+<li>When Enable is selected in the Custom Address Space Enable configuration, Custom Address Space settings are applied to all slave devices connected xSPI0 or xSPI1. When using different types of xSPI modules (for example, xSPI_QSPI and xSPI_OSPI), make sure that Custom Address Space configuration settings are the same for all xSPI modules.</li>
 </ul>
 <h1><a class="anchor" id="r-ospi-examples"></a>
 Examples</h1>
@@ -968,7 +1006,7 @@ Enumerations</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>In this API, data can be written up to 64 bytes at a time. </dd>
+<dl class="section note"><dt>Note</dt><dd>In this API, the number of bytes that can be written at one time depends on the MCU : any byte within 64bytes for RZ/T2M and RZ/T2L, 1,2, or 4byte for RZ/T2ME. </dd>
 <dd>
 This API performs page program operations to the device. Writing across pages is not supported. Please set the write address and write size according to the page size of your device. </dd>
 <dd>
@@ -1171,7 +1209,7 @@ In 8D-8D-8D(OPI) mode, written data must be even bytes in size. </dd></dl>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.0.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

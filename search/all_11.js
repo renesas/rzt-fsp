@@ -362,7 +362,7 @@ var searchData=
   ['sync1_5firq',['sync1_irq',['../group___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t___a_p_i.html#a24de9ab76d50333f4c78e9c28a279592',1,'ethercat_ssc_port_cfg_t']]],
   ['synchronization_5fjump_5fwidth',['synchronization_jump_width',['../group___c_a_n___a_p_i.html#aeb8eee8b6e6ea6a433c1ff5d89f68c4b',1,'can_bit_timing_cfg_t']]],
   ['system_5fclock',['system_clock',['../group___c_g_c___a_p_i.html#a654bf74a6f5fa9b5b278f4bd1144658c',1,'cgc_clocks_cfg_t']]],
-  ['system_5finit',['system_init',['../group___b_s_p___m_c_u.html#gacfd73e334d50e76e674281656cc51b7e',1,'startup_core.c']]],
+  ['system_5finit',['system_init',['../group___b_s_p___m_c_u.html#gabce63124d36b500645b10016916656a0',1,'startup_core.c']]],
   ['systemclockget',['systemClockGet',['../group___c_g_c___a_p_i.html#aab4d84b9a18f5ff223fa9d5dbdf2104c',1,'cgc_api_t']]],
   ['systemclockset',['systemClockSet',['../group___c_g_c___a_p_i.html#ac55d09984ea2ed00e0b9f67b21ca9953',1,'cgc_api_t']]],
   ['systemcoreclock',['SystemCoreClock',['../group___b_s_p___m_c_u.html#gaa3cd3e43291e81e795d642b79b6088e6',1,'system.c']]],

@@ -82,6 +82,11 @@ var group___e_t_h_e_r___a_p_i =
       [ "ETHER_EVENT_LINK_ON", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973ae80e4569638a5a44618fa437270b0e7d", null ],
       [ "ETHER_EVENT_LINK_OFF", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a910e3b1bc2c7ad6d12ed9851f995dd20", null ],
       [ "ETHER_EVENT_SBD_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a2a925e315e43a690df754d77e34d3068", null ],
+      [ "ETHER_EVENT_PMT_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a1069dacea322847fda538b2bd5065c93", null ],
+      [ "ETHER_EVENT_WAKEON_LAN", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a11318f9e3ab9d48c75dacd4b1ec0b9de", null ],
+      [ "ETHER_EVENT_LINK_ON", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973ae80e4569638a5a44618fa437270b0e7d", null ],
+      [ "ETHER_EVENT_LINK_OFF", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a910e3b1bc2c7ad6d12ed9851f995dd20", null ],
+      [ "ETHER_EVENT_SBD_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a2a925e315e43a690df754d77e34d3068", null ],
       [ "ETHER_EVENT_PMT_INTERRUPT", "group___e_t_h_e_r___a_p_i.html#gad029483e98651bf40e3e3439ed6d1973a1069dacea322847fda538b2bd5065c93", null ]
     ] ]
 ];

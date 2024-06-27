@@ -63,6 +63,7 @@ var searchData=
   ['p_5fusb_5fapl_5fcallback',['p_usb_apl_callback',['../group___u_s_b___a_p_i.html#a58eb2b666cab78a4379cc49d802c019a',1,'usb_cfg_t']]],
   ['p_5fusb_5freg',['p_usb_reg',['../group___u_s_b___a_p_i.html#a88a9beff4fe7e9e3fa731976c6af7e91',1,'usb_cfg_t']]],
   ['p_5fuvw_5fcfg',['p_uvw_cfg',['../group___m_t_u3.html#ac32b9e4b52e9ff9decd57f5942655790',1,'mtu3_extended_cfg_t']]],
+  ['p_5fwindow_5fcfg',['p_window_cfg',['../group___a_d_c.html#a01eb9675c5cef9993c5a9e85dbadb4b0',1,'adc_channel_cfg_t']]],
   ['padding',['padding',['../group___e_t_h_e_r___a_p_i.html#a96ab539f1b4c8f7be6169d7173b67776',1,'ether_cfg_t']]],
   ['padding_5foffset',['padding_offset',['../group___e_t_h_e_r___a_p_i.html#a5c1d94fec751bde17d1a54d911c39619',1,'ether_cfg_t']]],
   ['page_5fprogram_5faddress_5flines',['page_program_address_lines',['../group___s_p_i___f_l_a_s_h___a_p_i.html#ab612f8046209bbb2b29e5d3eee98831f',1,'spi_flash_cfg_t']]],

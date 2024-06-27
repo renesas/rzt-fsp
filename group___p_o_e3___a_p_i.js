@@ -86,6 +86,18 @@ var group___p_o_e3___a_p_i =
       [ "POE3_STATE_DSMIF0_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4af7751e7db56b87d70058a7839b95f3ee", null ],
       [ "POE3_STATE_DSMIF1_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a10ff02076a776d0e89ae9b7c62cc0b0c", null ],
       [ "POE3_STATE_OUTPUT_SHORT_CIRCUIT_1_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a1bf1863365a368bae9299747131a0b96", null ],
+      [ "POE3_STATE_OUTPUT_SHORT_CIRCUIT_2_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a12a0900fdff34d0cc993edc52c5bf363", null ],
+      [ "POE3_STATE_NO_DISABLE_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a970810582f3aa66fbd9d8f9f71fe3989", null ],
+      [ "POE3_STATE_POE0_HIGH_IMPEDANCE_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4aadb44fc2c713d026dc15469d08b7a360", null ],
+      [ "POE3_STATE_POE4_HIGH_IMPEDANCE_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4ad1b0d8697dd1e3dd311272f85149b85a", null ],
+      [ "POE3_STATE_POE8_HIGH_IMPEDANCE_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a68b7fa82d9a6f9cff9c4e8e9b2fd5d1d", null ],
+      [ "POE3_STATE_POE10_HIGH_IMPEDANCE_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a2c87a94f9ae3f18cb21f0f9767627598", null ],
+      [ "POE3_STATE_POE11_HIGH_IMPEDANCE_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4aa26f930f95533328faedee86a1707e51", null ],
+      [ "POE3_STATE_SOFTWARE_STOP_DISABLE_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4af1ab1fc89fddf5761d1c7f0209f36c99", null ],
+      [ "POE3_STATE_OSCILLATION_STOP_DISABLE_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a5b9e21e157aa6ae92c8437896137c9a5", null ],
+      [ "POE3_STATE_DSMIF0_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4af7751e7db56b87d70058a7839b95f3ee", null ],
+      [ "POE3_STATE_DSMIF1_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a10ff02076a776d0e89ae9b7c62cc0b0c", null ],
+      [ "POE3_STATE_OUTPUT_SHORT_CIRCUIT_1_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a1bf1863365a368bae9299747131a0b96", null ],
       [ "POE3_STATE_OUTPUT_SHORT_CIRCUIT_2_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a12a0900fdff34d0cc993edc52c5bf363", null ]
     ] ],
     [ "poe3_active_level_t", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29", [
