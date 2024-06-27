@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /** @addtogroup Renesas Electronics Corporation
  * @{
@@ -8380,10 +8366,13 @@ typedef struct                         /*!< (@ 0x80110200) R_ESC_INI Structure  
 
         struct
         {
-            __IOM uint32_t TXSFT0 : 2; /*!< [1..0] Set the delay time for ETH0_TXC of the EtherCAT                    */
-            __IOM uint32_t TXSFT1 : 2; /*!< [3..2] Set the delay time for ETH1_TXC of the EtherCAT                    */
-            __IOM uint32_t TXSFT2 : 2; /*!< [5..4] Set the delay time for ETH2_TXC of the EtherCAT                    */
-            uint32_t              : 26;
+            __IOM uint32_t TXSFT0 : 2; /*!< [1..0] Set the delay time for ETH0_TXEN and ETH0_TXDn of the
+                                        *   EtherCAT                                                                  */
+            __IOM uint32_t TXSFT1 : 2; /*!< [3..2] Set the delay time for ETH1_TXEN and ETH1_TXDn of the
+                                        *   EtherCAT                                                                  */
+            __IOM uint32_t TXSFT2 : 2; /*!< [5..4] Set the delay time for ETH2_TXEN and ETH2_TXDn of the
+                                        *   EtherCAT                                                                  */
+            uint32_t : 26;
         } ECATDBGC_b;
     };
 
@@ -8556,8 +8545,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
                                            *   0.                                                                        */
             __IOM uint32_t ENABLE : 1;    /*!< [6..6] If set, all Bridge Protocol Frames (BPDU) are forwarded
                                            *   exclusively to the management port specified in bits [3:0].               */
-            __IOM uint32_t DISCARD : 1;   /*!< [7..7] If set, BPDU frames are discarded always. Setting has
-                                           *   no effect, when the enable bit is set.                                    */
+            __IOM uint32_t DISCARD : 1;   /*!< [7..7] If set, BPDU frames are discarded always.                          */
             __IOM uint32_t MGMT_EN : 1;   /*!< [8..8] If set, BPDU frames received at the management port are
                                            *   forwarded to the ports given in the portmask given in this
                                            *   register, bypassing the normal forwarding decisions (except
@@ -11066,8 +11054,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
 
     union
     {
-        __IOM uint32_t IDLE_SLOPE_P0;       /*!< (@ 0x00000854) Port n MAC Traffic Shaper Bandwidth Control (n
-                                             *                  = 0 to 3)                                                  */
+        __IOM uint32_t IDLE_SLOPE_P0;       /*!< (@ 0x00000854) Port 0 MAC Traffic Shaper Bandwidth Control                */
 
         struct
         {
@@ -11078,8 +11065,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
 
     union
     {
-        __IOM uint32_t CT_DELAY_P0;      /*!< (@ 0x00000858) Port n Cut-Through Delay Indication Register
-                                          *                  (n = 0 to 2)                                               */
+        __IOM uint32_t CT_DELAY_P0;      /*!< (@ 0x00000858) Port 0 Cut-Through Delay Indication Register               */
 
         struct
         {
@@ -11166,7 +11152,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
         struct
         {
             __IM uint32_t FCSERRCOUNT : 32;         /*!< [31..0] PORT n, this field indicates the number of MAC Valid
-                                                     *   Length except CRC error.                                                  */
+                                                     *   Length but CRC error.                                                     */
         } AFRAMECHECKSEQUENCEERRORS_P0_b;
     };
 
@@ -11934,8 +11920,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
 
     union
     {
-        __IOM uint32_t IDLE_SLOPE_P1;       /*!< (@ 0x00000C54) Port n MAC Traffic Shaper Bandwidth Control (n
-                                             *                  = 0 to 3)                                                  */
+        __IOM uint32_t IDLE_SLOPE_P1;       /*!< (@ 0x00000C54) Port 1 MAC Traffic Shaper Bandwidth Control                */
 
         struct
         {
@@ -11946,8 +11931,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
 
     union
     {
-        __IOM uint32_t CT_DELAY_P1;      /*!< (@ 0x00000C58) Port n Cut-Through Delay Indication Register
-                                          *                  (n = 0 to 2)                                               */
+        __IOM uint32_t CT_DELAY_P1;      /*!< (@ 0x00000C58) Port 1 Cut-Through Delay Indication Register               */
 
         struct
         {
@@ -12034,7 +12018,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
         struct
         {
             __IM uint32_t FCSERRCOUNT : 32;         /*!< [31..0] PORT n, this field indicates the number of MAC Valid
-                                                     *   Length except CRC error.                                                  */
+                                                     *   Length but CRC error.                                                     */
         } AFRAMECHECKSEQUENCEERRORS_P1_b;
     };
 
@@ -12802,8 +12786,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
 
     union
     {
-        __IOM uint32_t IDLE_SLOPE_P2;       /*!< (@ 0x00001054) Port n MAC Traffic Shaper Bandwidth Control (n
-                                             *                  = 0 to 3)                                                  */
+        __IOM uint32_t IDLE_SLOPE_P2;       /*!< (@ 0x00001054) Port 2 MAC Traffic Shaper Bandwidth Control                */
 
         struct
         {
@@ -12814,8 +12797,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
 
     union
     {
-        __IOM uint32_t CT_DELAY_P2;      /*!< (@ 0x00001058) Port n Cut-Through Delay Indication Register
-                                          *                  (n = 0 to 2)                                               */
+        __IOM uint32_t CT_DELAY_P2;      /*!< (@ 0x00001058) Port 2 Cut-Through Delay Indication Register               */
 
         struct
         {
@@ -12902,7 +12884,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
         struct
         {
             __IM uint32_t FCSERRCOUNT : 32;         /*!< [31..0] PORT n, this field indicates the number of MAC Valid
-                                                     *   Length except CRC error.                                                  */
+                                                     *   Length but CRC error.                                                     */
         } AFRAMECHECKSEQUENCEERRORS_P2_b;
     };
 
@@ -13521,8 +13503,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
 
     union
     {
-        __IOM uint32_t IDLE_SLOPE_P3;       /*!< (@ 0x00001454) Port n MAC Traffic Shaper Bandwidth Control (n
-                                             *                  = 0 to 3)                                                  */
+        __IOM uint32_t IDLE_SLOPE_P3;       /*!< (@ 0x00001454) Port 3 MAC Traffic Shaper Bandwidth Control                */
 
         struct
         {
@@ -13564,7 +13545,7 @@ typedef struct                         /*!< (@ 0x80120000) R_ETHSW Structure    
         struct
         {
             __IM uint32_t FCSERRCOUNT : 32;         /*!< [31..0] PORT n, this field indicates the number of MAC Valid
-                                                     *   Length except CRC error.                                                  */
+                                                     *   Length but CRC error.                                                     */
         } AFRAMECHECKSEQUENCEERRORS_P3_b;
     };
 
@@ -19314,10 +19295,46 @@ typedef struct                         /*!< (@ 0x80210000) R_BSC Structure      
             uint32_t             : 11;
         } SDCR_b;
     };
-    __IOM uint32_t RTCSR;              /*!< (@ 0x00000050) Refresh Timer Control/Status Register                      */
-    __IOM uint32_t RTCNT;              /*!< (@ 0x00000054) Refresh Timer Counter                                      */
-    __IOM uint32_t RTCOR;              /*!< (@ 0x00000058) Refresh Time Constant Register                             */
-    __IM uint32_t  RESERVED4;
+
+    union
+    {
+        __IOM uint32_t RTCSR;          /*!< (@ 0x00000050) Refresh Timer Control/Status Register                      */
+
+        struct
+        {
+            __IOM uint32_t RRC  : 3;   /*!< [2..0] Refresh Count                                                      */
+            __IOM uint32_t CKS  : 3;   /*!< [5..3] Clock Select                                                       */
+            __IOM uint32_t CMIE : 1;   /*!< [6..6] Compare Match Interrupt Enable                                     */
+            __IOM uint32_t CMF  : 1;   /*!< [7..7] Compare Match Flag                                                 */
+            uint32_t            : 8;
+            __OM uint32_t CWP   : 16;  /*!< [31..16] Cancel Write Protection                                          */
+        } RTCSR_b;
+    };
+
+    union
+    {
+        __IOM uint32_t RTCNT;           /*!< (@ 0x00000054) Refresh Timer Counter                                      */
+
+        struct
+        {
+            __IOM uint32_t RFSHTC : 8;  /*!< [7..0] Refresh Timer Counter                                              */
+            uint32_t              : 8;
+            __OM uint32_t CWP     : 16; /*!< [31..16] Cancel Write Protection                                          */
+        } RTCNT_b;
+    };
+
+    union
+    {
+        __IOM uint32_t RTCOR;           /*!< (@ 0x00000058) Refresh Time Constant Register                             */
+
+        struct
+        {
+            __IOM uint32_t RFSHTV : 8;  /*!< [7..0] Refresh time value                                                 */
+            uint32_t              : 8;
+            __OM uint32_t CWP     : 16; /*!< [31..16] Cancel Write Protection                                          */
+        } RTCOR_b;
+    };
+    __IM uint32_t RESERVED4;
 
     union
     {
@@ -22525,7 +22542,7 @@ typedef struct                         /*!< (@ 0x90001000) R_MTU Structure      
 
     union
     {
-        __IOM uint8_t TRWERA;          /*!< (@ 0x00000284) Timer Read/Write Enable Register                           */
+        __IOM uint8_t TRWERA;          /*!< (@ 0x00000284) Timer Read/Write Enable Register A                         */
 
         struct
         {
@@ -22751,7 +22768,7 @@ typedef struct                         /*!< (@ 0x90001000) R_MTU Structure      
 
     union
     {
-        __IOM uint8_t TRWERB;          /*!< (@ 0x00000A84) Timer Read/Write Enable Register                           */
+        __IOM uint8_t TRWERB;          /*!< (@ 0x00000A84) Timer Read/Write Enable Register B                         */
 
         struct
         {
@@ -34709,29 +34726,47 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
  #define R_BSC_SDCR_A2ROW_Pos         (19UL)         /*!< A2ROW (Bit 19)                                        */
  #define R_BSC_SDCR_A2ROW_Msk         (0x180000UL)   /*!< A2ROW (Bitfield-Mask: 0x03)                           */
 /* =========================================================  RTCSR  ========================================================= */
+ #define R_BSC_RTCSR_RRC_Pos          (0UL)          /*!< RRC (Bit 0)                                           */
+ #define R_BSC_RTCSR_RRC_Msk          (0x7UL)        /*!< RRC (Bitfield-Mask: 0x07)                             */
+ #define R_BSC_RTCSR_CKS_Pos          (3UL)          /*!< CKS (Bit 3)                                           */
+ #define R_BSC_RTCSR_CKS_Msk          (0x38UL)       /*!< CKS (Bitfield-Mask: 0x07)                             */
+ #define R_BSC_RTCSR_CMIE_Pos         (6UL)          /*!< CMIE (Bit 6)                                          */
+ #define R_BSC_RTCSR_CMIE_Msk         (0x40UL)       /*!< CMIE (Bitfield-Mask: 0x01)                            */
+ #define R_BSC_RTCSR_CMF_Pos          (7UL)          /*!< CMF (Bit 7)                                           */
+ #define R_BSC_RTCSR_CMF_Msk          (0x80UL)       /*!< CMF (Bitfield-Mask: 0x01)                             */
+ #define R_BSC_RTCSR_CWP_Pos          (16UL)         /*!< CWP (Bit 16)                                          */
+ #define R_BSC_RTCSR_CWP_Msk          (0xffff0000UL) /*!< CWP (Bitfield-Mask: 0xffff)                           */
 /* =========================================================  RTCNT  ========================================================= */
+ #define R_BSC_RTCNT_RFSHTC_Pos       (0UL)          /*!< RFSHTC (Bit 0)                                        */
+ #define R_BSC_RTCNT_RFSHTC_Msk       (0xffUL)       /*!< RFSHTC (Bitfield-Mask: 0xff)                          */
+ #define R_BSC_RTCNT_CWP_Pos          (16UL)         /*!< CWP (Bit 16)                                          */
+ #define R_BSC_RTCNT_CWP_Msk          (0xffff0000UL) /*!< CWP (Bitfield-Mask: 0xffff)                           */
 /* =========================================================  RTCOR  ========================================================= */
+ #define R_BSC_RTCOR_RFSHTV_Pos       (0UL)          /*!< RFSHTV (Bit 0)                                        */
+ #define R_BSC_RTCOR_RFSHTV_Msk       (0xffUL)       /*!< RFSHTV (Bitfield-Mask: 0xff)                          */
+ #define R_BSC_RTCOR_CWP_Pos          (16UL)         /*!< CWP (Bit 16)                                          */
+ #define R_BSC_RTCOR_CWP_Msk          (0xffff0000UL) /*!< CWP (Bitfield-Mask: 0xffff)                           */
 /* ========================================================  TOSCOR  ========================================================= */
- #define R_BSC_TOSCOR_TOCNUM_Pos      (0UL)      /*!< TOCNUM (Bit 0)                                        */
- #define R_BSC_TOSCOR_TOCNUM_Msk      (0xffffUL) /*!< TOCNUM (Bitfield-Mask: 0xffff)                        */
+ #define R_BSC_TOSCOR_TOCNUM_Pos      (0UL)          /*!< TOCNUM (Bit 0)                                        */
+ #define R_BSC_TOSCOR_TOCNUM_Msk      (0xffffUL)     /*!< TOCNUM (Bitfield-Mask: 0xffff)                        */
 /* =========================================================  TOSTR  ========================================================= */
- #define R_BSC_TOSTR_CS0TOSTF_Pos     (0UL)      /*!< CS0TOSTF (Bit 0)                                      */
- #define R_BSC_TOSTR_CS0TOSTF_Msk     (0x1UL)    /*!< CS0TOSTF (Bitfield-Mask: 0x01)                        */
- #define R_BSC_TOSTR_CS2TOSTF_Pos     (2UL)      /*!< CS2TOSTF (Bit 2)                                      */
- #define R_BSC_TOSTR_CS2TOSTF_Msk     (0x4UL)    /*!< CS2TOSTF (Bitfield-Mask: 0x01)                        */
- #define R_BSC_TOSTR_CS3TOSTF_Pos     (3UL)      /*!< CS3TOSTF (Bit 3)                                      */
- #define R_BSC_TOSTR_CS3TOSTF_Msk     (0x8UL)    /*!< CS3TOSTF (Bitfield-Mask: 0x01)                        */
- #define R_BSC_TOSTR_CS5TOSTF_Pos     (5UL)      /*!< CS5TOSTF (Bit 5)                                      */
- #define R_BSC_TOSTR_CS5TOSTF_Msk     (0x20UL)   /*!< CS5TOSTF (Bitfield-Mask: 0x01)                        */
+ #define R_BSC_TOSTR_CS0TOSTF_Pos     (0UL)          /*!< CS0TOSTF (Bit 0)                                      */
+ #define R_BSC_TOSTR_CS0TOSTF_Msk     (0x1UL)        /*!< CS0TOSTF (Bitfield-Mask: 0x01)                        */
+ #define R_BSC_TOSTR_CS2TOSTF_Pos     (2UL)          /*!< CS2TOSTF (Bit 2)                                      */
+ #define R_BSC_TOSTR_CS2TOSTF_Msk     (0x4UL)        /*!< CS2TOSTF (Bitfield-Mask: 0x01)                        */
+ #define R_BSC_TOSTR_CS3TOSTF_Pos     (3UL)          /*!< CS3TOSTF (Bit 3)                                      */
+ #define R_BSC_TOSTR_CS3TOSTF_Msk     (0x8UL)        /*!< CS3TOSTF (Bitfield-Mask: 0x01)                        */
+ #define R_BSC_TOSTR_CS5TOSTF_Pos     (5UL)          /*!< CS5TOSTF (Bit 5)                                      */
+ #define R_BSC_TOSTR_CS5TOSTF_Msk     (0x20UL)       /*!< CS5TOSTF (Bitfield-Mask: 0x01)                        */
 /* =========================================================  TOENR  ========================================================= */
- #define R_BSC_TOENR_CS0TOEN_Pos      (0UL)      /*!< CS0TOEN (Bit 0)                                       */
- #define R_BSC_TOENR_CS0TOEN_Msk      (0x1UL)    /*!< CS0TOEN (Bitfield-Mask: 0x01)                         */
- #define R_BSC_TOENR_CS2TOEN_Pos      (2UL)      /*!< CS2TOEN (Bit 2)                                       */
- #define R_BSC_TOENR_CS2TOEN_Msk      (0x4UL)    /*!< CS2TOEN (Bitfield-Mask: 0x01)                         */
- #define R_BSC_TOENR_CS3TOEN_Pos      (3UL)      /*!< CS3TOEN (Bit 3)                                       */
- #define R_BSC_TOENR_CS3TOEN_Msk      (0x8UL)    /*!< CS3TOEN (Bitfield-Mask: 0x01)                         */
- #define R_BSC_TOENR_CS5TOEN_Pos      (5UL)      /*!< CS5TOEN (Bit 5)                                       */
- #define R_BSC_TOENR_CS5TOEN_Msk      (0x20UL)   /*!< CS5TOEN (Bitfield-Mask: 0x01)                         */
+ #define R_BSC_TOENR_CS0TOEN_Pos      (0UL)          /*!< CS0TOEN (Bit 0)                                       */
+ #define R_BSC_TOENR_CS0TOEN_Msk      (0x1UL)        /*!< CS0TOEN (Bitfield-Mask: 0x01)                         */
+ #define R_BSC_TOENR_CS2TOEN_Pos      (2UL)          /*!< CS2TOEN (Bit 2)                                       */
+ #define R_BSC_TOENR_CS2TOEN_Msk      (0x4UL)        /*!< CS2TOEN (Bitfield-Mask: 0x01)                         */
+ #define R_BSC_TOENR_CS3TOEN_Pos      (3UL)          /*!< CS3TOEN (Bit 3)                                       */
+ #define R_BSC_TOENR_CS3TOEN_Msk      (0x8UL)        /*!< CS3TOEN (Bitfield-Mask: 0x01)                         */
+ #define R_BSC_TOENR_CS5TOEN_Pos      (5UL)          /*!< CS5TOEN (Bit 5)                                       */
+ #define R_BSC_TOENR_CS5TOEN_Msk      (0x20UL)       /*!< CS5TOEN (Bitfield-Mask: 0x01)                         */
 
 /* =========================================================================================================================== */
 /* ================                                          R_XSPI0                                          ================ */

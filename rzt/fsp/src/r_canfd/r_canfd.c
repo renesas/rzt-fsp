@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /***********************************************************************************************************************
  * Includes
@@ -35,12 +21,36 @@
 
 #define CANFD_PRV_CTR_MODE_MASK                (R_CANFD_CFDGCTR_GSLPR_Msk + R_CANFD_CFDGCTR_GMDC_Msk)
 #define CANFD_PRV_CTR_RESET_BIT                (1U)
-#define CANFD_PRV_RX_FIFO_MAX                  (8U)
 #define CANFD_PRV_RX_BUFFER_RAM_LIMIT_BYTES    (4864U)
 #define CANFD_PRV_RXMB_MAX                     (32U)
 #define CANFD_PRV_TXMB_OFFSET                  (32U)
 #define CANFD_PRV_TXMB_CHANNEL_OFFSET          (64U)
 #define CANFD_PRV_STANDARD_ID_MAX              (0x7FFU)
+
+#define CANFD_PRV_CFIFO_CHANNEL_OFFSET         (3U)
+
+#define R_CANFD_CFDRM_RM_TYPE                  R_CANFD_CFDRM_Type
+
+#define CANFD_PRV_RXMB_PTR(buffer)    (&p_reg->CFDRM[buffer])
+#define CANFD_PRV_RX_FIFO_MAX                  (8U)
+#define CANFD_PRV_COMMON_FIFO_MAX              (3U)
+#define CANFD_PRV_CFDTMIEC_LENGTH              (2)
+#define CANFD_PRV_RMID_POSITION                (R_CANFD_CFDRM_ID_RMID_Pos)
+#define CANFD_PRV_RMID_MASK                    (R_CANFD_CFDRM_ID_RMID_Msk)
+#define CANFD_PRV_RMRTR_POSITION               (R_CANFD_CFDRM_ID_RMRTR_Pos)
+#define CANFD_PRV_RMRTR_MASK                   (R_CANFD_CFDRM_ID_RMRTR_Msk)
+#define CANFD_PRV_RMIDE_POSITION               (R_CANFD_CFDRM_ID_RMIDE_Pos)
+#define CANFD_PRV_RMIDE_MASK                   (R_CANFD_CFDRM_ID_RMIDE_Msk)
+#define CANFD_PRV_RMDLC_POSITION               (R_CANFD_CFDRM_PTR_RMDLC_Pos)
+#define CANFD_PRV_RMDLC_MASK                   (R_CANFD_CFDRM_PTR_RMDLC_Msk)
+
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
+ #define CANFD_INTER_CH(channel)                  (0U)
+#else
+ #define CANFD_INTER_CH(channel)                  (channel)
+#endif
+
+#define CANFD_PRV_CFIFO_INDEX(buffer, channel)    ((buffer) + ((channel) * CANFD_PRV_CFIFO_CHANNEL_OFFSET))
 
 /***********************************************************************************************************************
  * Const data
@@ -63,14 +73,18 @@ static bool r_canfd_bit_timing_parameter_check(can_bit_timing_cfg_t * p_bit_timi
 
 #endif
 
-static void    r_canfd_mb_read(uint32_t buffer, can_frame_t * const frame);
-static void    r_canfd_call_callback(canfd_instance_ctrl_t * p_instance_ctrl, can_callback_args_t * p_args);
-static void    r_canfd_mode_transition(canfd_instance_ctrl_t * p_instance_ctrl, can_operation_mode_t operation_mode);
-static void    r_canfd_mode_ctr_set(volatile uint32_t * p_ctr_reg, can_operation_mode_t operation_mode);
 static uint8_t r_canfd_bytes_to_dlc(uint8_t bytes);
-void           canfd_error_isr(void);
-void           canfd_rx_fifo_isr(void);
-void           canfd_channel_tx_isr(void);
+
+static void r_candfd_global_error_handler(uint32_t instance);
+static void r_canfd_rx_fifo_handler(uint32_t instance);
+static void r_canfd_mb_read(R_CANFD_Type * p_reg, uint32_t buffer, can_frame_t * const frame);
+static void r_canfd_call_callback(canfd_instance_ctrl_t * p_instance_ctrl, can_callback_args_t * p_args);
+static void r_canfd_mode_transition(canfd_instance_ctrl_t * p_instance_ctrl, can_operation_mode_t operation_mode);
+static void r_canfd_mode_ctr_set(volatile uint32_t * p_ctr_reg, can_operation_mode_t operation_mode);
+void        canfd_error_isr(void);
+void        canfd_rx_fifo_isr(void);
+void        canfd_common_fifo_rx_isr(void);
+void        canfd_channel_tx_isr(void);
 
 /***********************************************************************************************************************
  * ISR prototypes
@@ -85,7 +99,10 @@ void           canfd_channel_tx_isr(void);
  **********************************************************************************************************************/
 
 /* Channel control struct array */
-static canfd_instance_ctrl_t * gp_instance_ctrl[BSP_FEATURE_CANFD_NUM_CHANNELS] = {NULL};
+static canfd_instance_ctrl_t * gp_instance_ctrl[BSP_FEATURE_CANFD_NUM_INSTANCES * BSP_FEATURE_CANFD_NUM_CHANNELS] =
+{
+    NULL
+};
 
 /* CAN function pointers   */
 const can_api_t g_canfd_on_canfd =
@@ -129,10 +146,13 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
     FSP_ASSERT(p_cfg->p_callback);
     FSP_ASSERT(p_cfg->p_bit_timing);
 
+    uint32_t channel = p_cfg->channel;
+
     /* Check that the module is not open, the channel is present and that it is not in use */
     FSP_ERROR_RETURN(CANFD_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
-    FSP_ERROR_RETURN(p_cfg->channel < 2, FSP_ERR_IP_CHANNEL_NOT_PRESENT);
-    FSP_ERROR_RETURN(NULL == gp_instance_ctrl[p_cfg->channel], FSP_ERR_IN_USE);
+    FSP_ERROR_RETURN(channel < BSP_FEATURE_CANFD_NUM_CHANNELS * BSP_FEATURE_CANFD_NUM_INSTANCES,
+                     FSP_ERR_IP_CHANNEL_NOT_PRESENT);
+    FSP_ERROR_RETURN(NULL == gp_instance_ctrl[channel], FSP_ERR_IN_USE);
 
     /* Check that mandatory interrupts are enabled */
     FSP_ERROR_RETURN(VECTOR_NUMBER_CAN_RXF >= 0, FSP_ERR_CAN_INIT_FAILED);
@@ -159,12 +179,22 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
                                    (p_bit_timing->time_segment_1 + p_bit_timing->time_segment_2 + 1U);
     FSP_ERROR_RETURN(data_rate_clocks <= nominal_rate_clocks, FSP_ERR_CAN_INIT_FAILED);
 #else
+    uint32_t channel = p_cfg->channel;
 
     /* Get extended config */
     canfd_extended_cfg_t * p_extend = (canfd_extended_cfg_t *) p_cfg->p_extend;
 #endif
 
     fsp_err_t err = FSP_SUCCESS;
+
+    /* Save the base register for this channel. */
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
+    R_CANFD_Type * p_reg =
+        (R_CANFD_Type *) ((uint32_t) R_CANFD0 + (channel * ((uint32_t) R_CANFD1 - (uint32_t) R_CANFD0)));
+#else
+    R_CANFD_Type * p_reg = R_CANFD;
+#endif
+    p_instance_ctrl->p_reg = p_reg;
 
     /* Initialize the control block */
     p_instance_ctrl->p_cfg = p_cfg;
@@ -183,61 +213,84 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
     /* Perform global config only if the module is in Global Sleep or Global Reset */
-    if (R_CANFD->CFDGSTS & R_CANFD_CFDGSTS_GRSTSTS_Msk)
+    if (p_reg->CFDGSTS & R_CANFD_CFDGSTS_GRSTSTS_Msk)
     {
         /* Wait for RAM initialization
          *(see RZ microprocessor User's Manual section "Timing of Global Mode Change") */
-        FSP_HARDWARE_REGISTER_WAIT((R_CANFD->CFDGSTS & R_CANFD_CFDGSTS_GRAMINIT_Msk), 0);
+        FSP_HARDWARE_REGISTER_WAIT((p_reg->CFDGSTS & R_CANFD_CFDGSTS_GRAMINIT_Msk), 0);
 
         /* Cancel Global Sleep and wait for transition to Global Reset */
         r_canfd_mode_transition(p_instance_ctrl, CAN_OPERATION_MODE_GLOBAL_RESET);
 
         /* Configure global TX priority, DLC check/replace functions, external/internal clock select and payload
          * overflow behavior */
-        R_CANFD->CFDGCFG = p_global_cfg->global_config;
+        p_reg->CFDGCFG = p_global_cfg->global_config;
 
         /* Configure rule count for both channels */
-        R_CANFD->CFDGAFLCFG0 = (CANFD_CFG_AFL_CH0_RULE_NUM << R_CANFD_CFDGAFLCFG0_RNC0_Pos) |
-                               CANFD_CFG_AFL_CH1_RULE_NUM;
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
+        p_reg->CFDGAFLCFG0 = (CANFD_CFG_AFL_CH0_RULE_NUM << R_CANFD_CFDGAFLCFG0_RNC0_Pos);
+#else
+        p_reg->CFDGAFLCFG0 = (CANFD_CFG_AFL_CH0_RULE_NUM << R_CANFD_CFDGAFLCFG0_RNC0_Pos) |
+                             CANFD_CFG_AFL_CH1_RULE_NUM;
+#endif
 
         /* Set CAN FD Protocol Exception response (ISO exception state or send error frame) */
-        R_CANFD->CFDGFDCFG = CANFD_CFG_FD_PROTOCOL_EXCEPTION;
+        p_reg->CFDGFDCFG = CANFD_CFG_FD_PROTOCOL_EXCEPTION;
 
         /* Set number and size of RX message buffers */
-        R_CANFD->CFDRMNB = p_global_cfg->rx_mb_config;
+        p_reg->CFDRMNB = p_global_cfg->rx_mb_config;
 
         /* Configure RX FIFOs and interrupt */
         for (uint32_t i = 0; i < CANFD_PRV_RX_FIFO_MAX; i++)
         {
-            R_CANFD->CFDRFCC[i] = p_global_cfg->rx_fifo_config[i];
+            p_reg->CFDRFCC[i] = p_global_cfg->rx_fifo_config[i];
         }
 
         R_BSP_IrqCfgEnable(VECTOR_NUMBER_CAN_RXF, p_global_cfg->rx_fifo_ipl, NULL);
 
         /* Set global error interrupts */
-        R_CANFD->CFDGCTR = p_global_cfg->global_interrupts;
+        p_reg->CFDGCTR = p_global_cfg->global_interrupts;
+
+        /* Configure Common FIFOs */
+        for (uint32_t i = 0; i < R_CANFD_NUM_COMMON_FIFOS; i++)
+        {
+            /* Configure the Common FIFOs. Mask out the enable bit because it can only be set once operating.
+             * See Section "Common FIFO Configuration/Control Register n" in the RZ microprocessor User's Manual for more details. */
+            p_reg->CFDCFCC[i] = p_global_cfg->common_fifo_config[i] & ~R_CANFD_CFDCFCC_CFE_Msk;
+        }
     }
 
-    if (CANFD_CFG_GLOBAL_ERROR_CH == p_cfg->channel)
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
+    if (CANFD_CFG_GLOBAL_ERROR_CH == channel)
+#endif
     {
         /* Configure global error interrupt */
-        R_BSP_IrqCfgEnable(VECTOR_NUMBER_CAN_GLERR, p_global_cfg->global_err_ipl, NULL);
+        R_BSP_IrqCfgEnable(VECTOR_NUMBER_CAN_GLERR, p_global_cfg->global_err_ipl, p_instance_ctrl);
     }
 
     /* Track ctrl struct */
-    gp_instance_ctrl[p_cfg->channel] = p_instance_ctrl;
+    gp_instance_ctrl[channel] = p_instance_ctrl;
 
     /* Get AFL entry and limit */
     uint32_t afl_entry = 0;
-    uint32_t afl_max   = CANFD_CFG_AFL_CH0_RULE_NUM;
-    if (1U == p_cfg->channel)
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
+    uint32_t afl_max = CANFD_CFG_AFL_CH0_RULE_NUM;
+    if (1U == channel)
+    {
+        afl_max = CANFD_CFG_AFL_CH1_RULE_NUM;
+    }
+
+#else
+    uint32_t afl_max = CANFD_CFG_AFL_CH0_RULE_NUM;
+    if (1U == channel)
     {
         afl_entry += CANFD_CFG_AFL_CH0_RULE_NUM;
         afl_max   += CANFD_CFG_AFL_CH1_RULE_NUM;
     }
+#endif
 
     /* Unlock AFL */
-    R_CANFD->CFDGAFLECTR = R_CANFD_CFDGAFLECTR_AFLDAE_Msk;
+    p_reg->CFDGAFLECTR = R_CANFD_CFDGAFLECTR_AFLDAE_Msk;
 
     /* Write all configured AFL entries */
     R_CANFD_CFDGAFL_Type * p_afl = (R_CANFD_CFDGAFL_Type *) p_extend->p_afl;
@@ -247,24 +300,26 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
          * Entries in the AFL" in the RZ microprocessor User's Manual for more details. */
 
         /* Set AFL page */
-        R_CANFD->CFDGAFLECTR = (afl_entry >> 4) | R_CANFD_CFDGAFLECTR_AFLDAE_Msk;
+        p_reg->CFDGAFLECTR = (afl_entry >> 4) | R_CANFD_CFDGAFLECTR_AFLDAE_Msk;
 
         /* Get pointer to current AFL rule and set it to the rule pointed to by p_afl */
-        volatile R_CANFD_CFDGAFL_Type * cfdgafl = &R_CANFD->CFDGAFL[afl_entry & 0xF];
+        volatile R_CANFD_CFDGAFL_Type * cfdgafl = &p_reg->CFDGAFL[afl_entry & 0xF];
         *cfdgafl = *p_afl++;
 
         /* Set Information Label 0 to the channel being configured */
-        cfdgafl->P0_b.GAFLIFL0 = p_cfg->channel & 1U;
+        cfdgafl->P0_b.GAFLIFL0 = channel & 1U;
     }
 
     /* Lock AFL */
-    R_CANFD->CFDGAFLECTR = 0;
+    p_reg->CFDGAFLECTR = 0;
 
     /* Cancel Channel Sleep and wait for transition to Channel Reset */
     r_canfd_mode_transition(p_instance_ctrl, CAN_OPERATION_MODE_RESET);
 
+    uint32_t interlaced_channel = CANFD_INTER_CH(channel);
+
     /* Configure bitrate */
-    R_CANFD->CFDC[p_cfg->channel].NCFG =
+    p_reg->CFDC[interlaced_channel].NCFG =
         (uint32_t) (((p_cfg->p_bit_timing->baud_rate_prescaler - 1) & R_CANFD_CFDC_NCFG_NBRP_Msk) <<
                     R_CANFD_CFDC_NCFG_NBRP_Pos) |
         ((p_cfg->p_bit_timing->time_segment_1 - 1U) << R_CANFD_CFDC_NCFG_NTSEG1_Pos) |
@@ -272,7 +327,7 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
         ((p_cfg->p_bit_timing->synchronization_jump_width - 1U) << R_CANFD_CFDC_NCFG_NSJW_Pos);
 
     /* Configure data bitrate for rate switching on FD frames */
-    R_CANFD->CFDC2[p_cfg->channel].DCFG =
+    p_reg->CFDC2[interlaced_channel].DCFG =
         (uint32_t) (((p_extend->p_data_timing->baud_rate_prescaler - 1) & R_CANFD_CFDC2_DCFG_DBRP_Msk) <<
                     R_CANFD_CFDC2_DCFG_DBRP_Pos) |
         ((p_extend->p_data_timing->time_segment_1 - 1U) << R_CANFD_CFDC2_DCFG_DTSEG1_Pos) |
@@ -289,18 +344,20 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
     /* Configure transceiver delay compensation; allow user to set ESI bit manually
      * Leave the CLOE bit at the default setting for each device product.
      */
-    uint32_t cloe = R_CANFD->CFDC2[p_cfg->channel].FDCFG_b.CLOE;
-    R_CANFD->CFDC2[p_cfg->channel].FDCFG =
+    uint32_t cloe = p_reg->CFDC2[interlaced_channel].FDCFG_b.CLOE;
+    p_reg->CFDC2[interlaced_channel].FDCFG =
         (cloe << R_CANFD_CFDC2_FDCFG_CLOE_Pos) |
         (tdco << R_CANFD_CFDC2_FDCFG_TDCO_Pos) |
         (uint32_t) (p_extend->delay_compensation << R_CANFD_CFDC2_FDCFG_TDCE_Pos) |
         R_CANFD_CFDC2_FDCFG_ESIC_Msk | 1U;
 
     /* Write TX message buffer interrupt enable bits */
-    memcpy((void *) &R_CANFD->CFDTMIEC[p_cfg->channel * 2], &p_extend->txmb_txi_enable, 2 * sizeof(uint32_t));
+    memcpy((void *) &p_reg->CFDTMIEC[interlaced_channel * CANFD_PRV_CFDTMIEC_LENGTH],
+           &p_extend->txmb_txi_enable,
+           CANFD_PRV_CFDTMIEC_LENGTH * sizeof(uint32_t));
 
     /* Configure channel error interrupts */
-    R_CANFD->CFDC[p_cfg->channel].CTR = p_extend->error_interrupts | R_CANFD_CFDC_CTR_CHMDC_Msk;
+    p_reg->CFDC[interlaced_channel].CTR = p_extend->error_interrupts | R_CANFD_CFDC_CTR_CHMDC_Msk;
 
     /* Enable channel interrupts */
 
@@ -312,6 +369,12 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
     if (p_cfg->tx_irq >= 0)
     {
         R_BSP_IrqCfgEnable(p_cfg->tx_irq, p_cfg->ipl, p_instance_ctrl);
+    }
+
+    /* Use the CAN RX IRQ for Common FIFO RX. */
+    if (p_cfg->rx_irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(p_cfg->rx_irq, p_cfg->ipl, p_ctrl);
     }
 
     /* Set global mode to Operation and wait for transition */
@@ -361,10 +424,21 @@ fsp_err_t R_CANFD_Close (can_ctrl_t * const p_ctrl)
         R_BSP_IrqDisable(p_cfg->tx_irq);
     }
 
+    if (p_cfg->rx_irq >= 0)
+    {
+        R_BSP_IrqDisable(p_cfg->rx_irq);
+    }
+
     /* Disable Global Error interrupt if the handler channel is being closed */
     if (CANFD_CFG_GLOBAL_ERROR_CH == p_cfg->channel)
     {
         R_BSP_IrqDisable(VECTOR_NUMBER_CAN_GLERR);
+
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
+
+        /* Disable RX FIFO interrupt */
+        R_BSP_IrqDisable(VECTOR_NUMBER_CAN_RXF);
+#endif
     }
 
     /* Set channel to Sleep if other is open, otherwise reset/stop CANFD module */
@@ -374,8 +448,11 @@ fsp_err_t R_CANFD_Close (can_ctrl_t * const p_ctrl)
     }
     else
     {
+#if BSP_FEATURE_CANFD_NUM_INSTANCES == 1
+
         /* Disable RX FIFO interrupt */
         R_BSP_IrqDisable(VECTOR_NUMBER_CAN_RXF);
+#endif
 
         /* Transition to Global Sleep */
         r_canfd_mode_transition(p_instance_ctrl, CAN_OPERATION_MODE_GLOBAL_RESET);
@@ -408,15 +485,18 @@ fsp_err_t R_CANFD_Close (can_ctrl_t * const p_ctrl)
  *****************************************************************************************************************/
 fsp_err_t R_CANFD_Write (can_ctrl_t * const p_ctrl, uint32_t buffer, can_frame_t * const p_frame)
 {
+#if CANFD_CFG_PARAM_CHECKING_ENABLE
     canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) p_ctrl;
 
-#if CANFD_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_frame);
     FSP_ERROR_RETURN(p_instance_ctrl->open == CANFD_OPEN, FSP_ERR_NOT_OPEN);
 
-    /* CANFD channels have 32 TX message buffers each (0-15, 32-47) */
-    FSP_ERROR_RETURN((buffer <= 15U) || (buffer - 32U <= 15U), FSP_ERR_INVALID_ARGUMENT);
+    /* CANFD channels have 32 TX message buffers + 3 common FIFOs each (0-15, 32-47, 64-66) */
+    FSP_ERROR_RETURN((buffer <= 15U) ||
+                     (buffer - 32U <= 15U) ||
+                     (buffer - (uint32_t) CANFD_TX_BUFFER_FIFO_COMMON_0 <= 2U),
+                     FSP_ERR_INVALID_ARGUMENT);
 
     /* Check DLC field */
     if (!(p_frame->options & CANFD_FRAME_OPTION_FD))
@@ -433,34 +513,80 @@ fsp_err_t R_CANFD_Write (can_ctrl_t * const p_ctrl, uint32_t buffer, can_frame_t
     {
         /* Do nothing. */
     }
+
+#else
+    canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) p_ctrl;
 #endif
 
-    /* Calculate global TX message buffer number */
-    uint32_t txmb = buffer + (p_instance_ctrl->p_cfg->channel * CANFD_PRV_TXMB_CHANNEL_OFFSET);
+    /* Provide variables to store common values. */
+    const bool     is_cfifo           = buffer >= (uint32_t) CANFD_TX_BUFFER_FIFO_COMMON_0;
+    const uint32_t interlaced_channel = CANFD_INTER_CH(p_instance_ctrl->p_cfg->channel);
 
-    /* Ensure MB is ready */
-    FSP_ERROR_RETURN(0U == R_CANFD->CFDTMSTS_b[txmb].TMTSTS, FSP_ERR_CAN_TRANSMIT_NOT_READY);
+    const uint32_t id = p_frame->id | ((uint32_t) p_frame->type << R_CANFD_CFDTM_ID_TMRTR_Pos) |
+                        ((uint32_t) p_frame->id_mode << R_CANFD_CFDTM_ID_TMIDE_Pos);
 
-    /* Set TX message buffer registers */
-    R_CANFD->CFDTM[txmb].ID = p_frame->id | ((uint32_t) p_frame->type << R_CANFD_CFDTM_ID_TMRTR_Pos) |
-                              ((uint32_t) p_frame->id_mode << R_CANFD_CFDTM_ID_TMIDE_Pos);
-    R_CANFD->CFDTM[txmb].PTR = (uint32_t) r_canfd_bytes_to_dlc(p_frame->data_length_code) <<
-                               R_CANFD_CFDTM_PTR_TMDLC_Pos;
+    uint32_t           buffer_idx = 0;
+    volatile uint8_t * p_dest     = NULL;
 
-    /* Set FD bits (ESI, BRS and FDF) */
-    R_CANFD->CFDTM[txmb].FDCTR = p_frame->options & 7U;
+    if (!is_cfifo)
+    {
+        /* Calculate global TX message buffer number */
+        buffer_idx = buffer + (interlaced_channel * CANFD_PRV_TXMB_CHANNEL_OFFSET);
+
+        /* Ensure MB is ready */
+        FSP_ERROR_RETURN(0U == p_instance_ctrl->p_reg->CFDTMSTS_b[buffer_idx].TMTSTS, FSP_ERR_CAN_TRANSMIT_NOT_READY);
+
+        /* Set ID */
+        p_instance_ctrl->p_reg->CFDTM[buffer_idx].ID = id;
+
+        /* Set DLC */
+        p_instance_ctrl->p_reg->CFDTM[buffer_idx].PTR = (uint32_t) r_canfd_bytes_to_dlc(p_frame->data_length_code) <<
+                                                        R_CANFD_CFDTM_PTR_TMDLC_Pos;
+
+        /* Set FD bits (ESI, BRS and FDF) */
+        p_instance_ctrl->p_reg->CFDTM[buffer_idx].FDCTR = p_frame->options & 7U;
+
+        /* Store the data pointer. */
+        p_dest = (uint8_t *) p_instance_ctrl->p_reg->CFDTM[buffer_idx].DF;
+    }
+    else
+    {
+        /* Calculate the Common FIFO index. */
+        buffer_idx = buffer - (uint32_t) CANFD_TX_BUFFER_FIFO_COMMON_0 +
+                     (interlaced_channel * CANFD_PRV_CFIFO_CHANNEL_OFFSET);
+
+        /* Set ID. */
+        p_instance_ctrl->p_reg->CFDCF[buffer_idx].ID = id;
+
+        /* Set DLC. */
+        p_instance_ctrl->p_reg->CFDCF[buffer_idx].PTR = (uint32_t) r_canfd_bytes_to_dlc(p_frame->data_length_code) <<
+                                                        R_CANFD_CFDCF_PTR_CFDLC_Pos;
+
+        /* Set the FD bits (ESI, BRS and FDF). */
+        p_instance_ctrl->p_reg->CFDCF[buffer_idx].FDCSTS = p_frame->options & 7U;
+
+        /* Store the data poitner. */
+        p_dest = (uint8_t *) p_instance_ctrl->p_reg->CFDCF[buffer_idx].DF;
+    }
 
     /* Copy data to register buffer */
-    uint32_t           len    = p_frame->data_length_code;
-    volatile uint8_t * p_dest = (uint8_t *) R_CANFD->CFDTM[txmb].DF;
-    volatile uint8_t * p_src  = p_frame->data;
+    uint32_t           len   = p_frame->data_length_code;
+    volatile uint8_t * p_src = p_frame->data;
     while (len--)
     {
         *p_dest++ = *p_src++;
     }
 
-    /* Request transmission */
-    R_CANFD->CFDTMC[txmb] = 1;
+    if (!is_cfifo)
+    {
+        /* Request transmission */
+        p_instance_ctrl->p_reg->CFDTMC[buffer_idx] = 1;
+    }
+    else
+    {
+        /* Increment the FIFO pointer by writing 0xFF to CFPC. */
+        p_instance_ctrl->p_reg->CFDCFPCTR[buffer_idx] = R_CANFD_CFDCFPCTR_CFPC_Msk;
+    }
 
     return FSP_SUCCESS;
 }
@@ -476,14 +602,15 @@ fsp_err_t R_CANFD_Write (can_ctrl_t * const p_ctrl, uint32_t buffer, can_frame_t
  *****************************************************************************************************************/
 fsp_err_t R_CANFD_Read (can_ctrl_t * const p_ctrl, uint32_t buffer, can_frame_t * const p_frame)
 {
-#if CANFD_CFG_PARAM_CHECKING_ENABLE
     canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) p_ctrl;
+#if CANFD_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_frame);
     FSP_ERROR_RETURN(p_instance_ctrl->open == CANFD_OPEN, FSP_ERR_NOT_OPEN);
-    FSP_ERROR_RETURN(buffer < CANFD_PRV_RXMB_MAX + CANFD_PRV_RX_FIFO_MAX, FSP_ERR_INVALID_ARGUMENT);
-#else
-    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_ERROR_RETURN((buffer < CANFD_PRV_RXMB_MAX + CANFD_PRV_RX_FIFO_MAX) ||
+                     ((buffer >= CANFD_RX_BUFFER_FIFO_COMMON_0) &&
+                      (buffer < CANFD_RX_BUFFER_FIFO_COMMON_0 + CANFD_PRV_COMMON_FIFO_MAX)),
+                     FSP_ERR_INVALID_ARGUMENT);
 #endif
 
     uint32_t not_empty;
@@ -491,17 +618,29 @@ fsp_err_t R_CANFD_Read (can_ctrl_t * const p_ctrl, uint32_t buffer, can_frame_t 
     /* Return an error if the buffer or FIFO is empty */
     if (buffer < CANFD_PRV_RXMB_MAX)
     {
-        not_empty = R_CANFD->CFDRMND0 & (1U << buffer);
+        not_empty = p_instance_ctrl->p_reg->CFDRMND0 & (1U << buffer);
+    }
+    else if (buffer < (uint32_t) CANFD_RX_BUFFER_FIFO_COMMON_0)
+    {
+        not_empty = !(p_instance_ctrl->p_reg->CFDFESTS & (1U << (buffer - CANFD_PRV_RXMB_MAX)));
     }
     else
     {
-        not_empty = !(R_CANFD->CFDFESTS & (1U << (buffer - CANFD_PRV_RXMB_MAX)));
+        /* Common FIFO status are grouped together and not channelized, so calculate the index based on the channel. */
+        const uint32_t cfifo_idx = CANFD_PRV_CFIFO_INDEX(buffer - (uint32_t) CANFD_RX_BUFFER_FIFO_COMMON_0,
+                                                         CANFD_INTER_CH(p_instance_ctrl->p_cfg->channel));
+
+        /* Update the buffer to be effectively the cfifo index calculated above. */
+        /* This is needed since r_canfd_mb_read(...) doesn't take a channel number. */
+        buffer = cfifo_idx + (uint32_t) CANFD_RX_BUFFER_FIFO_COMMON_0;
+
+        not_empty = (~p_instance_ctrl->p_reg->CFDFESTS & (1U << (R_CANFD_CFDFESTS_CFXEMP_Pos + cfifo_idx))) != 0;
     }
 
     FSP_ERROR_RETURN(not_empty, FSP_ERR_BUFFER_EMPTY);
 
     /* Retrieve message from buffer */
-    r_canfd_mb_read(buffer, p_frame);
+    r_canfd_mb_read(p_instance_ctrl->p_reg, buffer, p_frame);
 
     return FSP_SUCCESS;
 }
@@ -525,7 +664,7 @@ fsp_err_t R_CANFD_ModeTransition (can_ctrl_t * const   p_ctrl,
     FSP_ERROR_RETURN(p_instance_ctrl->open == CANFD_OPEN, FSP_ERR_NOT_OPEN);
 
     /* Get Global Status */
-    uint32_t cfdgsts = R_CANFD->CFDGSTS;
+    uint32_t cfdgsts = p_instance_ctrl->p_reg->CFDGSTS;
 
     /* Check to ensure the current mode is Global Halt when transitioning into or out of Internal Bus mode */
     FSP_ERROR_RETURN((cfdgsts & R_CANFD_CFDGSTS_GHLTSTS_Msk) || !((p_instance_ctrl->test_mode != test_mode) &&
@@ -550,6 +689,8 @@ fsp_err_t R_CANFD_ModeTransition (can_ctrl_t * const   p_ctrl,
     }
 #endif
 
+    uint32_t interlaced_channel = CANFD_INTER_CH(p_instance_ctrl->p_cfg->channel);
+
     if (p_instance_ctrl->test_mode != test_mode)
     {
         /* Follow the procedure for switching to Internal Bus mode given in Section "Internal CAN Bus
@@ -557,25 +698,25 @@ fsp_err_t R_CANFD_ModeTransition (can_ctrl_t * const   p_ctrl,
         if (CAN_TEST_MODE_INTERNAL_BUS == test_mode)
         {
             /* Disable channel test mode */
-            R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].CTR_b.CTME = 0;
+            p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR_b.CTME = 0;
 
             /* Link channel to internal bus */
-            R_CANFD->CFDGTSTCFG |= 1U << p_instance_ctrl->p_cfg->channel;
+            p_instance_ctrl->p_reg->CFDGTSTCFG |= 1U << interlaced_channel;
 
             /* Enable internal bus test mode */
-            R_CANFD->CFDGTSTCTR = 1;
+            p_instance_ctrl->p_reg->CFDGTSTCTR = 1;
         }
         else
         {
             if (p_instance_ctrl->test_mode == CAN_TEST_MODE_INTERNAL_BUS)
             {
                 /* Unlink channel from internal bus */
-                R_CANFD->CFDGTSTCFG &= ~(1U << p_instance_ctrl->p_cfg->channel);
+                p_instance_ctrl->p_reg->CFDGTSTCFG &= ~(1U << interlaced_channel);
 
                 /* Disable global test mode if no channels are linked */
-                if (!R_CANFD->CFDGTSTCFG)
+                if (!p_instance_ctrl->p_reg->CFDGTSTCFG)
                 {
-                    R_CANFD->CFDGTSTCTR = 0;
+                    p_instance_ctrl->p_reg->CFDGTSTCTR = 0;
                 }
             }
 
@@ -583,10 +724,10 @@ fsp_err_t R_CANFD_ModeTransition (can_ctrl_t * const   p_ctrl,
             r_canfd_mode_transition(p_instance_ctrl, CAN_OPERATION_MODE_HALT);
 
             /* Set channel test mode */
-            uint32_t cfdcnctr = R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].CTR;
+            uint32_t cfdcnctr = p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR;
             cfdcnctr &= ~(R_CANFD_CFDC_CTR_CTME_Msk | R_CANFD_CFDC_CTR_CTMS_Msk);
-            R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].CTR = cfdcnctr |
-                                                                 ((uint32_t) test_mode << R_CANFD_CFDC_CTR_CTME_Pos);
+            p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR = cfdcnctr |
+                                                                   ((uint32_t) test_mode << R_CANFD_CFDC_CTR_CTME_Pos);
         }
 
         p_instance_ctrl->test_mode = test_mode;
@@ -609,9 +750,8 @@ fsp_err_t R_CANFD_ModeTransition (can_ctrl_t * const   p_ctrl,
  *****************************************************************************************************************/
 fsp_err_t R_CANFD_InfoGet (can_ctrl_t * const p_ctrl, can_info_t * const p_info)
 {
-    canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) p_ctrl;
-
 #if CANFD_CFG_PARAM_CHECKING_ENABLE
+    canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) p_ctrl;
 
     /* Check pointers for NULL values */
     FSP_ASSERT(NULL != p_instance_ctrl);
@@ -619,22 +759,20 @@ fsp_err_t R_CANFD_InfoGet (can_ctrl_t * const p_ctrl, can_info_t * const p_info)
 
     /* If channel is not open, return an error */
     FSP_ERROR_RETURN(p_instance_ctrl->open == CANFD_OPEN, FSP_ERR_NOT_OPEN);
+#else
+    canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) p_ctrl;
 #endif
 
-    uint32_t cfdcnsts = R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].STS;
+    uint32_t interlaced_channel = CANFD_INTER_CH(p_instance_ctrl->p_cfg->channel);
+
+    uint32_t cfdcnsts = p_instance_ctrl->p_reg->CFDC[interlaced_channel].STS;
     p_info->status               = cfdcnsts & UINT16_MAX;
     p_info->error_count_receive  = (uint8_t) ((cfdcnsts & R_CANFD_CFDC_STS_REC_Msk) >> R_CANFD_CFDC_STS_REC_Pos);
     p_info->error_count_transmit = (uint8_t) ((cfdcnsts & R_CANFD_CFDC_STS_TEC_Msk) >> R_CANFD_CFDC_STS_TEC_Pos);
-    p_info->error_code           = R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].ERFL & UINT16_MAX;
-    p_info->rx_mb_status         = R_CANFD->CFDRMND0;
-    p_info->rx_fifo_status       = (~R_CANFD->CFDFESTS) & R_CANFD_CFDFESTS_RFXEMP_Msk;
-
-    /* Clear error flags */
-    R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].ERFL &= ~((uint32_t) UINT16_MAX);
-
-    /* Dummy read to ensure that interrupt event is cleared. */
-    volatile uint32_t dummy = R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].ERFL;
-    FSP_PARAMETER_NOT_USED(dummy);
+    p_info->error_code           = p_instance_ctrl->p_reg->CFDC[interlaced_channel].ERFL & UINT16_MAX;
+    p_info->rx_mb_status         = p_instance_ctrl->p_reg->CFDRMND0;
+    p_info->rx_fifo_status       = (~p_instance_ctrl->p_reg->CFDFESTS) &
+                                   (R_CANFD_CFDFESTS_RFXEMP_Msk | R_CANFD_CFDFESTS_CFXEMP_Msk);
 
     return FSP_SUCCESS;
 }
@@ -711,35 +849,47 @@ static bool r_canfd_bit_timing_parameter_check (can_bit_timing_cfg_t * const p_b
  *
  * NOTE: Does not index FIFOs.
  *
+ * @param[in]     p_reg      Pointer to the CANFD registers
  * @param[in]     buffer     Index of buffer to read from (MBs 0-31, FIFOs 32+)
  * @param[in]     frame      Pointer to CAN frame to write to
  **********************************************************************************************************************/
-static void r_canfd_mb_read (uint32_t buffer, can_frame_t * const frame)
+static void r_canfd_mb_read (R_CANFD_Type * p_reg, uint32_t buffer, can_frame_t * const frame)
 {
-    bool is_mb = buffer < CANFD_PRV_RXMB_MAX;
+    const bool is_mb    = buffer < CANFD_PRV_RXMB_MAX;
+    const bool is_cfifo = buffer >= (uint32_t) CANFD_RX_BUFFER_FIFO_COMMON_0;
 
     /* Get pointer to message buffer (FIFOs use the same buffer structure) */
-    volatile R_CANFD_CFDRM_Type * mb_regs =
-        (is_mb) ? &(R_CANFD->CFDRM[buffer]) :
-        (volatile R_CANFD_CFDRM_Type *) &(R_CANFD->CFDRF[buffer - CANFD_PRV_RXMB_MAX]);
+    volatile R_CANFD_CFDRM_RM_TYPE * mb_regs;
+    if (is_mb)
+    {
+        mb_regs = CANFD_PRV_RXMB_PTR(buffer);
+    }
+    else if (is_cfifo)
+    {
+        mb_regs = (volatile R_CANFD_CFDRM_RM_TYPE *) &(p_reg->CFDCF[buffer - (uint32_t) CANFD_RX_BUFFER_FIFO_COMMON_0]);
+    }
+    else
+    {
+        mb_regs = (volatile R_CANFD_CFDRM_RM_TYPE *) &(p_reg->CFDRF[buffer - CANFD_PRV_RXMB_MAX]);
+    }
 
     /* Get frame data. */
     uint32_t id = mb_regs->ID;
 
     /* Get the frame type */
-    frame->type = (can_frame_type_t) ((id & R_CANFD_CFDRM_ID_RMRTR_Msk) >> R_CANFD_CFDRM_ID_RMRTR_Pos);
+    frame->type = (can_frame_type_t) ((id & CANFD_PRV_RMRTR_MASK) >> CANFD_PRV_RMRTR_POSITION);
 
     /* Get FD status bits (ESI, BRS and FDF) */
     frame->options = mb_regs->FDSTS & 7U;
 
     /* Get the frame ID */
-    frame->id = id & R_CANFD_CFDRM_ID_RMID_Msk;
+    frame->id = id & CANFD_PRV_RMID_MASK;
 
     /* Get the frame ID mode (IDE bit) */
-    frame->id_mode = (can_id_mode_t) (id >> R_CANFD_CFDRM_ID_RMIDE_Pos);
+    frame->id_mode = (can_id_mode_t) (id >> CANFD_PRV_RMIDE_POSITION);
 
     /* Get the frame data length code */
-    frame->data_length_code = dlc_to_bytes[mb_regs->PTR >> R_CANFD_CFDRM_PTR_RMDLC_Pos];
+    frame->data_length_code = dlc_to_bytes[mb_regs->PTR >> CANFD_PRV_RMDLC_POSITION];
 
     /* Copy data to frame */
     uint32_t           len    = frame->data_length_code;
@@ -753,12 +903,17 @@ static void r_canfd_mb_read (uint32_t buffer, can_frame_t * const frame)
     if (is_mb)
     {
         /* Clear RXMB New Data bit */
-        R_CANFD->CFDRMND0 &= ~(1U << buffer);
+        p_reg->CFDRMND0 &= ~(1U << buffer);
+    }
+    else if (is_cfifo)
+    {
+        /* Increment the Common FIFO pointer. */
+        p_reg->CFDCFPCTR[buffer - (uint32_t) CANFD_RX_BUFFER_FIFO_COMMON_0] = R_CANFD_CFDCFPCTR_CFPC_Msk;
     }
     else
     {
         /* Increment RX FIFO pointer */
-        R_CANFD->CFDRFPCTR[buffer - CANFD_PRV_RXMB_MAX] = UINT8_MAX;
+        p_reg->CFDRFPCTR[buffer - CANFD_PRV_RXMB_MAX] = UINT8_MAX;
     }
 }
 
@@ -798,6 +953,51 @@ static void r_canfd_call_callback (canfd_instance_ctrl_t * p_instance_ctrl, can_
 }
 
 /*******************************************************************************************************************//**
+ * Global Error Handler.
+ *
+ * Handles the Global Error IRQ for a given instance of CANFD.
+ **********************************************************************************************************************/
+static void r_candfd_global_error_handler (uint32_t instance)
+{
+    canfd_instance_ctrl_t * p_instance_ctrl = gp_instance_ctrl[instance];
+
+    can_callback_args_t args = {0U};
+
+    args.event = CAN_EVENT_ERR_GLOBAL;
+
+    /* Read global error flags. */
+    uint32_t cfdgerfl = p_instance_ctrl->p_reg->CFDGERFL;
+
+    /* Global errors are in the top halfword of canfd_error_t; move and preserve ECC error flags. */
+    args.error = ((cfdgerfl & UINT16_MAX) << 16) + ((cfdgerfl >> 16) << 28);
+
+    /* Clear global error flags. */
+    p_instance_ctrl->p_reg->CFDGERFL = 0;
+
+    /* Dummy read to ensure that interrupt event is cleared. */
+    volatile uint32_t dummy = p_instance_ctrl->p_reg->CFDGERFL;
+    FSP_PARAMETER_NOT_USED(dummy);
+
+    if (args.error & CANFD_ERROR_GLOBAL_MESSAGE_LOST)
+    {
+        /* Get lowest RX FIFO with Message Lost condition and clear the flag */
+        args.buffer = __CLZ(__RBIT(p_instance_ctrl->p_reg->CFDFMSTS));
+        p_instance_ctrl->p_reg->CFDRFSTS[args.buffer] &= ~R_CANFD_CFDRFSTS_RFMLT_Msk;
+
+        /* Dummy read to ensure that interrupt event is cleared. */
+        dummy = p_instance_ctrl->p_reg->CFDRFSTS[args.buffer];
+        FSP_PARAMETER_NOT_USED(dummy);
+    }
+
+    /* Set channel and context based on selected global error handler channel. */
+    args.channel   = CANFD_CFG_GLOBAL_ERROR_CH;
+    args.p_context = p_instance_ctrl->p_context;
+
+    /* Set remaining arguments and call callback */
+    r_canfd_call_callback(p_instance_ctrl, &args);
+}
+
+/*******************************************************************************************************************//**
  * Error ISR.
  *
  * Saves context if RTOS is used, clears interrupts, calls common error function, and restores context if RTOS is used.
@@ -810,74 +1010,112 @@ void canfd_error_isr (void)
     FSP_CONTEXT_SAVE;
 
     /* Get IRQ and context */
-    IRQn_Type               irq             = R_FSP_CurrentIrqGet();
-    canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
-
-    can_callback_args_t     args = {0U};
-    canfd_instance_ctrl_t * p_callback_ctrl;
+    IRQn_Type irq = R_FSP_CurrentIrqGet();
 
     if (VECTOR_NUMBER_CAN_GLERR == irq)
     {
-        args.event = CAN_EVENT_ERR_GLOBAL;
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
 
-        /* Read global error flags. */
-        uint32_t cfdgerfl = R_CANFD->CFDGERFL;
-
-        /* Global errors are in the top halfword of canfd_error_t; move and preserve ECC error flags. */
-        args.error = ((cfdgerfl & UINT16_MAX) << 16) + ((cfdgerfl >> 16) << 28);
-
-        /* Clear global error flags. */
-        R_CANFD->CFDGERFL = 0;
-
-        /* Dummy read to ensure that interrupt event is cleared. */
-        volatile uint32_t dummy = R_CANFD->CFDGERFL;
-        FSP_PARAMETER_NOT_USED(dummy);
-
-        if (args.error & CANFD_ERROR_GLOBAL_MESSAGE_LOST)
+        /* If there are seperate instances of CANFD, then loop over each instance to handle the source of the global
+         * error IRQ. */
+        for (uint32_t i = 0; i < BSP_FEATURE_CANFD_NUM_INSTANCES; i++)
         {
-            /* Get lowest RX FIFO with Message Lost condition and clear the flag */
-            args.buffer = __CLZ(__RBIT(R_CANFD->CFDFMSTS));
-            R_CANFD->CFDRFSTS[args.buffer] &= ~R_CANFD_CFDRFSTS_RFMLT_Msk;
-
-            /* Dummy read to ensure that interrupt event is cleared. */
-            dummy = R_CANFD->CFDRFSTS[args.buffer];
-            FSP_PARAMETER_NOT_USED(dummy);
+            if (NULL != gp_ctrl[i])
+            {
+                r_candfd_global_error_handler(i);
+            }
         }
 
-        /* Choose ctrl block for the selected global error handler channel. */
-        p_callback_ctrl = gp_instance_ctrl[CANFD_CFG_GLOBAL_ERROR_CH];
-
-        /* Set channel and context based on selected global error handler channel. */
-        args.channel   = CANFD_CFG_GLOBAL_ERROR_CH;
-        args.p_context = p_callback_ctrl->p_context;
+#else
+        r_candfd_global_error_handler(CANFD_CFG_GLOBAL_ERROR_CH);
+#endif
     }
     else
     {
+        canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
+
+        can_callback_args_t     args = {0U};
+        canfd_instance_ctrl_t * p_callback_ctrl;
+
         args.event = CAN_EVENT_ERR_CHANNEL;
 
         /* Read and clear channel error flags. */
-        args.error = R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].ERFL & UINT16_MAX; // Upper halfword contains latest CRC
-        R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].ERFL = 0;
+        uint32_t interlaced_channel = CANFD_INTER_CH(p_instance_ctrl->p_cfg->channel);
+        args.error = p_instance_ctrl->p_reg->CFDC[interlaced_channel].ERFL & UINT16_MAX; // Upper halfword contains latest CRC
+        p_instance_ctrl->p_reg->CFDC[interlaced_channel].ERFL = 0;
 
         /* Dummy read to ensure that interrupt event is cleared. */
-        volatile uint32_t dummy = R_CANFD->CFDC[p_instance_ctrl->p_cfg->channel].ERFL;
+        volatile uint32_t dummy = p_instance_ctrl->p_reg->CFDC[interlaced_channel].ERFL;
         FSP_PARAMETER_NOT_USED(dummy);
 
         /* Choose the channel provided by the interrupt context. */
         p_callback_ctrl = p_instance_ctrl;
 
-        args.channel   = p_instance_ctrl->p_cfg->channel;
+        args.channel   = interlaced_channel;
         args.p_context = p_instance_ctrl->p_context;
         args.buffer    = 0U;
-    }
 
-    /* Set remaining arguments and call callback */
-    r_canfd_call_callback(p_callback_ctrl, &args);
+        /* Set remaining arguments and call callback */
+        r_canfd_call_callback(p_callback_ctrl, &args);
+    }
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
 
     CANFD_CFG_MULTIPLEX_INTERRUPT_DISABLE;
+}
+
+/*******************************************************************************************************************//**
+ * Receive FIFO handler.
+ *
+ * Handles the Receive IRQ for a given instance of CANFD.
+ **********************************************************************************************************************/
+static void r_canfd_rx_fifo_handler (uint32_t instance)
+{
+    can_callback_args_t args;
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
+    R_CANFD_Type * p_reg =
+        (R_CANFD_Type *) ((uint32_t) R_CANFD0 + (instance * ((uint32_t) R_CANFD1 - (uint32_t) R_CANFD0)));
+#else
+    FSP_PARAMETER_NOT_USED(instance);
+    R_CANFD_Type * p_reg = R_CANFD;
+#endif
+
+    /* Get lowest FIFO requesting interrupt */
+    uint32_t fifo = __CLZ(__RBIT(p_reg->CFDRFISTS));
+
+    /* Only perform ISR duties if a FIFO has requested it */
+    if (fifo < CANFD_PRV_RX_FIFO_MAX)
+    {
+        /* Set static arguments */
+        args.event  = CAN_EVENT_RX_COMPLETE;
+        args.buffer = fifo + CANFD_PRV_RXMB_MAX;
+
+        /* Read from the FIFO until it is empty */
+        while (!(p_reg->CFDFESTS & (1U << fifo)))
+        {
+            /* Get channel associated with the AFL entry */
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
+            args.channel = instance;
+#else
+            args.channel = p_reg->CFDRF[fifo].FDSTS_b.RFIFL;
+#endif
+
+            /* Read and index FIFO */
+            r_canfd_mb_read(p_reg, fifo + CANFD_PRV_RXMB_MAX, &args.frame);
+
+            /* Set the remaining callback arguments */
+            args.p_context = gp_instance_ctrl[args.channel]->p_context;
+            r_canfd_call_callback(gp_instance_ctrl[args.channel], &args);
+        }
+
+        /* Clear RX FIFO Interrupt Flag */
+        p_reg->CFDRFSTS[fifo] &= ~R_CANFD_CFDRFSTS_RFIF_Msk;
+
+        /* Dummy read to ensure that interrupt event is cleared. */
+        volatile uint32_t dummy = p_reg->CFDRFSTS[fifo];
+        FSP_PARAMETER_NOT_USED(dummy);
+    }
 }
 
 /*******************************************************************************************************************//**
@@ -893,39 +1131,21 @@ void canfd_rx_fifo_isr (void)
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
 
-    can_callback_args_t args;
+#if BSP_FEATURE_CANFD_NUM_INSTANCES > 1
 
-    /* Get lowest FIFO requesting interrupt */
-    uint32_t fifo = __CLZ(__RBIT(R_CANFD->CFDRFISTS));
-
-    /* Only perform ISR duties if a FIFO has requested it */
-    if (fifo < CANFD_PRV_RX_FIFO_MAX)
+    /* If there are seperate instances of CANFD, then loop over each instance to handle the source of the global
+     * receive IRQ. */
+    for (uint32_t i = 0; i < BSP_FEATURE_CANFD_NUM_INSTANCES; i++)
     {
-        /* Set static arguments */
-        args.event  = CAN_EVENT_RX_COMPLETE;
-        args.buffer = fifo + CANFD_PRV_RXMB_MAX;
-
-        /* Read from the FIFO until it is empty */
-        while (!(R_CANFD->CFDFESTS & (1U << fifo)))
+        if (NULL != gp_ctrl[i])
         {
-            /* Get channel associated with the AFL entry */
-            args.channel = R_CANFD->CFDRF[fifo].FDSTS_b.RFIFL;
-
-            /* Read and index FIFO */
-            r_canfd_mb_read(fifo + CANFD_PRV_RXMB_MAX, &args.frame);
-
-            /* Set the remaining callback arguments */
-            args.p_context = gp_instance_ctrl[args.channel]->p_context;
-            r_canfd_call_callback(gp_instance_ctrl[args.channel], &args);
+            r_canfd_rx_fifo_handler(i);
         }
-
-        /* Clear RX FIFO Interrupt Flag */
-        R_CANFD->CFDRFSTS[fifo] &= ~R_CANFD_CFDRFSTS_RFIF_Msk;
-
-        /* Dummy read to ensure that interrupt event is cleared. */
-        volatile uint32_t dummy = R_CANFD->CFDRFSTS[fifo];
-        FSP_PARAMETER_NOT_USED(dummy);
     }
+
+#else
+    r_canfd_rx_fifo_handler(0U);
+#endif
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
@@ -948,6 +1168,7 @@ void canfd_channel_tx_isr (void)
 
     IRQn_Type               irq             = R_FSP_CurrentIrqGet();
     canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
+    canfd_extended_cfg_t  * p_extend        = (canfd_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
     uint32_t                channel         = p_instance_ctrl->p_cfg->channel;
 
     /* Set static arguments */
@@ -955,46 +1176,77 @@ void canfd_channel_tx_isr (void)
     args.channel   = channel;
     args.p_context = p_instance_ctrl->p_context;
 
-    /* Check the byte of CFDGTINTSTS0 that corresponds to the interrupting channel */
-    uint32_t cfdgtintsts = *((uint8_t *) (&R_CANFD->CFDGTINTSTS0) + channel);
-    while (cfdgtintsts)
-    {
-        uint32_t            txmb;
-        volatile uint32_t * cfdtm_sts;
+    uint32_t interlaced_channel = CANFD_INTER_CH(channel);
 
-        channel <<= 1;
+    /* Check the byte of CFDGTINTSTS0 that corresponds to the interrupting channel */
+    volatile uint8_t * p_cfdgtintsts =
+        (((volatile uint8_t *) &p_instance_ctrl->p_reg->CFDGTINTSTS0) + interlaced_channel);
+    while (*p_cfdgtintsts)
+    {
+        bool                is_cfifo = false;
+        uint32_t            txmb;
+        volatile uint32_t * p_cfdtm_sts;
+        const uint32_t      cfdgtintsts = *p_cfdgtintsts;
+
+        interlaced_channel <<= 1;
 
         /* Get relevant TX status register bank */
         if (cfdgtintsts & R_CANFD_CFDGTINTSTS0_TSIF0_Msk)
         {
-            cfdtm_sts  = (volatile uint32_t *) &R_CANFD->CFDTMTCSTS[channel];
-            args.event = CAN_EVENT_TX_COMPLETE;
+            p_cfdtm_sts = (volatile uint32_t *) &p_instance_ctrl->p_reg->CFDTMTCSTS[interlaced_channel];
+            args.event  = CAN_EVENT_TX_COMPLETE;
+        }
+        else if (cfdgtintsts & R_CANFD_CFDGTINTSTS0_CFTIF0_Msk)
+        {
+            is_cfifo    = true;
+            p_cfdtm_sts = (volatile uint32_t *) &p_instance_ctrl->p_reg->CFDCFTISTS;
+            args.event  = (p_extend->p_global_cfg->common_fifo_config[interlaced_channel] & R_CANFD_CFDCFCC_CFIM_Msk) ?
+                          CAN_EVENT_TX_COMPLETE : CAN_EVENT_TX_FIFO_EMPTY;
         }
         else
         {
-            cfdtm_sts  = (volatile uint32_t *) &R_CANFD->CFDTMTASTS[channel];
-            args.event = CAN_EVENT_TX_ABORTED;
+            p_cfdtm_sts = (volatile uint32_t *) &p_instance_ctrl->p_reg->CFDTMTASTS[interlaced_channel];
+            args.event  = CAN_EVENT_TX_ABORTED;
         }
 
-        channel >>= 1;
+        interlaced_channel >>= 1;
 
         /* Calculate lowest TXMB with the specified event */
-        txmb = __CLZ(__RBIT(*cfdtm_sts));
-        txmb = (txmb < 16) ? txmb : __CLZ(__RBIT(*(cfdtm_sts + 1))) + CANFD_PRV_TXMB_OFFSET;
+        if (!is_cfifo)
+        {
+            txmb = __CLZ(__RBIT(*p_cfdtm_sts));
+            txmb = (txmb < 16) ? txmb : __CLZ(__RBIT(*(p_cfdtm_sts + 1))) + CANFD_PRV_TXMB_OFFSET;
 
-        /* Clear TX complete/abort flags */
-        R_CANFD->CFDTMSTS_b[txmb + (CANFD_PRV_TXMB_CHANNEL_OFFSET * channel)].TMTRF = 0;
+            /* Clear TX complete/abort flags */
+            p_instance_ctrl->p_reg->CFDTMSTS_b[txmb + (CANFD_PRV_TXMB_CHANNEL_OFFSET * interlaced_channel)].TMTRF = 0;
 
-        /* Dummy read to ensure that interrupt event is cleared. */
-        volatile uint32_t dummy = R_CANFD->CFDTMSTS[txmb + (CANFD_PRV_TXMB_CHANNEL_OFFSET * channel)];
-        FSP_PARAMETER_NOT_USED(dummy);
+            /* Dummy read to ensure that interrupt event is cleared. */
+            volatile uint32_t dummy =
+                p_instance_ctrl->p_reg->CFDTMSTS[txmb + (CANFD_PRV_TXMB_CHANNEL_OFFSET * interlaced_channel)];
+            FSP_PARAMETER_NOT_USED(dummy);
+        }
+        else
+        {
+            /* Adjust txmb with the lowest indexed Common FIFO that could have triggered this event.
+             * Mask out only the Common FIFOs associated with this channel. */
+            uint32_t cfdtm_mask = ((1U << CANFD_PRV_COMMON_FIFO_MAX) - 1U) <<
+                                  (interlaced_channel * CANFD_PRV_COMMON_FIFO_MAX);
+            txmb = __CLZ(__RBIT(*p_cfdtm_sts & cfdtm_mask));
+
+            /* Clear the interrupt flag for Common FIFO TX. */
+            p_instance_ctrl->p_reg->CFDCFSTS[txmb] &= ~R_CANFD_CFDCFSTS_CFTXIF_Msk;
+
+            /* Dummy read to ensure that interrupt event is cleared. */
+            volatile uint32_t dummy = p_instance_ctrl->p_reg->CFDCFSTS[txmb];
+            FSP_PARAMETER_NOT_USED(dummy);
+
+            /* Add the Common FIFO offset so the correct type of buffer will be available in the callback. */
+            txmb += CANFD_TX_BUFFER_FIFO_COMMON_0;
+        }
 
         /* Set the callback arguments */
         args.buffer = txmb;
         r_canfd_call_callback(p_instance_ctrl, &args);
-
-        /* Check for more interrupts on this channel */
-        cfdgtintsts = *((uint8_t *) (&R_CANFD->CFDGTINTSTS0) + channel);
     }
 
     /* Restore context if RTOS is used */
@@ -1004,13 +1256,86 @@ void canfd_channel_tx_isr (void)
 }
 
 /*******************************************************************************************************************//**
+ * Common FIFO Receive ISR.
+ *
+ * Saves context if RTOS is used, clears interrupts, calls common receive function
+ * and restores context if RTOS is used.
+ **********************************************************************************************************************/
+void canfd_common_fifo_rx_isr (void)
+{
+    CANFD_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+
+    /* Save context if RTOS is used */
+    FSP_CONTEXT_SAVE;
+
+    IRQn_Type               irq             = R_FSP_CurrentIrqGet();
+    canfd_instance_ctrl_t * p_instance_ctrl = (canfd_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
+    uint32_t                channel         = p_instance_ctrl->p_cfg->channel;
+    can_callback_args_t     args;
+
+    /* Get lowest FIFO requesting interrupt */
+
+    /* To satisfy clang-tidy mask out the index. A value of 32 only happens if no flag is set which shouldn't happen in
+     * this ISR. If it does for some reason, the while loop below will be bypassed since the associated flag being
+     * checked will be ignored. */
+    uint32_t fifo = __CLZ(__RBIT(p_instance_ctrl->p_reg->CFDCFRISTS & R_CANFD_CFDCFRISTS_CFXRXIF_Msk)) & 0x1FU;
+
+    /* Set static arguments */
+    args.event   = CAN_EVENT_RX_COMPLETE;
+    args.channel = channel;
+
+#if BSP_FEATURE_CANFD_NUM_CHANNELS > 1
+
+    /* Get the channel based fifo index to get the currect buffer value. */
+    if (fifo > CANFD_PRV_CFIFO_CHANNEL_OFFSET)
+    {
+        args.buffer = fifo % (CANFD_PRV_CFIFO_CHANNEL_OFFSET + 1);
+    }
+    else
+    {
+        args.buffer = fifo;
+    }
+
+#else
+    args.buffer = fifo;
+#endif
+
+    /* Move buffer up to the correct range. */
+    args.buffer += (uint32_t) CANFD_RX_BUFFER_FIFO_COMMON_0;
+
+    /* Read from the FIFO until it is empty */
+    while (!(p_instance_ctrl->p_reg->CFDFESTS & (1U << (R_CANFD_CFDFESTS_CFXEMP_Pos + fifo))))
+    {
+        /* Read and index FIFO */
+        /* buffer is slightly different in this function since it operates globally. */
+        r_canfd_mb_read(p_instance_ctrl->p_reg, fifo + (uint32_t) CANFD_RX_BUFFER_FIFO_COMMON_0, &args.frame);
+
+        /* Set the remaining callback arguments */
+        args.p_context = gp_instance_ctrl[args.channel]->p_context;
+        r_canfd_call_callback(gp_instance_ctrl[args.channel], &args);
+    }
+
+    /* Clear Common FIFO RX Interrupt Flag */
+    p_instance_ctrl->p_reg->CFDCFSTS[fifo] &= ~R_CANFD_CFDCFSTS_CFRXIF_Msk;
+
+    /* Dummy read to ensure that interrupt event is cleared. */
+    volatile uint32_t dummy = p_instance_ctrl->p_reg->CFDCFSTS[fifo];
+    FSP_PARAMETER_NOT_USED(dummy);
+
+    /* Restore context if RTOS is used */
+    FSP_CONTEXT_RESTORE;
+
+    CANFD_CFG_MULTIPLEX_INTERRUPT_ENABLE;
+}
+
+/*******************************************************************************************************************//**
  * This function is used to switch the CANFD peripheral operation mode.
  * @param[in]  p_instance_ctrl            - pointer to control structure
  * @param[in]  operation_mode    - destination operation mode
  **********************************************************************************************************************/
 static void r_canfd_mode_transition (canfd_instance_ctrl_t * p_instance_ctrl, can_operation_mode_t operation_mode)
 {
-    uint32_t channel = p_instance_ctrl->p_cfg->channel;
+    uint32_t interlaced_channel = CANFD_INTER_CH(p_instance_ctrl->p_cfg->channel);
 
     /* Get bit 7 from operation_mode to determine if this is a global mode change request */
     bool global_mode = (bool) (operation_mode >> 7);
@@ -1018,9 +1343,25 @@ static void r_canfd_mode_transition (canfd_instance_ctrl_t * p_instance_ctrl, ca
 
     if (global_mode)
     {
-        uint32_t cfdgctr = R_CANFD->CFDGCTR;
+        uint32_t cfdgctr = p_instance_ctrl->p_reg->CFDGCTR;
 
-        r_canfd_mode_ctr_set(&R_CANFD->CFDGCTR, operation_mode);
+        /* If CANFD is transitioning to Global Reset, make sure the FIFOs are disabled. */
+        if (!(cfdgctr & R_CANFD_CFDGSTS_GRSTSTS_Msk) && (operation_mode & CAN_OPERATION_MODE_RESET))
+        {
+            /* Disable RX FIFOs */
+            for (uint32_t i = 0; i < CANFD_PRV_RX_FIFO_MAX; i++)
+            {
+                p_instance_ctrl->p_reg->CFDRFCC[i] &= ~R_CANFD_CFDRFCC_RFE_Msk;
+            }
+
+            /* Disable Common FIFOs */
+            for (uint32_t i = 0; i < CANFD_PRV_COMMON_FIFO_MAX * BSP_FEATURE_CANFD_NUM_CHANNELS; i++)
+            {
+                p_instance_ctrl->p_reg->CFDCFCC[i] &= ~R_CANFD_CFDCFCC_CFE_Msk;
+            }
+        }
+
+        r_canfd_mode_ctr_set(&p_instance_ctrl->p_reg->CFDGCTR, operation_mode);
 
         /* If CANFD is transitioning out of Reset the FIFOs need to be enabled. */
         if ((cfdgctr & R_CANFD_CFDGSTS_GRSTSTS_Msk) && !(operation_mode & CAN_OPERATION_MODE_RESET))
@@ -1032,27 +1373,46 @@ static void r_canfd_mode_transition (canfd_instance_ctrl_t * p_instance_ctrl, ca
             /* Enable RX FIFOs */
             for (uint32_t i = 0; i < CANFD_PRV_RX_FIFO_MAX; i++)
             {
-                R_CANFD->CFDRFCC[i] = p_global_cfg->rx_fifo_config[i];
+                p_instance_ctrl->p_reg->CFDRFCC[i] = p_global_cfg->rx_fifo_config[i];
             }
         }
     }
     else
     {
-        uint32_t cfdcnctr = R_CANFD->CFDC[channel].CTR;
+        uint32_t cfdcnctr = p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR;
 
         if (((cfdcnctr & R_CANFD_CFDC_CTR_CSLPR_Msk) && (!(CAN_OPERATION_MODE_RESET & operation_mode))) ||
             ((!(cfdcnctr & CANFD_PRV_CTR_RESET_BIT)) && (CAN_OPERATION_MODE_SLEEP == operation_mode)))
         {
             /* Transition channel to Reset if a transition to/from Sleep is requested (see Section "Channel
              * Modes" in the RZ microprocessor User's Manual for details) */
-            r_canfd_mode_ctr_set(&R_CANFD->CFDC[channel].CTR, CAN_OPERATION_MODE_RESET);
+            r_canfd_mode_ctr_set(&p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR, CAN_OPERATION_MODE_RESET);
         }
 
         /* Request transition to selected mode */
-        r_canfd_mode_ctr_set(&R_CANFD->CFDC[channel].CTR, operation_mode);
+        r_canfd_mode_ctr_set(&p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR, operation_mode);
+
+        /* If CANFD is transitioning from Reset, make sure the Common FIFOs are enabled.
+         * The FIFOs will be disabled automatically if configured for TX and the channel is transitioned to reset. */
+        if ((cfdcnctr & R_CANFD_CFDC_CTR_CHMDC_Msk) && !(operation_mode & CAN_OPERATION_MODE_RESET))
+        {
+            /* Get global config */
+            canfd_global_cfg_t * p_global_cfg =
+                ((canfd_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend)->p_global_cfg;
+
+            const uint32_t ch_offset = interlaced_channel * CANFD_PRV_COMMON_FIFO_MAX;
+
+            /* Enable Common FIFOs */
+            for (uint32_t i = 0; i < CANFD_PRV_COMMON_FIFO_MAX; i++)
+            {
+                p_instance_ctrl->p_reg->CFDCFCC[ch_offset + i] |=
+                    (p_global_cfg->common_fifo_config[ch_offset + i] & R_CANFD_CFDCFCC_CFE_Msk);
+            }
+        }
     }
 
-    p_instance_ctrl->operation_mode = (can_operation_mode_t) (R_CANFD->CFDC[channel].CTR & CANFD_PRV_CTR_MODE_MASK);
+    p_instance_ctrl->operation_mode =
+        (can_operation_mode_t) (p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR & CANFD_PRV_CTR_MODE_MASK);
 }
 
 /*******************************************************************************************************************//**

@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /*******************************************************************************************************************//**
  * @addtogroup XSPI_QSPI
@@ -33,6 +19,11 @@
 #include <string.h>
 #include "r_xspi_qspi_cfg.h"
 #include "r_spi_flash_api.h"
+
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+ #include "r_rsip_api.h"
+ #include "r_rsip_reg.h"
+#endif
 
 /* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
@@ -114,6 +105,34 @@ typedef enum e_xspi_qspi_prefetch_function
     XSPI_QSPI_PREFETCH_FUNCTION_ENABLE  = 0x01, ///< Prefetch function enable
 } xspi_qspi_prefetch_function_t;
 
+/* Address space settings */
+typedef struct st_qspi_address_space
+{
+    uint32_t unit0_cs0_end_address;    ///< xSPI unit0 cs0 end address
+    uint32_t unit0_cs1_start_address;  ///< xSPI unit0 cs1 start address
+    uint32_t unit0_cs1_end_address;    ///< xSPI unit0 cs1 end address
+    uint32_t unit1_cs0_end_address;    ///< xSPI unit1 cs0 end address
+    uint32_t unit1_cs1_start_address;  ///< xSPI unit1 cs1 start address
+    uint32_t unit1_cs1_end_address;    ///< xSPI unit1 cs1 end address
+} xspi_qspi_address_space_t;
+
+/* OTFD AES Type. */
+typedef enum e_xspi_qspi_otfd_aes_key_type
+{
+    XSPI_QSPI_OTFD_AES_KEY_TYPE_128 = 0U,
+    XSPI_QSPI_OTFD_AES_KEY_TYPE_256 = 2U,
+} xspi_qspi_otfd_aes_key_type_t;
+
+/* This structure is used to hold all the OTFD related configuration. */
+typedef struct st_xspi_qspi_otfd_cfg
+{
+    xspi_qspi_otfd_aes_key_type_t key_type;
+    uint32_t * p_start_addr;
+    uint32_t * p_end_addr;
+    uint32_t * p_key;
+    uint32_t * p_iv;
+} xspi_qspi_otfd_cfg_t;
+
 /* Extended configuration. */
 typedef struct st_xspi_qspi_extended_cfg
 {
@@ -122,6 +141,11 @@ typedef struct st_xspi_qspi_extended_cfg
     xspi_qspi_memory_size_t            memory_size;       ///< Size of memory device
     xspi_qspi_timing_setting_t const * p_timing_settings; ///< Memory mapped timing settings
     xspi_qspi_prefetch_function_t      prefetch_en;       ///< Prefetch function settings
+    xspi_qspi_address_space_t const  * p_address_space;   ///< Address space settings when custom address space enabled
+
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+    xspi_qspi_otfd_cfg_t const * p_otfd_cfg;              ///< OTFD Configuration. Set to NULL if unused.
+#endif
 } xspi_qspi_extended_cfg_t;
 
 /** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref spi_flash_api_t::open is called */
@@ -132,7 +156,12 @@ typedef struct st_xspi_qspi_instance_ctrl
     uint32_t                total_size_bytes; // Total size of the flash in bytes
     uint32_t                open;             // Whether or not driver is open
     R_XSPI0_Type          * p_reg;            // Base register for this channel
-    spi_flash_protocol_t    spi_protocol;     // Current SPI protocol selected
+
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+    R_OTFD0_Type * p_otfd_reg;                // Base OTFD register for this channel
+#endif
+
+    spi_flash_protocol_t spi_protocol;        // Current SPI protocol selected
 } xspi_qspi_instance_ctrl_t;
 
 /**********************************************************************************************************************

@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /***********************************************************************************************************************
  * Includes
@@ -399,8 +385,8 @@ fsp_err_t R_GPT_PeriodSet (timer_ctrl_t * const p_ctrl, uint32_t const period_co
     /* Set a 50% duty cycle so the period of the waveform on the output pin matches the requested period. */
     if (TIMER_MODE_PERIODIC == p_instance_ctrl->p_cfg->mode)
     {
-        /* The  GTIOCA/GTIOCB pins transition 1 cycle after compare match when buffer operation is used. Reference
-         * "19.3.3 PWM Output Operating Mode" in the RZT2M manual R01UH0916EJ0063. To get a duty cycle
+        /* The  GTIOCA/GTIOCB pins transition 1 cycle after compare match when buffer operation is used (see
+         * Section "PWM Output Operating Mode" in the RZ microprocessor User's Manual for details). To get a duty cycle
          * as close to 50% as possible, duty cycle (register) = (period (counts) / 2) - 1. */
         uint32_t duty_cycle_50_percent = (period_counts >> 1) - 1U;
         p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRC] = duty_cycle_50_percent;
@@ -931,8 +917,8 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
 
     if (TIMER_MODE_PERIODIC == p_cfg->mode)
     {
-        /* The  GTIOCA/GTIOCB pins transition 1 cycle after compare match when buffer operation is used. Reference
-         * "19.3.3 PWM Output Operating Mode" in the RZT2M manual R01UH0916EJ0063. To get a duty cycle
+        /* The  GTIOCA/GTIOCB pins transition 1 cycle after compare match when buffer operation is used (see
+         * Section "PWM Output Operating Mode" in the RZ microprocessor User's Manual for details). To get a duty cycle
          * as close to 50% as possible, duty cycle (register) = (period (counts) / 2) - 1. */
         uint32_t duty_cycle_50_percent = (p_cfg->period_counts >> 1) - 1U;
         duty_regs.gtccr_buffer = duty_cycle_50_percent;
@@ -1051,8 +1037,8 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
     p_instance_ctrl->p_reg->GTIOR = gtior;
 
     /* Configure duty cycle and force timer to count up. GTUDDTYC must be set, then cleared to force the count
-     * direction to be reflected when counting starts. Reference section 19.2.13 "General PWM Timer Count Direction
-     * and Duty Setting Register (GTUDDTYC)" in the RZT2M manual R01UH0916EJ0063. */
+     * direction to be reflected when counting starts (see Section "General PWM Timer Count Direction
+     * and Duty Setting Register (GTUDDTYC)" in the RZ microprocessor User's Manual for details). */
     p_instance_ctrl->p_reg->GTUDDTYC = gtuddtyc | 3U;
     p_instance_ctrl->p_reg->GTUDDTYC = gtuddtyc | 1U;
 
@@ -1088,7 +1074,8 @@ static void gpt_counter_initialize (gpt_instance_ctrl_t * const p_instance_ctrl,
     /* GTPR, GTCCRn, GTIOR, GTSSR, GTPSR, GTCSR, GTUPSR, GTDNSR, GTPBR, and GTUDDTYC are set by this driver. */
 
     /* Initialization sets all register required for up counting as described in hardware manual
-     * (19.3.1.1 Counter Operation in the RZT2M manual R01UH0916EJ0063) and other registers required by the driver. */
+     * (see Section "Counter Operation" in the RZ microprocessor User's Manual for details) and
+     * other registers required by the driver. */
 
     /* Dividers for GPT are half the enum value. */
     uint32_t gtcr_tpcs = p_cfg->source_div;
@@ -1110,8 +1097,8 @@ static void gpt_counter_initialize (gpt_instance_ctrl_t * const p_instance_ctrl,
     }
 #endif
 
-    /* Counter must be stopped to update TPCS. Reference section 19.2.12 "General PWM Timer Control Register (GTCR)"
-     * in the RZT2M R01UH0916EJ0063 manual. */
+    /* Counter must be stopped to update TPCS (see Section "General PWM Timer Control Register (GTCR)"
+     * in the RZ microprocessor User's Manual for details). */
     p_instance_ctrl->p_reg->GTCR = gtcr;
 
     gpt_hardware_events_disable(p_instance_ctrl);
@@ -1313,8 +1300,8 @@ static void gpt_calculate_duty_cycle (gpt_instance_ctrl_t * const p_instance_ctr
         else
  #endif
         {
-            /* The GTIOCA/GTIOCB pins transition 1 cycle after compare match when buffer operation is used. Reference
-             * "19.3.3 PWM Output Operating Mode" in the RZT2M manual R01UH0916EJ0063. */
+            /* The GTIOCA/GTIOCB pins transition 1 cycle after compare match when buffer operation is used (see
+             * Section "PWM Output Operating Mode" in the RZ microprocessor User's Manual for details). */
             temp_duty_cycle--;
             p_duty_reg->gtccr_buffer = temp_duty_cycle;
         }

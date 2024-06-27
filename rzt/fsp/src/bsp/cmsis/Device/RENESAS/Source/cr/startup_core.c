@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
@@ -99,13 +85,13 @@ extern void bsp_slavetcm_enable(void);
  **********************************************************************************************************************/
 int32_t main(void);
 
-BSP_TARGET_ARM void                         system_init(void) BSP_PLACE_IN_SECTION(".loader_text");
+BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init(void) BSP_PLACE_IN_SECTION(".loader_text");
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init(void);
 BSP_TARGET_ARM void                         fpu_slavetcm_init(void);
 
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void        __Vectors(void) BSP_PLACE_IN_SECTION(".intvec");
 __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void IRQ_Handler(void);
-__WEAK BSP_TARGET_ARM void                         Reset_Handler(void) BSP_PLACE_IN_SECTION(".reset_handler");
+__WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void Reset_Handler(void) BSP_PLACE_IN_SECTION(".reset_handler");
 
 void Default_Handler(void);
 
@@ -130,26 +116,18 @@ BSP_DONT_REMOVE static uint8_t g_heap[BSP_CFG_HEAP_BYTES] BSP_ALIGN_VARIABLE(BSP
     BSP_PLACE_IN_SECTION(BSP_SECTION_HEAP);
 #endif
 
-#if defined(__GNUC__)
-BSP_DONT_REMOVE static const void * g_bsp_dummy BSP_PLACE_IN_SECTION(".dummy");
-
- #if BSP_CFG_RAM_EXECUTION
-BSP_DONT_REMOVE static const void * g_bsp_loader_dummy BSP_PLACE_IN_SECTION(".loader_dummy");
-
- #endif
-#endif
-
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void __Vectors (void)
 {
-    __asm volatile ("    ldr pc,=Reset_Handler            \n"
-                    "    ldr pc,=Undefined_Handler        \n"
-                    "    ldr pc,=SVC_Handler              \n"
-                    "    ldr pc,=Prefetch_Handler         \n"
-                    "    ldr pc,=Abort_Handler            \n"
-                    "    ldr pc,=Reserved_Handler         \n"
-                    "    ldr pc,=IRQ_Handler              \n"
-                    "    ldr pc,=FIQ_Handler              \n"
-                    ::: "memory");
+    __asm volatile (
+        "    LDR pc,=Reset_Handler            \n"
+        "    LDR pc,=Undefined_Handler        \n"
+        "    LDR pc,=SVC_Handler              \n"
+        "    LDR pc,=Prefetch_Handler         \n"
+        "    LDR pc,=Abort_Handler            \n"
+        "    LDR pc,=Reserved_Handler         \n"
+        "    LDR pc,=IRQ_Handler              \n"
+        "    LDR pc,=FIQ_Handler              \n"
+        ::: "memory");
 }
 
 /*******************************************************************************************************************//**
@@ -172,7 +150,7 @@ void Default_Handler (void)
 /*******************************************************************************************************************//**
  * After boot processing, LSI starts executing here.
  **********************************************************************************************************************/
-BSP_TARGET_ARM void system_init (void)
+BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init (void)
 {
     __asm volatile (
         "set_hactlr:                              \n"
@@ -349,7 +327,7 @@ __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void IRQ_Handler (void)
         ::: "memory");
 }
 
-__WEAK BSP_TARGET_ARM void Reset_Handler (void)
+__WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void Reset_Handler (void)
 {
 #if (0 == BSP_CFG_CORE_CR52)
 

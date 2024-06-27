@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
@@ -39,16 +25,15 @@
 
 #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
  #if !(BSP_CFG_RAM_EXECUTION)
+  #define BSP_PRV_IMAGE_INFO_OFFSET     (0x100)
 
-  #define BSP_PRV_IMAGE_INFO_ARRAY_MAX    (3)
-
-  #define BSP_PRV_IMAGE_INFO_KEY          (0xAC54E6B8)
+  #define BSP_PRV_IMAGE_INFO_CPU_NUM    (2)
 
   #if (0 == BSP_CFG_CORE_CR52)
-   #define BSP_PRV_IMAGE_INFO_CPU         (BSP_PRIV_ASSIGNMENT_CPU_CR52_0)
+   #define BSP_PRV_IMAGE_INFO_CPU       (BSP_PRIV_ASSIGNMENT_CPU_CR52_0)
 
   #elif (1 == BSP_CFG_CORE_CR52)
-   #define BSP_PRV_IMAGE_INFO_CPU         (BSP_PRIV_ASSIGNMENT_CPU_CR52_1)
+   #define BSP_PRV_IMAGE_INFO_CPU       (BSP_PRIV_ASSIGNMENT_CPU_CR52_1)
 
   #endif
  #endif
@@ -56,189 +41,134 @@
 
 #if defined(__ICCARM__)
  #if BSP_CFG_C_RUNTIME_INIT
-  #define BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS    __section_begin("LDR_DATA_RBLOCK")
-  #define BSP_PRV_SECTION_LDR_DATA_RAM_START      __section_begin("LDR_DATA_WBLOCK")
-  #define BSP_PRV_SECTION_LDR_DATA_RAM_END        __section_end("LDR_DATA_WBLOCK")
+  #define BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS                  __section_begin("LDR_DATA_RBLOCK")
+  #define BSP_PRV_SECTION_LDR_DATA_RAM_START                    __section_begin("LDR_DATA_WBLOCK")
+  #define BSP_PRV_SECTION_LDR_DATA_RAM_END                      __section_end("LDR_DATA_WBLOCK")
 
-  #define BSP_PRV_SECTION_LDR_DATA_BSS_START      __section_begin("LDR_DATA_ZBLOCK")
-  #define BSP_PRV_SECTION_LDR_DATA_BSS_END        __section_end("LDR_DATA_ZBLOCK")
+  #define BSP_PRV_SECTION_LDR_DATA_BSS_START                    __section_begin("LDR_DATA_ZBLOCK")
+  #define BSP_PRV_SECTION_LDR_DATA_BSS_END                      __section_end("LDR_DATA_ZBLOCK")
 
  #endif
 
  #if !(BSP_CFG_RAM_EXECUTION)
-  #if BSP_CFG_XSPI0_X1_BOOT
-   #define BSP_PRV_SECTION_SLAVE_ROM_ADDRESS                __section_begin("xSPI0_CS0_SPACE_ALIGNMENT_block")
+  #define BSP_PRV_SECTION_VECTOR_ROM_ADDRESS                    __section_begin("VECTOR_RBLOCK")
+  #define BSP_PRV_SECTION_VECTOR_RAM_START                      __section_begin("VECTOR_WBLOCK")
+  #define BSP_PRV_SECTION_VECTOR_RAM_END                        __section_end("VECTOR_WBLOCK")
 
-  #elif BSP_CFG_XSPI1_X1_BOOT
-   #define BSP_PRV_SECTION_SLAVE_ROM_ADDRESS                __section_begin("xSPI1_CS0_SPACE_ALIGNMENT_block")
+  #define BSP_PRV_SECTION_USER_PRG_ROM_ADDRESS                  __section_begin("USER_PRG_RBLOCK")
+  #define BSP_PRV_SECTION_USER_PRG_RAM_START                    __section_begin("USER_PRG_WBLOCK")
+  #define BSP_PRV_SECTION_USER_PRG_RAM_END                      __section_end("USER_PRG_WBLOCK")
 
-  #elif BSP_CFG_16BIT_NOR_BOOT
-   #define BSP_PRV_SECTION_SLAVE_ROM_ADDRESS                __section_begin("CS0_SPACE_ALIGNMENT_block")
+  #define BSP_PRV_SECTION_USER_DATA_ROM_ADDRESS                 __section_begin("USER_DATA_RBLOCK")
+  #define BSP_PRV_SECTION_USER_DATA_RAM_START                   __section_begin("USER_DATA_WBLOCK")
+  #define BSP_PRV_SECTION_USER_DATA_RAM_END                     __section_end("USER_DATA_WBLOCK")
 
-  #endif
+  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_ROM_ADDRESS        __section_begin("USER_DATA_NONCACHE_RBLOCK")
+  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_START          __section_begin("USER_DATA_NONCACHE_WBLOCK")
+  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_END            __section_end("USER_DATA_NONCACHE_WBLOCK")
 
-  #define BSP_PRV_SECTION_VECTOR_ROM_ADDRESS                __section_begin("VECTOR_RBLOCK")
-  #define BSP_PRV_SECTION_VECTOR_RAM_START                  __section_begin("VECTOR_WBLOCK")
-  #define BSP_PRV_SECTION_VECTOR_RAM_END                    __section_end("VECTOR_WBLOCK")
+  #define BSP_PRV_SECTION_DMAC_LINK_MODE_ROM_ADDRESS            __section_begin("DMAC_LINK_MODE_RBLOCK")
+  #define BSP_PRV_SECTION_DMAC_LINK_MODE_RAM_START              __section_begin("DMAC_LINK_MODE_WBLOCK")
+  #define BSP_PRV_SECTION_DMAC_LINK_MODE_RAM_END                __section_end("DMAC_LINK_MODE_WBLOCK")
 
-  #define BSP_PRV_SECTION_USER_PRG_ROM_ADDRESS              __section_begin("USER_PRG_RBLOCK")
-  #define BSP_PRV_SECTION_USER_PRG_RAM_START                __section_begin("USER_PRG_WBLOCK")
-  #define BSP_PRV_SECTION_USER_PRG_RAM_END                  __section_end("USER_PRG_WBLOCK")
+  #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_ROM_ADDRESS    __section_begin("SHARED_NONCACHE_BUFFER_RBLOCK")
+  #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_RAM_START      __section_begin("SHARED_NONCACHE_BUFFER_WBLOCK")
+  #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_RAM_END        __section_end("SHARED_NONCACHE_BUFFER_WBLOCK")
 
-  #define BSP_PRV_SECTION_USER_DATA_ROM_ADDRESS             __section_begin("USER_DATA_RBLOCK")
-  #define BSP_PRV_SECTION_USER_DATA_RAM_START               __section_begin("USER_DATA_WBLOCK")
-  #define BSP_PRV_SECTION_USER_DATA_RAM_END                 __section_end("USER_DATA_WBLOCK")
+  #define BSP_PRV_SECTION_NONCACHE_BUFFER_ROM_ADDRESS           __section_begin("NONCACHE_BUFFER_RBLOCK")
+  #define BSP_PRV_SECTION_NONCACHE_BUFFER_RAM_START             __section_begin("NONCACHE_BUFFER_WBLOCK")
+  #define BSP_PRV_SECTION_NONCACHE_BUFFER_RAM_END               __section_end("NONCACHE_BUFFER_WBLOCK")
 
-  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_ROM_ADDRESS    __section_begin("USER_DATA_NONCACHE_RBLOCK")
-  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_START      __section_begin("USER_DATA_NONCACHE_WBLOCK")
-  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_END        __section_end("USER_DATA_NONCACHE_WBLOCK")
+  #define BSP_PRV_SECTION_LDR_PRG_ROM_ADDRESS                   __section_begin("LDR_PRG_RBLOCK")
+  #define BSP_PRV_SECTION_LDR_PRG_RAM_START                     __section_begin("LDR_PRG_WBLOCK")
+  #define BSP_PRV_SECTION_LDR_PRG_RAM_END                       __section_end("LDR_PRG_WBLOCK")
 
-  #define BSP_PRV_SECTION_USER_DATA_BSS_START               __section_begin("USER_DATA_ZBLOCK")
-  #define BSP_PRV_SECTION_USER_DATA_BSS_END                 __section_end("USER_DATA_ZBLOCK")
-
-  #define BSP_PRV_SECTION_LDR_PRG_ROM_ADDRESS               __section_begin("LDR_PRG_RBLOCK")
-  #define BSP_PRV_SECTION_LDR_PRG_RAM_START                 __section_begin("LDR_PRG_WBLOCK")
-  #define BSP_PRV_SECTION_LDR_PRG_RAM_END                   __section_end("LDR_PRG_WBLOCK")
+  #define BSP_PRV_SECTION_USER_DATA_BSS_START                   __section_begin("USER_DATA_ZBLOCK")
+  #define BSP_PRV_SECTION_USER_DATA_BSS_END                     __section_end("USER_DATA_ZBLOCK")
 
   #if !(BSP_CFG_C_RUNTIME_INIT)
-   #define BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS             __section_begin("LDR_DATA_RBLOCK")
-   #define BSP_PRV_SECTION_LDR_DATA_RAM_START               __section_begin("LDR_DATA_WBLOCK")
-   #define BSP_PRV_SECTION_LDR_DATA_RAM_END                 __section_end("LDR_DATA_WBLOCK")
+   #define BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS                 __section_begin("LDR_DATA_RBLOCK")
+   #define BSP_PRV_SECTION_LDR_DATA_RAM_START                   __section_begin("LDR_DATA_WBLOCK")
+   #define BSP_PRV_SECTION_LDR_DATA_RAM_END                     __section_end("LDR_DATA_WBLOCK")
 
   #endif
-
  #endif
 
- #if BSP_CFG_RAM_EXECUTION
-  #define BSP_PRV_SECTION_NONCACHE_BUFFER_BSS_START            __section_begin("NONCACHE_BUFFER_ZBLOCK")
-  #define BSP_PRV_SECTION_NONCACHE_BUFFER_BSS_END              __section_end("NONCACHE_BUFFER_ZBLOCK")
-
-  #if (1 == _RZT_ORDINAL)
-   #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_BSS_START    __section_begin("SHARED_NONCACHE_BUFFER_ZBLOCK")
-   #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_BSS_END      __section_end("SHARED_NONCACHE_BUFFER_ZBLOCK")
-
-  #endif
-
-  #define BSP_PRV_SECTION_DMAC_LINK_MODE_BSS_START             __section_begin("DMAC_LINK_MODE_ZBLOCK")
-  #define BSP_PRV_SECTION_DMAC_LINK_MODE_BSS_END               __section_end("DMAC_LINK_MODE_ZBLOCK")
+ #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
+  #define BSP_PRV_SECTION_SECONDARY_ROM_ADDRESS    __section_begin("SECONDARY_RBLOCK")
+  #define BSP_PRV_SECTION_SECONDARY_RAM_START      __section_begin("SECONDARY_WBLOCK")
+  #define BSP_PRV_SECTION_SECONDARY_RAM_END        __section_end("SECONDARY_WBLOCK")
 
  #endif
 
 #elif defined(__GNUC__)
  #if BSP_CFG_C_RUNTIME_INIT
-  #define BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS    &_mloader_data
-  #define BSP_PRV_SECTION_LDR_DATA_RAM_START      &__loader_data_start
-  #define BSP_PRV_SECTION_LDR_DATA_RAM_END        &__loader_data_end
+  #define BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS                  &LOADER_DATA_IMAGE
+  #define BSP_PRV_SECTION_LDR_DATA_RAM_START                    &__loader_data_start
+  #define BSP_PRV_SECTION_LDR_DATA_RAM_END                      &__loader_data_end
 
-  #define BSP_PRV_SECTION_LDR_DATA_BSS_START      &__loader_bss_start
-  #define BSP_PRV_SECTION_LDR_DATA_BSS_END        &__loader_bss_end
+  #define BSP_PRV_SECTION_LDR_DATA_BSS_START                    &__loader_bss_start
+  #define BSP_PRV_SECTION_LDR_DATA_BSS_END                      &__loader_bss_end
 
  #endif
 
  #if !(BSP_CFG_RAM_EXECUTION)
-  #if BSP_CFG_XSPI0_X1_BOOT
-   #define BSP_PRV_SECTION_SLAVE_ROM_ADDRESS                   &__ddsc_xSPI0_CS0_SPACE_ALIGNMENT
+  #define BSP_PRV_SECTION_VECTOR_ROM_ADDRESS                    &INTVEC_IMAGE
+  #define BSP_PRV_SECTION_VECTOR_RAM_START                      &_fvector_start
+  #define BSP_PRV_SECTION_VECTOR_RAM_END                        &_fvector_end
 
-  #elif BSP_CFG_XSPI1_X1_BOOT
-   #define BSP_PRV_SECTION_SLAVE_ROM_ADDRESS                   &__ddsc_xSPI1_CS0_SPACE_ALIGNMENT
+  #define BSP_PRV_SECTION_USER_PRG_ROM_ADDRESS                  &TEXT_IMAGE
+  #define BSP_PRV_SECTION_USER_PRG_RAM_START                    &_text_start
+  #define BSP_PRV_SECTION_USER_PRG_RAM_END                      &_text_end
 
-  #elif BSP_CFG_16BIT_NOR_BOOT
-   #define BSP_PRV_SECTION_SLAVE_ROM_ADDRESS                   &__ddsc_CS0_SPACE_ALIGNMENT
+  #define BSP_PRV_SECTION_USER_DATA_ROM_ADDRESS                 &DATA_IMAGE
+  #define BSP_PRV_SECTION_USER_DATA_RAM_START                   &_data_start
+  #define BSP_PRV_SECTION_USER_DATA_RAM_END                     &_data_end
 
-  #endif
+  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_ROM_ADDRESS        &_mdata_noncache
+  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_START          &_data_noncache_start
+  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_END            &_data_noncache_end
 
-  #define BSP_PRV_SECTION_VECTOR_ROM_ADDRESS                   &_mfvector
-  #define BSP_PRV_SECTION_VECTOR_RAM_START                     &_fvector_start
-  #define BSP_PRV_SECTION_VECTOR_RAM_END                       &_fvector_end
+  #define BSP_PRV_SECTION_DMAC_LINK_MODE_ROM_ADDRESS            &_mdmac_link_mode
+  #define BSP_PRV_SECTION_DMAC_LINK_MODE_RAM_START              &_dmac_link_mode_start
+  #define BSP_PRV_SECTION_DMAC_LINK_MODE_RAM_END                &_dmac_link_mode_end
 
-  #define BSP_PRV_SECTION_USER_PRG_ROM_ADDRESS                 &_mtext
-  #define BSP_PRV_SECTION_USER_PRG_RAM_START                   &_text_start
-  #define BSP_PRV_SECTION_USER_PRG_RAM_END                     &_text_end
+  #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_ROM_ADDRESS    &_msncbuffer
+  #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_RAM_START      &_sncbuffer_start
+  #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_RAM_END        &_sncbuffer_end
 
-  #define BSP_PRV_SECTION_USER_DATA_ROM_ADDRESS                &_mdata
-  #define BSP_PRV_SECTION_USER_DATA_RAM_START                  &_data_start
-  #define BSP_PRV_SECTION_USER_DATA_RAM_END                    &_data_end
+  #define BSP_PRV_SECTION_NONCACHE_BUFFER_ROM_ADDRESS           &_mncbuffer
+  #define BSP_PRV_SECTION_NONCACHE_BUFFER_RAM_START             &_ncbuffer_start
+  #define BSP_PRV_SECTION_NONCACHE_BUFFER_RAM_END               &_ncbuffer_end
 
-  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_ROM_ADDRESS       &_mdata_noncache
-  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_START         &_data_noncache_start
-  #define BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_END           &_data_noncache_end
-
-  #define BSP_PRV_SECTION_LDR_PRG_ROM_ADDRESS                  &_mloader_text
-  #define BSP_PRV_SECTION_LDR_PRG_RAM_START                    &_loader_text_start
-  #define BSP_PRV_SECTION_LDR_PRG_RAM_END                      &_loader_text_end
+  #define BSP_PRV_SECTION_LDR_PRG_ROM_ADDRESS                   &LOADER_TEXT_IMAGE
+  #define BSP_PRV_SECTION_LDR_PRG_RAM_START                     &_loader_text_start
+  #define BSP_PRV_SECTION_LDR_PRG_RAM_END                       &_loader_text_end
 
   #if !(BSP_CFG_C_RUNTIME_INIT)
-   #define BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS                &_mloader_data
-   #define BSP_PRV_SECTION_LDR_DATA_RAM_START                  &__loader_data_start
-   #define BSP_PRV_SECTION_LDR_DATA_RAM_END                    &__loader_data_end
+   #define BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS                 &LOADER_DATA_IMAGE
+   #define BSP_PRV_SECTION_LDR_DATA_RAM_START                   &__loader_data_start
+   #define BSP_PRV_SECTION_LDR_DATA_RAM_END                     &__loader_data_end
 
   #endif
  #endif
 
- #define BSP_PRV_SECTION_USER_DATA_BSS_START                   &__bss_start__
- #define BSP_PRV_SECTION_USER_DATA_BSS_END                     &__bss_end__
-
- #if BSP_CFG_RAM_EXECUTION
-  #define BSP_PRV_SECTION_NONCACHE_BUFFER_BSS_START            &_ncbuffer_start
-  #define BSP_PRV_SECTION_NONCACHE_BUFFER_BSS_END              &_ncbuffer_end
-
-  #if (1 == _RZT_ORDINAL)
-   #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_BSS_START    &_sncbuffer_start
-   #define BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_BSS_END      &_sncbuffer_end
-
-  #endif
-
-  #define BSP_PRV_SECTION_DMAC_LINK_MODE_BSS_START             &_DmacLinkMode_start
-  #define BSP_PRV_SECTION_DMAC_LINK_MODE_BSS_END               &_DmacLinkMode_end
+ #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
+  #define BSP_PRV_SECTION_SECONDARY_ROM_ADDRESS    &SECONDARY_IMAGE
+  #define BSP_PRV_SECTION_SECONDARY_RAM_START      &_secondary_start
+  #define BSP_PRV_SECTION_SECONDARY_RAM_END        &_secondary_end
 
  #endif
+
+ #define BSP_PRV_SECTION_USER_DATA_BSS_START       &__bss_start__
+ #define BSP_PRV_SECTION_USER_DATA_BSS_END         &__bss_end__
+
 #endif
 
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
 #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
- #if !(BSP_CFG_RAM_EXECUTION)
-  #if (1 == _RZT_ORDINAL)
-typedef enum e_bsp_image_info
-{
-    BSP_PRIV_IMAGE_INFO_KEY = 0,
-
-    BSP_PRIV_IMAGE_INFO_CPU = 1,
-
-    BSP_PRIV_IMAGE_INFO_SECTION_ADDRESS = 2,
-} bsp_image_info_t;
-
-typedef enum e_bsp_section
-{
-    BSP_PRIV_SECTION_SLAVE_ROM_ADDRESS = 0,
-
-    BSP_PRIV_SECTION_VECTOR_ROM_ADDRESS = 1,
-    BSP_PRIV_SECTION_VECTOR_RAM_START   = 2,
-    BSP_PRIV_SECTION_VECTOR_RAM_END     = 3,
-
-    BSP_PRIV_SECTION_LDR_PRG_ROM_ADDRESS = 4,
-    BSP_PRIV_SECTION_LDR_PRG_RAM_START   = 5,
-    BSP_PRIV_SECTION_LDR_PRG_RAM_END     = 6,
-
-    BSP_PRIV_SECTION_LDR_DATA_ROM_ADDRESS = 7,
-    BSP_PRIV_SECTION_LDR_DATA_RAM_START   = 8,
-    BSP_PRIV_SECTION_LDR_DATA_RAM_END     = 9,
-
-    BSP_PRIV_SECTION_USER_PRG_ROM_ADDRESS = 10,
-    BSP_PRIV_SECTION_USER_PRG_RAM_START   = 11,
-    BSP_PRIV_SECTION_USER_PRG_RAM_END     = 12,
-
-    BSP_PRIV_SECTION_USER_DATA_ROM_ADDRESS = 13,
-    BSP_PRIV_SECTION_USER_DATA_RAM_START   = 14,
-    BSP_PRIV_SECTION_USER_DATA_RAM_END     = 15,
-
-    BSP_PRIV_SECTION_USER_DATA_NONCACHE_ROM_ADDRESS = 16,
-    BSP_PRIV_SECTION_USER_DATA_NONCACHE_RAM_START   = 17,
-    BSP_PRIV_SECTION_USER_DATA_NONCACHE_RAM_END     = 18,
-} bsp_section_t;
-
-  #endif
 
 typedef enum e_bsp_assignment_cpu
 {
@@ -246,7 +176,6 @@ typedef enum e_bsp_assignment_cpu
     BSP_PRIV_ASSIGNMENT_CPU_CR52_1 = 0xAC54E001,
 } bsp_assignment_cpu_t;
 
- #endif
 #endif
 
 /***********************************************************************************************************************
@@ -272,17 +201,6 @@ uint32_t SystemCoreClock = 0U;
  #endif
 
  #if !(BSP_CFG_RAM_EXECUTION)
-  #if BSP_CFG_XSPI0_X1_BOOT
-   #pragma section="xSPI0_CS0_SPACE_ALIGNMENT_block"
-
-  #elif BSP_CFG_XSPI1_X1_BOOT
-   #pragma section="xSPI1_CS0_SPACE_ALIGNMENT_block"
-
-  #elif BSP_CFG_16BIT_NOR_BOOT
-   #pragma section="CS0_SPACE_ALIGNMENT_block"
-
-  #endif
-
   #pragma section="VECTOR_RBLOCK"
   #pragma section="VECTOR_WBLOCK"
 
@@ -296,6 +214,15 @@ uint32_t SystemCoreClock = 0U;
   #pragma section="USER_DATA_NONCACHE_RBLOCK"
   #pragma section="USER_DATA_NONCACHE_WBLOCK"
 
+  #pragma section="DMAC_LINK_MODE_RBLOCK"
+  #pragma section="DMAC_LINK_MODE_WBLOCK"
+
+  #pragma section="SHARED_NONCACHE_BUFFER_RBLOCK"
+  #pragma section="SHARED_NONCACHE_BUFFER_WBLOCK"
+
+  #pragma section="NONCACHE_BUFFER_RBLOCK"
+  #pragma section="NONCACHE_BUFFER_WBLOCK"
+
   #pragma section="LDR_PRG_RBLOCK"
   #pragma section="LDR_PRG_WBLOCK"
 
@@ -306,21 +233,12 @@ uint32_t SystemCoreClock = 0U;
   #endif
  #endif
 
- #if BSP_CFG_RAM_EXECUTION
-  #pragma section="NONCACHE_BUFFER_ZBLOCK"
-
-  #if (1 == _RZT_ORDINAL)
-   #pragma section="SHARED_NONCACHE_BUFFER_ZBLOCK"
-
-  #endif
-
-  #pragma section="DMAC_LINK_MODE_ZBLOCK"
-
- #endif
+ #pragma section="SECONDARY_RBLOCK"
+ #pragma section="SECONDARY_WBLOCK"
 
 #elif defined(__GNUC__)
  #if BSP_CFG_C_RUNTIME_INIT
-extern void * _mloader_data;
+extern void * LOADER_DATA_IMAGE;
 extern void * __loader_data_start;
 extern void * __loader_data_end;
 
@@ -335,26 +253,15 @@ extern void (* __init_array_end[])(void);
  #endif
 
  #if !(BSP_CFG_RAM_EXECUTION)
-  #if BSP_CFG_XSPI0_X1_BOOT
-extern void * __ddsc_xSPI0_CS0_SPACE_ALIGNMENT;
-
-  #elif BSP_CFG_XSPI1_X1_BOOT
-extern void * __ddsc_xSPI1_CS0_SPACE_ALIGNMENT;
-
-  #elif BSP_CFG_16BIT_NOR_BOOT
-extern void * __ddsc_CS0_SPACE_ALIGNMENT;
-
-  #endif
-
-extern void * _mfvector;
+extern void * INTVEC_IMAGE;
 extern void * _fvector_start;
 extern void * _fvector_end;
 
-extern void * _mtext;
+extern void * TEXT_IMAGE;
 extern void * _text_start;
 extern void * _text_end;
 
-extern void * _mdata;
+extern void * DATA_IMAGE;
 extern void * _data_start;
 extern void * _data_end;
 
@@ -362,35 +269,40 @@ extern void * _mdata_noncache;
 extern void * _data_noncache_start;
 extern void * _data_noncache_end;
 
-extern void * _mloader_text;
+extern void * _mdmac_link_mode;
+extern void * _dmac_link_mode_start;
+extern void * _dmac_link_mode_end;
+
+extern void * _msncbuffer;
+extern void * _sncbuffer_start;
+extern void * _sncbuffer_end;
+
+extern void * _mncbuffer;
+extern void * _ncbuffer_start;
+extern void * _ncbuffer_end;
+
+extern void * LOADER_TEXT_IMAGE;
 extern void * _loader_text_start;
 extern void * _loader_text_end;
 
   #if !(BSP_CFG_C_RUNTIME_INIT)
-extern void * _mloader_data;
+extern void * LOADER_DATA_IMAGE;
 extern void * __loader_data_start;
 extern void * __loader_data_end;
 
   #endif
  #endif
 
+ #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
+extern void * SECONDARY_IMAGE;
+extern void * _secondary_start;
+extern void * _secondary_end;
+
+ #endif
+
 extern void * __bss_start__;
 extern void * __bss_end__;
 
- #if BSP_CFG_RAM_EXECUTION
-extern void * _ncbuffer_start;
-extern void * _ncbuffer_end;
-
-  #if (1 == _RZT_ORDINAL)
-extern void * _sncbuffer_start;
-extern void * _sncbuffer_end;
-
-  #endif
-
-extern void * _DmacLinkMode_start;
-extern void * _DmacLinkMode_end;
-
- #endif
 #endif
 
 /***********************************************************************************************************************
@@ -503,57 +415,23 @@ const uint32_t g_bsp_master_mpu7_cfg[BSP_PRV_MASTER_MPU_REGION_NUM][2] =
 #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
  #if !(BSP_CFG_RAM_EXECUTION)
   #if (1 != _RZT_ORDINAL)
-
-const uint32_t g_bsp_image_info_section[] BSP_PLACE_IN_SECTION (".image_info") =
-{
-    (uint32_t) BSP_PRV_SECTION_SLAVE_ROM_ADDRESS,
-
-    (uint32_t) BSP_PRV_SECTION_VECTOR_ROM_ADDRESS,
-    (uint32_t) BSP_PRV_SECTION_VECTOR_RAM_START,
-    (uint32_t) BSP_PRV_SECTION_VECTOR_RAM_END,
-
-    (uint32_t) BSP_PRV_SECTION_LDR_PRG_ROM_ADDRESS,
-    (uint32_t) BSP_PRV_SECTION_LDR_PRG_RAM_START,
-    (uint32_t) BSP_PRV_SECTION_LDR_PRG_RAM_END,
-
-    (uint32_t) BSP_PRV_SECTION_LDR_DATA_ROM_ADDRESS,
-    (uint32_t) BSP_PRV_SECTION_LDR_DATA_RAM_START,
-    (uint32_t) BSP_PRV_SECTION_LDR_DATA_RAM_END,
-
-    (uint32_t) BSP_PRV_SECTION_USER_PRG_ROM_ADDRESS,
-    (uint32_t) BSP_PRV_SECTION_USER_PRG_RAM_START,
-    (uint32_t) BSP_PRV_SECTION_USER_PRG_RAM_END,
-
-    (uint32_t) BSP_PRV_SECTION_USER_DATA_ROM_ADDRESS,
-    (uint32_t) BSP_PRV_SECTION_USER_DATA_RAM_START,
-    (uint32_t) BSP_PRV_SECTION_USER_DATA_RAM_END,
-
-    (uint32_t) BSP_PRV_SECTION_USER_DATA_NONCACHE_ROM_ADDRESS,
-    (uint32_t) BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_START,
-    (uint32_t) BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_END,
-};
-
-const uint32_t g_bsp_image_info_array[BSP_PRV_IMAGE_INFO_ARRAY_MAX] BSP_PLACE_IN_SECTION(BSP_SECTION_LOADER_PARAM) =
-{
-    (uint32_t) BSP_PRV_IMAGE_INFO_KEY,
-
-    (uint32_t) BSP_PRV_IMAGE_INFO_CPU,
-
-    (uint32_t) g_bsp_image_info_section
-};
+uint32_t g_bsp_image_info BSP_PLACE_IN_SECTION(".image_info") = BSP_PRV_IMAGE_INFO_CPU;
 
   #endif
  #endif
 
  #if defined(__ICCARM__)
   #if BSP_CFG_RAM_EXECUTION
-BSP_DONT_REMOVE const void * const __ddsc_SYSTEM_RAM_END BSP_PLACE_IN_SECTION(".ddsc_system_ram_end") = 0;
+BSP_DONT_REMOVE const void * __ddsc_SYSTEM_RAM_END BSP_PLACE_IN_SECTION(".ddsc_system_ram_end") = 0;
 
-  #elif BSP_CFG_XSPI0_X1_BOOT
-BSP_DONT_REMOVE const void * const __ddsc_xSPI0_CS0_SPACE_END BSP_PLACE_IN_SECTION(".ddsc_xspi0_cs0_space_end") = 0;
+  #elif BSP_CFG_XSPI0_X1_BOOT || BSP_CFG_XSPI0_X8_BOOT
+BSP_DONT_REMOVE const void * __ddsc_xSPI0_CS0_SPACE_END BSP_PLACE_IN_SECTION(".ddsc_xspi0_cs0_space_end") = 0;
 
-  #elif BSP_CFG_16BIT_NOR_BOOT
-BSP_DONT_REMOVE const void * const __ddsc_CS0_SPACE_END BSP_PLACE_IN_SECTION(".ddsc_cs0_space_end") = 0;
+  #elif BSP_CFG_XSPI1_X1_BOOT
+BSP_DONT_REMOVE const void * __ddsc_xSPI1_CS0_SPACE_END BSP_PLACE_IN_SECTION(".ddsc_xspi1_cs0_space_end") = 0;
+
+  #elif BSP_CFG_16BIT_NOR_BOOT || BSP_CFG_32BIT_NOR_BOOT
+BSP_DONT_REMOVE const void * __ddsc_CS0_SPACE_END BSP_PLACE_IN_SECTION(".ddsc_cs0_space_end") = 0;
 
   #endif
  #endif
@@ -572,11 +450,7 @@ void R_BSP_WarmStart(bsp_warm_start_event_t event) __attribute__((weak));
 #endif
 
 #if BSP_CFG_C_RUNTIME_INIT
- #if (1 == _RZT_ORDINAL) || BSP_CFG_RAM_EXECUTION
 void bsp_loader_data_init(void);
-
- #endif
-
 void bsp_loader_bss_init(void);
 void bsp_static_constructor_init(void);
 
@@ -590,8 +464,11 @@ void bsp_application_bss_init(void);
 
  #if (1 == _RZT_ORDINAL)
 void bsp_copy_to_ram(void);
-void bsp_cpu_reset_release(void);
 
+  #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
+void bsp_cpu_reset_release(uintptr_t * image_info_cpu);
+
+  #endif
  #endif
 #endif
 
@@ -715,14 +592,13 @@ void R_BSP_WarmStart (bsp_warm_start_event_t event)
 /** @} (end addtogroup BSP_MCU) */
 
 #if BSP_CFG_C_RUNTIME_INIT
- #if (1 == _RZT_ORDINAL) || BSP_CFG_RAM_EXECUTION
 
 /*******************************************************************************************************************//**
  * Copy the loader data block from external Flash to internal RAM.
  **********************************************************************************************************************/
 void bsp_loader_data_init (void)
 {
-  #if (!defined(__GNUC__) || !(BSP_CFG_RAM_EXECUTION))
+ #if (defined(__ICCARM__) || ((1 == _RZT_ORDINAL) && !(BSP_CFG_RAM_EXECUTION)))
 
     /* Define destination/source address pointer and block size */
     uintptr_t * src;
@@ -734,10 +610,8 @@ void bsp_loader_data_init (void)
     dst  = (uintptr_t *) BSP_PRV_SECTION_LDR_DATA_RAM_START;
     size = (uintptr_t) BSP_PRV_SECTION_LDR_DATA_RAM_END - (uintptr_t) BSP_PRV_SECTION_LDR_DATA_RAM_START;
     bsp_copy_multibyte(src, dst, size);
-  #endif
-}
-
  #endif
+}
 
 /*******************************************************************************************************************//**
  * Clear the loader bss block in internal RAM.
@@ -768,27 +642,6 @@ void bsp_loader_bss_init (void)
     size = (uintptr_t) BSP_PRV_SECTION_USER_DATA_BSS_END - (uintptr_t) BSP_PRV_SECTION_USER_DATA_BSS_START;
     bsp_bss_init_multibyte(src, size);
   #endif
-
-    /* Clear non-cache buffer block. */
-    src  = (uintptr_t *) BSP_PRV_SECTION_NONCACHE_BUFFER_BSS_START;
-    size = (uintptr_t) BSP_PRV_SECTION_NONCACHE_BUFFER_BSS_END -
-           (uintptr_t) BSP_PRV_SECTION_NONCACHE_BUFFER_BSS_START;
-    bsp_bss_init_multibyte(src, size);
-
-  #if (1 == _RZT_ORDINAL)
-
-    /* Clear shared non-cache buffer block. */
-    src  = (uintptr_t *) BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_BSS_START;
-    size = (uintptr_t) BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_BSS_END -
-           (uintptr_t) BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_BSS_START;
-    bsp_bss_init_multibyte(src, size);
-  #endif
-
-    /* Clear DMAC link mode data block. */
-    src  = (uintptr_t *) BSP_PRV_SECTION_DMAC_LINK_MODE_BSS_START;
-    size = (uintptr_t) BSP_PRV_SECTION_DMAC_LINK_MODE_BSS_END -
-           (uintptr_t) BSP_PRV_SECTION_DMAC_LINK_MODE_BSS_START;
-    bsp_bss_init_multibyte(src, size);
  #endif
 }
 
@@ -802,28 +655,28 @@ void bsp_copy_multibyte (uintptr_t * src, uintptr_t * dst, uintptr_t bytesize)
     uintptr_t i;
     uintptr_t cnt;
 
-    uintptr_t src_mod;
+    uintptr_t bytesize_mod;
     uint8_t * src_single_byte;
     uint8_t * dst_single_byte;
 
     if (0 != bytesize)
     {
         /* Copy Count in single byte unit */
-        src_mod = (uintptr_t) src % sizeof(uintptr_t);
+        bytesize_mod = bytesize % sizeof(uintptr_t);
 
-        if (0 != src_mod)
+        if (0 != bytesize_mod)
         {
             src_single_byte = (uint8_t *) src;
             dst_single_byte = (uint8_t *) dst;
 
-            for (i = 0; i < src_mod; i++)
+            for (i = 0; i < bytesize_mod; i++)
             {
                 *dst_single_byte++ = *src_single_byte++;
             }
 
             dst       = (uintptr_t *) dst_single_byte;
             src       = (uintptr_t *) src_single_byte;
-            bytesize -= src_mod;
+            bytesize -= bytesize_mod;
         }
         else
         {
@@ -856,26 +709,26 @@ void bsp_bss_init_multibyte (uintptr_t * src, uintptr_t bytesize)
     uintptr_t cnt;
     uintptr_t zero = 0;
 
-    uintptr_t src_mod;
+    uintptr_t bytesize_mod;
     uint8_t * src_single_byte;
     uint8_t   zero_single_byte = 0;
 
     if (0 != bytesize)
     {
         /* Clear Count in single byte unit */
-        src_mod = (uintptr_t) src % sizeof(uintptr_t);
+        bytesize_mod = bytesize % sizeof(uintptr_t);
 
-        if (0 != src_mod)
+        if (0 != bytesize_mod)
         {
             src_single_byte = (uint8_t *) src;
 
-            for (i = 0; i < src_mod; i++)
+            for (i = 0; i < bytesize_mod; i++)
             {
                 *src_single_byte++ = zero_single_byte;
             }
 
             src       = (uintptr_t *) src_single_byte;
-            bytesize -= src_mod;
+            bytesize -= bytesize_mod;
         }
         else
         {
@@ -955,117 +808,92 @@ void bsp_copy_to_ram (void)
            (uintptr_t) BSP_PRV_SECTION_USER_DATA_NONCACHE_RAM_START;
     bsp_copy_multibyte(src, dst, size);
 
+    /* Copy DMAC link mode data block. */
+    src  = (uintptr_t *) BSP_PRV_SECTION_DMAC_LINK_MODE_ROM_ADDRESS;
+    dst  = (uintptr_t *) BSP_PRV_SECTION_DMAC_LINK_MODE_RAM_START;
+    size = (uintptr_t) BSP_PRV_SECTION_DMAC_LINK_MODE_RAM_END -
+           (uintptr_t) BSP_PRV_SECTION_DMAC_LINK_MODE_RAM_START;
+    bsp_copy_multibyte(src, dst, size);
+
+    /* Copy shared non-cache buffer block. */
+    src  = (uintptr_t *) BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_ROM_ADDRESS;
+    dst  = (uintptr_t *) BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_RAM_START;
+    size = (uintptr_t) BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_RAM_END -
+           (uintptr_t) BSP_PRV_SECTION_SHARED_NONCACHE_BUFFER_RAM_START;
+    bsp_copy_multibyte(src, dst, size);
+
+    /* Copy non-cache buffer block. */
+    src  = (uintptr_t *) BSP_PRV_SECTION_NONCACHE_BUFFER_ROM_ADDRESS;
+    dst  = (uintptr_t *) BSP_PRV_SECTION_NONCACHE_BUFFER_RAM_START;
+    size = (uintptr_t) BSP_PRV_SECTION_NONCACHE_BUFFER_RAM_END -
+           (uintptr_t) BSP_PRV_SECTION_NONCACHE_BUFFER_RAM_START;
+    bsp_copy_multibyte(src, dst, size);
+
   #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
+    uintptr_t image_info_cpu[BSP_PRV_IMAGE_INFO_CPU_NUM] = {0};
+    uint32_t  cpu_count = 0;
 
-    /* Define a pointer to refer to the address of each section of the secondary core (or later) */
-    uint32_t * image_info = (uint32_t *) BSP_PRV_SECTION_SLAVE_ROM_ADDRESS;
+    /* Copy secondary core application */
+    src  = (uintptr_t *) BSP_PRV_SECTION_SECONDARY_ROM_ADDRESS;
+    dst  = (uintptr_t *) BSP_PRV_SECTION_SECONDARY_RAM_START;
+    size = (uintptr_t) BSP_PRV_SECTION_SECONDARY_RAM_END -
+           (uintptr_t) BSP_PRV_SECTION_SECONDARY_RAM_START;
 
-    /* Determine whether the secondary core (or later) binary exists */
-    while ((BSP_PRV_IMAGE_INFO_KEY == image_info[BSP_PRIV_IMAGE_INFO_KEY]) &&
-           (BSP_PRIV_ASSIGNMENT_CPU_CR52_0 <= image_info[BSP_PRIV_IMAGE_INFO_CPU]) &&
-           (BSP_PRIV_ASSIGNMENT_CPU_CR52_1 >= image_info[BSP_PRIV_IMAGE_INFO_CPU]))
+    if (0 != size)
     {
-        /* Assign the address of the array that stores the address of each section of the secondary core (or later) */
-        image_info = (uint32_t *) image_info[BSP_PRIV_IMAGE_INFO_SECTION_ADDRESS];
-
-        /* Copy exception vector block on the secondary core (or later) */
-        src  = (uintptr_t *) image_info[BSP_PRIV_SECTION_VECTOR_ROM_ADDRESS];
-        dst  = (uintptr_t *) image_info[BSP_PRIV_SECTION_VECTOR_RAM_START];
-        size = (uintptr_t) image_info[BSP_PRIV_SECTION_VECTOR_RAM_END] -
-               (uintptr_t) image_info[BSP_PRIV_SECTION_VECTOR_RAM_START];
         bsp_copy_multibyte(src, dst, size);
-
-        /* Copy loader program block on the secondary core (or later) */
-        src  = (uintptr_t *) image_info[BSP_PRIV_SECTION_LDR_PRG_ROM_ADDRESS];
-        dst  = (uintptr_t *) image_info[BSP_PRIV_SECTION_LDR_PRG_RAM_START];
-        size = (uintptr_t) image_info[BSP_PRIV_SECTION_LDR_PRG_RAM_END] -
-               (uintptr_t) image_info[BSP_PRIV_SECTION_LDR_PRG_RAM_START];
-        bsp_copy_multibyte(src, dst, size);
-
-        /* Copy loader data block on the secondary core (or later) */
-        src  = (uintptr_t *) image_info[BSP_PRIV_SECTION_LDR_DATA_ROM_ADDRESS];
-        dst  = (uintptr_t *) image_info[BSP_PRIV_SECTION_LDR_DATA_RAM_START];
-        size = (uintptr_t) image_info[BSP_PRIV_SECTION_LDR_DATA_RAM_END] -
-               (uintptr_t) image_info[BSP_PRIV_SECTION_LDR_DATA_RAM_START];
-        bsp_copy_multibyte(src, dst, size);
-
-        /* Copy user program block on the secondary core (or later) */
-        src  = (uintptr_t *) image_info[BSP_PRIV_SECTION_USER_PRG_ROM_ADDRESS];
-        dst  = (uintptr_t *) image_info[BSP_PRIV_SECTION_USER_PRG_RAM_START];
-        size = (uintptr_t) image_info[BSP_PRIV_SECTION_USER_PRG_RAM_END] -
-               (uintptr_t) image_info[BSP_PRIV_SECTION_USER_PRG_RAM_START];
-        bsp_copy_multibyte(src, dst, size);
-
-        /* Copy user data block on the secondary core (or later) */
-        src  = (uintptr_t *) image_info[BSP_PRIV_SECTION_USER_DATA_ROM_ADDRESS];
-        dst  = (uintptr_t *) image_info[BSP_PRIV_SECTION_USER_DATA_RAM_START];
-        size = (uintptr_t) image_info[BSP_PRIV_SECTION_USER_DATA_RAM_END] -
-               (uintptr_t) image_info[BSP_PRIV_SECTION_USER_DATA_RAM_START];
-        bsp_copy_multibyte(src, dst, size);
-
-        /* Copy user data_noncache block on the secondary core (or later) */
-        src  = (uintptr_t *) image_info[BSP_PRIV_SECTION_USER_DATA_NONCACHE_ROM_ADDRESS];
-        dst  = (uintptr_t *) image_info[BSP_PRIV_SECTION_USER_DATA_NONCACHE_RAM_START];
-        size = (uintptr_t) image_info[BSP_PRIV_SECTION_USER_DATA_NONCACHE_RAM_END] -
-               (uintptr_t) image_info[BSP_PRIV_SECTION_USER_DATA_NONCACHE_RAM_START];
-        bsp_copy_multibyte(src, dst, size);
-
-        /* Refer to the address information of each section after the secondary core */
-        image_info = (uint32_t *) image_info[BSP_PRIV_SECTION_SLAVE_ROM_ADDRESS];
+        image_info_cpu[cpu_count] = *(uintptr_t *) ((uintptr_t) BSP_PRV_SECTION_SECONDARY_RAM_START +
+                                                    (uintptr_t) BSP_PRV_IMAGE_INFO_OFFSET);
+        cpu_count++;
     }
+    bsp_cpu_reset_release(image_info_cpu);
   #endif
 }
+
+  #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
 
 /*******************************************************************************************************************//**
  * Reset release each CPU
  **********************************************************************************************************************/
-void bsp_cpu_reset_release (void)
+void bsp_cpu_reset_release (uintptr_t * image_info_cpu)
 {
-  #if (2 == BSP_FEATURE_BSP_CR52_CORE_NUM)
-    uint32_t * image_info = (uint32_t *) BSP_PRV_SECTION_SLAVE_ROM_ADDRESS;
+    uint32_t cpu_count = 0;
 
-    /* Determine whether the secondary core (or later) binary exists */
-    if ((BSP_PRV_IMAGE_INFO_KEY == image_info[BSP_PRIV_IMAGE_INFO_KEY]) &&
-        (BSP_PRIV_ASSIGNMENT_CPU_CR52_0 <= image_info[BSP_PRIV_IMAGE_INFO_CPU]) &&
-        (BSP_PRIV_ASSIGNMENT_CPU_CR52_1 >= image_info[BSP_PRIV_IMAGE_INFO_CPU]))
+    if (0 != image_info_cpu[cpu_count])
     {
         R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
 
-        /* Determine whether the secondary core (or later) binary exists */
-        while ((BSP_PRV_IMAGE_INFO_KEY == image_info[BSP_PRIV_IMAGE_INFO_KEY]) &&
-               (BSP_PRIV_ASSIGNMENT_CPU_CR52_0 <= image_info[BSP_PRIV_IMAGE_INFO_CPU]) &&
-               (BSP_PRIV_ASSIGNMENT_CPU_CR52_1 >= image_info[BSP_PRIV_IMAGE_INFO_CPU]))
+        while (BSP_PRV_IMAGE_INFO_CPU_NUM > cpu_count)
         {
-            switch (image_info[BSP_PRIV_IMAGE_INFO_CPU])
+            switch (image_info_cpu[cpu_count])
             {
                 case BSP_PRIV_ASSIGNMENT_CPU_CR52_0:
                 {
                     R_BSP_CPUResetRelease(BSP_RESET_CR52_0);
+                    cpu_count++;
                     break;
                 }
 
                 case BSP_PRIV_ASSIGNMENT_CPU_CR52_1:
                 {
                     R_BSP_CPUResetRelease(BSP_RESET_CR52_1);
+                    cpu_count++;
                     break;
                 }
 
                 default:
                 {
+                    cpu_count = BSP_PRV_IMAGE_INFO_CPU_NUM;
                     break;
                 }
             }
-
-            /* Refer to the address information of each section after the secondary core */
-            image_info = (uint32_t *) image_info[BSP_PRIV_IMAGE_INFO_SECTION_ADDRESS];
-            image_info = (uint32_t *) image_info[BSP_PRIV_SECTION_SLAVE_ROM_ADDRESS];
         }
 
         R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
     }
-  #endif
 }
 
+  #endif
  #endif
 #endif
 

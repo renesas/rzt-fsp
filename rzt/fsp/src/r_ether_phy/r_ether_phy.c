@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
@@ -813,15 +799,28 @@ static ether_selector_duplex_t ether_phy_get_selector_duplex (ether_phy_duplex_t
  **********************************************************************************************************************/
 fsp_err_t ether_phy_reset (ether_phy_instance_ctrl_t * p_instance_ctrl, ether_phy_cfg_t const * const p_cfg)
 {
-    static bool g_ether_phy_state_initialized = false;
-
+    bool phy_state_initialized;
+    static bsp_io_port_pin_t g_phy_reset_pin_initialized[BSP_FEATURE_ETHER_PHY_MAX_CHANNELS] = {(bsp_io_port_pin_t) 0U};
+    uint32_t                 index;
     ether_phy_extend_cfg_t * p_extend = (ether_phy_extend_cfg_t *) p_cfg->p_extend;
     fsp_err_t                err      = FSP_SUCCESS;
 
-    if (!g_ether_phy_state_initialized)
+    phy_state_initialized = false;
+
+    for (index = 0U; index < BSP_FEATURE_ETHER_PHY_MAX_CHANNELS; index++)
+    {
+        if (g_phy_reset_pin_initialized[index] == p_extend->phy_reset_pin)
+        {
+            phy_state_initialized = true;
+            break;
+        }
+    }
+
+    g_phy_reset_pin_initialized[p_cfg->channel] = p_extend->phy_reset_pin;
+
+    if (!phy_state_initialized)
     {
         /* Reset PHY by hard */
-        g_ether_phy_state_initialized = true;
 
         /* This code uses BSP IO functions to show how it is used.*/
         R_BSP_PinAccessEnable();

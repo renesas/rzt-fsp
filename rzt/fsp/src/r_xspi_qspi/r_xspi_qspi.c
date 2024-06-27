@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 #include "bsp_api.h"
 
@@ -25,90 +11,112 @@
  **********************************************************************************************************************/
 #include "r_xspi_qspi.h"
 
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+ #include "r_rsip.h"
+#endif
+
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define XSPI_QSPI_PRV_OPEN                            (0x51535049)
+#define XSPI_QSPI_PRV_OPEN                               (0x51535049)
 
 /* External address space xSPI0 : 0x60000000 - 0x67FFFFFF,
  * External address space xSPI1 : 0x68000000 - 0x6FFFFFFF */
-#define XSPI_QSPI_DEVICE_START_ADDRESS                (0x60000000)
-#define XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA        (0x8000000)
+#define XSPI_QSPI_DEVICE_START_ADDRESS                   (0x60000000)
+#define XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA           (0x8000000)
 
 /* External address space xSPI0 CS0 : 0x60000000 - 0x63FFFFFF,
  * External address space xSPI0 CS1 : 0x64000000 - 0x67FFFFFF */
-#define XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA          (0x4000000)
+#define XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA             (0x4000000)
 
 /* Mirror area of external address space xSPI0 : 0x40000000 - 0x47FFFFFF,
  * Mirror area of external address space xSPI1 : 0x48000000 - 0x4FFFFFFF */
-#define XSPI_QSPI_DEVICE_START_MIRROR_ADDRESS         (0x40000000)
 
-#define XSPI_QSPI_PRV_LIOCFGCS_PRTMD_OFFSET           (0U)
-#define XSPI_QSPI_PRV_LIOCFGCS_PRTMD_VALUE_MASK       (0x3FFU)
-#define XSPI_QSPI_PRV_LIOCFGCS_PRTMD_MASK             (0x3FFU << XSPI_QSPI_PRV_LIOCFGCS_PRTMD_OFFSET)
-#define XSPI_QSPI_PRV_LIOCFGCS_CSMIN_OFFSET           (16U)
-#define XSPI_QSPI_PRV_LIOCFGCS_CSMIN_VALUE_MASK       (0x0FU)
-#define XSPI_QSPI_PRV_LIOCFGCS_CSASTEX_OFFSET         (20U)
-#define XSPI_QSPI_PRV_LIOCFGCS_CSASTEX_VALUE_MASK     (0x01U)
-#define XSPI_QSPI_PRV_LIOCFGCS_CSENGEX_OFFSET         (21U)
-#define XSPI_QSPI_PRV_LIOCFGCS_CSENGEX_VALUE_MASK     (0x01U)
+#define XSPI_QSPI_MIRROR_ADDRESS_DELTA                   (0x20000000)
+#define XSPI_QSPI_DEVICE_START_MIRROR_ADDRESS            (0x40000000)
 
-#define XSPI_QSPI_PRV_CMCFG0_FFMT_OFFSET              (0U)
-#define XSPI_QSPI_PRV_CMCFG0_ADDSIZE_OFFSET           (2U)
-#define XSPI_QSPI_PRV_CMCFG0_ADDSIZE_VALUE_MASK       (0x03U)
-#define XSPI_QSPI_PRV_CMCFG1_RDCMD_UPPER_OFFSET       (8U)
-#define XSPI_QSPI_PRV_CMCFG1_RDCMD_VALUE_MASK         (0xFFU)
-#define XSPI_QSPI_PRV_CMCFG1_RDLATE_OFFSET            (16U)
-#define XSPI_QSPI_PRV_CMCFG1_RDLATE_VALUE_MASK        (0x1FU)
+/* Mirror area offset value */
+#define XSPO_QSPI_DEVICE_MIRROR_OFFSET                   (0x20000000)
 
-#define XSPI_QSPI_PRV_CMCFG2_WRCMD_UPPER_OFFSET       (8U)
-#define XSPI_QSPI_PRV_CMCFG1_WRCMD_VALUE_MASK         (0xFFU)
-#define XSPI_QSPI_PRV_CMCFG2_WRLATE_OFFSET            (16U)
+#define XSPI_QSPI_PRV_LIOCFGCS_PRTMD_OFFSET              (0U)
+#define XSPI_QSPI_PRV_LIOCFGCS_PRTMD_VALUE_MASK          (0x3FFU)
+#define XSPI_QSPI_PRV_LIOCFGCS_PRTMD_MASK                (0x3FFU << XSPI_QSPI_PRV_LIOCFGCS_PRTMD_OFFSET)
+#define XSPI_QSPI_PRV_LIOCFGCS_CSMIN_OFFSET              (16U)
+#define XSPI_QSPI_PRV_LIOCFGCS_CSMIN_VALUE_MASK          (0x0FU)
+#define XSPI_QSPI_PRV_LIOCFGCS_CSASTEX_OFFSET            (20U)
+#define XSPI_QSPI_PRV_LIOCFGCS_CSASTEX_VALUE_MASK        (0x01U)
+#define XSPI_QSPI_PRV_LIOCFGCS_CSENGEX_OFFSET            (21U)
+#define XSPI_QSPI_PRV_LIOCFGCS_CSENGEX_VALUE_MASK        (0x01U)
 
-#define XSPI_QSPI_PRV_BMCFG_WRMD_OFFSET               (0U)
-#define XSPI_QSPI_PRV_BMCFG_MWRCOMB_OFFSET            (7U)
-#define XSPI_QSPI_PRV_BMCFG_MWRSIZE_OFFSET            (8U)
-#define XSPI_QSPI_PRV_BMCFG_PREEN_OFFSET              (16U)
-#define XSPI_QSPI_PRV_BMCFG_PREEN_VALUE_MASK          (0x01U)
+#define XSPI_QSPI_PRV_CMCFG0_FFMT_OFFSET                 (0U)
+#define XSPI_QSPI_PRV_CMCFG0_ADDSIZE_OFFSET              (2U)
+#define XSPI_QSPI_PRV_CMCFG0_ADDSIZE_VALUE_MASK          (0x03U)
+#define XSPI_QSPI_PRV_CMCFG1_RDCMD_UPPER_OFFSET          (8U)
+#define XSPI_QSPI_PRV_CMCFG1_RDCMD_VALUE_MASK            (0xFFU)
+#define XSPI_QSPI_PRV_CMCFG1_RDLATE_OFFSET               (16U)
+#define XSPI_QSPI_PRV_CMCFG1_RDLATE_VALUE_MASK           (0x1FU)
 
-#define XSPI_QSPI_PRV_BMCTL_DEFAULT_VALUE             (0x000000FFUL)
+#define XSPI_QSPI_PRV_CMCFG2_WRCMD_UPPER_OFFSET          (8U)
+#define XSPI_QSPI_PRV_CMCFG1_WRCMD_VALUE_MASK            (0xFFU)
+#define XSPI_QSPI_PRV_CMCFG2_WRLATE_OFFSET               (16U)
 
-#define XSPI_QSPI_PRV_BMCTL_CSNACC_R_ENABLE           (0x01U)
-#define XSPI_QSPI_PRV_BMCTL_CSNACC_R_W_ENABLE         (0x03U)
+#define XSPI_QSPI_PRV_BMCFG_WRMD_OFFSET                  (0U)
+#define XSPI_QSPI_PRV_BMCFG_MWRCOMB_OFFSET               (7U)
+#define XSPI_QSPI_PRV_BMCFG_MWRSIZE_OFFSET               (8U)
+#define XSPI_QSPI_PRV_BMCFG_PREEN_OFFSET                 (16U)
+#define XSPI_QSPI_PRV_BMCFG_PREEN_VALUE_MASK             (0x01U)
 
-#define XSPI_QSPI_PRV_CDTBUF_CMDSIZE_OFFSET           (0U)
-#define XSPI_QSPI_PRV_CDTBUF_CMDSIZE_VALUE_MASK       (0x03U)
-#define XSPI_QSPI_PRV_CDTBUF_ADDSIZE_OFFSET           (2U)
-#define XSPI_QSPI_PRV_CDTBUF_ADDSIZE_VALUE_MASK       (0x07U)
-#define XSPI_QSPI_PRV_CDTBUF_DATASIZE_OFFSET          (5U)
-#define XSPI_QSPI_PRV_CDTBUF_DATASIZE_VALUE_MASK      (0x0FU)
-#define XSPI_QSPI_PRV_CDTBUF_LATE_OFFSET              (9U)
-#define XSPI_QSPI_PRV_CDTBUF_LATE_VALUE_MASK          (0x1FU)
-#define XSPI_QSPI_PRV_CDTBUF_TRTYPE_OFFSET            (15U)
-#define XSPI_QSPI_PRV_CDTBUF_TRTYPE_VALUE_MASK        (0x01U)
-#define XSPI_QSPI_PRV_CDTBUF_CMD_UPPER_OFFSET         (24U)
-#define XSPI_QSPI_PRV_CDTBUF_CMD_VALUE_MASK           (0xFFU)
+#define XSPI_QSPI_PRV_BMCTL_DEFAULT_VALUE                (0x000000FFUL)
 
-#define XSPI_QSPI_PRV_COMSTT_MEMACC_OFFSET            (0U)
-#define XSPI_QSPI_PRV_COMSTT_MEMACC_VALUE_MASK        (0x01U)
-#define XSPI_QSPI_PRV_COMSTT_WRBUFNE_OFFSET           (6U)
-#define XSPI_QSPI_PRV_COMSTT_WRBUFNE_VALUE_MASK       (0x01U)
+#define XSPI_QSPI_PRV_BMCTL_CSNACC_R_ENABLE              (0x01U)
+#define XSPI_QSPI_PRV_BMCTL_CSNACC_R_W_ENABLE            (0x03U)
 
-#define XSPI_QSPI_PRV_INTC_CMDCMPC_OFFSET             (0U)
+#define XSPI_QSPI_PRV_CDTBUF_CMDSIZE_OFFSET              (0U)
+#define XSPI_QSPI_PRV_CDTBUF_CMDSIZE_VALUE_MASK          (0x03U)
+#define XSPI_QSPI_PRV_CDTBUF_ADDSIZE_OFFSET              (2U)
+#define XSPI_QSPI_PRV_CDTBUF_ADDSIZE_VALUE_MASK          (0x07U)
+#define XSPI_QSPI_PRV_CDTBUF_DATASIZE_OFFSET             (5U)
+#define XSPI_QSPI_PRV_CDTBUF_DATASIZE_VALUE_MASK         (0x0FU)
+#define XSPI_QSPI_PRV_CDTBUF_LATE_OFFSET                 (9U)
+#define XSPI_QSPI_PRV_CDTBUF_LATE_VALUE_MASK             (0x1FU)
+#define XSPI_QSPI_PRV_CDTBUF_TRTYPE_OFFSET               (15U)
+#define XSPI_QSPI_PRV_CDTBUF_TRTYPE_VALUE_MASK           (0x01U)
+#define XSPI_QSPI_PRV_CDTBUF_CMD_UPPER_OFFSET            (24U)
+#define XSPI_QSPI_PRV_CDTBUF_CMD_VALUE_MASK              (0xFFU)
 
-#define XSPI_QSPI_PRV_DEVICE_WRITE_STATUS_BIT_MASK    (1U)
+#define XSPI_QSPI_PRV_COMSTT_MEMACC_OFFSET               (0U)
+#define XSPI_QSPI_PRV_COMSTT_MEMACC_VALUE_MASK           (0x01U)
+#define XSPI_QSPI_PRV_COMSTT_WRBUFNE_OFFSET              (6U)
+#define XSPI_QSPI_PRV_COMSTT_WRBUFNE_VALUE_MASK          (0x01U)
 
-#define XSPI_QSPI_PRV_MAX_COMBINE_SIZE                (64U)
+#define XSPI_QSPI_PRV_INTC_CMDCMPC_OFFSET                (0U)
 
-#define XSPI_QSPI_PRV_WORD_ACCESS_SIZE                (4U)
-#define XSPI_QSPI_PRV_HALF_WORD_ACCESS_SIZE           (2U)
+#define XSPI_QSPI_PRV_DEVICE_WRITE_STATUS_BIT_MASK       (1U)
+
+#define XSPI_QSPI_PRV_MAX_COMBINE_SIZE                   (64U)
+
+#define XSPI_QSPI_PRV_WORD_ACCESS_SIZE                   (4U)
+#define XSPI_QSPI_PRV_HALF_WORD_ACCESS_SIZE              (2U)
+
+#define XSPI_QSPI_PRV_1MB_MEMORY_SPACE                   (0xFFFFFU)
+#define XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT                  (20U)
+
+#if defined(BSP_MCU_GROUP_RZT2ME)
+ #define XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET             (16U)
+ #define XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_MASK           (0x01U)
+ #define XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK       (0x02U)
+ #define XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_MASK        (0x10U)
+ #define XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK    (0x20U)
+#endif
+
+#define XSPI_QSPI_PRV_OTFD_REG00_RESET_VALUE             (0x22000000)
 
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
 
 /* Number of address bytes in 4 byte address mode. */
-#define QSPI_4_BYTE_ADDRESS                           (4U)
+#define QSPI_4_BYTE_ADDRESS                              (4U)
 
 /***********************************************************************************************************************
  * Private function prototypes
@@ -129,9 +137,20 @@ static fsp_err_t r_xspi_qspi_program_param_check(xspi_qspi_instance_ctrl_t * p_i
 
 #endif
 
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+static fsp_err_t r_xspi_qspi_otfd_setup(xspi_qspi_instance_ctrl_t * p_instance_ctrl);
+
+#endif
+
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
+
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+static rsip_instance_ctrl_t g_xspi_qspi_rsip_ctrl;
+static const rsip_cfg_t     g_xspi_qspi_rsip_cfg;
+
+#endif
 
 /*******************************************************************************************************************//**
  * @addtogroup XSPI_QSPI
@@ -196,16 +215,112 @@ fsp_err_t R_XSPI_QSPI_Open (spi_flash_ctrl_t * p_ctrl, spi_flash_cfg_t const * c
     R_BSP_MODULE_START(FSP_IP_XSPI, p_cfg_extend->unit);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
+#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+#endif
+
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+    if (NULL != p_cfg_extend->p_otfd_cfg)
+    {
+        /* OTFD enable. */
+        R_XSPI_MISC2->OTFD_ENABLE |=
+            (uint32_t) (R_XSPI_MISC2_OTFD_ENABLE_OTFD0E_Msk <<
+                        (R_XSPI_MISC2_OTFD_ENABLE_OTFD1E_Pos * p_cfg_extend->unit));
+    }
+    else
+    {
+        /* OTFD disable. */
+        R_XSPI_MISC2->OTFD_ENABLE &=
+            (uint32_t) ~(R_XSPI_MISC2_OTFD_ENABLE_OTFD0E_Msk <<
+                         (R_XSPI_MISC2_OTFD_ENABLE_OTFD1E_Pos * p_cfg_extend->unit));
+    }
+#endif
+
+#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+
+    /* Bus release request */
+    R_XSPI_MISC2->MSTP_CTRL_XSPI &=
+        ~(XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_MASK << (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit));
+    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                 (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK),
+                               0U);
+
+    /* Module release request */
+    R_XSPI_MISC2->MSTP_CTRL_XSPI &=
+        ~(XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_MASK << (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit));
+    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                 (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK),
+                               0U);
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
+#endif
+
     uint32_t base_address = (uint32_t) R_XSPI0 + (p_cfg_extend->unit * ((uint32_t) R_XSPI1 - (uint32_t) R_XSPI0));
     p_instance_ctrl->p_reg = (R_XSPI0_Type *) base_address;
 
     /* Initialize control block. */
     p_instance_ctrl->p_cfg = p_cfg;
 
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+    if (NULL != p_cfg_extend->p_otfd_cfg)
+    {
+        uint32_t base_otfd_address = (uint32_t) R_OTFD0 +
+                                     (p_cfg_extend->unit * ((uint32_t) R_OTFD1 - (uint32_t) R_OTFD0));
+        p_instance_ctrl->p_otfd_reg = (R_OTFD0_Type *) base_otfd_address;
+
+        fsp_err_t dotf_ret = r_xspi_qspi_otfd_setup(p_instance_ctrl);
+        if (FSP_SUCCESS != dotf_ret)
+        {
+            R_RSIP_Close(&g_xspi_qspi_rsip_ctrl);
+
+ #if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+            R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+
+            /* Module stop request */
+            R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_MASK <<
+                                            (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
+            FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                         (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                        XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK),
+                                       XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK);
+
+            /* Bus stop request */
+            R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_MASK <<
+                                            (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
+            FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                         (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                        XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK),
+                                       XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK);
+            R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
+ #endif
+
+            /* If the OTFD initialization fails, stop the module. */
+            R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
+            R_BSP_MODULE_STOP(FSP_IP_XSPI, p_cfg_extend->unit);
+            R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
+
+            return dotf_ret;
+        }
+    }
+#endif
+
     /* xSPI configuration (see RZ microprocessor User's Manual section "Flow of Configuration"). */
     p_instance_ctrl->p_reg->LIOCFGCS[p_cfg_extend->chip_select] = (p_cfg->spi_protocol) <<
                                                                   XSPI_QSPI_PRV_LIOCFGCS_PRTMD_OFFSET;
     p_instance_ctrl->spi_protocol = p_cfg->spi_protocol;
+
+    /* Set xSPI CSn address space. */
+    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+#if XSPI_QSPI_CFG_CUSTOM_ADDR_SPACE_ENABLE
+    R_XSPI0_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit0_cs0_end_address - XSPI_QSPI_MIRROR_ADDRESS_DELTA;
+    R_XSPI0_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit0_cs1_start_address - XSPI_QSPI_MIRROR_ADDRESS_DELTA;
+    R_XSPI0_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit0_cs1_end_address - XSPI_QSPI_MIRROR_ADDRESS_DELTA;
+    R_XSPI1_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit1_cs0_end_address - XSPI_QSPI_MIRROR_ADDRESS_DELTA;
+    R_XSPI1_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit1_cs1_start_address - XSPI_QSPI_MIRROR_ADDRESS_DELTA;
+    R_XSPI1_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit1_cs1_end_address - XSPI_QSPI_MIRROR_ADDRESS_DELTA;
+#else
+ #if 1 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
 
     /* Set xSPI CSn slave memory size. */
     if (XSPI_QSPI_CHIP_SELECT_0 == p_cfg_extend->chip_select)
@@ -216,6 +331,50 @@ fsp_err_t R_XSPI_QSPI_Open (spi_flash_ctrl_t * p_ctrl, spi_flash_cfg_t const * c
     {
         p_instance_ctrl->p_reg->CSSCTL_b.CS1SIZE = p_cfg_extend->memory_size;
     }
+
+ #elif 2 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
+    if (XSPI_QSPI_CHIP_SELECT_0 == p_cfg_extend->chip_select)
+    {
+        if (0 == p_cfg_extend->unit)
+        {
+            R_XSPI0_MISC->CS0ENDAD = XSPI_QSPI_DEVICE_START_ADDRESS - XSPI_QSPI_MIRROR_ADDRESS_DELTA +
+                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT) +
+                                     XSPI_QSPI_PRV_1MB_MEMORY_SPACE;
+        }
+        else
+        {
+            R_XSPI1_MISC->CS0ENDAD = XSPI_QSPI_DEVICE_START_ADDRESS - XSPI_QSPI_MIRROR_ADDRESS_DELTA +
+                                     XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA +
+                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT) +
+                                     XSPI_QSPI_PRV_1MB_MEMORY_SPACE;
+        }
+    }
+    else
+    {
+        if (0 == p_cfg_extend->unit)
+        {
+            R_XSPI0_MISC->CS1STRAD = XSPI_QSPI_DEVICE_START_ADDRESS - XSPI_QSPI_MIRROR_ADDRESS_DELTA +
+                                     XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA;
+            R_XSPI0_MISC->CS1ENDAD = XSPI_QSPI_DEVICE_START_ADDRESS - XSPI_QSPI_MIRROR_ADDRESS_DELTA +
+                                     XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA +
+                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT) +
+                                     XSPI_QSPI_PRV_1MB_MEMORY_SPACE;
+        }
+        else
+        {
+            R_XSPI1_MISC->CS1STRAD = XSPI_QSPI_DEVICE_START_ADDRESS - XSPI_QSPI_MIRROR_ADDRESS_DELTA +
+                                     XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA +
+                                     XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA;
+            R_XSPI1_MISC->CS1ENDAD = XSPI_QSPI_DEVICE_START_ADDRESS - XSPI_QSPI_MIRROR_ADDRESS_DELTA +
+                                     XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA +
+                                     XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA +
+                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT) +
+                                     XSPI_QSPI_PRV_1MB_MEMORY_SPACE;
+        }
+    }
+ #endif
+#endif
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 
     p_instance_ctrl->p_reg->LIOCFGCS[p_cfg_extend->chip_select] =
         ((p_cfg->spi_protocol & XSPI_QSPI_PRV_LIOCFGCS_PRTMD_VALUE_MASK) << XSPI_QSPI_PRV_LIOCFGCS_PRTMD_OFFSET) |
@@ -387,7 +546,8 @@ fsp_err_t R_XSPI_QSPI_XipExit (spi_flash_ctrl_t * p_ctrl)
  * @retval FSP_ERR_INVALID_MODE        This function can't be called when XIP mode is enabled.
  * @retval FSP_ERR_DEVICE_BUSY         The device is busy.
  *
- * @note In this API, data can be written up to 64 bytes at a time.
+ * @note In this API, the number of bytes that can be written at one time depends on the MCU :
+ * any byte within 64bytes for RZ/T2M and RZ/T2L, 1,2, or 4byte for RZ/T2ME.
  * @note This API performs page program operations to the device. Writing across pages is not supported.
  * Please set the write address and write size according to the page size of your device.
  **********************************************************************************************************************/
@@ -485,9 +645,43 @@ fsp_err_t R_XSPI_QSPI_Erase (spi_flash_ctrl_t * p_ctrl, uint8_t * const p_device
     FSP_ASSERT(NULL != p_device_address);
 #endif
 
+    xspi_qspi_extended_cfg_t * p_cfg_extend =
+        (xspi_qspi_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+
+    uint8_t unit        = p_cfg_extend->unit;
+    uint8_t chip_select = p_cfg_extend->chip_select;
+
     uint16_t erase_command = 0;
-    uint32_t chip_address  = (uint32_t) p_device_address - XSPI_QSPI_DEVICE_START_ADDRESS;
-    bool     send_address  = true;
+    uint32_t chip_address;
+    bool     send_address = true;
+
+#if XSPI_QSPI_CFG_CUSTOM_ADDR_SPACE_ENABLE
+    if (XSPI_QSPI_CHIP_SELECT_0 == chip_select)
+    {
+        chip_address = (uint32_t) p_device_address -
+                       (uint32_t) (XSPI_QSPI_DEVICE_START_ADDRESS +
+                                   (unit * XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA));
+    }
+    else
+    {
+        if (0 == unit)
+        {
+            chip_address = (uint32_t) p_device_address -
+                           p_cfg_extend->p_address_space->unit0_cs1_start_address;
+        }
+        else
+        {
+            chip_address = (uint32_t) p_device_address -
+                           p_cfg_extend->p_address_space->unit1_cs1_start_address;
+        }
+    }
+
+#else
+    chip_address = (uint32_t) p_device_address -
+                   (uint32_t) (XSPI_QSPI_DEVICE_START_ADDRESS +
+                               (unit * XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA) +
+                               (chip_select * XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA));
+#endif
 
     for (uint32_t index = 0; index < p_instance_ctrl->p_cfg->erase_command_list_length; index++)
     {
@@ -655,6 +849,27 @@ fsp_err_t R_XSPI_QSPI_Close (spi_flash_ctrl_t * p_ctrl)
 
     p_instance_ctrl->open = 0U;
 
+#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+
+    /* Module stop request */
+    R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_MASK <<
+                                    (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
+    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                 (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK),
+                               XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK);
+
+    /* Bus stop request */
+    R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_MASK <<
+                                    (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
+    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                 (XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK),
+                               XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK);
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
+#endif
+
     /* Disable clock to the QSPI block */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_STOP(FSP_IP_XSPI, p_cfg_extend->unit);
@@ -733,9 +948,30 @@ static fsp_err_t r_xspi_qspi_xip (xspi_qspi_instance_ctrl_t * p_instance_ctrl, u
 
     /* Read from QSPI to send the XIP entry request.
      * Read via a cache-invalid mirror area to ensure access to QSPI. */
+#if XSPI_QSPI_CFG_CUSTOM_ADDR_SPACE_ENABLE
+    if (XSPI_QSPI_CHIP_SELECT_0 == chip_select)
+    {
+        dummy =
+            *(volatile uint8_t *) (XSPI_QSPI_DEVICE_START_MIRROR_ADDRESS +
+                                   (unit * XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA));
+    }
+    else
+    {
+        if (unit == 0)
+        {
+            dummy = *(volatile uint8_t *) p_cfg_extend->p_address_space->unit0_cs1_start_address;
+        }
+        else
+        {
+            dummy = *(volatile uint8_t *) p_cfg_extend->p_address_space->unit1_cs1_start_address;
+        }
+    }
+
+#else
     dummy = *(volatile uint8_t *) (XSPI_QSPI_DEVICE_START_MIRROR_ADDRESS +
                                    (unit * XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA) +
                                    (chip_select * XSPI_QSPI_DEVICE_CS0_1_ADDRESS_DELTA));
+#endif
 
     if (false == enter_mode)
     {
@@ -906,9 +1142,106 @@ static fsp_err_t r_xspi_qspi_program_param_check (xspi_qspi_instance_ctrl_t * p_
     uint32_t bytes_left_in_page = page_size_bytes - ((uint32_t) p_dest % page_size_bytes);
     FSP_ASSERT(byte_count <= bytes_left_in_page);
 
+ #if (BSP_MCU_GROUP_RZT2ME)
+    FSP_ASSERT((XSPI_QSPI_PRV_WORD_ACCESS_SIZE == byte_count) || (XSPI_QSPI_PRV_HALF_WORD_ACCESS_SIZE == byte_count) ||
+               (1 == byte_count));
+ #else
     FSP_ASSERT(XSPI_QSPI_PRV_MAX_COMBINE_SIZE >= byte_count);
+ #endif
 
     return FSP_SUCCESS;
+}
+
+#endif
+
+#if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
+
+/*******************************************************************************************************************//**
+ * Configures the device for OTFD operation.
+ *
+ * @param[in]   p_instance_ctrl    Pointer to the instance ctrl struct.
+ * @retval      FSP_SUCCESS                       OTFD configuration completed successfully.
+ * @retval      FSP_ERR_INVALID_ARGUMENT          Invalid key type argument or invalid OTFD conversion area.
+ **********************************************************************************************************************/
+static fsp_err_t r_xspi_qspi_otfd_setup (xspi_qspi_instance_ctrl_t * p_instance_ctrl)
+{
+    fsp_err_t rsip_ret = FSP_SUCCESS;
+    uint8_t   seed[16] = {0};
+    uint8_t   wrapped_key[RSIP_BYTE_SIZE_WRAPPED_KEY_AES_256] = {0};
+
+    xspi_qspi_extended_cfg_t * p_cfg_extend = (xspi_qspi_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+    xspi_qspi_otfd_cfg_t     * p_otfd_cfg   = (xspi_qspi_otfd_cfg_t *) p_cfg_extend->p_otfd_cfg;
+
+    rsip_key_type_t key_type = RSIP_KEY_TYPE_AES_128;
+
+    if (XSPI_QSPI_OTFD_AES_KEY_TYPE_128 == p_otfd_cfg->key_type)
+    {
+        key_type = RSIP_KEY_TYPE_AES_128;
+    }
+    else if (XSPI_QSPI_OTFD_AES_KEY_TYPE_256 == p_otfd_cfg->key_type)
+    {
+        key_type = RSIP_KEY_TYPE_AES_256;
+    }
+    else
+    {
+        return FSP_ERR_INVALID_ARGUMENT;
+    }
+
+ #if XSPI_QSPI_CFG_PARAM_CHECKING_ENABLE
+
+    /* Verify OTFD conversion area. */
+    FSP_ERROR_RETURN((uint32_t) p_otfd_cfg->p_end_addr >= (uint32_t) p_otfd_cfg->p_start_addr,
+                     FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((uint32_t) p_otfd_cfg->p_start_addr >=
+                     (uint32_t) (XSPI_QSPI_DEVICE_START_ADDRESS + (p_cfg_extend->unit) *
+                                 XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA),
+                     FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((uint32_t) p_otfd_cfg->p_end_addr <
+                     (uint32_t) (XSPI_QSPI_DEVICE_START_ADDRESS + (p_cfg_extend->unit + 1U) *
+                                 XSPI_QSPI_DEVICE_XSPI0_1_ADDRESS_DELTA),
+                     FSP_ERR_INVALID_ARGUMENT);
+ #endif
+
+    /* Set the start and end area for OTFD conversion. */
+    p_instance_ctrl->p_otfd_reg->CONVAREAST = ((uint32_t) p_otfd_cfg->p_start_addr - XSPO_QSPI_DEVICE_MIRROR_OFFSET) &
+                                              R_OTFD0_CONVAREAST_CONVAREAST_Msk;
+    p_instance_ctrl->p_otfd_reg->CONVAREAED = ((uint32_t) p_otfd_cfg->p_end_addr - XSPO_QSPI_DEVICE_MIRROR_OFFSET) &
+                                              R_OTFD0_CONVAREAED_CONVAREAED_Msk;
+
+    /* Open RSIP. */
+    rsip_ret = R_RSIP_Open(&g_xspi_qspi_rsip_ctrl, &g_xspi_qspi_rsip_cfg);
+    FSP_ERROR_RETURN(FSP_SUCCESS == rsip_ret, rsip_ret);
+
+    rsip_wrapped_key_t * p_wrapped_key = (rsip_wrapped_key_t *) wrapped_key;
+
+    /* Generates structure data "rsip_wrapped_key_t". */
+    rsip_ret = R_RSIP_InjectedKeyImport(key_type,
+                                        (uint8_t *) p_otfd_cfg->p_key,
+                                        p_wrapped_key,
+                                        RSIP_BYTE_SIZE_WRAPPED_KEY_AES_256);
+    FSP_ERROR_RETURN(FSP_SUCCESS == rsip_ret, rsip_ret);
+
+    /* Init OTFD. */
+    rsip_ret = R_RSIP_OTF_Init(&g_xspi_qspi_rsip_ctrl, (rsip_otf_channel_t) p_cfg_extend->unit, p_wrapped_key, seed);
+    FSP_ERROR_RETURN(FSP_SUCCESS == rsip_ret, rsip_ret);
+
+    if (FSP_SUCCESS == rsip_ret)
+    {
+        /* Disable byte order conversion. */
+        p_instance_ctrl->p_otfd_reg->REG00 = (XSPI_QSPI_PRV_OTFD_REG00_RESET_VALUE | R_OTFD0_REG00_B09_Msk);
+
+        /* Load the IV. */
+        p_instance_ctrl->p_otfd_reg->REG03 = p_otfd_cfg->p_iv[0];
+        p_instance_ctrl->p_otfd_reg->REG03 = p_otfd_cfg->p_iv[1];
+        p_instance_ctrl->p_otfd_reg->REG03 = p_otfd_cfg->p_iv[2];
+        p_instance_ctrl->p_otfd_reg->REG03 = p_otfd_cfg->p_iv[3];
+    }
+
+    /* Close RSIP. */
+    rsip_ret = R_RSIP_Close(&g_xspi_qspi_rsip_ctrl);
+    FSP_ERROR_RETURN(FSP_SUCCESS == rsip_ret, rsip_ret);
+
+    return rsip_ret;
 }
 
 #endif

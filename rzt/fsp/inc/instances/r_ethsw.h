@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /*******************************************************************************************************************//**
  * @addtogroup ETHER_SWITCH
@@ -46,10 +32,15 @@ FSP_HEADER
 #define ETHSW_PORT_MGMT          (3U)  ///< Management port number
 #define ETHSW_PORT_BIT(x)    (1U << (x))
 
-/* RZN2L have the EFP feture, RZT2M don't have it. */
+/* RZN2L and RZT2ME have the EFP (Extended Frame Parser) feture, RZT2M don't have it. */
 #ifdef R_ETHSW_P0_QSTMACU0_MACA_Pos
  #define ETHSW_EFP_FEATURE_SUPPORTED
-#endif                                       // R_ETHSW_P0_QSTMACU0_MACA_Pos
+#endif                                 // R_ETHSW_P0_QSTMACU0_MACA_Pos
+
+/* RZT2ME have the PTP over UDP/IPv4 feture, RZN2L and RZT2M don't have it. */
+#ifdef R_ETHSW_PTP_PTPMDSEL_SEL_Pos
+ #define ETHSW_L3PTP_FEATURE_SUPPORTED
+#endif                                       // R_ETHSW_PTP_PTPMDSEL_SEL_Pos
 
 #ifdef  ETHSW_EFP_FEATURE_SUPPORTED
  #define ETHSW_VLAN_VID_LEN             (2U)
@@ -62,7 +53,7 @@ FSP_HEADER
 #endif                                       /* ETHSW_EFP_FEATURE_SUPPORTED */
 #define ETHSW_QUEUE_COUNT               (8U) ///< Number of queues ETHSW has
 #define ETHSW_QUEUE_COUNT               (8U) ///< Number of queues ETHSW has
-#define ETHSW_TDMA_GPIO_COUNT           (8U) ///< Noumber of TDMA_GPIO
+#define ETHSW_TDMA_GPIO_COUNT           (8U) ///< Number of TDMA_GPIO
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -567,7 +558,7 @@ typedef struct st_ethsw_mmctl_pool_size
 /** The parameter for function that assins a memory pool for a queue. */
 typedef struct st_ethsw_mmctl_queue_assign
 {
-    uint8_t               queue_num;   ///< Queue bumber
+    uint8_t               queue_num;   ///< Queue number
     ethsw_mmctl_pool_id_t pool_id;     ///< MMCTL pool ID.
 } ethsw_mmctl_queue_assign_t;
 
@@ -1013,6 +1004,17 @@ typedef struct st_ethsw_time_domain
     uint8_t domain_num;                ///< Domain number
 } ethsw_time_domain_t;
 
+#ifdef ETHSW_L3PTP_FEATURE_SUPPORTED
+typedef struct st_ethsw_l3_ptp_config
+{
+    bool     enable;                   // When true, enable PTP over UDP/IPv4.
+    bool     udp_checksum;             // When true, incremental UDP checksum mode. When false, zero UDP checksum mode.
+    bool     ipv4_filter;              // When true, enbale IPv4 destination address filtering.
+    uint32_t ipv4_address;             // IPv4 destination address. Valid when ipv4_dest_filter is true.
+    uint16_t udp_port;                 // UDP destination port numbe.
+} ethsw_l3_ptp_config_t;
+#endif
+
 /**********************************************************************************************************************
  * Exported global variables
  **********************************************************************************************************************/
@@ -1242,6 +1244,12 @@ fsp_err_t R_ETHSW_TimePeerDelaySet(ether_switch_ctrl_t * const p_ctrl,
 fsp_err_t R_ETHSW_TimeOffsetSet(ether_switch_ctrl_t * const p_ctrl, ethsw_time_offset_correction_t * p_offset);
 fsp_err_t R_ETHSW_TimeRateSet(ether_switch_ctrl_t * const p_ctrl, ethsw_time_rate_correction_t * p_rate);
 fsp_err_t R_ETHSW_TimeDomainSet(ether_switch_ctrl_t * const p_ctrl, ethsw_time_domain_t * p_domain);
+
+/* Layer3 PTP extension API function */
+#ifdef ETHSW_L3PTP_FEATURE_SUPPORTED
+fsp_err_t R_ETHSW_L3PtpConfigSet(ether_switch_ctrl_t * const p_ctrl, ethsw_l3_ptp_config_t * p_ptp_config);
+
+#endif                                 /* ETHSW_L3PTP_FEATURE_SUPPORTED */
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHSW)

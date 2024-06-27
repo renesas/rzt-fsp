@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 #ifndef R_CANFD_H
 #define R_CANFD_H
@@ -39,6 +25,7 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
+#define R_CANFD_NUM_COMMON_FIFOS    (6U)
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -87,6 +74,30 @@ typedef enum e_canfd_error
     CANFD_ERROR_GLOBAL_CH1_ECC           = 0x20000000, ///< Channel 1 ECC Error
 } canfd_error_t;
 
+/** CANFD Transmit Buffer (MB + CFIFO) */
+typedef enum e_canfd_tx_buffer
+{
+    CANFD_TX_BUFFER_0             = 0,
+    CANFD_TX_BUFFER_1             = 1,
+    CANFD_TX_BUFFER_2             = 2,
+    CANFD_TX_BUFFER_3             = 3,
+    CANFD_TX_BUFFER_4             = 4,
+    CANFD_TX_BUFFER_5             = 5,
+    CANFD_TX_BUFFER_6             = 6,
+    CANFD_TX_BUFFER_7             = 7,
+    CANFD_TX_BUFFER_32            = 32,
+    CANFD_TX_BUFFER_33            = 33,
+    CANFD_TX_BUFFER_34            = 34,
+    CANFD_TX_BUFFER_35            = 35,
+    CANFD_TX_BUFFER_36            = 36,
+    CANFD_TX_BUFFER_37            = 37,
+    CANFD_TX_BUFFER_38            = 38,
+    CANFD_TX_BUFFER_39            = 39,
+    CANFD_TX_BUFFER_FIFO_COMMON_0 = 64,
+    CANFD_TX_BUFFER_FIFO_COMMON_1 = 65,
+    CANFD_TX_BUFFER_FIFO_COMMON_2 = 66,
+} canfd_tx_buffer_t;
+
 /** CANFD Transmit Message Buffer (TX MB) */
 typedef enum e_canfd_tx_mb
 {
@@ -124,49 +135,52 @@ typedef enum e_canfd_tx_mb
     CANFD_TX_MB_47 = 47,
 } canfd_tx_mb_t;
 
-/** CANFD Receive Buffer (MB + FIFO) */
+/** CANFD Receive Buffer (MB + FIFO + CFIFO) */
 typedef enum e_canfd_rx_buffer
 {
-    CANFD_RX_BUFFER_MB_0   = 0,
-    CANFD_RX_BUFFER_MB_1   = 1,
-    CANFD_RX_BUFFER_MB_2   = 2,
-    CANFD_RX_BUFFER_MB_3   = 3,
-    CANFD_RX_BUFFER_MB_4   = 4,
-    CANFD_RX_BUFFER_MB_5   = 5,
-    CANFD_RX_BUFFER_MB_6   = 6,
-    CANFD_RX_BUFFER_MB_7   = 7,
-    CANFD_RX_BUFFER_MB_8   = 8,
-    CANFD_RX_BUFFER_MB_9   = 9,
-    CANFD_RX_BUFFER_MB_10  = 10,
-    CANFD_RX_BUFFER_MB_11  = 11,
-    CANFD_RX_BUFFER_MB_12  = 12,
-    CANFD_RX_BUFFER_MB_13  = 13,
-    CANFD_RX_BUFFER_MB_14  = 14,
-    CANFD_RX_BUFFER_MB_15  = 15,
-    CANFD_RX_BUFFER_MB_16  = 16,
-    CANFD_RX_BUFFER_MB_17  = 17,
-    CANFD_RX_BUFFER_MB_18  = 18,
-    CANFD_RX_BUFFER_MB_19  = 19,
-    CANFD_RX_BUFFER_MB_20  = 20,
-    CANFD_RX_BUFFER_MB_21  = 21,
-    CANFD_RX_BUFFER_MB_22  = 22,
-    CANFD_RX_BUFFER_MB_23  = 23,
-    CANFD_RX_BUFFER_MB_24  = 24,
-    CANFD_RX_BUFFER_MB_25  = 25,
-    CANFD_RX_BUFFER_MB_26  = 26,
-    CANFD_RX_BUFFER_MB_27  = 27,
-    CANFD_RX_BUFFER_MB_28  = 28,
-    CANFD_RX_BUFFER_MB_29  = 29,
-    CANFD_RX_BUFFER_MB_30  = 30,
-    CANFD_RX_BUFFER_MB_31  = 31,
-    CANFD_RX_BUFFER_FIFO_0 = 32,
-    CANFD_RX_BUFFER_FIFO_1 = 33,
-    CANFD_RX_BUFFER_FIFO_2 = 34,
-    CANFD_RX_BUFFER_FIFO_3 = 35,
-    CANFD_RX_BUFFER_FIFO_4 = 36,
-    CANFD_RX_BUFFER_FIFO_5 = 37,
-    CANFD_RX_BUFFER_FIFO_6 = 38,
-    CANFD_RX_BUFFER_FIFO_7 = 39,
+    CANFD_RX_BUFFER_MB_0          = 0,
+    CANFD_RX_BUFFER_MB_1          = 1,
+    CANFD_RX_BUFFER_MB_2          = 2,
+    CANFD_RX_BUFFER_MB_3          = 3,
+    CANFD_RX_BUFFER_MB_4          = 4,
+    CANFD_RX_BUFFER_MB_5          = 5,
+    CANFD_RX_BUFFER_MB_6          = 6,
+    CANFD_RX_BUFFER_MB_7          = 7,
+    CANFD_RX_BUFFER_MB_8          = 8,
+    CANFD_RX_BUFFER_MB_9          = 9,
+    CANFD_RX_BUFFER_MB_10         = 10,
+    CANFD_RX_BUFFER_MB_11         = 11,
+    CANFD_RX_BUFFER_MB_12         = 12,
+    CANFD_RX_BUFFER_MB_13         = 13,
+    CANFD_RX_BUFFER_MB_14         = 14,
+    CANFD_RX_BUFFER_MB_15         = 15,
+    CANFD_RX_BUFFER_MB_16         = 16,
+    CANFD_RX_BUFFER_MB_17         = 17,
+    CANFD_RX_BUFFER_MB_18         = 18,
+    CANFD_RX_BUFFER_MB_19         = 19,
+    CANFD_RX_BUFFER_MB_20         = 20,
+    CANFD_RX_BUFFER_MB_21         = 21,
+    CANFD_RX_BUFFER_MB_22         = 22,
+    CANFD_RX_BUFFER_MB_23         = 23,
+    CANFD_RX_BUFFER_MB_24         = 24,
+    CANFD_RX_BUFFER_MB_25         = 25,
+    CANFD_RX_BUFFER_MB_26         = 26,
+    CANFD_RX_BUFFER_MB_27         = 27,
+    CANFD_RX_BUFFER_MB_28         = 28,
+    CANFD_RX_BUFFER_MB_29         = 29,
+    CANFD_RX_BUFFER_MB_30         = 30,
+    CANFD_RX_BUFFER_MB_31         = 31,
+    CANFD_RX_BUFFER_FIFO_0        = 32,
+    CANFD_RX_BUFFER_FIFO_1        = 33,
+    CANFD_RX_BUFFER_FIFO_2        = 34,
+    CANFD_RX_BUFFER_FIFO_3        = 35,
+    CANFD_RX_BUFFER_FIFO_4        = 36,
+    CANFD_RX_BUFFER_FIFO_5        = 37,
+    CANFD_RX_BUFFER_FIFO_6        = 38,
+    CANFD_RX_BUFFER_FIFO_7        = 39,
+    CANFD_RX_BUFFER_FIFO_COMMON_0 = 40,
+    CANFD_RX_BUFFER_FIFO_COMMON_1 = 41,
+    CANFD_RX_BUFFER_FIFO_COMMON_2 = 42,
 } canfd_rx_buffer_t;
 
 /** CANFD Receive Message Buffer (RX MB) */
@@ -210,14 +224,20 @@ typedef enum e_canfd_rx_mb
 /** CANFD Receive FIFO (RX FIFO) */
 typedef enum e_canfd_rx_fifo
 {
-    CANFD_RX_FIFO_0 = (1U),
-    CANFD_RX_FIFO_1 = (1U << 1),
-    CANFD_RX_FIFO_2 = (1U << 2),
-    CANFD_RX_FIFO_3 = (1U << 3),
-    CANFD_RX_FIFO_4 = (1U << 4),
-    CANFD_RX_FIFO_5 = (1U << 5),
-    CANFD_RX_FIFO_6 = (1U << 6),
-    CANFD_RX_FIFO_7 = (1U << 7),
+    CANFD_RX_FIFO_0        = (1U),
+    CANFD_RX_FIFO_1        = (1U << 1),
+    CANFD_RX_FIFO_2        = (1U << 2),
+    CANFD_RX_FIFO_3        = (1U << 3),
+    CANFD_RX_FIFO_4        = (1U << 4),
+    CANFD_RX_FIFO_5        = (1U << 5),
+    CANFD_RX_FIFO_6        = (1U << 6),
+    CANFD_RX_FIFO_7        = (1U << 7),
+    CANFD_RX_FIFO_COMMON_0 = (1U << 8),
+    CANFD_RX_FIFO_COMMON_1 = (1U << 9),
+    CANFD_RX_FIFO_COMMON_2 = (1U << 10),
+    CANFD_RX_FIFO_COMMON_3 = (1U << 11),
+    CANFD_RX_FIFO_COMMON_4 = (1U << 12),
+    CANFD_RX_FIFO_COMMON_5 = (1U << 13),
 } canfd_rx_fifo_t;
 
 /** CANFD AFL Minimum DLC settings */
@@ -253,6 +273,8 @@ typedef enum e_canfd_frame_option
 /* CAN Instance Control Block   */
 typedef struct st_canfd_instance_ctrl
 {
+    R_CANFD_Type * p_reg;                       // Pointer to register base address
+
     /* Parameters to control CAN peripheral device */
     can_cfg_t const    * p_cfg;                 // Pointer to the configuration structure
     uint32_t             open;                  // Open status of channel.
@@ -313,12 +335,13 @@ typedef struct st_canfd_afl_entry_t
 /** CANFD Global Configuration */
 typedef struct st_canfd_global_cfg
 {
-    uint32_t global_interrupts;        ///< Global control options (CFDGCTR register setting)
-    uint32_t global_config;            ///< Global configuration options (CFDGCFG register setting)
-    uint32_t rx_fifo_config[8];        ///< RX FIFO configuration (CFDRFCCn register settings)
-    uint32_t rx_mb_config;             ///< Number and size of RX Message Buffers (CFDRMNB register setting)
-    uint8_t  global_err_ipl;           ///< Global Error interrupt priority
-    uint8_t  rx_fifo_ipl;              ///< RX FIFO interrupt priority
+    uint32_t global_interrupts;                            ///< Global control options (CFDGCTR register setting)
+    uint32_t global_config;                                ///< Global configuration options (CFDGCFG register setting)
+    uint32_t rx_fifo_config[8];                            ///< RX FIFO configuration (CFDRFCCn register settings)
+    uint32_t rx_mb_config;                                 ///< Number and size of RX Message Buffers (CFDRMNB register setting)
+    uint8_t  global_err_ipl;                               ///< Global Error interrupt priority
+    uint8_t  rx_fifo_ipl;                                  ///< RX FIFO interrupt priority
+    uint32_t common_fifo_config[R_CANFD_NUM_COMMON_FIFOS]; ///< Common FIFO configurations
 } canfd_global_cfg_t;
 
 /** CANFD Extended Configuration */

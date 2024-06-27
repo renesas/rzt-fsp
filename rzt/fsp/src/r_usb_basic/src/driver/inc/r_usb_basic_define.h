@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 #ifndef R_USB_BASIC_DEFINE_H
 #define R_USB_BASIC_DEFINE_H
 #include "r_usb_basic_cfg.h"
@@ -89,7 +75,7 @@
 #define USB_HCD_MPL                    (USB_HCD_TSK) /* Memory pool ID */
 
 /* Host Manager Task */
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
  #define USB_MGR_TSK                   (USB_TID_1)   /* Task ID */
  #define USB_MGR_MBX                   (USB_MGR_TSK) /* Mailbox ID */
  #define USB_MGR_MPL                   (USB_MGR_TSK) /* Memory pool ID */
@@ -97,7 +83,7 @@
  #define USB_MGR_TSK                   (USB_TID_2)   /* Task ID */
  #define USB_MGR_MBX                   (USB_MGR_TSK) /* Mailbox ID */
  #define USB_MGR_MPL                   (USB_MGR_TSK) /* Memory pool ID */
-#endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
+#endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
 
 /* Hub Task */
 #define USB_HUB_TSK                    (USB_TID_3)   /* Task ID */
@@ -221,9 +207,9 @@
 /* USB module definition */
 #define USB_M0                                 (R_USBF)
 #define USB_M1                                 (R_USBF)
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
  #define USB00                                 (R_USBHC)
-#endif                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) */
+#endif                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
 
 #if defined(BSP_MCU_GROUP_RA6M3)       /* High-speed module */
  #define USB_M1                                (R_USB_HS0)
@@ -288,7 +274,7 @@
 #define USB_CFG_HOST                           (1)
 #define USB_CFG_PERI                           (2)
 
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
   #define USB_IP_EHCI_OHCI                     (1)
  #else
@@ -621,7 +607,7 @@
 #define USB_NOPORT                             (0xFFFFU) /* Not connect */
 
 /* Condition compilation by the difference of IP */
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
  #define USB_MAXDEVADDR                        (1U)
 #else
  #define USB_MAXDEVADDR                        (10U)

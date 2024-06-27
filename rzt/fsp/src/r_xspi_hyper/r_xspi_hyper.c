@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 #include "bsp_api.h"
 
@@ -30,10 +16,11 @@
  **********************************************************************************************************************/
 #define XSPI_HYPER_PRV_OPEN                                  (0x48595045)
 
-#define XSPI_HYPER_DEVICE_START_ADDRESS                      (0x68000000)
+#define XSPI_HYPER_DEVICE_START_ADDRESS                      (0x60000000)
 #define XSPI_HYPER_DEVICE_XSPI0_1_ADDRESS_DELTA              (0x8000000)
 #define XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA                (0x4000000)
-#define XSPI_HYPER_DEVICE_START_MIRROR_ADDRESS               (0X48000000)
+#define XSPI_HYPER_MIRROR_ADDRESS_DELTA                      (0x20000000)
+#define XSPI_HYPER_DEVICE_START_MIRROR_ADDRESS               (0X40000000)
 
 #define XSPI_HYPER_PRV_WRAPCFG_DSSFTCS0_OFFSET               (8U)
 #define XSPI_HYPER_PRV_WRAPCFG_DSSFTCS0_VALUE_MASK           (0x1FU)
@@ -116,6 +103,17 @@
 #define XSPI_HYPER_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_2     (0x00FFF700)
 #define XSPI_HYPER_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_3     (0xF700F708)
 
+#define XSPI_HYPER_PRV_1MB_MEMORY_SPACE                      (0xFFFFF)
+#define XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT                     (20U)
+
+#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+ #define XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET                (16U)
+ #define XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_MASK              (0x01U)
+ #define XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK          (0x02U)
+ #define XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_MASK           (0x10U)
+ #define XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK       (0x20U)
+#endif
+
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
@@ -179,6 +177,27 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     R_BSP_MODULE_START(FSP_IP_XSPI, p_cfg_extend->unit);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
+#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+
+    /* Bus release request */
+    R_XSPI_MISC2->MSTP_CTRL_XSPI &=
+        ~(XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_MASK << (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit));
+    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                 (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK),
+                               0U);
+
+    /* Module release request */
+    R_XSPI_MISC2->MSTP_CTRL_XSPI &=
+        ~(XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_MASK << (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit));
+    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                 (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK),
+                               0U);
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
+#endif
+
     /* Set base address. */
     uint32_t base_address = (uint32_t) R_XSPI0 + (p_cfg_extend->unit * ((uint32_t) R_XSPI1 - (uint32_t) R_XSPI0));
     p_instance_ctrl->p_reg = (R_XSPI0_Type *) base_address;
@@ -188,6 +207,18 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
 
     /* xSPI configuration (see RZ microprocessor User's Manual section "Flow of Configuration"). */
     /* Set xSPI CSn slave memory size. */
+    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+#if XSPI_HYPER_CFG_CUSTOM_ADDR_SPACE_ENABLE
+    R_XSPI0_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit0_cs0_end_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
+    R_XSPI0_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit0_cs1_start_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
+    R_XSPI0_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit0_cs1_end_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
+    R_XSPI1_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit1_cs0_end_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
+    R_XSPI1_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit1_cs1_start_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
+    R_XSPI1_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit1_cs1_end_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
+#else
+ #if 1 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
+
+    /* Set xSPI CSn slave memory size. */
     if (XSPI_HYPER_CHIP_SELECT_0 == p_cfg_extend->chip_select)
     {
         p_instance_ctrl->p_reg->CSSCTL_b.CS0SIZE = p_cfg_extend->memory_size;
@@ -196,6 +227,50 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     {
         p_instance_ctrl->p_reg->CSSCTL_b.CS1SIZE = p_cfg_extend->memory_size;
     }
+
+ #elif 2 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
+    if (XSPI_HYPER_CHIP_SELECT_0 == p_cfg_extend->chip_select)
+    {
+        if (0 == p_cfg_extend->unit)
+        {
+            R_XSPI0_MISC->CS0ENDAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
+                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
+                                     XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
+        }
+        else
+        {
+            R_XSPI1_MISC->CS0ENDAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
+                                     XSPI_HYPER_DEVICE_XSPI0_1_ADDRESS_DELTA +
+                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
+                                     XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
+        }
+    }
+    else
+    {
+        if (0 == p_cfg_extend->unit)
+        {
+            R_XSPI0_MISC->CS1STRAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
+                                     XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA;
+            R_XSPI0_MISC->CS1ENDAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
+                                     XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA +
+                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
+                                     XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
+        }
+        else
+        {
+            R_XSPI1_MISC->CS1STRAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
+                                     XSPI_HYPER_DEVICE_XSPI0_1_ADDRESS_DELTA +
+                                     XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA;
+            R_XSPI1_MISC->CS1ENDAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
+                                     XSPI_HYPER_DEVICE_XSPI0_1_ADDRESS_DELTA +
+                                     XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA +
+                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
+                                     XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
+        }
+    }
+ #endif
+#endif
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 
     /* Set xSPI protocol mode. */
     p_instance_ctrl->p_reg->LIOCFGCS[p_cfg_extend->chip_select] =
@@ -429,6 +504,27 @@ fsp_err_t R_XSPI_HYPER_Close (hyperbus_ctrl_t * p_ctrl) {
     xspi_hyper_extended_cfg_t * p_cfg_extend = (xspi_hyper_extended_cfg_t *) p_cfg->p_extend;
 
     p_instance_ctrl->open = 0U;
+
+#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+
+    /* Module stop request */
+    R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_MASK <<
+                                    (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
+    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                 (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK),
+                               XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK);
+
+    /* Bus stop request */
+    R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_MASK <<
+                                    (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
+    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                 (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK),
+                               XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK);
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
+#endif
 
     /* Disable clock to the Hyper block */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);

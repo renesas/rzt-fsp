@@ -1,22 +1,8 @@
-/***********************************************************************************************************************
- * Copyright [2020-2024] Renesas Electronics Corporation and/or its affiliates.  All Rights Reserved.
- *
- * This software and documentation are supplied by Renesas Electronics Corporation and/or its affiliates and may only
- * be used with products of Renesas Electronics Corp. and its affiliates ("Renesas").  No other uses are authorized.
- * Renesas products are sold pursuant to Renesas terms and conditions of sale.  Purchasers are solely responsible for
- * the selection and use of Renesas products and Renesas assumes no liability.  No license, express or implied, to any
- * intellectual property right is granted by Renesas.  This software is protected under all applicable laws, including
- * copyright laws. Renesas reserves the right to change or discontinue this software and/or this documentation.
- * THE SOFTWARE AND DOCUMENTATION IS DELIVERED TO YOU "AS IS," AND RENESAS MAKES NO REPRESENTATIONS OR WARRANTIES, AND
- * TO THE FULLEST EXTENT PERMISSIBLE UNDER APPLICABLE LAW, DISCLAIMS ALL WARRANTIES, WHETHER EXPLICITLY OR IMPLICITLY,
- * INCLUDING WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT, WITH RESPECT TO THE
- * SOFTWARE OR DOCUMENTATION.  RENESAS SHALL HAVE NO LIABILITY ARISING OUT OF ANY SECURITY VULNERABILITY OR BREACH.
- * TO THE MAXIMUM EXTENT PERMITTED BY LAW, IN NO EVENT WILL RENESAS BE LIABLE TO YOU IN CONNECTION WITH THE SOFTWARE OR
- * DOCUMENTATION (OR ANY PERSON OR ENTITY CLAIMING RIGHTS DERIVED FROM YOU) FOR ANY LOSS, DAMAGES, OR CLAIMS WHATSOEVER,
- * INCLUDING, WITHOUT LIMITATION, ANY DIRECT, CONSEQUENTIAL, SPECIAL, INDIRECT, PUNITIVE, OR INCIDENTAL DAMAGES; ANY
- * LOST PROFITS, OTHER ECONOMIC DAMAGE, PROPERTY DAMAGE, OR PERSONAL INJURY; AND EVEN IF RENESAS HAS BEEN ADVISED OF THE
- * POSSIBILITY OF SUCH LOSS, DAMAGES, CLAIMS OR COSTS.
- **********************************************************************************************************************/
+/*
+* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+*
+* SPDX-License-Identifier: BSD-3-Clause
+*/
 
 /***********************************************************************************************************************
  * Includes   <System Includes> , "Project Includes"
@@ -248,6 +234,13 @@
 /* Define for constant value */
 #define ETHSW_DEC_100                         (100U)
 #define ETHSW_DEC_512                         (512U)
+
+/* ASI_MEM_ADDR Register Bit Definitions */
+#define ETHSW_MEM_WEN_ENABLE                  (0x80U)
+#define ETHSW_MEM_REQ_ALL_ACCESS              (0x700U)
+
+/* Nanosecond count value for 1 second */
+#define NANO_COUNT_FOR_1SEC                   (1000000000)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -1276,7 +1269,7 @@ fsp_err_t R_ETHSW_DlrInitSet (ether_switch_ctrl_t * const p_ctrl, ethsw_dlr_init
     p_switch_reg->DLR_CONTROL_b.IGNORE_INVTM = 0;
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrInit() */
+}                                      /* End of function R_ETHSW_DlrInitSet() */
 
 /*******************************************************************************************************************//**
  * Uninitialize DLR module
@@ -1314,7 +1307,7 @@ fsp_err_t R_ETHSW_DlrUninitSet (ether_switch_ctrl_t * const p_ctrl)
     }
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrForward() */
+}                                      /* End of function R_ETHSW_DlrUninitSet() */
 
 /*******************************************************************************************************************//**
  * Enable DLR module
@@ -1354,7 +1347,7 @@ fsp_err_t R_ETHSW_DlrEnableSet (ether_switch_ctrl_t * const p_ctrl)
     p_switch_reg->DLR_CONTROL_b.ENABLE          = 1;
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrEnable() */
+}                                      /* End of function R_ETHSW_DlrEnableSet() */
 
 /*******************************************************************************************************************//**
  * Disable DLR module.
@@ -1383,7 +1376,7 @@ fsp_err_t R_ETHSW_DlrDisableSet (ether_switch_ctrl_t * const p_ctrl)
     p_switch_reg->DLR_IRQ_STAT_ACK     = ETHSW_HEX_0000FFFF;
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrShutdown() */
+}                                      /* End of function R_ETHSW_DlrDisableSet() */
 
 /*******************************************************************************************************************//**
  * Gets the beacon receive status of the specified port.
@@ -1422,7 +1415,7 @@ fsp_err_t R_ETHSW_DlrBeaconStateGet (ether_switch_ctrl_t * const p_ctrl,
     }
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrLastBeacon() */
+}                                      /* End of function R_ETHSW_DlrBeaconStateGet() */
 
 /*******************************************************************************************************************//**
  * Gets DLR node status.
@@ -1449,7 +1442,7 @@ fsp_err_t R_ETHSW_DlrNodeStateGet (ether_switch_ctrl_t * const p_ctrl, ethsw_dlr
     *p_node_state = (ethsw_dlr_node_state_t) p_switch_reg->DLR_STATUS_b.NODE_STATE;
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrNodeState() */
+}                                      /* End of function R_ETHSW_DlrNodeStateGet() */
 
 /*******************************************************************************************************************//**
  * Gets IP address of DLR supervisor.
@@ -1476,7 +1469,7 @@ fsp_err_t R_ETHSW_DlrSvIpGet (ether_switch_ctrl_t * const p_ctrl, uint32_t * p_i
     *p_ip_addr = p_switch_reg->DLR_SUPR_IPADR;
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrSvIp() */
+}                                      /* End of function R_ETHSW_DlrSvIpGet() */
 
 /*******************************************************************************************************************//**
  * Gets preference of DLR supervisor.
@@ -1503,7 +1496,7 @@ fsp_err_t R_ETHSW_DlrSvPriorityGet (ether_switch_ctrl_t * const p_ctrl, uint8_t 
     *p_priority = p_switch_reg->DLR_SUPR_MAChi_b.PRECE;
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrSvPrec() */
+}                                      /* End of function R_ETHSW_DlrSvPriorityGet() */
 
 /*******************************************************************************************************************//**
  * Gets VLAN ID of DLR beacon frame.
@@ -1530,7 +1523,7 @@ fsp_err_t R_ETHSW_DlrVlanGet (ether_switch_ctrl_t * const p_ctrl, uint16_t * p_v
     *p_vlan_info = p_switch_reg->DLR_STATE_VLAN_b.VLANINFO;
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrVlan() */
+}                                      /* End of function R_ETHSW_DlrVlanGet() */
 
 /*******************************************************************************************************************//**
  * Gets MAC address of DLR beacon frame.
@@ -1567,7 +1560,7 @@ fsp_err_t R_ETHSW_DlrSvMacGet (ether_switch_ctrl_t * const p_ctrl, ethsw_mac_add
     (*pp_addr_mac)[5] = (uint8_t) ((regVal & ETHSW_HEX_0000FF00) >> 8);
 
     return FSP_SUCCESS;
-}                                      /* End of function R_ETHSW_DlrSvMac() */
+}                                      /* End of function R_ETHSW_DlrSvMacGet() */
 
 #ifdef  ETHSW_EFP_FEATURE_SUPPORTED
 
@@ -1604,7 +1597,7 @@ fsp_err_t R_ETHSW_EfpInitilizeAsiTable (ether_switch_ctrl_t * const p_ctrl, eths
 
     for (uint8_t addr = 0; addr < ETHSW_EFP_ASI_ADDR_NUM; addr++)
     {
-        p_reg_switch->ASI_MEM_ADDR = (uint32_t) ((0x780UL) | addr); /* < 0x780 : MEM_REQ(10:8)=7, MEM_WEN(7)=1 */
+        p_reg_switch->ASI_MEM_ADDR = (uint32_t) (ETHSW_MEM_REQ_ALL_ACCESS | ETHSW_MEM_WEN_ENABLE | addr); /* < 0x700 : MEM_REQ(10:8)=7 | 0x80 : MEM_WEN(7)=1 */
     }
 
     /* Extended Frame Parser (EFP) Enable */
@@ -3433,7 +3426,7 @@ fsp_err_t R_ETHSW_StatisticsEfpGet (ether_switch_ctrl_t * const p_ctrl,
 
     /* Qci Meter Red Packet Count */
     volatile const uint32_t * pn_qmrpcm = &p_switch_reg->P0_QMRPC0;
-    pn_qmrpcm += (0x100U * port);
+    pn_qmrpcm += ((ETHSW_PORT_OFFSET / 4) * port);
     for (uint32_t meid = 0; meid < ETHSW_EFP_MEATER_COUNT; meid++)
     {
         p_statistics_efp->qci_mater_red_pkts[meid] = (*pn_qmrpcm & R_ETHSW_P0_QMRPC0_QMRPC_Msk);
@@ -3442,12 +3435,12 @@ fsp_err_t R_ETHSW_StatisticsEfpGet (ether_switch_ctrl_t * const p_ctrl,
 
     /* VLAN Ingress Check Drop Frame Counter */
     volatile const uint32_t * pn_vic_drop_cnt = &p_switch_reg->P0_VIC_DROP_CNT;
-    pn_vic_drop_cnt               += (0x100U * port);
+    pn_vic_drop_cnt               += ((ETHSW_PORT_OFFSET / 4) * port);
     p_statistics_efp->vlan_in_drop = (*pn_vic_drop_cnt & R_ETHSW_P0_VIC_DROP_CNT_VIC_DROP_CNT_Msk);
 
     /* DST Address Lookup Hit Counter */
     volatile const uint32_t * pn_lookup_hit_cnt = &p_switch_reg->P0_LOOKUP_HIT_CNT;
-    pn_lookup_hit_cnt           += (0x100U * port);
+    pn_lookup_hit_cnt           += ((ETHSW_PORT_OFFSET / 4) * port);
     p_statistics_efp->lookup_hit = (*pn_lookup_hit_cnt & R_ETHSW_P0_LOOKUP_HIT_CNT_LOOKUP_HIT_CNT_Msk);
 
     return FSP_SUCCESS;
@@ -5490,6 +5483,7 @@ fsp_err_t R_ETHSW_TimeValueGet (ether_switch_ctrl_t * const p_ctrl, ethsw_timest
     volatile uint32_t * p_atime;       /* nanoseconds time value */
     volatile uint32_t * p_atime_sec;   /* seconds time value */
     uint64_t            timeout;       /* timeout */
+    int32_t             sign_time_nano;
 
     ethsw_instance_ctrl_t * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
     R_ETHSW_Type volatile * p_switch_reg;
@@ -5526,9 +5520,25 @@ fsp_err_t R_ETHSW_TimeValueGet (ether_switch_ctrl_t * const p_ctrl, ethsw_timest
         timeout--;
     }
 
-    p_timestamp->time_sec  = *p_atime_sec;
-    p_timestamp->time_nsec = *p_atime;
+    p_timestamp->time_sec = *p_atime_sec;
+    sign_time_nano        = (int32_t) *p_atime;
 
+    if (sign_time_nano < 0)
+    {
+        p_timestamp->time_sec -= 1;
+        sign_time_nano        += NANO_COUNT_FOR_1SEC;
+    }
+    else if (sign_time_nano >= NANO_COUNT_FOR_1SEC)
+    {
+        p_timestamp->time_sec += 1;
+        sign_time_nano        -= NANO_COUNT_FOR_1SEC;
+    }
+    else
+    {
+        ;
+    }
+
+    p_timestamp->time_nsec    = (uint32_t) sign_time_nano;
     p_timestamp->timestamp_id = 0;
 
     return FSP_SUCCESS;
@@ -5740,6 +5750,45 @@ fsp_err_t R_ETHSW_TimeDomainSet (ether_switch_ctrl_t * const p_ctrl, ethsw_time_
 
     return FSP_SUCCESS;
 }                                      /* End of function R_ETHSW_TimeDomainSet() */
+
+#ifdef ETHSW_L3PTP_FEATURE_SUPPORTED
+
+/*******************************************************************************************************************//**
+ * Sets Layer3 PTP Configuration
+ *
+ * @retval  FSP_SUCCESS                 Command successfully.
+ * @retval  FSP_ERR_ASSERTION           Pointer to ETHER control block is NULL.
+ * @retval  FSP_ERR_NOT_OPEN            The control block has not been opened.
+ * @retval  FSP_ERR_INVALID_POINTER     Pointer to arguments are NULL.
+ **********************************************************************************************************************/
+fsp_err_t R_ETHSW_L3PtpConfigSet (ether_switch_ctrl_t * const p_ctrl, ethsw_l3_ptp_config_t * p_ptp_config)
+{
+    ethsw_instance_ctrl_t     * p_instance_ctrl = (ethsw_instance_ctrl_t *) p_ctrl;
+    R_ETHSW_PTP_Type volatile * p_reg_ethsw_ptp;
+
+ #if (ETHSW_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_instance_ctrl);
+    ETHSW_ERROR_RETURN(ETHSW_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+    ETHSW_ERROR_RETURN((NULL != p_ptp_config), FSP_ERR_INVALID_POINTER);
+ #endif
+
+    r_ethsw_reg_protection_disable(p_instance_ctrl->p_reg_ethss);
+
+    p_reg_ethsw_ptp = p_instance_ctrl->p_reg_ethsw_ptp;
+
+    p_reg_ethsw_ptp->IPV4_DEST_ADR              = p_ptp_config->ipv4_address;
+    p_reg_ethsw_ptp->UDP_DEST_PORTNUM_b.PORTNUM = p_ptp_config->udp_port;
+
+    p_reg_ethsw_ptp->PTPMDSEL_b.ADR_FILTER = p_ptp_config->ipv4_filter;
+    p_reg_ethsw_ptp->PTPMDSEL_b.UDP_CHKSUM = p_ptp_config->udp_checksum;
+    p_reg_ethsw_ptp->PTPMDSEL_b.SEL        = p_ptp_config->enable;
+
+    r_ethsw_reg_protection_enable(p_instance_ctrl->p_reg_ethss);
+
+    return FSP_SUCCESS;
+}                                      /* End of function R_ETHSW_L3PtpConfigSet() */
+
+#endif                                 /* ETHSW_L3PTP_FEATURE_SUPPORTED */
 
 /*******************************************************************************************************************//**
  * @} (end addtogroup ETHSW)
@@ -6114,6 +6163,7 @@ static void ethsw_isr_tsm (ethsw_instance_ctrl_t * p_instance_ctrl)
     uint32_t          irq_stat_ack;
     R_ETHSW_Type    * p_switch_reg;
     uint32_t          ts_fifo_read_ctrl;
+    int32_t           sign_time_nano;
 
     p_switch_reg = p_instance_ctrl->p_reg_switch;
 
@@ -6147,7 +6197,22 @@ static void ethsw_isr_tsm (ethsw_instance_ctrl_t * p_instance_ctrl)
                 timestamp.timestamp_id = ((ts_fifo_read_ctrl & R_ETHSW_TS_FIFO_READ_CTRL_TS_ID_Msk) >>
                                           R_ETHSW_TS_FIFO_READ_CTRL_TS_ID_Pos);
 
-                timestamp.time_nsec = p_switch_reg->TS_FIFO_READ_TIMESTAMP;
+                sign_time_nano = (int32_t) p_switch_reg->TS_FIFO_READ_TIMESTAMP;
+
+                if (sign_time_nano < 0)
+                {
+                    sign_time_nano += NANO_COUNT_FOR_1SEC;
+                }
+                else if (sign_time_nano >= NANO_COUNT_FOR_1SEC)
+                {
+                    sign_time_nano -= NANO_COUNT_FOR_1SEC;
+                }
+                else
+                {
+                    ;
+                }
+
+                timestamp.time_nsec = (uint32_t) sign_time_nano;
 
                 if (gp_ethsw_time_callback)
                 {
