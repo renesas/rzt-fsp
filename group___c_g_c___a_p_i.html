@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.1.0</span>
+   &#160;<span id="projectnumber">Release v2.2.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -297,6 +297,24 @@ out_div_r</td>
 <td class="fielddoc">
 PLL divisor for output clock R. </td></tr>
 <tr><td class="fieldtype">
+<a id="a8c31ea5f63aea72eb2ccd86db43e348c"></a>cgc_pll_ssc_cfg_t</td>
+<td class="fieldname">
+pll0_ssc_cfg</td>
+<td class="fielddoc">
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a96f041e878ab6f9def5ce8544ec561e9"></a>cgc_pll_ssc_cfg_t</td>
+<td class="fieldname">
+pll2_ssc_cfg</td>
+<td class="fielddoc">
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a218650cc42b8a7e28f9a757f45a19424"></a>cgc_pll_vco_cfg_t</td>
+<td class="fieldname">
+pll3_vco_cfg</td>
+<td class="fielddoc">
+</td></tr>
+<tr><td class="fieldtype">
 <a id="aafe9c790f970de56fdfff1f11f3046d4"></a>uint32_t</td>
 <td class="fieldname">
 dummy</td>
@@ -424,6 +442,36 @@ State of PLL2. </td></tr>
 subosc_state</td>
 <td class="fielddoc">
 State of Sub oscillator. </td></tr>
+<tr><td class="fieldtype">
+<a id="a111a27672fa10e649f00291a50ffad49"></a>cgc_pll_ssc_cfg_t</td>
+<td class="fieldname">
+pll0_ssc_cfg</td>
+<td class="fielddoc">
+Configuration of PLL0 SSC function setting. </td></tr>
+<tr><td class="fieldtype">
+<a id="aa0eb1cd97e62a756498cc61a9eb9ac1b"></a>cgc_pll_ssc_cfg_t</td>
+<td class="fieldname">
+pll2_ssc_cfg</td>
+<td class="fielddoc">
+Configuration of PLL2 SSC function setting. </td></tr>
+<tr><td class="fieldtype">
+<a id="a3c2612cc2d7051fc49531257d693e51e"></a>cgc_pll_vco_cfg_t</td>
+<td class="fieldname">
+pll3_vco_cfg</td>
+<td class="fielddoc">
+Configuration of PLL3 VCO setting. </td></tr>
+<tr><td class="fieldtype">
+<a id="ab682d7fe0b89cf42a08fe76c61c79700"></a><a class="el" href="group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8">cgc_clock_change_t</a></td>
+<td class="fieldname">
+pll0_state</td>
+<td class="fielddoc">
+State of PLL0. </td></tr>
+<tr><td class="fieldtype">
+<a id="ad1e10769d2f9a33c19539fa54ffefe80"></a><a class="el" href="group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8">cgc_clock_change_t</a></td>
+<td class="fieldname">
+pll3_state</td>
+<td class="fielddoc">
+State of PLL3. </td></tr>
 <tr><td class="fieldtype">
 <a id="a65576b6ec7bf7e8b29f5d493350ca153"></a><a class="el" href="group___c_g_c___a_p_i.html#ga67f8525be602a7cce075f0b33d5f2ad8">cgc_clock_change_t</a></td>
 <td class="fieldname">
@@ -840,6 +888,18 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6ae8c02b01bca2fef787845ef7728d3f59"></a>CGC_CLOCK_PLL1&#160;</td><td class="fielddoc"><p>The PLL1 oscillator. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6a87344731497e93d24a2ffefea84ab870"></a>CGC_CLOCK_PLL2&#160;</td><td class="fielddoc"><p>The PLL2 oscillator. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6a9aa99bb1d1639102ef34d8fc7cdf656a"></a>CGC_CLOCK_PLL3&#160;</td><td class="fielddoc"><p>The PLL3 oscillator. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6a8f531d8a513cb17ec213a45628502458"></a>CGC_CLOCK_PLL4&#160;</td><td class="fielddoc"><p>The PLL4 oscillator. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6ac8e8533716349cdc1396bdb313ec2651"></a>CGC_CLOCK_LOCO&#160;</td><td class="fielddoc"><p>The low speed on chip oscillator. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6a48802b93f6055b1194a32a17b867af4e"></a>CGC_CLOCK_PLL0&#160;</td><td class="fielddoc"><p>The PLL0 oscillator. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6ae8c02b01bca2fef787845ef7728d3f59"></a>CGC_CLOCK_PLL1&#160;</td><td class="fielddoc"><p>The PLL1 oscillator. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6ac8e8533716349cdc1396bdb313ec2651"></a>CGC_CLOCK_LOCO&#160;</td><td class="fielddoc"><p>The low speed on chip oscillator. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ga4dcbe960cf591207eef834969b83f8a6a48802b93f6055b1194a32a17b867af4e"></a>CGC_CLOCK_PLL0&#160;</td><td class="fielddoc"><p>The PLL0 oscillator. </p>
@@ -1030,6 +1090,12 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ga67f8525be602a7cce075f0b33d5f2ad8a4778b4e094845ab42e902ffc9a68842c"></a>CGC_CLOCK_CHANGE_NONE&#160;</td><td class="fielddoc"><p>No change to the clock. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ga67f8525be602a7cce075f0b33d5f2ad8afc34723b6efeafd271fb3cfb365f8ec1"></a>CGC_CLOCK_CHANGE_START&#160;</td><td class="fielddoc"><p>Start the clock. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga67f8525be602a7cce075f0b33d5f2ad8ab254feb9ce2b8227de97b93ab5ea4de5"></a>CGC_CLOCK_CHANGE_STOP&#160;</td><td class="fielddoc"><p>Stop the clock. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga67f8525be602a7cce075f0b33d5f2ad8a4778b4e094845ab42e902ffc9a68842c"></a>CGC_CLOCK_CHANGE_NONE&#160;</td><td class="fielddoc"><p>No change to the clock. </p>
+</td></tr>
 </table>
 
 </div>
@@ -1040,7 +1106,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.1.0</span>
+   &#160;<span id="projectnumber">Release v2.2.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -219,9 +219,9 @@ Disabled</li>
 <tr>
 <td>Name</td><td>Name must be a valid C symbol</td><td>g_rm_freertos_plus_fat0 </td><td>Module name. </td></tr>
 <tr>
-<td>Total Number of Sectors</td><td>Must be a non-negative integer</td><td>31293440 </td><td>Enter the total number of sectors on the device. If this is not known, update rm_freertos_plus_fat_disk_cfg_t::num_blocks after calling <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t.html#ga0b57cc55832b6dce144b866a28e2d9bd">RM_FREERTOS_PLUS_FAT_MediaInit()</a>. </td></tr>
+<td>Total Number of Sectors</td><td>Must be a non-negative integer</td><td>31293440 </td><td>Enter the total number of sectors on the device. If this is not known, update <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#a00112719456aeaad1c03a06cf51c2113">rm_freertos_plus_fat_device_t::sector_count</a> after calling <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t.html#ga0b57cc55832b6dce144b866a28e2d9bd">RM_FREERTOS_PLUS_FAT_MediaInit()</a>. </td></tr>
 <tr>
-<td>Sector Size (bytes)</td><td>Must be a power of 2 multiple of 512</td><td>512 </td><td>Select the sector size. Must match the underlying media sector size and at least 512. If this is not known, update rm_freertos_plus_fat_disk_cfg_t::num_blocks after calling <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t.html#ga0b57cc55832b6dce144b866a28e2d9bd">RM_FREERTOS_PLUS_FAT_MediaInit()</a>. </td></tr>
+<td>Sector Size (bytes)</td><td>Must be a power of 2 multiple of 512</td><td>512 </td><td>Select the sector size. Must match the underlying media sector size and at least 512. If this is not known, update <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ab887b9022744cd972fc18c5071b2e308">rm_freertos_plus_fat_device_t::sector_size_bytes</a> after calling <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t.html#ga0b57cc55832b6dce144b866a28e2d9bd">RM_FREERTOS_PLUS_FAT_MediaInit()</a>. </td></tr>
 <tr>
 <td>Cache Size (bytes)</td><td>Must be a power of 2 multiple of 512</td><td>1024 </td><td>Select the cache size. Must be a multiple of the sector size and at least 2 times the sector size. </td></tr>
 <tr>
@@ -238,6 +238,8 @@ Usage Notes</h1>
 <h2>FreeRTOS+FAT without FreeRTOS</h2>
 <p>To use FreeRTOS+FAT without FreeRTOS, copy FreeRTOSConfigMinimal.h to one of your project's include paths and rename it FreeRTOSConfig.h.</p>
 <p>Also, update the Malloc function to malloc and the Free function to free in the Common configurations.</p>
+<h2>Debug</h2>
+<p>Please refer to "Debug" section in FreeRTOS Port(rm_freertos_port).</p>
 <h1><a class="anchor" id="rm-freertos-plus-fat-examples"></a>
 Examples</h1>
 <h2>Basic Example</h2>
@@ -522,7 +524,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

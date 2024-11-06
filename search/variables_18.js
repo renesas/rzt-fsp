@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['zerocopy',['zerocopy',['../group___e_t_h_e_r___a_p_i.html#a95fe157e19266ea57bd532ce4c22a23c',1,'ether_cfg_t']]]
+  ['year_5fmatch',['year_match',['../group___r_t_c___a_p_i.html#ab20077ad52e2ef1a05a206d3cf216662',1,'rtc_alarm_time_t']]]
 ];

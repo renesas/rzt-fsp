@@ -44,6 +44,10 @@ var group___x_s_p_i___q_s_p_i =
       [ "XSPI_QSPI_PREFETCH_FUNCTION_DISABLE", "group___x_s_p_i___q_s_p_i.html#gga8c59ecaa03a56fa5db80924c81ff6fccafd2c195951167330e5b7a90ae262d361", null ],
       [ "XSPI_QSPI_PREFETCH_FUNCTION_ENABLE", "group___x_s_p_i___q_s_p_i.html#gga8c59ecaa03a56fa5db80924c81ff6fcca152b74d0c0cf97d6a36343f724a8d6ee", null ]
     ] ],
+    [ "xspi_qspi_io_voltage_t", "group___x_s_p_i___q_s_p_i.html#ga34a821834b382e17bb2910206cbc3632", [
+      [ "XSPI_QSPI_IO_VOLTAGE_1_8V", "group___x_s_p_i___q_s_p_i.html#gga34a821834b382e17bb2910206cbc3632a9866c9a87795f66f64ae0955243231b3", null ],
+      [ "XSPI_QSPI_IO_VOLTAGE_3_3V", "group___x_s_p_i___q_s_p_i.html#gga34a821834b382e17bb2910206cbc3632afc8189c0c56d008ce278bc36c75c8026", null ]
+    ] ],
     [ "R_XSPI_QSPI_Open", "group___x_s_p_i___q_s_p_i.html#ga6e1ddbaec6b1d04c6425b3a271d9093a", null ],
     [ "R_XSPI_QSPI_Close", "group___x_s_p_i___q_s_p_i.html#gaad19b3c8e517b9e614ee8697f8cef4e7", null ],
     [ "R_XSPI_QSPI_DirectWrite", "group___x_s_p_i___q_s_p_i.html#ga1bfceb0eafe5923f05b90899c095bd2d", null ],

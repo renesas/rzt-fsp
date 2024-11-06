@@ -1,5 +1,12 @@
 var searchData=
 [
+  ['gmac_5fb_5flink_5fchange_5ft',['gmac_b_link_change_t',['../group___e_t_h_e_r___b.html#ga7d42d58e9dc9295d0a3ab7aa25fcb666',1,'r_gmac_b.h']]],
+  ['gmac_5fb_5flink_5fstatus_5ft',['gmac_b_link_status_t',['../group___e_t_h_e_r___b.html#gad1dde87a8557a5b7d3f959d3772ed5a7',1,'r_gmac_b.h']]],
+  ['gmac_5fb_5fmagic_5fpacket_5ft',['gmac_b_magic_packet_t',['../group___e_t_h_e_r___b.html#gaa5ac9161eeb8820d6a350ba7e3c2c01a',1,'r_gmac_b.h']]],
+  ['gmac_5fb_5fpause_5fmask_5ft',['gmac_b_pause_mask_t',['../group___e_t_h_e_r___b.html#gad1d115185b6a6dd2217b26810cc84b7d',1,'r_gmac_b.h']]],
+  ['gmac_5fb_5fpause_5fval_5ft',['gmac_b_pause_val_t',['../group___e_t_h_e_r___b.html#gaa7de49f4b99c58c510d63fe379d86d36',1,'r_gmac_b.h']]],
+  ['gmac_5fb_5fphylink_5ft',['gmac_b_phylink_t',['../group___e_t_h_e_r___b.html#ga0ddd63bf978fe26b9fcdfbddeda15fc7',1,'r_gmac_b.h']]],
+  ['gmac_5fb_5fport_5fmask_5ft',['gmac_b_port_mask_t',['../group___e_t_h_e_r___b.html#ga9333565ca2c7dcf4f0f0e59a75918874',1,'r_gmac_b.h']]],
   ['gmac_5flink_5fchange_5ft',['gmac_link_change_t',['../group___e_t_h_e_r.html#ga24d2dc0a237f070557fb10b57a3969bc',1,'r_gmac.h']]],
   ['gmac_5flink_5fstatus_5ft',['gmac_link_status_t',['../group___e_t_h_e_r.html#ga24f3b2847af3e4c27f85924af55f5241',1,'r_gmac.h']]],
   ['gmac_5fmagic_5fpacket_5ft',['gmac_magic_packet_t',['../group___e_t_h_e_r.html#ga3a743e2bcb738ad6759a41747bdad1cf',1,'r_gmac.h']]],
@@ -7,7 +14,6 @@ var searchData=
   ['gpt_5fadc_5fcompare_5fmatch_5ft',['gpt_adc_compare_match_t',['../group___g_p_t.html#ga2a838fffcbafd97778bbe3ffbfbf54b1',1,'r_gpt.h']]],
   ['gpt_5fadc_5ftrigger_5ft',['gpt_adc_trigger_t',['../group___g_p_t.html#ga6dfe4ddfb53ba52c674039fd20b6c2b6',1,'r_gpt.h']]],
   ['gpt_5fcapture_5ffilter_5ft',['gpt_capture_filter_t',['../group___g_p_t.html#ga4781e2b42b2ef339318ea0a70b250cd5',1,'r_gpt.h']]],
-  ['gpt_5fchannel_5ft',['gpt_channel_t',['../group___g_p_t.html#gae66ff00d5ef51274e22f1fd687730018',1,'r_gpt.h']]],
   ['gpt_5fgtioc_5fdisable_5ft',['gpt_gtioc_disable_t',['../group___g_p_t.html#ga82d61d33edf38d50f1247d1d55ec506b',1,'r_gpt.h']]],
   ['gpt_5finterrupt_5fskip_5fadc_5ft',['gpt_interrupt_skip_adc_t',['../group___g_p_t.html#ga9928e374919fa53240edaca52412beaa',1,'r_gpt.h']]],
   ['gpt_5finterrupt_5fskip_5fcount_5ft',['gpt_interrupt_skip_count_t',['../group___g_p_t.html#gac737ceea25e4989a9afbf47969a71ba3',1,'r_gpt.h']]],

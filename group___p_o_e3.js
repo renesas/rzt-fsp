@@ -2,7 +2,8 @@ var group___p_o_e3 =
 [
     [ "poe3_poe_input_setting_t", "group___p_o_e3.html#structpoe3__poe__input__setting__t", [
       [ "mode", "group___p_o_e3.html#a2e8bca5fcc1226a25e4be1e2797f2251", null ],
-      [ "interrupt_enable", "group___p_o_e3.html#add0151025d95c061671ced11e286737e", null ]
+      [ "interrupt_enable", "group___p_o_e3.html#add0151025d95c061671ced11e286737e", null ],
+      [ "hiz_output_enable", "group___p_o_e3.html#abc6ca0e7178da1c9036f7a7bb5fdf09b", null ]
     ] ],
     [ "poe3_instance_ctrl_t", "group___p_o_e3.html#structpoe3__instance__ctrl__t", null ],
     [ "poe3_hiz_mode_t", "group___p_o_e3.html#ga653e9db5a7623053c6282f7b6e5303e5", [

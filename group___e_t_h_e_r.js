@@ -27,6 +27,7 @@ var group___e_t_h_e_r =
     ] ],
     [ "gmac_magic_packet_t", "group___e_t_h_e_r.html#ga3a743e2bcb738ad6759a41747bdad1cf", [
       [ "GMAC_MAGIC_PACKET_NOT_DETECTED", "group___e_t_h_e_r.html#gga3a743e2bcb738ad6759a41747bdad1cfabd1d70df292ae05d31d90352ac9856ba", null ],
+      [ "GMAC_MAGIC_PACKET_DETECTING", "group___e_t_h_e_r.html#gga3a743e2bcb738ad6759a41747bdad1cfabaeeeb9fba97db5d157d6494affe377f", null ],
       [ "GMAC_MAGIC_PACKET_DETECTED", "group___e_t_h_e_r.html#gga3a743e2bcb738ad6759a41747bdad1cfa599762aac5a5a51fb6a478c4cf2b7a77", null ]
     ] ],
     [ "gmac_phylink_t", "group___e_t_h_e_r.html#ga57e1f65ccc0c8570c6c0f22515119001", [

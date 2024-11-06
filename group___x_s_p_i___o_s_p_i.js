@@ -44,6 +44,10 @@ var group___x_s_p_i___o_s_p_i =
       [ "XSPI_OSPI_PREFETCH_FUNCTION_DISABLE", "group___x_s_p_i___o_s_p_i.html#gga0f7510f116df0bbbd86af6663d9c6c69a2532a6ae87098b793b7fb4567aaa6d29", null ],
       [ "XSPI_OSPI_PREFETCH_FUNCTION_ENABLE", "group___x_s_p_i___o_s_p_i.html#gga0f7510f116df0bbbd86af6663d9c6c69a6dede61f6be759301b9f29d4ed224a50", null ]
     ] ],
+    [ "xspi_ospi_io_voltage_t", "group___x_s_p_i___o_s_p_i.html#gadbf9a653db1bb21cb079a9b5053b9f38", [
+      [ "XSPI_OSPI_IO_VOLTAGE_1_8V", "group___x_s_p_i___o_s_p_i.html#ggadbf9a653db1bb21cb079a9b5053b9f38af4736ba7b9e1bdde155a05988926447f", null ],
+      [ "XSPI_OSPI_IO_VOLTAGE_3_3V", "group___x_s_p_i___o_s_p_i.html#ggadbf9a653db1bb21cb079a9b5053b9f38ae735219a137e520b4109a9d0bb7d64a8", null ]
+    ] ],
     [ "xspi_ospi_byte_order_t", "group___x_s_p_i___o_s_p_i.html#gae4ac87a62886f5558cb5d21cd5f2357f", [
       [ "XSPI_OSPI_BYTE_ORDER_0123", "group___x_s_p_i___o_s_p_i.html#ggae4ac87a62886f5558cb5d21cd5f2357fa7d7f5251e544d4e038e7714eb521bcc7", null ],
       [ "XSPI_OSPI_BYTE_ORDER_1032", "group___x_s_p_i___o_s_p_i.html#ggae4ac87a62886f5558cb5d21cd5f2357fae1c39de0296598d4c18f1fdcc8025ad6", null ]

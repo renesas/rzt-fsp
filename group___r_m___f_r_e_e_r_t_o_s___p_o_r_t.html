@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.1.0</span>
+   &#160;<span id="projectnumber">Release v2.2.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -724,13 +724,25 @@ Clock Configuration</h2>
 <h2><a class="anchor" id="r-freertos-port-pin-configuration"></a>
 Pin Configuration</h2>
 <p>This module does not use I/O pins.</p>
+<h1><a class="anchor" id="rm-freertos-port-usage-notes"></a>
+Usage Notes</h1>
+<h2><a class="anchor" id="rm-freertos-port-debug"></a>
+Debug</h2>
+<p>When you debug with EWARM, please disable semihosting:</p>
+<ol type="1">
+<li>Click Project &gt; Options...</li>
+<li>In General Options &gt; Library Configuration, check "None" of Library low-level interface implementation.</li>
+</ol>
+<ul>
+<li>Please refer to the following document for more information. IAR C/C++ Development Guide : "Additional information on the runtime environment" Chapter &gt; "The semihosting mechanism" Section.</li>
+</ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

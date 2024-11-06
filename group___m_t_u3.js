@@ -86,7 +86,10 @@ var group___m_t_u3 =
       [ "p_pwm_cfg", "group___m_t_u3.html#aff82059debc7b813205be81de5f350c5", null ],
       [ "counting_mode", "group___m_t_u3.html#a99777aa2ad3b4ad66ae63969e09cc3a3", null ],
       [ "bit_mode", "group___m_t_u3.html#a88844e3354de7605a2544cc7606f4f80", null ],
-      [ "external_clock", "group___m_t_u3.html#a306e03c33213a61c25ae2c5da82a02ea", null ]
+      [ "external_clock", "group___m_t_u3.html#a306e03c33213a61c25ae2c5da82a02ea", null ],
+      [ "capture_a_source_select", "group___m_t_u3.html#a0b578dbb32b10bfaa53821fed8fd1000", null ],
+      [ "capture_b_source_select", "group___m_t_u3.html#a967fa20e3bae5bcf8bfd6fa84078c285", null ],
+      [ "cycle_end_source_select", "group___m_t_u3.html#a5d9c6c871e974bdfcb93655a73912439", null ]
     ] ],
     [ "mtu3_io_pin_level_t", "group___m_t_u3.html#ga4a8786cd182fb52e974c1214c2de627a", [
       [ "MTU3_IO_PIN_LEVEL_NO_OUTPUT", "group___m_t_u3.html#gga4a8786cd182fb52e974c1214c2de627aa61e5eccf44d43e36ee349a9ef52ab2fe", null ],

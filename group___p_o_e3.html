@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.1.0</span>
+   &#160;<span id="projectnumber">Release v2.2.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -290,6 +290,14 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Generates an interrupt when the POE8# matches the mode conditions. </td></tr>
 <tr>
+<td>Input &gt; POE8# &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if POE8# is triggered. </td></tr>
+<tr>
 <td>Input &gt; POE10# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Falling edge</li>
@@ -309,6 +317,14 @@ Disabled</li>
 Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Generates an interrupt when the POE10# matches the mode conditions. </td></tr>
+<tr>
+<td>Input &gt; POE10# &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if POE10# is triggered. </td></tr>
 <tr>
 <td>Input &gt; POE11# &gt; Mode Select(Trigger)</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -330,6 +346,14 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Generates an interrupt when the POE11# matches the mode conditions. </td></tr>
 <tr>
+<td>Input &gt; POE11# &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Disabled</li>
+<li>
+Enabled</li>
+</ul>
+</td><td>Disabled </td><td>Set the high impedance if POE11# is triggered. </td></tr>
+<tr>
 <td>Output &gt; DSMIF Error Interrupt &gt; Unit 0 &gt; DSMIF0 Error 0 Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Disabled</li>
@@ -338,7 +362,7 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Setting high impedance on DSMIF0 error0. </td></tr>
 <tr>
-<td>Output &gt; DSMIF Error Interrupt &gt; Unit 0 &gt; DSMIF0 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF0 error1.Unsupported devices show disabled. </td></tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 0 &gt; DSMIF0 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF0 error1. Unsupported devices show disabled. </td></tr>
 <tr>
 <td>Output &gt; DSMIF Error Interrupt &gt; Unit 1 &gt; DSMIF1 Error 0 Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -348,7 +372,39 @@ Enabled</li>
 </ul>
 </td><td>Disabled </td><td>Setting high impedance on DSMIF1 error0. </td></tr>
 <tr>
-<td>Output &gt; DSMIF Error Interrupt &gt; Unit 1 &gt; DSMIF1 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF1 error1.Unsupported devices show disabled. </td></tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 1 &gt; DSMIF1 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF1 error1. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 2 &gt; DSMIF2 Error 0 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF2 error0. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 2 &gt; DSMIF2 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF2 error1. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 3 &gt; DSMIF3 Error 0 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF3 error0. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 3 &gt; DSMIF3 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF3 error1. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 4 &gt; DSMIF4 Error 0 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF4 error0. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 4 &gt; DSMIF4 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF4 error1. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 5 &gt; DSMIF5 Error 0 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF5 error0. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 5 &gt; DSMIF5 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF5 error1. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 6 &gt; DSMIF6 Error 0 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF6 error0. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 6 &gt; DSMIF6 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF6 error1. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 7 &gt; DSMIF7 Error 0 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF7 error0. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 7 &gt; DSMIF7 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF7 error1. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 8 &gt; DSMIF8 Error 0 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF8 error0. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 8 &gt; DSMIF8 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF8 error1. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 9 &gt; DSMIF9 Error 0 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF9 error0. Unsupported devices show disabled. </td></tr>
+<tr>
+<td>Output &gt; DSMIF Error Interrupt &gt; Unit 9 &gt; DSMIF9 Error 1 Interrupt Enable</td><td>MCU Specific Options</td><td></td><td>Setting high impedance on DSMIF9 error1. Unsupported devices show disabled. </td></tr>
 <tr>
 <td>Output &gt; Output Short Circuit MTU3/4 &gt; Interrupt Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -432,6 +488,10 @@ Enabled</li>
 <tr>
 <td>MTU0 Pin Control &gt; Additional MTU0 pin control request condition (Always enable POE8# Input)</td><td>MCU Specific Options</td><td></td><td>Select the additional pin control request for MTU0 (Always enable POE8# Input). </td></tr>
 <tr>
+<td>MTU0 Pin Control &gt; Additional MTU0 pin control DSMIF Error 0 request condition</td><td>MCU Specific Options</td><td></td><td>Select the additional DSMIF error 0 request for MTU0. </td></tr>
+<tr>
+<td>MTU0 Pin Control &gt; Additional MTU0 pin control DSMIF Error 1 request condition</td><td>MCU Specific Options</td><td></td><td>Select the additional DSMIF error 1 request for MTU0. </td></tr>
+<tr>
 <td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC3B. </td></tr>
 <tr>
 <td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3D Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC3D. </td></tr>
@@ -442,7 +502,7 @@ Active High</li>
 <li>
 Active Low</li>
 </ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC3B output. </td></tr>
+</td><td>Active High </td><td>Set the active level of the MTIOC3B output. </td></tr>
 <tr>
 <td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; MTIOC3D Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -450,7 +510,7 @@ Active High</li>
 <li>
 Active Low</li>
 </ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC3D output. </td></tr>
+</td><td>Active High </td><td>Set the active level of the MTIOC3D output. </td></tr>
 <tr>
 <td>MTU3 and MTU4 Pin Control &gt; MTU3-B (MTIOC3B) and MTU3-D (MTIOC3D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -470,7 +530,7 @@ Active High</li>
 <li>
 Active Low</li>
 </ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC4B output. </td></tr>
+</td><td>Active High </td><td>Set the active level of the MTIOC4B output. </td></tr>
 <tr>
 <td>MTU3 and MTU4 Pin Control &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; MTIOC4D Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -478,7 +538,7 @@ Active High</li>
 <li>
 Active Low</li>
 </ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC4D output. </td></tr>
+</td><td>Active High </td><td>Set the active level of the MTIOC4D output. </td></tr>
 <tr>
 <td>MTU3 and MTU4 Pin Control &gt; MTU4-B (MTIOC4B) and MTU4-D (MTIOC4D) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -498,7 +558,7 @@ Active High</li>
 <li>
 Active Low</li>
 </ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC4A output. </td></tr>
+</td><td>Active High </td><td>Set the active level of the MTIOC4A output. </td></tr>
 <tr>
 <td>MTU3 and MTU4 Pin Control &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; MTIOC4C Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -506,7 +566,7 @@ Active High</li>
 <li>
 Active Low</li>
 </ul>
-</td><td>Active High </td><td>Sets the active level of the MTIOC4C output. </td></tr>
+</td><td>Active High </td><td>Set the active level of the MTIOC4C output. </td></tr>
 <tr>
 <td>MTU3 and MTU4 Pin Control &gt; MTU4-A (MTIOC4A) and MTU4-C (MTIOC4C) &gt; High-Impedance Enable</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -517,6 +577,10 @@ Enabled</li>
 </td><td>Disabled </td><td>Set the high impedance if the MTIOC4A or MTIOC4C matches the mode conditions. </td></tr>
 <tr>
 <td>MTU3 and MTU4 Pin Control &gt; Additional MTU3/4 pin control request condition (Always enable POE0# Input)</td><td>MCU Specific Options</td><td></td><td>Select the additional pin control request for MTU3/4 (Always enable POE0# Input). </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; Additional MTU3/4 pin control DSMIF Error 0 request condition</td><td>MCU Specific Options</td><td></td><td>Select the additional DSMIF error 0 request for MTU3/4. </td></tr>
+<tr>
+<td>MTU3 and MTU4 Pin Control &gt; Additional MTU3/4 pin control DSMIF Error 1 request condition</td><td>MCU Specific Options</td><td></td><td>Select the additional DSMIF error 1 request for MTU3/4. </td></tr>
 <tr>
 <td>MTU6 and MTU7 Pin Control &gt; MTU6-B (MTIOC6B) and MTU6-D (MTIOC6D) &gt; MTIOC6B Pin Select</td><td>MCU Specific Options</td><td></td><td>Select the pin you want to use as MTIOC6B. </td></tr>
 <tr>
@@ -556,6 +620,10 @@ Enabled</li>
 <tr>
 <td>MTU6 and MTU7 Pin Control &gt; Additional MTU6/7 pin control request condition (Always enable POE4# Input)</td><td>MCU Specific Options</td><td></td><td>Select the additional pin control request for MTU6/7 (Always enable POE4# Input). </td></tr>
 <tr>
+<td>MTU6 and MTU7 Pin Control &gt; Additional MTU6/7 pin control DSMIF Error 0 request condition</td><td>MCU Specific Options</td><td></td><td>Select the additional DSMIF error 0 request for MTU6/7. </td></tr>
+<tr>
+<td>MTU6 and MTU7 Pin Control &gt; Additional MTU6/7 pin control DSMIF Error 1 request condition</td><td>MCU Specific Options</td><td></td><td>Select the additional DSMIF error 1 request for MTU6/7. </td></tr>
+<tr>
 <td>Interrupts &gt; Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function can be provided. If this callback function is provided, it will be called from the interrupt service routine (ISR). </td></tr>
 <tr>
 <td>Interrupts &gt; POE0# Input, Output Short Circuit MTU3/4 Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Set the POE0# Input, Output Short Circuit MTU3/4 Input interrupt priority. </td></tr>
@@ -564,7 +632,7 @@ Enabled</li>
 <tr>
 <td>Interrupts &gt; POE8# Input Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Set the POE8# Input interrupt priority. </td></tr>
 <tr>
-<td>Interrupts &gt; POE10#/11# Input, DSMIF0/1 Error Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Set the POE10#/11# Input, DSMIF0/1 Error interrupt priority. </td></tr>
+<td>Interrupts &gt; POE10#/11# Input, DSMIF Error Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Set the POE10#/11# Input, DSMIF Error interrupt priority. </td></tr>
 </table>
 </p>
 <h2><a class="anchor" id="r-poe3-clock-configuration"></a>
@@ -631,6 +699,12 @@ High-impedance output mode. </td></tr>
 interrupt_enable</td>
 <td class="fielddoc">
 Interrupt enable. </td></tr>
+<tr><td class="fieldtype">
+<a id="abc6ca0e7178da1c9036f7a7bb5fdf09b"></a>bool</td>
+<td class="fieldname">
+hiz_output_enable</td>
+<td class="fielddoc">
+High-impedance output enable for POE8, POE10, POE11. </td></tr>
 </table>
 
 </div>
@@ -890,7 +964,7 @@ Interrupt enable. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

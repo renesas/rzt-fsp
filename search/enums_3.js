@@ -22,7 +22,6 @@ var searchData=
   ['dsmif_5fcurrent_5fdata_5ft',['dsmif_current_data_t',['../group___d_s_m_i_f.html#gacc3bb4577244c5660d9d6d096b44c04c',1,'r_dsmif.h']]],
   ['dsmif_5fdata_5fshift_5ft',['dsmif_data_shift_t',['../group___d_s_m_i_f.html#ga2d483fc22c3c6b91de847dc78afcfd19',1,'r_dsmif.h']]],
   ['dsmif_5ffilter_5forder_5ft',['dsmif_filter_order_t',['../group___d_s_m_i_f.html#gaf4ba6e2cd34edf3e6623d313c381628a',1,'r_dsmif.h']]],
-  ['dsmif_5fmaster_5fclock_5ft',['dsmif_master_clock_t',['../group___d_s_m_i_f.html#ga5a3ab9c28912b26c690234238279a537',1,'r_dsmif.h']]],
   ['dsmif_5fovercurrent_5fsum_5fstatus_5ft',['dsmif_overcurrent_sum_status_t',['../group___d_s_m_i_f.html#ga8308422b91fbd62d0c348c194db083ef',1,'r_dsmif.h']]],
   ['dsmif_5fsum_5ferr_5fdetect_5fchannel_5ft',['dsmif_sum_err_detect_channel_t',['../group___d_s_m_i_f.html#ga0bf3fc84c2662c097b0145e5a91ffe3c',1,'r_dsmif.h']]]
 ];

@@ -48,7 +48,12 @@ var group___g_p_t =
       [ "capture_a_irq", "group___g_p_t.html#a630c77adb426ddddb5eac8b974fd7c85", null ],
       [ "capture_b_irq", "group___g_p_t.html#a22eb63abdf43064c9c83d81287c67c88", null ],
       [ "dead_time_irq", "group___g_p_t.html#afbc788de7ed38b81ebb727b2c05d0525", null ],
-      [ "p_pwm_cfg", "group___g_p_t.html#a55e5f85f57b77fd7ee5a1de7ff39da27", null ]
+      [ "p_pwm_cfg", "group___g_p_t.html#a55e5f85f57b77fd7ee5a1de7ff39da27", null ],
+      [ "capture_a_source_select", "group___g_p_t.html#a8a4b67efcbdd8118270a3a10c980b3bc", null ],
+      [ "capture_b_source_select", "group___g_p_t.html#ad2cd89401d71cb01b0b210165529e09e", null ],
+      [ "cycle_end_source_select", "group___g_p_t.html#a6095dfec68e554e48dab215dab8e1554", null ],
+      [ "dead_time_error_source_select", "group___g_p_t.html#a4c2d0a899c3cb24a9fa02e8667b13221", null ],
+      [ "trough_source_select", "group___g_p_t.html#a8197d0efe7b7c43a7a1ff26b1cdbe0c1", null ]
     ] ],
     [ "gpt_io_pin_t", "group___g_p_t.html#gaabd4a03d16b1b4254cc44c7779f44c60", [
       [ "GPT_IO_PIN_GTIOCA", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60aec2d2c471241869efb57a9a48a5d0eda", null ],
@@ -58,26 +63,6 @@ var group___g_p_t =
     [ "gpt_pin_level_t", "group___g_p_t.html#ga454c639e426428470ce78115af5d3648", [
       [ "GPT_PIN_LEVEL_LOW", "group___g_p_t.html#gga454c639e426428470ce78115af5d3648a3270f1165e7a86c5b12eecb9501390f4", null ],
       [ "GPT_PIN_LEVEL_HIGH", "group___g_p_t.html#gga454c639e426428470ce78115af5d3648adc8ebfd0f787322b884ca5d087b3a6a3", null ]
-    ] ],
-    [ "gpt_channel_t", "group___g_p_t.html#gae66ff00d5ef51274e22f1fd687730018", [
-      [ "GPT_CHANNEL_UNIT0_0", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a6b4339da2d4405e877b8e4476a1859f6", null ],
-      [ "GPT_CHANNEL_UNIT0_1", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018aa5fdb907c80efa41267299837ba6b5dd", null ],
-      [ "GPT_CHANNEL_UNIT0_2", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018afe292e87fc9a32db737dd12fcacfbdec", null ],
-      [ "GPT_CHANNEL_UNIT0_3", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018ab570195036182e54d91bcca73204d1fe", null ],
-      [ "GPT_CHANNEL_UNIT0_4", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a1767c3de7424d4e9a572db26cc2e85c8", null ],
-      [ "GPT_CHANNEL_UNIT0_5", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a5582fda4d5258021e4d11808057793cc", null ],
-      [ "GPT_CHANNEL_UNIT0_6", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a601e993b97b79c108f2e12a6e392aa37", null ],
-      [ "GPT_CHANNEL_UNIT1_0", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018ac3d53cf08e6126024cf1f6de853bd470", null ],
-      [ "GPT_CHANNEL_UNIT1_1", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a30d0eae38539a81ef8e4c3b499d41c78", null ],
-      [ "GPT_CHANNEL_UNIT1_2", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a4bf8f6d5595094a5798a1b37ac966c62", null ],
-      [ "GPT_CHANNEL_UNIT1_3", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a3ea67c970b22d805c3841af15e4c6c07", null ],
-      [ "GPT_CHANNEL_UNIT1_4", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018acf5202767b83ca6d3a03b6e15e68a8e2", null ],
-      [ "GPT_CHANNEL_UNIT1_5", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018ae17448e7d4f8c6530706b42a96c7694b", null ],
-      [ "GPT_CHANNEL_UNIT1_6", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a5fdf0fe8333f3bb21da34a519a7f81fb", null ],
-      [ "GPT_CHANNEL_UNIT2_0", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018ac2d8771bc1aebf3f4dc08e6de327632b", null ],
-      [ "GPT_CHANNEL_UNIT2_1", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a5e3f6c26d9bd94283386e54a58bbda09", null ],
-      [ "GPT_CHANNEL_UNIT2_2", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018aa1623db49d498fc2be8a1e69dc33f5cd", null ],
-      [ "GPT_CHANNEL_UNIT2_3", "group___g_p_t.html#ggae66ff00d5ef51274e22f1fd687730018a701486d583e56d761795fa8fb80b04b7", null ]
     ] ],
     [ "gpt_source_t", "group___g_p_t.html#gaa1457c9c1f178fff4dd1558832db196a", [
       [ "GPT_SOURCE_NONE", "group___g_p_t.html#ggaa1457c9c1f178fff4dd1558832db196aae376db52803d52361481b2384c3a3bd8", null ],

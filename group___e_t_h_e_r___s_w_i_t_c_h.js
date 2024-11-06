@@ -229,7 +229,7 @@ var group___e_t_h_e_r___s_w_i_t_c_h =
     ] ],
     [ "ethsw_time_rate_correction_t", "group___e_t_h_e_r___s_w_i_t_c_h.html#structethsw__time__rate__correction__t", [
       [ "time_num", "group___e_t_h_e_r___s_w_i_t_c_h.html#a1c8623f48f485cc93edaafd404929995", null ],
-      [ "rate", "group___e_t_h_e_r___s_w_i_t_c_h.html#a819c49e7b76f7b03292c368e8ab3cc84", null ]
+      [ "rate", "group___e_t_h_e_r___s_w_i_t_c_h.html#aabdd3d6648a6ca10b54e5c38defc2309", null ]
     ] ],
     [ "ETHSW_PORT_MGMT", "group___e_t_h_e_r___s_w_i_t_c_h.html#ga77b33068acb0736d071a13cd67aaf58a", null ],
     [ "ETHER_SWITCH_TDMA_GPIO_COUNT", "group___e_t_h_e_r___s_w_i_t_c_h.html#gab0f916b2f22114e2d587dd7d66628552", null ],
@@ -447,6 +447,7 @@ var group___e_t_h_e_r___s_w_i_t_c_h =
     [ "R_ETHSW_TimeTransmitTimestampSet", "group___e_t_h_e_r___s_w_i_t_c_h.html#ga5b77adb0d1a7c1d427dcbf99400d4b66", null ],
     [ "R_ETHSW_TimeValueSet", "group___e_t_h_e_r___s_w_i_t_c_h.html#ga5340edd4dc20babd2141b60d8bdae51a", null ],
     [ "R_ETHSW_TimeValueGet", "group___e_t_h_e_r___s_w_i_t_c_h.html#ga426536ac53d235cfee6fd00cd94d9ae7", null ],
+    [ "R_ETHSW_TimeValueGetAll", "group___e_t_h_e_r___s_w_i_t_c_h.html#gaa44abcfb4dc971fa3c92440c720a1371", null ],
     [ "R_ETHSW_TimePeerDelaySet", "group___e_t_h_e_r___s_w_i_t_c_h.html#ga3e6b1698241ac210a317fd79bf662801", null ],
     [ "R_ETHSW_TimeOffsetSet", "group___e_t_h_e_r___s_w_i_t_c_h.html#ga7ddc5cefc5587bbc78a3330dcbcc943a", null ],
     [ "R_ETHSW_TimeRateSet", "group___e_t_h_e_r___s_w_i_t_c_h.html#gaeb81762fdbed638fbd7195bccc2aa9a2", null ],

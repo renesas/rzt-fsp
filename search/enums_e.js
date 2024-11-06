@@ -14,5 +14,7 @@ var searchData=
   ['transfer_5fmode_5ft',['transfer_mode_t',['../group___t_r_a_n_s_f_e_r___a_p_i.html#gadfb7c2a6a73bfdf993e50505aa92992f',1,'r_transfer_api.h']]],
   ['transfer_5frepeat_5farea_5ft',['transfer_repeat_area_t',['../group___t_r_a_n_s_f_e_r___a_p_i.html#ga769464d2068881ccb44573c96167812b',1,'r_transfer_api.h']]],
   ['transfer_5fsize_5ft',['transfer_size_t',['../group___t_r_a_n_s_f_e_r___a_p_i.html#ga6c224e5afb174f3f6ea9eddbb9da8b12',1,'r_transfer_api.h']]],
-  ['transfer_5fstart_5fmode_5ft',['transfer_start_mode_t',['../group___t_r_a_n_s_f_e_r___a_p_i.html#ga11917a0ab2cb8b878937c97691b07fd9',1,'r_transfer_api.h']]]
+  ['transfer_5fstart_5fmode_5ft',['transfer_start_mode_t',['../group___t_r_a_n_s_f_e_r___a_p_i.html#ga11917a0ab2cb8b878937c97691b07fd9',1,'r_transfer_api.h']]],
+  ['tsu_5fb_5faverage_5ft',['tsu_b_average_t',['../group___t_s_u___b.html#ga5ab9606f8b75e848e5743dd79d08aa29',1,'r_tsu_b.h']]],
+  ['tsu_5fb_5fcompare_5fcfg_5ft',['tsu_b_compare_cfg_t',['../group___t_s_u___b.html#gae1e53473fd2f49e840ce26b43131aa29',1,'r_tsu_b.h']]]
 ];

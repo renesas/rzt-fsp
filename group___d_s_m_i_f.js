@@ -36,20 +36,6 @@ var group___d_s_m_i_f =
       [ "DSMIF_CLOCK_EDGE_NEGATIVE", "group___d_s_m_i_f.html#ggad2aff173b01c7b1f26fa329bc95f2684a146df8aeb64b02dac1402e88d440cd40", null ],
       [ "DSMIF_CLOCK_EDGE_POSITIVE", "group___d_s_m_i_f.html#ggad2aff173b01c7b1f26fa329bc95f2684a7716ddb133a052e23154780b595e764b", null ]
     ] ],
-    [ "dsmif_master_clock_t", "group___d_s_m_i_f.html#ga5a3ab9c28912b26c690234238279a537", [
-      [ "DSMIF_MASTER_CLOCK_25MHZ_PCLKH200", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537a93965d7f94944b3d60d0827263168c3e", null ],
-      [ "DSMIF_MASTER_CLOCK_20MHZ_PCLKH200", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537a92a3a61b9c13b3b5dc3d6cfde48f65fc", null ],
-      [ "DSMIF_MASTER_CLOCK_12_5MHZ_PCLKH200", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537a166cd16d1800542e89e399300f94672b", null ],
-      [ "DSMIF_MASTER_CLOCK_10MHZ_PCLKH200", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537a7b97b1a335adf986c6af43d2749b5cc1", null ],
-      [ "DSMIF_MASTER_CLOCK_6_25MHZ_PCLKH200", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537a6f5b8fddeb17740b1bf7681f3a6b3a14", null ],
-      [ "DSMIF_MASTER_CLOCK_5MHZ_PCLKH200", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537a21ae423a737915c98f219b5affca5767", null ],
-      [ "DSMIF_MASTER_CLOCK_25MHZ_PCLKH150", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537af346dd6eed1f3875f90fa8c6b5146736", null ],
-      [ "DSMIF_MASTER_CLOCK_18_75MHZ_PCLKH150", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537ac00cbcd01ea563e3352b891139034261", null ],
-      [ "DSMIF_MASTER_CLOCK_12_5MHZ_PCLKH150", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537afb2a3241529bdc18af1a242f7fe86b93", null ],
-      [ "DSMIF_MASTER_CLOCK_9_375MHZ_PCLKH150", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537a0a3748bdc1f1a95d9c16f6cb679e4033", null ],
-      [ "DSMIF_MASTER_CLOCK_6_25MHZ_PCLKH150", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537aed6ddef5022c3caec7fc1ab47d447d0b", null ],
-      [ "DSMIF_MASTER_CLOCK_5MHZ_PCLKH150", "group___d_s_m_i_f.html#gga5a3ab9c28912b26c690234238279a537a607fa790b336803af631b076a4235aa1", null ]
-    ] ],
     [ "dsmif_filter_order_t", "group___d_s_m_i_f.html#gaf4ba6e2cd34edf3e6623d313c381628a", [
       [ "DSMIF_FILTER_ORDER_3RD", "group___d_s_m_i_f.html#ggaf4ba6e2cd34edf3e6623d313c381628aa09e42a6299cb69c97bd693fab40a5fa7", null ],
       [ "DSMIF_FILTER_ORDER_1ST", "group___d_s_m_i_f.html#ggaf4ba6e2cd34edf3e6623d313c381628aad259c890b8887d2f816ba82e3973df26", null ],

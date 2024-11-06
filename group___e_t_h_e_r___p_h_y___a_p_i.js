@@ -54,6 +54,13 @@ var group___e_t_h_e_r___p_h_y___a_p_i =
       [ "ETHER_PHY_LSI_TYPE_KSZ9031", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5aee6a7c766fb9162cdc987e9c39aefb1d", null ],
       [ "ETHER_PHY_LSI_TYPE_KSZ8081", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5aca6569a82fa2721d05a6e31809203c24", null ],
       [ "ETHER_PHY_LSI_TYPE_KSZ8041", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5a29cbe6685ab800c244b58a82fcdfc89e", null ],
+      [ "ETHER_PHY_LSI_TYPE_CUSTOM", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5ac19ab1507a515d6174f27f7af0e6de0e", null ],
+      [ "ETHER_PHY_LSI_TYPE_DEFAULT", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5af54eff8466eb8c190b1f5ed76a89154b", null ],
+      [ "ETHER_PHY_LSI_TYPE_VSC8541", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5ae84157d78d7b13a2b695bd4e89d880f3", null ],
+      [ "ETHER_PHY_LSI_TYPE_KSZ9131", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5aeb871e41bd9f28cd44af17549ef8017f", null ],
+      [ "ETHER_PHY_LSI_TYPE_KSZ9031", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5aee6a7c766fb9162cdc987e9c39aefb1d", null ],
+      [ "ETHER_PHY_LSI_TYPE_KSZ8081", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5aca6569a82fa2721d05a6e31809203c24", null ],
+      [ "ETHER_PHY_LSI_TYPE_KSZ8041", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5a29cbe6685ab800c244b58a82fcdfc89e", null ],
       [ "ETHER_PHY_LSI_TYPE_CUSTOM", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga52ba7820524fdf3472ec06b109d4e9a5ac19ab1507a515d6174f27f7af0e6de0e", null ]
     ] ],
     [ "ether_phy_flow_control_t", "group___e_t_h_e_r___p_h_y___a_p_i.html#ga113895595732b38ac87e4efecacb87de", [

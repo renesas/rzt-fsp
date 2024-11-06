@@ -48,6 +48,10 @@ var group___x_s_p_i___h_y_p_e_r =
       [ "XSPI_HYPER_PREFETCH_FUNCTION_DISABLE", "group___x_s_p_i___h_y_p_e_r.html#ggab1b84328e019d51f1b017e089cd0330baac2e3a39b0a0804c9e34ff65e55c24f4", null ],
       [ "XSPI_HYPER_PREFETCH_FUNCTION_ENABLE", "group___x_s_p_i___h_y_p_e_r.html#ggab1b84328e019d51f1b017e089cd0330ba869484640fd3c040179e9dc41028d9f2", null ]
     ] ],
+    [ "xspi_hyper_io_voltage_t", "group___x_s_p_i___h_y_p_e_r.html#ga74610755ec73d9392b07945cb01ce0ec", [
+      [ "XSPI_HYPER_IO_VOLTAGE_1_8V", "group___x_s_p_i___h_y_p_e_r.html#gga74610755ec73d9392b07945cb01ce0eca6afa5e0173d8808fac374aa316bc7648", null ],
+      [ "XSPI_HYPER_IO_VOLTAGE_3_3V", "group___x_s_p_i___h_y_p_e_r.html#gga74610755ec73d9392b07945cb01ce0ecac5024b764881836a70a06ca2463ad697", null ]
+    ] ],
     [ "R_XSPI_HYPER_Open", "group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b", null ],
     [ "R_XSPI_HYPER_Close", "group___x_s_p_i___h_y_p_e_r.html#ga18f866b0d9e5e876018f448642fe9024", null ],
     [ "R_XSPI_HYPER_BurstTypeSet", "group___x_s_p_i___h_y_p_e_r.html#ga0dd1bd1a499b711b67881920d5e00a47", null ],

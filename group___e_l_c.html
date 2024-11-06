@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.1.0</span>
+   &#160;<span id="projectnumber">Release v2.2.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -160,7 +160,8 @@ $(document).ready(function(){initNavTree('group___e_l_c.html','');});
 <div class="header">
   <div class="summary">
 <a href="#func-members">Functions</a> &#124;
-<a href="#nested-classes">Data Structures</a>  </div>
+<a href="#nested-classes">Data Structures</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">Event Link Controller (r_elc)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_y_s_t_e_m___m_o_d_u_l_e_s.html">System</a></div></div>  </div>
 </div><!--header-->
@@ -174,7 +175,7 @@ Functions</h2></td></tr>
 <tr class="separator:gac5e6b998138cc28bcbd8b17a5eb26674"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaa8735a16325cfeff3c47a50345d11d82"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_l_c.html#gaa8735a16325cfeff3c47a50345d11d82">R_ELC_SoftwareEventGenerate</a> (<a class="el" href="group___e_l_c___a_p_i.html#ga71d9612a7e093ba6bbef8ff708266596">elc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___e_l_c___a_p_i.html#ga5fed76c06664ddad69c5a7ccb0330f0e">elc_software_event_t</a> event_number)</td></tr>
 <tr class="separator:gaa8735a16325cfeff3c47a50345d11d82"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ga4b40a4cb59194b6315cf608cd5e36bd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_l_c.html#ga4b40a4cb59194b6315cf608cd5e36bd9">R_ELC_LinkSet</a> (<a class="el" href="group___e_l_c___a_p_i.html#ga71d9612a7e093ba6bbef8ff708266596">elc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___e_l_c___a_p_i.html#gaa5bf5e18ceb8cf51ac6dce985f9230a7">elc_peripheral_t</a> peripheral, <a class="el" href="group___b_s_p___m_c_u___r_z_t2_l.html#gaebe723200f2a7f181f08324128b9d7b5">elc_event_t</a> signal)</td></tr>
+<tr class="memitem:ga4b40a4cb59194b6315cf608cd5e36bd9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_l_c.html#ga4b40a4cb59194b6315cf608cd5e36bd9">R_ELC_LinkSet</a> (<a class="el" href="group___e_l_c___a_p_i.html#ga71d9612a7e093ba6bbef8ff708266596">elc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___e_l_c___a_p_i.html#gaa5bf5e18ceb8cf51ac6dce985f9230a7">elc_peripheral_t</a> peripheral, <a class="el" href="group___b_s_p___m_c_u___r_z_t2_h.html#gaebe723200f2a7f181f08324128b9d7b5">elc_event_t</a> signal)</td></tr>
 <tr class="separator:ga4b40a4cb59194b6315cf608cd5e36bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga2b2ed9cb9e86bf6c75d85977c4c135ff"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_l_c.html#ga2b2ed9cb9e86bf6c75d85977c4c135ff">R_ELC_LinkBreak</a> (<a class="el" href="group___e_l_c___a_p_i.html#ga71d9612a7e093ba6bbef8ff708266596">elc_ctrl_t</a> *const p_ctrl, <a class="el" href="group___e_l_c___a_p_i.html#gaa5bf5e18ceb8cf51ac6dce985f9230a7">elc_peripheral_t</a> peripheral)</td></tr>
 <tr class="separator:ga2b2ed9cb9e86bf6c75d85977c4c135ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -247,12 +248,118 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Default (BSP) </td><td>If selected code for parameter checking is included in the build. </td></tr>
+<tr>
+<td>GPT/MTU3 Combined Event Select</td><td>MCU Specific Options</td><td></td><td>Support for GPT/MTU3 Combined ELC Event Mask Register </td></tr>
 </table>
  <h2>Configurations for System &gt; Event Link Controller (r_elc)</h2>
 This module can be added to the Stacks tab via New Stack &gt; System &gt; Event Link Controller (r_elc).<br />
 </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT00 Event Select &gt; GPT00_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT00_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT00 Event Select &gt; GPT00_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT00_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT00 Event Select &gt; GPT00_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT00_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT00 Event Select &gt; GPT00_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT00_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT00 Event Select &gt; GPT00_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT00_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT01 Event Select &gt; GPT01_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT01_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT01 Event Select &gt; GPT01_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT01_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT01 Event Select &gt; GPT01_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT01_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT01 Event Select &gt; GPT01_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT01_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT01 Event Select &gt; GPT01_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT01_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT02 Event Select &gt; GPT02_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT02_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT02 Event Select &gt; GPT02_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT02_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT02 Event Select &gt; GPT02_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT02_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT02 Event Select &gt; GPT02_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT02_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT02 Event Select &gt; GPT02_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT02_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT03 Event Select &gt; GPT03_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT03_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT03 Event Select &gt; GPT03_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT03_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT03 Event Select &gt; GPT03_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT03_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT03 Event Select &gt; GPT03_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT03_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT03 Event Select &gt; GPT03_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT03_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT04 Event Select &gt; GPT04_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT04_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT04 Event Select &gt; GPT04_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT04_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT04 Event Select &gt; GPT04_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT04_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT04 Event Select &gt; GPT04_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT04_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT04 Event Select &gt; GPT04_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT04_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT05 Event Select &gt; GPT05_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT05_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT05 Event Select &gt; GPT05_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT05_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT05 Event Select &gt; GPT05_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT05_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT05 Event Select &gt; GPT05_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT05_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT05 Event Select &gt; GPT05_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT05_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT06 Event Select &gt; GPT06_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT06_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT06 Event Select &gt; GPT06_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT06_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT06 Event Select &gt; GPT06_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT06_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT06 Event Select &gt; GPT06_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT06_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT06 Event Select &gt; GPT06_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT06_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT07 Event Select &gt; GPT07_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT07_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT07 Event Select &gt; GPT07_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT07_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT07 Event Select &gt; GPT07_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT07_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT07 Event Select &gt; GPT07_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT07_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT07 Event Select &gt; GPT07_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT07_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT08 Event Select &gt; GPT08_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT08_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT08 Event Select &gt; GPT08_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT08_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT08 Event Select &gt; GPT08_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT08_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT08 Event Select &gt; GPT08_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT08_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT08 Event Select &gt; GPT08_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT08_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT09 Event Select &gt; GPT09_0_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT09_0_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT09 Event Select &gt; GPT09_1_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT09_1_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT09 Event Select &gt; GPT09_2_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT09_2_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT09 Event Select &gt; GPT09_3_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT09_3_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT09 Event Select &gt; GPT09_4_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT09_4_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT09 Event Select &gt; GPT09_5_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT09_5_INT4. </td></tr>
+<tr>
+<td>GPT/MTU3 Event Select &gt; GPT09 Event Select &gt; GPT09_6_INT4 Event Select</td><td>MCU Specific Options</td><td></td><td>GPT/MTU3 combined ELC event select for GPT09_6_INT4. </td></tr>
 <tr>
 <td>Name</td><td>ELC instance name must be g_elc to match <a class="el" href="group___e_l_c___a_p_i.html#structelc__cfg__t">elc_cfg_t</a> data structure created in elc_data.c</td><td>g_elc </td><td>Module name. Fixed to g_elc. </td></tr>
 </table>
@@ -275,6 +382,11 @@ Examples</h1>
 Data Structures</h2></td></tr>
 <tr class="memitem:structelc__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_l_c.html#structelc__instance__ctrl__t">elc_instance_ctrl_t</a></td></tr>
 <tr class="separator:structelc__instance__ctrl__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:gaf4fa75c085eb265e6c361a1549d1f05d"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_l_c.html#gaf4fa75c085eb265e6c361a1549d1f05d">elc_gpt_event_mask_t</a> </td></tr>
+<tr class="separator:gaf4fa75c085eb265e6c361a1549d1f05d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structelc__instance__ctrl__t" id="structelc__instance__ctrl__t"></a>
@@ -290,6 +402,82 @@ Data Structures</h2></td></tr>
 </div><div class="memdoc">
 <div class="textblock"><p>ELC private control block. DO NOT MODIFY. Initialization occurs when <a class="el" href="group___e_l_c.html#ga35864de459d2ef45a03da4343729712f">R_ELC_Open()</a> is called. </p>
 </div>
+</div>
+</div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="gaf4fa75c085eb265e6c361a1549d1f05d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf4fa75c085eb265e6c361a1549d1f05d">&#9670;&nbsp;</a></span>elc_gpt_event_mask_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___e_l_c.html#gaf4fa75c085eb265e6c361a1549d1f05d">elc_gpt_event_mask_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>GPT/MTU event source definitions. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da68b1b3d2ba465611da37524abb753084"></a>ELC_GPT_EVENT_MASK_OFF&#160;</td><td class="fielddoc"><p>GPT Event not selected. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05daacca896d5cf88e87c4108116d8704d7c"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_0&#160;</td><td class="fielddoc"><p>GPT2n Event BIT0 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da04d00fd96eeaa16e2550a3a533866b00"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_1&#160;</td><td class="fielddoc"><p>GPT2n Event BIT1 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da59e87a9403c452691a9d323996d16a42"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_2&#160;</td><td class="fielddoc"><p>GPT2n Event BIT2 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dad1e2d1c589e8647fdb398cd12fe4f204"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_3&#160;</td><td class="fielddoc"><p>GPT2n Event BIT3 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05daee4ffb3d37536b3f6e7bb6fc0c094759"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_4&#160;</td><td class="fielddoc"><p>GPT2n Event BIT4 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dad077679dfea24c6b0fc9cd7f974f83e8"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_5&#160;</td><td class="fielddoc"><p>GPT2n Event BIT5 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dab71e57daff0fc32135c94aea8cb3c0f8"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_6&#160;</td><td class="fielddoc"><p>GPT2n Event BIT6 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da4232a4e8d67ba1b8222ffdd424b5124c"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_7&#160;</td><td class="fielddoc"><p>GPT2n Event BIT7 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dad7c269acb1c46340a5e64990179d2ee2"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_8&#160;</td><td class="fielddoc"><p>GPT2n Event BIT8 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05daee3e69abbbf02a6612f80414f77decb4"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_9&#160;</td><td class="fielddoc"><p>GPT2n Event BIT9 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dadb49bb791e74b12064b3ba096ccaf44c"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_10&#160;</td><td class="fielddoc"><p>GPT2n Event BIT10 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da5329c0dd1d70e5236ac9a3859419bbad"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_11&#160;</td><td class="fielddoc"><p>GPT2n Event BIT11 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da94ece71bb30fc36d414c50a29281e3ef"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_12&#160;</td><td class="fielddoc"><p>GPT2n Event BIT12 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05daf894bd883cb606d8eaf52fb662f22f9f"></a>ELC_GPT_EVENT_MASK_GPTX_BIT_13&#160;</td><td class="fielddoc"><p>GPT2n Event BIT13 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dab08f2195e3b2df0f7660cd0004ea2cb0"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_0&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT0 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da8a5c493ea9addf8aff2106372babe1eb"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_1&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT1 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dadd58e99047beecff3b675262badfafa1"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_2&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT2 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da5fdcf309fe1aae153ca6ee8203e1b2df"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_3&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT3 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da3b04bd70f0a17e5ad5a180fde30fb519"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_4&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT4 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dacf25484caf60b02f45b7db099ce4b6c2"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_5&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT5 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05daa7679ffdaeddd23fced5d2fa4779fc97"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_6&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT6 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da575249d7b8fd62f5bbd296efab6b7479"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_7&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT7 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05daf3bfff5b237e9ba456e72387f45121dd"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_8&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT8 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da34f2c163555fb3cbf662da7975264ccd"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_9&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT9 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05daa0ee5ed1115edb8771140854eea822a1"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_10&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT10 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05da3d516180fd896ae1366f80bad3fe7a12"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_11&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT11 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05dad68a617c9a37ac9dbb8179b741be018e"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_12&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT12 mask. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggaf4fa75c085eb265e6c361a1549d1f05daad0734f8e69041cf49b4454b81e592ec"></a>ELC_GPT_EVENT_MASK_GPTY_BIT_13&#160;</td><td class="fielddoc"><p>GPT2n+1 Event BIT13 mask. </p>
+</td></tr>
+</table>
+
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
@@ -414,7 +602,7 @@ Data Structures</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="group___b_s_p___m_c_u___r_z_t2_l.html#gaebe723200f2a7f181f08324128b9d7b5">elc_event_t</a>&#160;</td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___m_c_u___r_z_t2_h.html#gaebe723200f2a7f181f08324128b9d7b5">elc_event_t</a>&#160;</td>
           <td class="paramname"><em>signal</em>&#160;</td>
         </tr>
         <tr>
@@ -529,7 +717,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

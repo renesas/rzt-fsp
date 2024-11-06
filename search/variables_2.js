@@ -11,6 +11,7 @@ var searchData=
   ['b_5frx_5fcarrier',['b_rx_carrier',['../group___u_s_b___p_c_d_c___a_p_i.html#a64d87fa03e44b380127bfffec89336e4',1,'usb_serial_state_bitmap_t']]],
   ['b_5ftx_5fcarrier',['b_tx_carrier',['../group___u_s_b___p_c_d_c___a_p_i.html#a6fdf45d945abbb8784efe11afb142783',1,'usb_serial_state_bitmap_t']]],
   ['bankset',['bankSet',['../group___s_p_i___f_l_a_s_h___a_p_i.html#ae581e587fb514ab784257d07a77d6b32',1,'spi_flash_api_t']]],
+  ['base_5faddress',['base_address',['../group___p_c_i_e___e_p.html#a408e0d69a135aadbe1f741131dcd4c39',1,'pcie_ep_window_settings_t::base_address()'],['../group___p_c_i_e___r_c.html#a7d6bfc3d5ecac627fdf38d3ca96e4fec',1,'pcie_rc_window_settings_t::base_address()'],['../group___p_c_i_e___r_c.html#a779280953a10f1df7104cf551c418942',1,'pcie_rc_msi_window_settings_t::base_address()']]],
   ['baud_5frate_5ferror_5fx_5f1000',['baud_rate_error_x_1000',['../group___s_c_i___u_a_r_t.html#a4b30100db260c9d7a0ef8623562e548e',1,'sci_uart_baud_calculation_t']]],
   ['baud_5frate_5fprescaler',['baud_rate_prescaler',['../group___c_a_n___a_p_i.html#a33ae62d869abaf989823b7bb1563de41',1,'can_bit_timing_cfg_t']]],
   ['baudrate',['baudrate',['../group___s_c_i___u_a_r_t.html#a265ff65e259a80b26e375ed3292ae3e5',1,'sci_uart_baud_calculation_t']]],

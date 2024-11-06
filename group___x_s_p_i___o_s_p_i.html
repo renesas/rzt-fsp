@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.1.0</span>
+   &#160;<span id="projectnumber">Release v2.2.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -217,7 +217,9 @@ Features</h2>
 <li>3 byte addressing for 1S-1S-1S(SPI)<a class="anchor" id="um_ospi_3byte_address"></a></li>
 <li>4 byte addressing for 1S-1S-1S(SPI) and 8D-8D-8D(OPI)<a class="anchor" id="um_ospi_4byte_address"></a></li>
 <li>Auto-calibration for 8D-8D-8D(OPI) mode<a class="anchor" id="um_ospi_autocalibration"></a></li>
-<li>Configurable byte order in 8D-8D-8D(OPI) mode except for memory mapping read<a class="anchor" id="um_ospi_byte_order"></a> <dl class="section note"><dt>Note</dt><dd>The available chip select lines may differ between devices. A full list of selectable chip select lines is available in the User's Manual for your device.</dd></dl>
+<li>Configurable byte order in 8D-8D-8D(OPI) mode except for memory mapping read<a class="anchor" id="um_ospi_byte_order"></a> <dl class="section note"><dt>Note</dt><dd>1. The available chip select lines may differ between devices. A full list of selectable chip select lines is available in the User's Manual for your device. </dd>
+<dd>
+2. When using serial flash memory without a hardware reset pin, if this LSI is reset after the serial flash protocol setting has been changed from 1S-1S-1S protocol to another protocol mode by the user program, the protocol mode of the boot program does not coincide with the protocol mode of the serial flash memory, which causes a boot error.</dd></dl>
 </li>
 </ul>
 <h1><a class="anchor" id="r-xspi-ospi-configuration"></a>
@@ -228,7 +230,7 @@ The following build time configurations are defined in driver/r_xspi_ospi_cfg.h:
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
 <tr>
-<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; Start Address</td><td>Unit0 CS0 start address should be constant</td><td>0x60000000 </td><td>Start address of xSPI Unit0 CS0 in memory mapping mode. </td></tr>
+<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; Start Address</td><td>MCU Specific Options</td><td></td><td>Start address of xSPI Unit0 CS0 in memory mapping mode. </td></tr>
 <tr>
 <td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x600FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
 <tr>
@@ -236,7 +238,7 @@ The following build time configurations are defined in driver/r_xspi_ospi_cfg.h:
 <tr>
 <td>Custom Address Space &gt; Unit0 &gt; CS1 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x640FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; Start Address</td><td>Unit1 CS0 start address should be constant</td><td>0x68000000 </td><td>Start address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
+<td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; Start Address</td><td>MCU Specific Options</td><td></td><td>Start address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
 <tr>
 <td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit1 external address space</td><td>0x680FFFFF </td><td>End address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
 <tr>
@@ -271,6 +273,10 @@ Enable</li>
 Disable</li>
 </ul>
 </td><td>Disable </td><td>Enable prefetch function on memory-mapped reads of xSPI Unit 1. </td></tr>
+<tr>
+<td>Unit 0 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit0. </td></tr>
+<tr>
+<td>Unit 1 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit1. </td></tr>
 </table>
  <h2>Configurations for Storage &gt; OSPI (r_xspi_ospi)</h2>
 This module can be added to the Stacks tab via New Stack &gt; Storage &gt; OSPI (r_xspi_ospi).<br />
@@ -413,51 +419,50 @@ Usage Notes</h1>
 <h2><a class="anchor" id="r-xspi-ospi-memory-mapped-access"></a>
 OSPI Memory Mapped Access</h2>
 <p>After <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a> completes successfully, the OctaFlash device contents are mapped to address 0x60000000 (unit 0) or 0x68000000 (unit 1) based on the unit configured and can be read like on-chip flash. When not using the cache, access the OctaFlash device via the mirror space 0x40000000 (unit 0) or 0x48000000 (unit 1). Unit 0 and Unit 1 support 128 MB of address space.</p>
-<p>The address map details for the external address space xSPI unit 0 is as follows:</p>
+<p>The address map details for the external address space xSPI in RZ/T2M and RZ/T2L is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Address </th><th>Space  </th></tr>
 <tr>
-<td>0x40000000 to 0x43FFFFFF </td><td>CS0 mirror space </td></tr>
+<td>0x40000000 to 0x43FFFFFF </td><td>unit 0 CS0 mirror space </td></tr>
 <tr>
-<td>0x44000000 to 0x47FFFFFF </td><td>CS1 mirror space </td></tr>
+<td>0x44000000 to 0x47FFFFFF </td><td>unit 0 CS1 mirror space </td></tr>
 <tr>
-<td>0x60000000 to 0x63FFFFFF </td><td>CS0 </td></tr>
+<td>0x48000000 to 0x4BFFFFFF </td><td>unit 1 CS0 mirror space </td></tr>
 <tr>
-<td>0x64000000 to 0x67FFFFFF </td><td>CS1 </td></tr>
+<td>0x4C000000 to 0x4FFFFFFF </td><td>unit 1 CS1 mirror space </td></tr>
+<tr>
+<td>0x60000000 to 0x63FFFFFF </td><td>unit 0 CS0 </td></tr>
+<tr>
+<td>0x64000000 to 0x67FFFFFF </td><td>unit 0 CS1 </td></tr>
+<tr>
+<td>0x68000000 to 0x6BFFFFFF </td><td>unit 1 CS0 </td></tr>
+<tr>
+<td>0x6C000000 to 0x6FFFFFFF </td><td>unit 1 CS1 </td></tr>
 </table>
-<p>The address map details for the external address space xSPI unit 1 is as follows:</p>
+<p>The address map for the external address space xSPI in RZ/T2ME is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Address </th><th>Space  </th></tr>
 <tr>
-<td>0x48000000 to 0x4BFFFFFF </td><td>CS0 mirror space </td></tr>
+<td>0x40000000 to 0x47FFFFFF </td><td>unit 0 CS0 mirror space + unit 0 CS1 mirror space </td></tr>
 <tr>
-<td>0x4C000000 to 0x4FFFFFFF </td><td>CS1 mirror space </td></tr>
+<td>0x48000000 to 0x4FFFFFFF </td><td>unit 1 CS0 mirror space + unit 1 CS1 mirror space </td></tr>
 <tr>
-<td>0x68000000 to 0x6BFFFFFF </td><td>CS0 </td></tr>
+<td>0x60000000 to 0x67FFFFFF </td><td>unit 0 CS0 + unit 0 CS1 </td></tr>
 <tr>
-<td>0x6C000000 to 0x6FFFFFFF </td><td>CS1 </td></tr>
+<td>0x68000000 to 0x6FFFFFFF </td><td>unit 1 CS0 + unit 1 CS1 </td></tr>
 </table>
-<p>The address map for the external address space xSPI unit 0 in RZ/T2ME is as follows:</p>
+<p>The address map for the external address space xSPI in RZ/T2H is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Address </th><th>Space  </th></tr>
 <tr>
-<td>0x40000000 to 0x47FFFFFF </td><td>CS0 mirror space + CS1 mirror space </td></tr>
+<td>0x40000000 to 0x4FFFFFFF </td><td>unit 0 CS0 + unit 0 CS1 </td></tr>
 <tr>
-<td>0x60000000 to 0x67FFFFFF </td><td>CS0 + CS1 </td></tr>
+<td>0x50000000 to 0x5FFFFFFF </td><td>unit 1 CS0 + unit 1 CS1 </td></tr>
 </table>
-<p>The address map for the external address space xSPI unit 1 in RZ/T2ME is as follows:</p>
-<table class="doxtable">
-<tr>
-<th>Address </th><th>Space  </th></tr>
-<tr>
-<td>0x48000000 to 0x4FFFFFFF </td><td>CS0 mirror space + CS1 mirror space </td></tr>
-<tr>
-<td>0x68000000 to 0x6FFFFFFF </td><td>CS0 + CS1 </td></tr>
-</table>
-<dl class="section note"><dt>Note</dt><dd>When Custom Address Space Enable configuration setting is Enable, start address of CS1 space depends on the CS1 start address set in Custom Address Space configuration. When Disable, the start address of CS1 space is the same as that of RZ/T2L and RZ/T2M.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>When Custom Address Space Enable configuration setting for RZ/T2ME and RZ/T2H is Enable, start address of CS1 space depends on the CS1 start address set in Custom Address Space configuration. When Disable, the start address of CS1 space is set so that each CS uses half of the address space.</dd></dl>
 <h2><a class="anchor" id="r-xspi-ospi-auto-calibration"></a>
 Auto-calibration</h2>
 <p>Auto-calibration procedure is triggered automatically when the 'Data latching delay' field in the configurator properties is set to 0. The user application is responsible for setting the appropriate preamble pattern before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a> with 8D-8D-8D(OPI) mode or changing the SPI protocol to 8D-8D-8D(OPI) using <a class="el" href="group___x_s_p_i___o_s_p_i.html#gaf5076d7e3ab6762afb16eb83f95ae369">R_XSPI_OSPI_SpiProtocolSet()</a> API. The appropriate preamble pattern can be written to the desired address using the <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5">R_XSPI_OSPI_Write()</a> API while in the 1S-1S-1S(SPI) mode. Ensure that the same address is passed through the configurator. If the OctaFlash chip is already in 8D-8D-8D(OPI) mode, the preamble pattern must be programmed using the debugger before calling <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open()</a>.</p>
@@ -491,7 +496,9 @@ Examples</h1>
 <p>This is an example of using R_XSPI_OSPI_SpiProtocolSet to change the operating mode from 1S-1S-1S(SPI) to 8D-8D-8D(OPI) and allow the driver to initiate auto-calibration.</p>
 <div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define OSPI_OPI_PREAMBLE_PATTERN_LENGTH_BYTES    (16U)</span></div><div class="line"><span class="preprocessor">#define OSPI_EXAMPLE_PREAMBLE_ADDRESS             (0x60000000U) </span><span class="comment">/* Device connected to xSPI0_CS0 */</span><span class="preprocessor"></span></div><div class="line"><span class="keyword">const</span> uint8_t g_preamble_bytes[OSPI_OPI_PREAMBLE_PATTERN_LENGTH_BYTES] =</div><div class="line">{</div><div class="line">    0x00, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x08, 0x00, 0x00, 0xF7, 0xFF, 0x00, 0x08, 0xF7, 0x00, 0xF7</div><div class="line">};</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> ospi_example_wait_until_wip (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>          err = FSP_SUCCESS;</div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__status__t">spi_flash_status_t</a> status;</div><div class="line">    status.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ae20d4bed523ca4e802f5da6fdec4ca43">write_in_progress</a> = <span class="keyword">true</span>;</div><div class="line">    uint32_t timeout = UINT32_MAX;</div><div class="line">    <span class="keywordflow">while</span> ((status.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ae20d4bed523ca4e802f5da6fdec4ca43">write_in_progress</a>) &amp;&amp; (--timeout))</div><div class="line">    {</div><div class="line"></div><div class="line">        err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga05ba32343ad208b17d950b55b33dc73b">R_XSPI_OSPI_StatusGet</a>(&amp;g_ospi0_ctrl, &amp;status);</div><div class="line">        handle_error(err);</div><div class="line"></div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (0 == timeout)</div><div class="line">    {</div><div class="line">        handle_error(err);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_ospi_auto_calibrate_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Open the OSPI instance. */</span></div><div class="line">    <span class="comment">/* Set data_latch_delay_clocks to 0x0 to enable auto-calibration */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga67d8a86dcc3370f47dd8f113f604e1b2">R_XSPI_OSPI_Open</a>(&amp;g_ospi0_ctrl, &amp;g_ospi0_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    uint8_t * preamble_pattern_addr = (uint8_t *) OSPI_EXAMPLE_PREAMBLE_ADDRESS;</div><div class="line"></div><div class="line"></div><div class="line">    err = <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5">R_XSPI_OSPI_Write</a>(&amp;g_ospi0_ctrl,</div><div class="line">                            g_preamble_bytes,</div><div class="line">                            preamble_pattern_addr,</div><div class="line">                            OSPI_OPI_PREAMBLE_PATTERN_LENGTH_BYTES);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Wait until write has been completed */</span></div><div class="line">    ospi_example_wait_until_wip();</div><div class="line"></div><div class="line">    <span class="comment">/* Change from 1S-1S-1S(SPI) to 8D-8D-8D(OPI) mode */</span></div><div class="line">    r_ospi_example_spi_to_opi();</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Octaclk Update Example</h2>
 <p>This is an example of using R_CGC_SystemClockSet to change the Octal-SPI clock frequency during run time. The xSPI_CLK frequency must be updated before calling the R_XSPI_OSPI_SpiProtocolSet with appropriate clock source and divider settings required to be set for the new SPI protocol mode. Ensure that the clock source selected is started.</p>
-<div class="fragment"><div class="line"><a class="code" href="group___c_g_c.html#structcgc__instance__ctrl__t">cgc_instance_ctrl_t</a> g_cgc0_ctrl;</div><div class="line"><span class="keyword">const</span> <a class="code" href="group___c_g_c___a_p_i.html#structcgc__cfg__t">cgc_cfg_t</a>     g_cgc0_cfg = {NULL};</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> ospi_example_change_omclk (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    (void) <a class="code" href="group___c_g_c.html#ga84e412218c7f8074623d521bfc331a3c">R_CGC_Open</a>(&amp;g_cgc0_ctrl, &amp;g_cgc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Get system clock configuration */</span></div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t">cgc_divider_cfg_t</a> divider_cfg;</div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a>       clock;</div><div class="line">    <a class="code" href="group___c_g_c.html#ga52e037474dd1e9ebd92c3e3746517557">R_CGC_SystemClockGet</a>(&amp;g_cgc0_ctrl, &amp;clock, &amp;divider_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Update XSPI_CLK0 clock to 100.0MHz */</span></div><div class="line">    divider_cfg.sckcr_b.fselxspi0   = CGC_FSEL_XSPI_CLOCK_DIV_8;</div><div class="line">    divider_cfg.sckcr_b.divselxspi0 = CGC_DIVSEL_XSPI_CLOCK_DIV_3;</div><div class="line">    <a class="code" href="group___c_g_c.html#ga7f14fdc1ec5733550f503bd6868f98cd">R_CGC_SystemClockSet</a>(&amp;g_cgc0_ctrl, clock, &amp;divider_cfg);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
+<div class="fragment"><div class="line"><a class="code" href="group___c_g_c.html#structcgc__instance__ctrl__t">cgc_instance_ctrl_t</a> g_cgc0_ctrl;</div><div class="line"><span class="keyword">const</span> <a class="code" href="group___c_g_c___a_p_i.html#structcgc__cfg__t">cgc_cfg_t</a>     g_cgc0_cfg = {NULL};</div><div class="line"></div><div class="line"><span class="keyword">static</span> <span class="keywordtype">void</span> ospi_example_change_omclk (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    (void) <a class="code" href="group___c_g_c.html#ga84e412218c7f8074623d521bfc331a3c">R_CGC_Open</a>(&amp;g_cgc0_ctrl, &amp;g_cgc0_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Get system clock configuration */</span></div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#structcgc__divider__cfg__t">cgc_divider_cfg_t</a> divider_cfg;</div><div class="line">    <a class="code" href="group___c_g_c___a_p_i.html#ga4dcbe960cf591207eef834969b83f8a6">cgc_clock_t</a>       clock;</div><div class="line">    <a class="code" href="group___c_g_c.html#ga52e037474dd1e9ebd92c3e3746517557">R_CGC_SystemClockGet</a>(&amp;g_cgc0_ctrl, &amp;clock, &amp;divider_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Update XSPI_CLK0 clock to 100.0MHz */</span></div><div class="line">    divider_cfg.sckcr_b.fselxspi0   = CGC_FSEL_XSPI_CLOCK_DIV_8;</div><div class="line">    divider_cfg.sckcr_b.divselxspi0 = CGC_DIVSEL_XSPI_CLOCK_DIV_3;</div><div class="line">    <a class="code" href="group___c_g_c.html#ga7f14fdc1ec5733550f503bd6868f98cd">R_CGC_SystemClockSet</a>(&amp;g_cgc0_ctrl, clock, &amp;divider_cfg);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Direct Transfer Memory Write Example (R_XSPI_OSPI_DirectTransfer)</h2>
+<p>This is an example of using <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga33cbe6104492f4c691f5803fe345ecca">R_XSPI_OSPI_DirectTransfer()</a> to write a page of data to memory space. If two memories are connected on the same unit's xSPI bus, memory mapping write may not be possible due to bus collisions caused by simultaneous accesses to the xSPI area. In this case, it is recommended to write data using <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga33cbe6104492f4c691f5803fe345ecca">R_XSPI_OSPI_DirectTransfer()</a> instead of <a class="el" href="group___x_s_p_i___o_s_p_i.html#ga7bfd6bb973ae7b50d6e4dd61f2f63db5">R_XSPI_OSPI_Write()</a>.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#define DIRECT_TRANSFER_MAX_DATA_BYTES    (8U)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_ospi_example_write_page_with_direct_transfer (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#structspi__flash__direct__transfer__t">spi_flash_direct_transfer_t</a> ospi_test_direct_transfer =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#ab20fca5fa35e25becd87abc7539a4246">command</a>        = OSPI_COMMAND_PAGE_PROGRAM,</div><div class="line">        .address        = 0U,</div><div class="line">        .data_u64       = 0U,</div><div class="line">        .command_length = 1U,</div><div class="line">        .address_length = 4U,</div><div class="line">        .data_length    = DIRECT_TRANSFER_MAX_DATA_BYTES,</div><div class="line">        .dummy_cycles   = 0U</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Prepare a page of write data. */</span></div><div class="line">    uint8_t write_data[OSPI_FLASH_PAGE_BYTES];</div><div class="line">    <span class="keywordflow">for</span> (uint32_t bytes = 0; bytes &lt; OSPI_FLASH_PAGE_BYTES; bytes++)</div><div class="line">    {</div><div class="line">        write_data[bytes] = (uint8_t) bytes;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Repeat R_XSPI_OSPI_DirectTransfer until a page of data is written. */</span></div><div class="line">    <span class="keywordflow">for</span> (uint32_t trans = 0; trans &lt; OSPI_FLASH_PAGE_BYTES / DIRECT_TRANSFER_MAX_DATA_BYTES; trans++)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Write Enable */</span></div><div class="line">        r_ospi_write_enable_and_verify();</div><div class="line"></div><div class="line">        <span class="comment">/* Write memory with R_XSPI_OSPI_DirectTransfer */</span></div><div class="line">        ospi_test_direct_transfer.data_u64 = *((uint64_t *) &amp;write_data[trans * DIRECT_TRANSFER_MAX_DATA_BYTES]);</div><div class="line">        ospi_test_direct_transfer.<a class="code" href="group___s_p_i___f_l_a_s_h___a_p_i.html#a5120cdb55dcd4ce8da04eb8baa69254d">address</a>  = OSPI_EXAMPLE_DESTINATION_CHIP_ADDRESS + trans *</div><div class="line">                                             DIRECT_TRANSFER_MAX_DATA_BYTES;</div><div class="line"></div><div class="line"></div><div class="line">        <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err =</div><div class="line">            <a class="code" href="group___x_s_p_i___o_s_p_i.html#ga33cbe6104492f4c691f5803fe345ecca">R_XSPI_OSPI_DirectTransfer</a>(&amp;g_ospi0_ctrl, &amp;ospi_test_direct_transfer, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);</div><div class="line"></div><div class="line"></div><div class="line">        handle_error(err);</div><div class="line"></div><div class="line">        <span class="comment">/* Wait until write has been completed */</span></div><div class="line">        ospi_example_wait_until_wip();</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
 <tr class="memitem:structxspi__ospi__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___o_s_p_i.html#structxspi__ospi__instance__ctrl__t">xspi_ospi_instance_ctrl_t</a></td></tr>
@@ -511,6 +518,8 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga440f55141163d70b896fa3a3444f3404"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga0f7510f116df0bbbd86af6663d9c6c69"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___o_s_p_i.html#ga0f7510f116df0bbbd86af6663d9c6c69">xspi_ospi_prefetch_function_t</a> </td></tr>
 <tr class="separator:ga0f7510f116df0bbbd86af6663d9c6c69"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gadbf9a653db1bb21cb079a9b5053b9f38"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___o_s_p_i.html#gadbf9a653db1bb21cb079a9b5053b9f38">xspi_ospi_io_voltage_t</a> </td></tr>
+<tr class="separator:gadbf9a653db1bb21cb079a9b5053b9f38"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gae4ac87a62886f5558cb5d21cd5f2357f"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___o_s_p_i.html#gae4ac87a62886f5558cb5d21cd5f2357f">xspi_ospi_byte_order_t</a> </td></tr>
 <tr class="separator:gae4ac87a62886f5558cb5d21cd5f2357f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -684,6 +693,26 @@ Enumerations</h2></td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga0f7510f116df0bbbd86af6663d9c6c69a2532a6ae87098b793b7fb4567aaa6d29"></a>XSPI_OSPI_PREFETCH_FUNCTION_DISABLE&#160;</td><td class="fielddoc"><p>Prefetch function disable. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="gga0f7510f116df0bbbd86af6663d9c6c69a6dede61f6be759301b9f29d4ed224a50"></a>XSPI_OSPI_PREFETCH_FUNCTION_ENABLE&#160;</td><td class="fielddoc"><p>Prefetch function enable. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="gadbf9a653db1bb21cb079a9b5053b9f38"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gadbf9a653db1bb21cb079a9b5053b9f38">&#9670;&nbsp;</a></span>xspi_ospi_io_voltage_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___x_s_p_i___o_s_p_i.html#gadbf9a653db1bb21cb079a9b5053b9f38">xspi_ospi_io_voltage_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggadbf9a653db1bb21cb079a9b5053b9f38af4736ba7b9e1bdde155a05988926447f"></a>XSPI_OSPI_IO_VOLTAGE_1_8V&#160;</td><td class="fielddoc"><p>IO voltage 1.8V. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggadbf9a653db1bb21cb079a9b5053b9f38ae735219a137e520b4109a9d0bb7d64a8"></a>XSPI_OSPI_IO_VOLTAGE_3_3V&#160;</td><td class="fielddoc"><p>IO voltage 3.3V. </p>
 </td></tr>
 </table>
 
@@ -1006,7 +1035,7 @@ Enumerations</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>In this API, the number of bytes that can be written at one time depends on the MCU : any byte within 64bytes for RZ/T2M and RZ/T2L, 1,2, or 4byte for RZ/T2ME. </dd>
+<dl class="section note"><dt>Note</dt><dd>In this API, the number of bytes that can be written at one time depends on the MCU : any byte within 64bytes for RZ/T2M and RZ/T2L, 8byte for RZ/T2ME and RZ/T2H. </dd>
 <dd>
 This API performs page program operations to the device. Writing across pages is not supported. Please set the write address and write size according to the page size of your device. </dd>
 <dd>
@@ -1209,7 +1238,7 @@ In 8D-8D-8D(OPI) mode, written data must be even bytes in size. </dd></dl>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

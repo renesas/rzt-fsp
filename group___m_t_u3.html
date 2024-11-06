@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.1.0</span>
+   &#160;<span id="projectnumber">Release v2.2.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -305,9 +305,9 @@ PWM: Generates basic PWM waveforms.<br />
 Triangle-Wave Symmetric PWM: Generates symmetric PWM waveforms with duty cycle determined by compare match set during a crest interrupt and updated at the next trough.<br />
 Triangle-Wave Asymmetric PWM: Generates asymmetric PWM waveforms with duty cycle determined by compare match set during a crest/trough interrupt and updated at the next trough/crest. </td></tr>
 <tr>
-<td>General &gt; TGRA(Output Compare or Input Capture Value)</td><td></td><td>0x0000 </td><td>Capture/Compare match A value. </td></tr>
+<td>General &gt; TGRA(Output Compare or Input Capture Value)</td><td>Value must be a valid non-negative integer with a maximum configurable value of 0xFFFF</td><td>0x0000 </td><td>Capture/Compare match A value. </td></tr>
 <tr>
-<td>General &gt; TGRB(Output Compare or Input Capture Value)</td><td></td><td>0x0000 </td><td>Capture/Compare match B value. </td></tr>
+<td>General &gt; TGRB(Output Compare or Input Capture Value)</td><td>Value must be a valid non-negative integer with a maximum configurable value of 0xFFFF</td><td>0x0000 </td><td>Capture/Compare match B value. </td></tr>
 <tr>
 <td>General &gt; Time Prescaler</td><td>Refer to the RZT Configuration tool for available options.</td><td>PCLKH divided by 1 (common ch) </td><td>Select time prescaler. </td></tr>
 <tr>
@@ -405,17 +405,41 @@ Clock source</li>
 <tr>
 <td>Interrupts &gt; Capture B Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for capture B. </td></tr>
 <tr>
+<td>Interrupts (GPT_SEL) &gt; Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function can be specified here. If this callback function is provided, it will be called from the interrupt service routine (ISR) each time the timer period elapses </td></tr>
+<tr>
+<td>Interrupts (GPT_SEL) &gt; Overflow/Crest Interrupt Source</td><td>MCU Specific Options</td><td></td><td>Select the overflow interrupt source. This is the crest interrupt for triangle-wave PWM. </td></tr>
+<tr>
+<td>Interrupts (GPT_SEL) &gt; Capture A Interrupt Source</td><td>MCU Specific Options</td><td></td><td>Select the interrupt source for capture A. </td></tr>
+<tr>
+<td>Interrupts (GPT_SEL) &gt; Capture B Interrupt Source</td><td>MCU Specific Options</td><td></td><td>Select the interrupt source for capture B. </td></tr>
+<tr>
+<td>Interrupts (GPT_SEL) &gt; INT0 Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for int0. </td></tr>
+<tr>
+<td>Interrupts (GPT_SEL) &gt; INT1 Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for int1. </td></tr>
+<tr>
+<td>Interrupts (GPT_SEL) &gt; INT2 Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for int2. </td></tr>
+<tr>
+<td>Interrupts (GPT_SEL) &gt; INT3 Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for int3. </td></tr>
+<tr>
+<td>Interrupts (GPT_SEL) &gt; INT4 Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for int4. </td></tr>
+<tr>
 <td>Extra Features &gt; MTU5 &gt; Interrupts &gt; Capture U Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for capture U. </td></tr>
 <tr>
 <td>Extra Features &gt; MTU5 &gt; Interrupts &gt; Capture V Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for capture V. </td></tr>
 <tr>
 <td>Extra Features &gt; MTU5 &gt; Interrupts &gt; Capture W Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the interrupt priority for capture W. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; U Count</td><td></td><td>0x0000 </td><td>Timer U Counter. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; Interrupts (GPT_SEL) &gt; Capture U Interrupt Source</td><td>MCU Specific Options</td><td></td><td>Select the interrupt source for capture U. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; V Count</td><td></td><td>0x0000 </td><td>Timer V Counter. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; Interrupts (GPT_SEL) &gt; Capture V Interrupt Source</td><td>MCU Specific Options</td><td></td><td>Select the interrupt source for capture V. </td></tr>
 <tr>
-<td>Extra Features &gt; MTU5 &gt; W Count</td><td></td><td>0x0000 </td><td>Timer W Counter. </td></tr>
+<td>Extra Features &gt; MTU5 &gt; Interrupts (GPT_SEL) &gt; Capture W Interrupt Source</td><td>MCU Specific Options</td><td></td><td>Select the interrupt source for capture W. </td></tr>
+<tr>
+<td>Extra Features &gt; MTU5 &gt; U Count</td><td>Value must be a valid non-negative integer with a maximum configurable value of 0xFFFF</td><td>0x0000 </td><td>Timer U Counter. </td></tr>
+<tr>
+<td>Extra Features &gt; MTU5 &gt; V Count</td><td>Value must be a valid non-negative integer with a maximum configurable value of 0xFFFF</td><td>0x0000 </td><td>Timer V Counter. </td></tr>
+<tr>
+<td>Extra Features &gt; MTU5 &gt; W Count</td><td>Value must be a valid non-negative integer with a maximum configurable value of 0xFFFF</td><td>0x0000 </td><td>Timer W Counter. </td></tr>
 <tr>
 <td>Extra Features &gt; MTU5 &gt; U Clock Select</td><td>Refer to the RZT Configuration tool for available options.</td><td>PCLKH divided by 1 </td><td>Select U time prescaler. </td></tr>
 <tr>
@@ -1372,6 +1396,24 @@ Select bit mode. </td></tr>
 external_clock</td>
 <td class="fielddoc">
 Select External Clock Input Pins. </td></tr>
+<tr><td class="fieldtype">
+<a id="a0b578dbb32b10bfaa53821fed8fd1000"></a>uint8_t</td>
+<td class="fieldname">
+capture_a_source_select</td>
+<td class="fielddoc">
+Identify the GPT_INT for capture a. </td></tr>
+<tr><td class="fieldtype">
+<a id="a967fa20e3bae5bcf8bfd6fa84078c285"></a>uint8_t</td>
+<td class="fieldname">
+capture_b_source_select</td>
+<td class="fielddoc">
+Identify the GPT_INT for capture b. </td></tr>
+<tr><td class="fieldtype">
+<a id="a5d9c6c871e974bdfcb93655a73912439"></a>uint8_t</td>
+<td class="fieldname">
+cycle_end_source_select</td>
+<td class="fielddoc">
+Identify the GPT_INT for capture overflow/underflow. </td></tr>
 </table>
 
 </div>
@@ -2416,7 +2458,7 @@ Select External Clock Input Pins. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

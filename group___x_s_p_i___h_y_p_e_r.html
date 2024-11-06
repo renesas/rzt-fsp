@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.1.0</span>
+   &#160;<span id="projectnumber">Release v2.2.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -208,7 +208,7 @@ The following build time configurations are defined in fsp_cfg/r_xspi_hyper_cfg.
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
 <tr>
-<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; Start Address</td><td>Unit0 CS0 start address should be constant</td><td>0x60000000 </td><td>Start address of xSPI Unit0 CS0 in memory mapping mode. </td></tr>
+<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; Start Address</td><td>MCU Specific Options</td><td></td><td>Start address of xSPI Unit0 CS0 in memory mapping mode. </td></tr>
 <tr>
 <td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x600FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
 <tr>
@@ -216,7 +216,7 @@ The following build time configurations are defined in fsp_cfg/r_xspi_hyper_cfg.
 <tr>
 <td>Custom Address Space &gt; Unit0 &gt; CS1 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x640FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; Start Address</td><td>Unit1 CS0 start address should be constant</td><td>0x68000000 </td><td>Start address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
+<td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; Start Address</td><td>MCU Specific Options</td><td></td><td>Start address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
 <tr>
 <td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit1 external address space</td><td>0x680FFFFF </td><td>End address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
 <tr>
@@ -251,6 +251,10 @@ Enable</li>
 Disable</li>
 </ul>
 </td><td>Disable </td><td>Enable prefetch function on memory-mapped reads of xSPI Unit 1. </td></tr>
+<tr>
+<td>Unit 0 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit0. </td></tr>
+<tr>
+<td>Unit 1 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit1. </td></tr>
 </table>
  <h2>Configurations for Storage &gt; HyperRAM (r_xspi_hyper)</h2>
 This module can be added to the Stacks tab via New Stack &gt; Storage &gt; HyperRAM (r_xspi_hyper).<br />
@@ -351,51 +355,50 @@ Usage Notes</h1>
 <h2><a class="anchor" id="r-xspi-memory-mapped-access"></a>
 HYPER Memory Mapped Access</h2>
 <p>After <a class="el" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open()</a> completes successfully, the HyperRAM device contents are mapped to address 0x60000000 (unit 0) or 0x68000000 (unit 1) based on the unit configured and can be read like on-chip RAM. When not using the cache, access the HyperRAM device via the mirror space 0x40000000 (unit 0) or 0x48000000 (unit 1). Unit 0 and Unit 1 support until 128 MB of address space.</p>
-<p>The address map for the external address space xSPI unit 0 in RZ/T2M or RZ/T2L is as follows:</p>
+<p>The address map details for the external address space xSPI in RZ/T2M and RZ/T2L is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Address </th><th>Space  </th></tr>
 <tr>
-<td>0x40000000 to 0x43FFFFFF </td><td>CS0 mirror space </td></tr>
+<td>0x40000000 to 0x43FFFFFF </td><td>unit 0 CS0 mirror space </td></tr>
 <tr>
-<td>0x44000000 to 0x47FFFFFF </td><td>CS1 mirror space </td></tr>
+<td>0x44000000 to 0x47FFFFFF </td><td>unit 0 CS1 mirror space </td></tr>
 <tr>
-<td>0x60000000 to 0x63FFFFFF </td><td>CS0 </td></tr>
+<td>0x48000000 to 0x4BFFFFFF </td><td>unit 1 CS0 mirror space </td></tr>
 <tr>
-<td>0x64000000 to 0x67FFFFFF </td><td>CS1 </td></tr>
+<td>0x4C000000 to 0x4FFFFFFF </td><td>unit 1 CS1 mirror space </td></tr>
+<tr>
+<td>0x60000000 to 0x63FFFFFF </td><td>unit 0 CS0 </td></tr>
+<tr>
+<td>0x64000000 to 0x67FFFFFF </td><td>unit 0 CS1 </td></tr>
+<tr>
+<td>0x68000000 to 0x6BFFFFFF </td><td>unit 1 CS0 </td></tr>
+<tr>
+<td>0x6C000000 to 0x6FFFFFFF </td><td>unit 1 CS1 </td></tr>
 </table>
-<p>The address map for the external address space xSPI unit 1 in RZ/T2M or RZ/T2L is as follows:</p>
+<p>The address map for the external address space xSPI in RZ/T2ME is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Address </th><th>Space  </th></tr>
 <tr>
-<td>0x48000000 to 0x4BFFFFFF </td><td>CS0 mirror space </td></tr>
+<td>0x40000000 to 0x47FFFFFF </td><td>unit 0 CS0 mirror space + unit 0 CS1 mirror space </td></tr>
 <tr>
-<td>0x4C000000 to 0x4FFFFFFF </td><td>CS1 mirror space </td></tr>
+<td>0x48000000 to 0x4FFFFFFF </td><td>unit 1 CS0 mirror space + unit 1 CS1 mirror space </td></tr>
 <tr>
-<td>0x68000000 to 0x6BFFFFFF </td><td>CS0 </td></tr>
+<td>0x60000000 to 0x67FFFFFF </td><td>unit 0 CS0 + unit 0 CS1 </td></tr>
 <tr>
-<td>0x6C000000 to 0x6FFFFFFF </td><td>CS1 </td></tr>
+<td>0x68000000 to 0x6FFFFFFF </td><td>unit 1 CS0 + unit 1 CS1 </td></tr>
 </table>
-<p>The address map for the external address space xSPI unit 0 in RZ/T2ME is as follows:</p>
+<p>The address map for the external address space xSPI in RZ/T2H is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Address </th><th>Space  </th></tr>
 <tr>
-<td>0x40000000 to 0x47FFFFFF </td><td>CS0 mirror space + CS1 mirror space </td></tr>
+<td>0x40000000 to 0x4FFFFFFF </td><td>unit 0 CS0 + unit 0 CS1 </td></tr>
 <tr>
-<td>0x60000000 to 0x67FFFFFF </td><td>CS0 + CS1 </td></tr>
+<td>0x50000000 to 0x5FFFFFFF </td><td>unit 1 CS0 + unit 1 CS1 </td></tr>
 </table>
-<p>The address map for the external address space xSPI unit 1 in RZ/T2ME is as follows:</p>
-<table class="doxtable">
-<tr>
-<th>Address </th><th>Space  </th></tr>
-<tr>
-<td>0x48000000 to 0x4FFFFFFF </td><td>CS0 mirror space + CS1 mirror space </td></tr>
-<tr>
-<td>0x68000000 to 0x6FFFFFFF </td><td>CS0 + CS1 </td></tr>
-</table>
-<dl class="section note"><dt>Note</dt><dd>When Custom Address Space Enable configuration setting is Enable, start address of CS1 space depends on the CS1 start address set in Custom Address Space configuration. When Disable, the start address of CS1 space is the same as that of RZ/T2L and RZ/T2M.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>When Custom Address Space Enable configuration setting for RZ/T2ME and RZ/T2H is Enable, start address of CS1 space depends on the CS1 start address set in Custom Address Space configuration. When Disable, the start address of CS1 space is set so that each CS uses half of the address space.</dd></dl>
 <h2><a class="anchor" id="r-xspi-hyper-access-space-select"></a>
 Dynamic address space selection (Memory and Register)</h2>
 <p>This driver allows user to dynamically select whether to access memory space or register space. Call <a class="el" href="group___x_s_p_i___h_y_p_e_r.html#gaaeb7cbd1abbb6230d65f5c80741bd23c">R_XSPI_HYPER_AccessSpaceSet()</a>, and assign HYPERBUS_SPACE_SELECT_MEMORY_SPACE or HYPERBUS_SPACE_SELECT_REGISTER_SPACE to the second argument.</p>
@@ -446,6 +449,8 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga0da98bb87115fcb5bb303fd619c8d76b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab1b84328e019d51f1b017e089cd0330b"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___h_y_p_e_r.html#gab1b84328e019d51f1b017e089cd0330b">xspi_hyper_prefetch_function_t</a> </td></tr>
 <tr class="separator:gab1b84328e019d51f1b017e089cd0330b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga74610755ec73d9392b07945cb01ce0ec"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___h_y_p_e_r.html#ga74610755ec73d9392b07945cb01ce0ec">xspi_hyper_io_voltage_t</a> </td></tr>
+<tr class="separator:ga74610755ec73d9392b07945cb01ce0ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structxspi__hyper__instance__ctrl__t" id="structxspi__hyper__instance__ctrl__t"></a>
@@ -637,6 +642,26 @@ Enumerations</h2></td></tr>
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggab1b84328e019d51f1b017e089cd0330baac2e3a39b0a0804c9e34ff65e55c24f4"></a>XSPI_HYPER_PREFETCH_FUNCTION_DISABLE&#160;</td><td class="fielddoc"><p>Prefetch function disable. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ggab1b84328e019d51f1b017e089cd0330ba869484640fd3c040179e9dc41028d9f2"></a>XSPI_HYPER_PREFETCH_FUNCTION_ENABLE&#160;</td><td class="fielddoc"><p>Prefetch function enable. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="ga74610755ec73d9392b07945cb01ce0ec"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga74610755ec73d9392b07945cb01ce0ec">&#9670;&nbsp;</a></span>xspi_hyper_io_voltage_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___x_s_p_i___h_y_p_e_r.html#ga74610755ec73d9392b07945cb01ce0ec">xspi_hyper_io_voltage_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga74610755ec73d9392b07945cb01ce0eca6afa5e0173d8808fac374aa316bc7648"></a>XSPI_HYPER_IO_VOLTAGE_1_8V&#160;</td><td class="fielddoc"><p>IO voltage 1.8V. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga74610755ec73d9392b07945cb01ce0ecac5024b764881836a70a06ca2463ad697"></a>XSPI_HYPER_IO_VOLTAGE_3_3V&#160;</td><td class="fielddoc"><p>IO voltage 3.3V. </p>
 </td></tr>
 </table>
 
@@ -941,7 +966,7 @@ Enumerations</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.1.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>
