@@ -18,6 +18,9 @@
 #include "src/driver/inc/r_usb_extern.h"
 #include "src/hw/inc/r_usb_bitdefine.h"
 #include "src/hw/inc/r_usb_reg_access.h"
+ #if  USB_IP_EHCI_OHCI == 1
+#include "r_usb_hhci_local.h"
+ #endif
 
 #if defined(USB_CFG_HCDC_USE)
  #include "r_usb_hcdc_api.h"
@@ -50,7 +53,7 @@
 #endif                                 /* defined(USB_CFG_PMSC_USE) */
 
 #if (USB_CFG_DMA == USB_CFG_ENABLE)
- #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
   #include "r_dmac.h"
  #endif                                /* !defined(BSP_MCU_GROUP_RZT2M) */
 #endif
@@ -273,10 +276,10 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
     usb_utr_t utr;
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
     usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
-#if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+#if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     usb_utr_t hse_utr;
     memset((void *) &hse_utr, 0, sizeof(usb_utr_t));
-#endif                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+#endif                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 
 #if USB_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_ctrl)
@@ -323,7 +326,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
                 FSP_ERROR_RETURN(USB_SPEED_HS != p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
             }
 
- #elif defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) /* defined(BSP_MCU_GROUP_RA6M3) */
+ #elif defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) /* defined(BSP_MCU_GROUP_RA6M3) */
  #else /* defined(BSP_MCU_GROUP_RA6M3) */
             FSP_ERROR_RETURN(USB_SPEED_HS != p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
  #endif                                                             /* defined(BSP_MCU_GROUP_RA6M3) */
@@ -344,7 +347,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
   #if defined(BSP_MCU_GROUP_RA6M3)
             FSP_ERROR_RETURN(!((USB_SPEED_HS == p_cfg->usb_speed) && (USB_IP1 != p_instance_ctrl->module_number)),
                              FSP_ERR_USB_PARAMETER)
-  #elif defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #elif defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
             FSP_ERROR_RETURN(USB_SPEED_HS == p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
   #else                                /* defined(BSP_MCU_GROUP_RA6M3) */
             FSP_ERROR_RETURN(USB_SPEED_HS != p_cfg->usb_speed, FSP_ERR_USB_PARAMETER)
@@ -362,13 +365,13 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
 
 #if (USB_CFG_DMA == USB_CFG_ENABLE)
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
     p_instance_ctrl->p_transfer_tx = p_cfg->p_transfer_tx;
     p_instance_ctrl->p_transfer_rx = p_cfg->p_transfer_rx;
 #endif
 #endif
  #if defined(USB_CFG_PMSC_USE)
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
     extern usb_utr_t g_usb_pmsc_utr;
     g_usb_pmsc_utr.p_transfer_rx = p_cfg->p_transfer_rx;
     g_usb_pmsc_utr.p_transfer_tx = p_cfg->p_transfer_tx;
@@ -382,7 +385,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
 #if (USB_CFG_DMA == USB_CFG_ENABLE)
     if (USB_IP0 == p_cfg->module_number)
     {
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         if (0 != p_instance_ctrl->p_transfer_tx)
         {
             R_DMAC_Open(p_instance_ctrl->p_transfer_tx->p_instance_ctrl, p_instance_ctrl->p_transfer_tx->p_cfg);
@@ -397,7 +400,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
 
     if (USB_IP1 == p_cfg->module_number)
     {
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         if (0 != p_instance_ctrl->p_transfer_tx)
         {
             R_DMAC_Open(p_instance_ctrl->p_transfer_tx->p_instance_ctrl, p_instance_ctrl->p_transfer_tx->p_cfg);
@@ -459,7 +462,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
         if (FSP_SUCCESS == err)
         {
             /* USB driver initialization */
- #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
             usb_hdriver_init(&utr, p_cfg);
  #else
             R_USB_HstdMgrOpen(&utr);      /* USB0 MGR Open */
@@ -529,7 +532,7 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
             /* Setting MCU(USB interrupt init) register */
             usb_cpu_usbint_init(p_instance_ctrl->module_number, p_cfg);
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
             if (USB_SPEED_HS == p_cfg->usb_speed)
             {
                 hse_utr.ip = p_instance_ctrl->module_number;
@@ -539,15 +542,15 @@ fsp_err_t R_USB_Open (usb_ctrl_t * const p_ctrl, usb_cfg_t const * const p_cfg)
             {
                 (void) hse_utr;
             }
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
             /* Setting USB relation register  */
             hw_usb_pmodule_init(p_instance_ctrl->module_number);
 
             if (USB_ATTACH == usb_pstd_chk_vbsts(p_instance_ctrl->module_number))
             {
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                 hw_usb_set_cnen(p_instance_ctrl->module_number);
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                 usb_cpu_delay_xms((uint16_t) 10);
                 hw_usb_pset_dprpu(p_instance_ctrl->module_number);
             }
@@ -666,7 +669,13 @@ fsp_err_t R_USB_Close (usb_ctrl_t * const p_ctrl)
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
     }
 #endif                                 /* USB_CFG_PARAM_CHECKING_ENABLE */
-
+#if  USB_IP_EHCI_OHCI == 1
+    usb_hstd_ehci_deinit();
+    usb_hstd_ohci_deinit();
+#ifdef VECTOR_NUMBER_USB_HI
+    R_BSP_IrqDisable((IRQn_Type)VECTOR_NUMBER_USB_HI);       /* USBI disable */
+#endif
+#endif /* USB_IP_EHCI_OHCI == 1 */
     ret_code = usb_module_stop(p_instance_ctrl->module_number);
     if (FSP_SUCCESS == ret_code)
     {

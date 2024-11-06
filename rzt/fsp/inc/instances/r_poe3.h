@@ -43,36 +43,63 @@ typedef struct st_poe3_poe_input_setting
 {
     poe3_hiz_mode_t mode;              ///< High-impedance output mode
     bool            interrupt_enable;  ///< Interrupt enable
+    bool            hiz_output_enable; ///< High-impedance output enable for POE8, POE10, POE11
 } poe3_poe_input_setting_t;
 
 /* Extended configuration. */
 typedef struct st_poe3_extended_cfg
 {
-    poe3_poe_input_setting_t poe0;        ///< Settings for the POE0# pin input
-    poe3_poe_input_setting_t poe4;        ///< Settings for the POE4# pin input
-    poe3_poe_input_setting_t poe8;        ///< Settings for the POE8# pin input
-    poe3_poe_input_setting_t poe10;       ///< Settings for the POE10# pin input
-    poe3_poe_input_setting_t poe11;       ///< Settings for the POE11# pin input
+    poe3_poe_input_setting_t poe0;                     ///< Settings for the POE0# pin input
+    poe3_poe_input_setting_t poe4;                     ///< Settings for the POE4# pin input
+    poe3_poe_input_setting_t poe8;                     ///< Settings for the POE8# pin input
+    poe3_poe_input_setting_t poe10;                    ///< Settings for the POE10# pin input
+    poe3_poe_input_setting_t poe11;                    ///< Settings for the POE11# pin input
 
-    uint32_t mtu0_control_channel_mask;   ///< Additional MTU0 pin control request condition
-    uint32_t mtu3_4_control_channel_mask; ///< Additional MTU3/4 pin control request condition
-    uint32_t mtu6_7_control_channel_mask; ///< Additional MTU6/7 pin control request condition
+    uint32_t mtu0_control_channel_mask;                ///< Additional MTU0 pin control request condition
+    uint32_t mtu3_4_control_channel_mask;              ///< Additional MTU3/4 pin control request condition
+    uint32_t mtu6_7_control_channel_mask;              ///< Additional MTU6/7 pin control request condition
 
-#if BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE == 2
-    bool dsmif0_error_1;                  ///< High impedance output when the DSMIF0 Error 1 is error
-    bool dsmif1_error_1;                  ///< High impedance output when the DSMIF1 Error 1 is error
+#if 3 == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE
+    uint32_t mtu0_control_channel_mask_dsmif_error0;   ///< Additional MTU0 pin control dsmif error 0 request condition
+    uint32_t mtu3_4_control_channel_mask_dsmif_error0; ///< Additional MTU3/4 pin control dsmif error 0 request condition
+    uint32_t mtu6_7_control_channel_mask_dsmif_error0; ///< Additional MTU6/7 pin control dsmif error 0 request condition
+    uint32_t mtu0_control_channel_mask_dsmif_error1;   ///< Additional MTU0 pin control dsmif error 1 request condition
+    uint32_t mtu3_4_control_channel_mask_dsmif_error1; ///< Additional MTU3/4 pin control dsmif error 1 request condition
+    uint32_t mtu6_7_control_channel_mask_dsmif_error1; ///< Additional MTU6/7 pin control dsmif error 1 request condition
 #endif
-    bool dsmif0_error;                    ///< High impedance output when the DSMIF0 is error
-    bool dsmif1_error;                    ///< High impedance output when the DSMIF1 is error
 
-    uint8_t   oei1_ipl;                   ///< Output Enable Interrupt 1 interrupt priority
-    IRQn_Type oei1_irq;                   ///< Output Enable Interrupt 1 interrupt number assigned to this instance
-    uint8_t   oei2_ipl;                   ///< Output Enable Interrupt 2 interrupt priority
-    IRQn_Type oei2_irq;                   ///< Output Enable Interrupt 2 interrupt number assigned to this instance
-    uint8_t   oei3_ipl;                   ///< Output Enable Interrupt 3 interrupt priority
-    IRQn_Type oei3_irq;                   ///< Output Enable Interrupt 3 interrupt number assigned to this instance
-    uint8_t   oei4_ipl;                   ///< Output Enable Interrupt 4 interrupt priority
-    IRQn_Type oei4_irq;                   ///< Output Enable Interrupt 4 interrupt number assigned to this instance
+    bool dsmif0_error;                                 ///< High impedance output when the DSMIF0 is error
+    bool dsmif1_error;                                 ///< High impedance output when the DSMIF1 is error
+#if 2 == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE || 3 == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE
+    bool dsmif0_error_1;                               ///< High impedance output when the DSMIF0 Error 1 is error
+    bool dsmif1_error_1;                               ///< High impedance output when the DSMIF1 Error 1 is error
+#endif
+#if 3 == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE
+    bool dsmif2_error;                                 ///< High impedance output when the DSMIF2 Error 0 is error
+    bool dsmif3_error;                                 ///< High impedance output when the DSMIF3 Error 0 is error
+    bool dsmif4_error;                                 ///< High impedance output when the DSMIF4 Error 0 is error
+    bool dsmif5_error;                                 ///< High impedance output when the DSMIF5 Error 0 is error
+    bool dsmif6_error;                                 ///< High impedance output when the DSMIF6 Error 0 is error
+    bool dsmif7_error;                                 ///< High impedance output when the DSMIF7 Error 0 is error
+    bool dsmif8_error;                                 ///< High impedance output when the DSMIF8 Error 0 is error
+    bool dsmif9_error;                                 ///< High impedance output when the DSMIF9 Error 0 is error
+    bool dsmif2_error_1;                               ///< High impedance output when the DSMIF2 Error 1 is error
+    bool dsmif3_error_1;                               ///< High impedance output when the DSMIF3 Error 1 is error
+    bool dsmif4_error_1;                               ///< High impedance output when the DSMIF4 Error 1 is error
+    bool dsmif5_error_1;                               ///< High impedance output when the DSMIF5 Error 1 is error
+    bool dsmif6_error_1;                               ///< High impedance output when the DSMIF6 Error 1 is error
+    bool dsmif7_error_1;                               ///< High impedance output when the DSMIF7 Error 1 is error
+    bool dsmif8_error_1;                               ///< High impedance output when the DSMIF8 Error 1 is error
+    bool dsmif9_error_1;                               ///< High impedance output when the DSMIF9 Error 1 is error
+#endif
+    uint8_t   oei1_ipl;                                ///< Output Enable Interrupt 1 interrupt priority
+    IRQn_Type oei1_irq;                                ///< Output Enable Interrupt 1 interrupt number assigned to this instance
+    uint8_t   oei2_ipl;                                ///< Output Enable Interrupt 2 interrupt priority
+    IRQn_Type oei2_irq;                                ///< Output Enable Interrupt 2 interrupt number assigned to this instance
+    uint8_t   oei3_ipl;                                ///< Output Enable Interrupt 3 interrupt priority
+    IRQn_Type oei3_irq;                                ///< Output Enable Interrupt 3 interrupt number assigned to this instance
+    uint8_t   oei4_ipl;                                ///< Output Enable Interrupt 4 interrupt priority
+    IRQn_Type oei4_irq;                                ///< Output Enable Interrupt 4 interrupt number assigned to this instance
 } poe3_extended_cfg_t;
 
 /** Channel control block. DO NOT INITIALIZE.  Initialization occurs when @ref poe3_api_t::open is called. */

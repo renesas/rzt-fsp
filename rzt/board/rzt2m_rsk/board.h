@@ -31,6 +31,9 @@
 #include "board_leds.h"
 #include "board_ethernet_phy.h"
 
+/** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
+FSP_HEADER
+
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
@@ -49,5 +52,8 @@
  **********************************************************************************************************************/
 
 /** @} (end defgroup BSP_CONFIG_RZT2M) */
+
+/** Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
+FSP_FOOTER
 
 #endif

@@ -124,8 +124,8 @@ fsp_err_t R_BSC_Open (external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * c
     p_instance_ctrl->p_callback_memory = NULL;
 
     /* Calculate the CSnWCR register base address. */
-    uint32_t   address_gap = (uint32_t) &R_BSC->CS3WCR_0 - (uint32_t) &R_BSC->CS2WCR_0;
-    uint32_t * p_csnwcr    = (uint32_t *) ((uint32_t) &R_BSC->CS0WCR_0 + (address_gap * p_cfg->chip_select));
+    uint32_t   address_gap = (uint32_t) ((uintptr_t) &R_BSC->CS3WCR_0 - (uintptr_t) &R_BSC->CS2WCR_0);
+    uint32_t * p_csnwcr    = (uint32_t *) ((uintptr_t) &R_BSC->CS0WCR_0 + (address_gap * p_cfg->chip_select));
 
     /* Set bus access idle cycle. */
     uint32_t csnbcr = BSC_PRV_CSNBCR_RESERVED_BIT_MASK;
@@ -155,7 +155,7 @@ fsp_err_t R_BSC_Open (external_bus_ctrl_t * p_ctrl, external_bus_cfg_t const * c
         else
         {
             /* Set 0 if set write access wait cycle to be the same as the read access wait cycle. */
-            csnwcr &= ~R_BSC_CS5WCR_WW_Msk;
+            csnwcr &= ~(uint32_t) R_BSC_CS5WCR_WW_Msk;
         }
     }
 
@@ -323,7 +323,7 @@ void bsc_wto_int_isr (uint32_t id)
         }
 
         /* Clear the scanned flags one by one */
-        tostr &= ~(1UL);
+        tostr &= ~(uint32_t) (1UL);
     }
 
     BSC_CFG_MULTIPLEX_INTERRUPT_DISABLE;

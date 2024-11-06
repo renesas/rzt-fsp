@@ -399,10 +399,11 @@ void usb_pstd_test_mode (usb_utr_t * p_utr)
         /* Continue */
         case USB_TEST_PACKET:
         {
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || \
+            defined(BSP_MCU_GROUP_RZT2H)
             hw_usb_set_utst(p_utr, 0);
             hw_usb_set_utst(p_utr, (uint16_t) (g_usb_pstd_test_mode_select >> 8));
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
             break;
         }
 
@@ -482,16 +483,17 @@ void usb_pstd_set_stall_pipe0 (usb_utr_t * p_utr)
 uint8_t * usb_pstd_write_fifo (uint16_t count, uint16_t pipemode, uint8_t * write_p, usb_utr_t * p_utr)
 {
     uint16_t even;
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || \
+    defined(BSP_MCU_GROUP_RZT2H)
     uint16_t odd;
     uint16_t hs_flag = 1;
- #else                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+ #else                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
     uint16_t hs_flag = 0;
  #endif /* defined(BSP_MCU_GROUP_RA6M3) */
 
     if ((USB_CFG_IP0 == p_utr->ip) || (0 == hs_flag))
     {
- #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         if (0 == hs_flag)
         {
             /* WAIT_LOOP */
@@ -660,13 +662,14 @@ uint8_t * usb_pstd_read_fifo (uint16_t count, uint16_t pipemode, uint8_t * read_
  #if USB_CFG_ENDIAN == USB_CFG_BIG
     uint16_t i;
  #endif
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)|| \
+    defined(BSP_MCU_GROUP_RZT2H)
     uint16_t odd;
     uint16_t hs_flag = 1;
- #else                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+ #else                                 /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
     uint16_t hs_flag = 0;
- #endif /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
- #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #endif /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
+ #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     if (0 == hs_flag)
     {
         /* WAIT_LOOP */
@@ -894,14 +897,14 @@ void usb_pstd_forced_termination (uint16_t pipe, uint16_t status, usb_utr_t * p_
     hw_usb_set_csclr(p_utr, pipe);
 
     /* Call Back */
-    if (USB_NULL != g_p_usb_pstd_pipe[pipe])
+    if (NULL != g_p_usb_pstd_pipe[pipe])
     {
         /* Transfer information set */
         g_p_usb_pstd_pipe[pipe]->tranlen = g_usb_pstd_data_cnt[pipe];
         g_p_usb_pstd_pipe[pipe]->status  = status;
         g_p_usb_pstd_pipe[pipe]->pipectr = hw_usb_read_pipectr(p_utr, pipe);
 
-        if (USB_NULL != (g_p_usb_pstd_pipe[pipe]->complete))
+        if (NULL != (g_p_usb_pstd_pipe[pipe]->complete))
         {
             (g_p_usb_pstd_pipe[pipe]->complete)(g_p_usb_pstd_pipe[pipe], USB_NULL, USB_NULL);
         }
@@ -930,8 +933,9 @@ void usb_pstd_interrupt_clock (uint8_t usb_ip)
 {
     if (g_usb_cstd_suspend_mode != USB_NORMAL_MODE)
     {
-        hw_usb_set_suspendm(usb_ip);   /* UTMI Normal Mode (Not Suspend Mode) */
-        usb_cpu_delay_1us(USB_CPU_DELAY_US);
+      /*  hw_usb_set_suspendm(usb_ip); */   /* UTMI Normal Mode (Not Suspend Mode) */
+      /*  usb_cpu_delay_1us(USB_CPU_DELAY_US); */
+        FSP_PARAMETER_NOT_USED(usb_ip);
         g_usb_cstd_suspend_mode = USB_NORMAL_MODE;
     }
 }
@@ -969,7 +973,8 @@ void usb_pstd_self_clock (uint8_t usb_ip)
 void usb_pstd_stop_clock (uint8_t usb_ip)
 {
     g_usb_cstd_suspend_mode = USB_SUSPEND_MODE;
-    hw_usb_clear_suspm(usb_ip);        /* UTMI Suspend Mode */
+     /* hw_usb_clear_suspm(usb_ip); */        /* UTMI Suspend Mode */
+    FSP_PARAMETER_NOT_USED(usb_ip);
 }
 
 /******************************************************************************

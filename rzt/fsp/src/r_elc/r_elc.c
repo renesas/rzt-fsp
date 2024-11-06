@@ -43,6 +43,12 @@ static const uint32_t gs_elc_event_source_msk_table[BSP_FEATURE_ELC_EVENT_MASK_N
     BSP_FEATURE_ELC_PERIPHERAL_1_MASK,
     BSP_FEATURE_ELC_PERIPHERAL_2_MASK,
     BSP_FEATURE_ELC_PERIPHERAL_3_MASK,
+#if BSP_FEATURE_ELC_EVENT_MASK_NUM > 4
+    BSP_FEATURE_ELC_PERIPHERAL_4_MASK,
+    BSP_FEATURE_ELC_PERIPHERAL_5_MASK,
+    BSP_FEATURE_ELC_PERIPHERAL_6_MASK,
+    BSP_FEATURE_ELC_PERIPHERAL_7_MASK,
+#endif
 };
 
 /***********************************************************************************************************************
@@ -109,6 +115,10 @@ fsp_err_t R_ELC_Open (elc_ctrl_t * const p_ctrl, elc_cfg_t const * const p_cfg)
 #endif
 
     uint32_t i_shift = 1;
+#if (1 == ELC_CFG_EXTEND_SUPPORTED)
+    elc_extended_cfg_t const * p_cfg_extend     = (elc_extended_cfg_t const *) p_cfg->p_extend;
+    __IOM uint32_t           * p_elc_gpt_intmsk = &R_ICU_NS->ELC_GPT_INTMSK[0];
+#endif
 
     /* All links and set or clear them in the ELC block.
      * Use 'ELC_DISABLE_ELC_FUNCTION' because "ELC_EVENT_NONE" cannot disable the ELC function.
@@ -152,6 +162,19 @@ fsp_err_t R_ELC_Open (elc_ctrl_t * const p_ctrl, elc_cfg_t const * const p_cfg)
 
         R_ELC->ELC_SSEL[ssel_register_num] = elc_ssel;
     }
+
+#if (1 == ELC_CFG_EXTEND_SUPPORTED)
+    if (NULL != p_cfg_extend)
+    {
+        for (uint32_t elc_gpt_intmsk_num = 0;
+             elc_gpt_intmsk_num < BSP_FEATURE_ELC_GPT_EVENT_MASK_NUM;
+             elc_gpt_intmsk_num++)
+        {
+            p_elc_gpt_intmsk[elc_gpt_intmsk_num] = ELC_GPT_EVENT_MASK_OFF &
+                                                   ~(p_cfg_extend->elc_gpt_event_mask[elc_gpt_intmsk_num]);
+        }
+    }
+#endif
 
     /* Set driver status to open */
     p_instance_ctrl->open = ELC_OPEN;

@@ -675,8 +675,8 @@ st_usb_hci_tr_req_t * usb_hstd_hci_alloc_transefer_request (void)
             memset(p_tr_req, 0, sizeof(st_usb_hci_tr_req_t));
 
             p_tr_req->bit.enable = TRUE;
- #if 0
-            R_MMU_VAtoPA((uint32_t) &usb_hci_setup_buffer[i][0], (uint32_t *) &p_tr_req->setupbuf);
+ #if 1 == BSP_LP64_SUPPORT
+            p_tr_req->setupbuf = (uint32_t *) r_usb_va_to_pa((uint64_t) &usb_hci_setup_buffer[i][0]);
  #else
             p_tr_req->setupbuf = &usb_hci_setup_buffer[i][0];
  #endif
@@ -835,8 +835,8 @@ uint16_t r_usb_hstd_hci_make_transfer_request (void   * p_utr,
 
     p_tr_req->bit.epnum = epnum & 0x0000000FU;            /* Endpoint Number */
     p_tr_req->trsize    = tranlen;                        /* Transfer Size */
- #if 0
-    R_MMU_VAtoPA((uint32_t) tranadr, &p_tr_req->databuf); /* Transfer Data Buffer */
+ #if 1 == BSP_LP64_SUPPORT
+    p_tr_req->databuf = (uint32_t) r_usb_va_to_pa((uint64_t) tranadr); /* Transfer Data Buffer */
  #else
     p_tr_req->databuf = tranadr;                          /* Transfer Data Buffer */
  #endif
@@ -847,9 +847,9 @@ uint16_t r_usb_hstd_hci_make_transfer_request (void   * p_utr,
     {
         /* Setup Buffer */
         /* Because the data format is different, location is converted. */
- #if 0
-        p_dst = (uint8_t *) r_usb_pa_to_va((uint32_t) p_tr_req->setupbuf);
-        p_src = (uint8_t *) r_usb_pa_to_va((uint32_t) p_setup);
+ #if 1 == BSP_LP64_SUPPORT
+        p_dst = (uint8_t *) (r_usb_pa_to_va((uint64_t) p_tr_req->setupbuf));
+        p_src = (uint8_t *) (r_usb_pa_to_va((uint64_t) p_setup));
  #else
         p_dst = (uint8_t *) p_tr_req->setupbuf;
         p_src = (uint8_t *) p_setup;

@@ -54,10 +54,10 @@ void usb_pstd_usb_handler (void)
  #if (BSP_CFG_RTOS == 2)
     p->msginfo       = USB_MSG_PCD_INT;
     p->ip            = p_cfg->module_number;
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
     p->p_transfer_rx = p_cfg->p_transfer_rx;
     p->p_transfer_tx = p_cfg->p_transfer_tx;
-#endif /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) */
+#endif /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H) */
     usb_pstd_interrupt_handler(&p->keyword, &p->status, p->ip);
 
     USB_ISND_MSG(USB_PCD_MBX, (usb_msg_t *) p);

@@ -229,7 +229,7 @@ fsp_err_t R_IIC_SLAVE_Open (i2c_slave_ctrl_t * const p_ctrl, i2c_slave_cfg_t con
     {
         /* Non-Safety Peripheral */
         p_instance_ctrl->p_reg =
-            (R_IIC0_Type *) ((uint32_t) R_IIC0 + (p_cfg->channel * ((uint32_t) R_IIC1 - (uint32_t) R_IIC0)));
+            (R_IIC0_Type *) ((uintptr_t) R_IIC0 + (p_cfg->channel * ((uintptr_t) R_IIC1 - (uintptr_t) R_IIC0)));
     }
     else
     {

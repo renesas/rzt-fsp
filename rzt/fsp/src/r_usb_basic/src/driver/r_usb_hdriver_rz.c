@@ -37,8 +37,9 @@
 /***********************************************************************************************************************
  * Private global variables and functions
  ***********************************************************************************************************************/
+#if 0 == BSP_LP64_SUPPORT
 void usb_memcpy(uint32_t addr1, uint32_t addr2, uint32_t size);
-
+#endif
 st_usb_pipe_t g_usb_hstd_pipe[USB_MAXPIPE + 1U];          /* pipe information */
 
 /***********************************************************************************************************************
@@ -282,7 +283,7 @@ usb_er_t usb_hstd_transfer_start (st_usb_utr_t * p_utr)
                                                    USB_EP_CNTRL,                          /* eptype */
                                                    (p_utr->p_setup[0] & USB_DEV_TO_HOST), /* epdir */
                                                    p_utr->tranlen,                        /* tranlen */
-                                                   (uint32_t) p_utr->p_tranadr,           /* tranadr */
+                                                   (uint32_t)(uintptr_t) p_utr->p_tranadr,           /* tranadr */
                                                    0                                      /* mps */
                                                    );
     }
@@ -301,7 +302,7 @@ usb_er_t usb_hstd_transfer_start (st_usb_utr_t * p_utr)
                                                    pipe_type,                   /* eptype */
                                                    pipe_dir,                    /* epdir */
                                                    p_utr->tranlen,              /* tranlen */
-                                                   (uint32_t) p_utr->p_tranadr, /* tranadr */
+                                                   (uint32_t)(uintptr_t) p_utr->p_tranadr, /* tranadr */
                                                    mps                          /* mps */
                                                    );
     }
@@ -427,13 +428,21 @@ void usb_hstd_transfer_end_cb (usb_utr_t * ptr, void * p_utr, uint32_t actual_si
     {
         if ((p_mess->keyword != USB_PIPE0) && (g_usb_hstd_pipe[p_mess->keyword].direction == USB_DATA_DIR_IN))      /* API USB_Read */
         {
+#if 0 == BSP_LP64_SUPPORT
             usb_memcpy(g_data_buf_addr[p_mess->ip][devadr], (uint32_t) p_mess->p_tranadr, p_mess->tranlen);
+#else
+            memcpy((void *) g_data_buf_addr[p_mess->ip][devadr], (void *) p_mess->p_tranadr, p_mess->tranlen);
+#endif
         }
         else if ((p_mess->keyword == USB_PIPE0) && (g_usb_hstd_pipe[p_mess->keyword].direction == USB_DATA_DIR_IN)) /* API Controll transfer */
         {
             if (0 != g_data_buf_addr[p_mess->ip][p_mess->keyword])
             {
+#if 0 == BSP_LP64_SUPPORT
                 usb_memcpy(g_data_buf_addr[p_mess->ip][p_mess->keyword], (uint32_t) p_mess->p_tranadr, p_mess->tranlen);
+#else
+                memcpy((void *) g_data_buf_addr[p_mess->ip][p_mess->keyword], (void *) p_mess->p_tranadr, p_mess->tranlen);
+#endif
             }
         }
         else
@@ -455,11 +464,12 @@ void usb_hstd_transfer_end_cb (usb_utr_t * ptr, void * p_utr, uint32_t actual_si
     p_mess->complete(p_mess, devadr, data2);
 }                                      /* End of function usb_hstd_transfer_end_cb() */
 
+#if 0 == BSP_LP64_SUPPORT
 void usb_memcpy (uint32_t addr1, uint32_t addr2, uint32_t size)
 {
     memcpy((void *) addr1, (void *) addr2, size);
 }
-
+#endif
 #endif                                 /* USB_IP_EHCI_OHCI == 1 */
 
 /***********************************************************************************************************************

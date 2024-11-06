@@ -40,9 +40,9 @@
 /* Stabilization time when BGR is enabled */
 #define ADC_BGR_STABILIZATION_DELAY_US          (150U)
 
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
  #define ADC_PRV_ADCSR_ADST_TRGE_MASK           (R_ADC121_ADCSR_ADST_Msk | R_ADC121_ADCSR_TRGE_Msk)
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
  #define ADC_PRV_ADCSR_ADST_TRGE_MASK           (R_ADC120_ADCSR_ADST_Msk | R_ADC120_ADCSR_TRGE_Msk)
 #endif
 #define ADC_PRV_ADCSR_CLEAR_ADST_TRGE           (~ADC_PRV_ADCSR_ADST_TRGE_MASK)
@@ -74,12 +74,12 @@ static fsp_err_t r_adc_scan_cfg_check(adc_instance_ctrl_t * const     p_instance
 
 #endif
 
-static void r_adc_scan_cfg(adc_instance_ctrl_t * const     p_instance_ctrl,
-                           adc_channel_cfg_t const * const p_channel_cfg);
-void           adc_scan_end_b_isr(void);
-void           adc_scan_end_c_isr(void);
-void           adc_scan_end_isr(void);
-void           adc_window_compare_isr(void);
+static void r_adc_scan_cfg(adc_instance_ctrl_t * const p_instance_ctrl, adc_channel_cfg_t const * const p_channel_cfg);
+void        adc_scan_end_b_isr(void);
+void        adc_scan_end_c_isr(void);
+void        adc_scan_end_isr(void);
+void        adc_window_compare_isr(void);
+
 static int32_t r_adc_lowest_channel_get(uint32_t adc_mask);
 static void    r_adc_scan_end_common_isr(adc_event_t event);
 
@@ -90,7 +90,10 @@ static const uint32_t g_adc_valid_channels[] =
 {
     BSP_FEATURE_ADC_UNIT_0_CHANNELS,
  #if BSP_FEATURE_ADC_UNIT_1_CHANNELS
-    BSP_FEATURE_ADC_UNIT_1_CHANNELS
+    BSP_FEATURE_ADC_UNIT_1_CHANNELS,
+ #endif
+ #if BSP_FEATURE_ADC_UNIT_2_CHANNELS
+    BSP_FEATURE_ADC_UNIT_2_CHANNELS
  #endif
 };
 #endif
@@ -181,20 +184,31 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
     p_instance_ctrl->p_callback_memory = NULL;
 
     /* Calculate the register base address. */
-    uint32_t base_address;
+    uintptr_t base_address = (uintptr_t) R_ADC120;
     if (0U == p_cfg->unit)
     {
-        base_address = (uint32_t) R_ADC120;
+        base_address = (uintptr_t) R_ADC120;
+    }
+    else if (1U == p_cfg->unit)
+    {
+        base_address = (uintptr_t) R_ADC121;
     }
     else
     {
-        base_address = (uint32_t) R_ADC121;
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+
+        /* Do Nothing */
+#elif 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+        base_address = (uintptr_t) R_ADC122;
+#endif
     }
 
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     p_instance_ctrl->p_reg = (R_ADC121_Type *) base_address;
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     p_instance_ctrl->p_reg = (R_ADC120_Type *) base_address;
+#elif 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+    p_instance_ctrl->p_reg = (R_ADC122_Type *) base_address;
 #endif
 
     /* Initialize the hardware based on the configuration. */
@@ -560,12 +574,19 @@ fsp_err_t R_ADC_InfoGet (adc_ctrl_t * p_ctrl, adc_info_t * p_adc_info)
     p_adc_info->transfer_size = TRANSFER_SIZE_2_BYTE;
 
     /* Specify the peripheral name in the ELC list */
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     p_adc_info->elc_event =
         (elc_event_t) ((uint32_t) ELC_EVENT_ADC0_ADI +
                        (p_instance_ctrl->p_cfg->unit *
                         ((uint32_t) ELC_EVENT_ADC1_ADI - (uint32_t) ELC_EVENT_ADC0_ADI)));
-
     p_adc_info->elc_peripheral = (elc_peripheral_t) (ELC_PERIPHERAL_ADC0_A + (2U * p_instance_ctrl->p_cfg->unit));
+#elif 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+    p_adc_info->elc_event =
+        (elc_event_t) ((uint32_t) ELC_EVENT_ADC120_ADI +
+                       (p_instance_ctrl->p_cfg->unit *
+                        ((uint32_t) ELC_EVENT_ADC121_ADI - (uint32_t) ELC_EVENT_ADC120_ADI)));
+    p_adc_info->elc_peripheral = (elc_peripheral_t) (ELC_PERIPHERAL_ADC0_A + (2U * p_instance_ctrl->p_cfg->unit));
+#endif
 
     return err;
 }
@@ -811,9 +832,9 @@ static fsp_err_t r_adc_scan_cfg_check_sample_hold (adc_instance_ctrl_t * const  
     {
         /* Sample and Hold channels can only be 0, 1, 2(unit 0 only) and must have at least minimum state count specified (reference
          * section "A/D Sample and Hold Circuit Control Register (ADSHCR)" in the RZ microprocessor User's Manual for details. */
-  #if BSP_FEATURE_ADC_HAS_SAMPLE_HOLD_UNIT_NUM == 1
+  #if 1U == BSP_FEATURE_ADC_HAS_SAMPLE_HOLD_UNIT_NUM
         FSP_ASSERT(0U == p_instance_ctrl->p_cfg->unit);
-  #elif BSP_FEATURE_ADC_HAS_SAMPLE_HOLD_UNIT_NUM == 2
+  #elif 2U == BSP_FEATURE_ADC_HAS_SAMPLE_HOLD_UNIT_NUM || 3U == BSP_FEATURE_ADC_HAS_SAMPLE_HOLD_UNIT_NUM
 
         /* Unit1 can also be set. */
         FSP_PARAMETER_NOT_USED(p_instance_ctrl);
@@ -844,7 +865,7 @@ static fsp_err_t r_adc_scan_cfg_check_window_compare (adc_window_cfg_t const * c
         {
  #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
             if ((compare_cfg & R_ADC121_ADCMPCR_CMPAE_Msk) && (compare_cfg & R_ADC121_ADCMPCR_CMPBE_Msk))
- #elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+ #elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
             if ((compare_cfg & R_ADC120_ADCMPCR_CMPAE_Msk) && (compare_cfg & R_ADC120_ADCMPCR_CMPBE_Msk))
  #endif
             {
@@ -855,7 +876,7 @@ static fsp_err_t r_adc_scan_cfg_check_window_compare (adc_window_cfg_t const * c
 
  #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
             if (compare_cfg & R_ADC121_ADCMPCR_WCMPE_Msk)
- #elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+ #elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
             if (compare_cfg & R_ADC120_ADCMPCR_WCMPE_Msk)
  #endif
             {
@@ -892,12 +913,12 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
      *   * The value to set in ADCSR to start a scan is stored in the control structure. ADCSR.ADST is set in
      *     R_ADC_ScanStart if software trigger mode is used.
      */
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     uint32_t adcsr = (uint32_t) (p_cfg->mode << R_ADC121_ADCSR_ADCS_Pos);
     adcsr |= (uint32_t) (R_ADC121_ADCSR_GBADIE_Msk);
     adcsr |= (uint32_t) (R_ADC121_ADCSR_ADIE_Msk);
     adcsr |= ((uint32_t) p_cfg->trigger << R_ADC121_ADCSR_EXTRG_Pos);
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     uint32_t adcsr = (uint32_t) (p_cfg->mode << R_ADC120_ADCSR_ADCS_Pos);
     adcsr |= (uint32_t) (R_ADC120_ADCSR_GBADIE_Msk);
     adcsr |= (uint32_t) (R_ADC120_ADCSR_ADIE_Msk);
@@ -905,17 +926,17 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
 #endif
     if (ADC_DOUBLE_TRIGGER_DISABLED != p_cfg_extend->double_trigger_mode)
     {
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         adcsr |= R_ADC121_ADCSR_TRGE_Msk | R_ADC121_ADCSR_DBLE_Msk;
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         adcsr |= R_ADC120_ADCSR_TRGE_Msk | R_ADC120_ADCSR_DBLE_Msk;
 #endif
     }
     else if (ADC_TRIGGER_SOFTWARE == p_cfg->trigger)
     {
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         adcsr |= R_ADC121_ADCSR_ADST_Msk;
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         adcsr |= R_ADC120_ADCSR_ADST_Msk;
 #endif
     }
@@ -935,7 +956,7 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
      */
     uint32_t adcer = 0U;
 
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
  #if BSP_FEATURE_ADC_HAS_ADCER_ADPRC
     adcer |= (uint32_t) p_cfg->resolution << R_ADC121_ADCER_ADPRC_Pos;
  #endif
@@ -943,7 +964,7 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
     adcer |= (uint32_t) p_cfg->alignment << R_ADC121_ADCER_ADRFMT_Pos;
  #endif
     adcer |= (uint32_t) p_cfg_extend->clearing << R_ADC121_ADCER_ACE_Pos;
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
  #if BSP_FEATURE_ADC_HAS_ADCER_ADPRC
     adcer |= (uint32_t) p_cfg->resolution << R_ADC120_ADCER_ADPRC_Pos;
  #endif
@@ -970,10 +991,10 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
     /* Set the predetermined values for ADCSR, ADSTRGR, ADGCTRGR, ADCER, and ADADC without setting ADCSR.ADST or ADCSR.TRGE.
      * ADCSR.ADST or ADCSR.TRGE are set as configured in R_ADC_ScanStart. */
     p_instance_ctrl->p_reg->ADCSR = (uint16_t) (adcsr & ADC_PRV_ADCSR_CLEAR_ADST_TRGE);
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) ((p_cfg_extend->adc_start_trigger_a << R_ADC121_ADSTRGR_TRSA_Pos) |
                                                   (p_cfg_extend->adc_start_trigger_b << R_ADC121_ADSTRGR_TRSB_Pos));
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) ((p_cfg_extend->adc_start_trigger_a << R_ADC120_ADSTRGR_TRSA_Pos) |
                                                   (p_cfg_extend->adc_start_trigger_b << R_ADC120_ADSTRGR_TRSB_Pos));
 #endif
@@ -983,12 +1004,12 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
 
     if (true == p_cfg_extend->adc_start_trigger_c_enabled)
     {
-#if (BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1)
+#if (1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE)
         p_instance_ctrl->p_reg->ADGCTRGR =
             (uint8_t) ((p_cfg_extend->adc_start_trigger_c << R_ADC121_ADGCTRGR_TRSC_Pos) |
                        (uint8_t) (R_ADC121_ADGCTRGR_GCADIE_Msk |
                                   R_ADC121_ADGCTRGR_GRCE_Msk));
-#elif (BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2)
+#elif (2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE)
         p_instance_ctrl->p_reg->ADGCTRGR =
             (uint8_t) ((p_cfg_extend->adc_start_trigger_c << R_ADC120_ADGCTRGR_TRSC_Pos) |
                        (uint8_t) (R_ADC120_ADGCTRGR_GCADIE_Msk |
@@ -1110,7 +1131,7 @@ static void r_adc_scan_cfg (adc_instance_ctrl_t * const p_instance_ctrl, adc_cha
         adcmpcr = (uint16_t) p_window_cfg->compare_cfg;
 #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         if (p_window_cfg->compare_cfg & R_ADC121_ADCMPCR_CMPAE_Msk)
-#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         if (p_window_cfg->compare_cfg & R_ADC120_ADCMPCR_CMPAE_Msk)
 #endif
         {
@@ -1128,7 +1149,7 @@ static void r_adc_scan_cfg (adc_instance_ctrl_t * const p_instance_ctrl, adc_cha
 
 #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         if (p_window_cfg->compare_cfg & R_ADC121_ADCMPCR_CMPBE_Msk)
-#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         if (p_window_cfg->compare_cfg & R_ADC120_ADCMPCR_CMPBE_Msk)
 #endif
         {
@@ -1153,10 +1174,10 @@ static void r_adc_scan_cfg (adc_instance_ctrl_t * const p_instance_ctrl, adc_cha
     /* In double-trigger mode set the channel select bits to the highest selected channel number then return. */
     if (ADC_DOUBLE_TRIGGER_DISABLED != p_cfg_extend->double_trigger_mode)
     {
-        uint32_t adcsr = p_instance_ctrl->p_reg->ADCSR;
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+        uintptr_t adcsr = p_instance_ctrl->p_reg->ADCSR;
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         adcsr = (adcsr & ~R_ADC121_ADCSR_DBLANS_Msk) + (31U - __CLZ(p_channel_cfg->scan_mask));
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         adcsr = (adcsr & ~R_ADC120_ADCSR_DBLANS_Msk) + (31U - __CLZ(p_channel_cfg->scan_mask));
 #endif
         p_instance_ctrl->p_reg->ADCSR      = (uint16_t) adcsr;
@@ -1311,6 +1332,8 @@ void adc_window_compare_isr (void)
         R_ADC121_Type * p_reg = p_instance_ctrl->p_reg;
 #elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
         R_ADC120_Type * p_reg = p_instance_ctrl->p_reg;
+#elif 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+        R_ADC122_Type * p_reg = p_instance_ctrl->p_reg;
 #endif
 
         /* Get all Window A status registers */

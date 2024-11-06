@@ -9,6 +9,10 @@
  **********************************************************************************************************************/
 #include "bsp_api.h"
 
+#if (2 == BSP_CFG_RTOS)                // FreeRTOS
+ #include "FreeRTOS.h"
+#endif
+
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
@@ -34,31 +38,8 @@
  * Exported global variables (to be accessed by other files)
  **********************************************************************************************************************/
 
-/* System clock frequency information */
-const uint32_t g_bsp_system_clock_select[][2] =
-{
-    {BSP_PRV_CPU_FREQ_800_MHZ,      BSP_PRV_CPU_FREQ_600_MHZ      }, // FSP_PRIV_CLOCK_CPU0
-    {BSP_PRV_CPU_FREQ_800_MHZ,      BSP_PRV_CPU_FREQ_600_MHZ      }, // FSP_PRIV_CLOCK_CPU1
-    {BSP_PRV_ICLK_FREQ_200_MHZ,     BSP_PRV_ICLK_FREQ_150_MHZ     }, // FSP_PRIV_CLOCK_ICLK
-    {BSP_PRV_PCLKH_FREQ_200_MHZ,    BSP_PRV_PCLKH_FREQ_150_MHZ    }, // FSP_PRIV_CLOCK_PCLKH
-    {BSP_PRV_PCLKM_FREQ_100_MHZ,    BSP_PRV_PCLKM_FREQ_75_MHZ     }, // FSP_PRIV_CLOCK_PCLKM
-    {BSP_PRV_PCLKL_FREQ_50_MHZ,     BSP_PRV_PCLKL_FREQ_37_5_MHZ   }, // FSP_PRIV_CLOCK_PCLKL
-    {BSP_PRV_PCLKADC_FREQ_25_MHZ,   BSP_PRV_PCLKADC_FREQ_18_75_MHZ}, // FSP_PRIV_CLOCK_PCLKADC
-    {BSP_PRV_PCLKGPTL_FREQ_400_MHZ, BSP_PRV_PCLKGPTL_FREQ_300_MHZ }, // FSP_PRIV_CLOCK_PCLKGPTL
-    {BSP_PRV_PCLKSPI_FREQ_75_MHZ,   BSP_PRV_PCLKSPI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSPI0
-    {BSP_PRV_PCLKSPI_FREQ_75_MHZ,   BSP_PRV_PCLKSPI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSPI1
-    {BSP_PRV_PCLKSPI_FREQ_75_MHZ,   BSP_PRV_PCLKSPI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSPI2
-    {BSP_PRV_PCLKSPI_FREQ_75_MHZ,   BSP_PRV_PCLKSPI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSPI3
-    {BSP_PRV_PCLKSCI_FREQ_75_MHZ,   BSP_PRV_PCLKSCI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSCI0
-    {BSP_PRV_PCLKSCI_FREQ_75_MHZ,   BSP_PRV_PCLKSCI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSCI1
-    {BSP_PRV_PCLKSCI_FREQ_75_MHZ,   BSP_PRV_PCLKSCI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSCI2
-    {BSP_PRV_PCLKSCI_FREQ_75_MHZ,   BSP_PRV_PCLKSCI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSCI3
-    {BSP_PRV_PCLKSCI_FREQ_75_MHZ,   BSP_PRV_PCLKSCI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSCI4
-    {BSP_PRV_PCLKSCI_FREQ_75_MHZ,   BSP_PRV_PCLKSCI_FREQ_96_MHZ   }, // FSP_PRIV_CLOCK_PCLKSCI5
-    {BSP_PRV_PCLKCAN_FREQ_80_MHZ,   BSP_PRV_PCLKCAN_FREQ_40_MHZ   }, // FSP_PRIV_CLOCK_PCLKCAN
-};
-
 /* System clock frequency information for CKIO */
+#if (1 == BSP_FEATURE_CGC_SCKCR_TYPE)
 const uint32_t g_bsp_system_clock_select_ckio[][2] =
 {
     {BSP_PRV_CKIO_FREQ_100_MHZ,       BSP_PRV_CKIO_FREQ_75_MHZ       }, // CKIO = 000b
@@ -70,11 +51,24 @@ const uint32_t g_bsp_system_clock_select_ckio[][2] =
     {BSP_PRV_CKIO_FREQ_25_MHZ,        BSP_PRV_CKIO_FREQ_18_75_MHZ    }, // CKIO = 110b
     {BSP_PRV_CKIO_FREQ_NOT_SUPPORTED, BSP_PRV_CKIO_FREQ_NOT_SUPPORTED}, // CKIO = 111b
 };
+#elif (2 == BSP_FEATURE_CGC_SCKCR_TYPE)
+const uint32_t g_bsp_system_clock_select_ckio[] =
+{
+    BSP_PRV_CKIO_FREQ_125_MHZ,         // CKIO = 000b
+    BSP_PRV_CKIO_FREQ_83_3_MHZ,        // CKIO = 001b
+    BSP_PRV_CKIO_FREQ_62_5_MHZ,        // CKIO = 010b
+    BSP_PRV_CKIO_FREQ_50_MHZ,          // CKIO = 011b
+    BSP_PRV_CKIO_FREQ_41_7_MHZ,        // CKIO = 100b
+    BSP_PRV_CKIO_FREQ_35_7_MHZ,        // CKIO = 101b
+    BSP_PRV_CKIO_FREQ_31_25_MHZ,       // CKIO = 110b
+    BSP_PRV_CKIO_FREQ_NOT_SUPPORTED,   // CKIO = 111b
+};
+#endif
 
 /* System clock frequency information for XSPI_CLK */
 const uint32_t g_bsp_system_clock_select_xspi_clk[][2] =
 {
-    {BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED, BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED}, // FSELXSPIn = 000b
+    {BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED, BSP_PRV_XSPI_CLK_FREQ_150_MHZ      }, // FSELXSPIn = 000b
     {BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED, BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED}, // FSELXSPIn = 001b
     {BSP_PRV_XSPI_CLK_FREQ_133_3_MHZ,     BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED}, // FSELXSPIn = 010b
     {BSP_PRV_XSPI_CLK_FREQ_100_MHZ,       BSP_PRV_XSPI_CLK_FREQ_75_MHZ       }, // FSELXSPIn = 011b
@@ -83,6 +77,40 @@ const uint32_t g_bsp_system_clock_select_xspi_clk[][2] =
     {BSP_PRV_XSPI_CLK_FREQ_12_5_MHZ,      BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED}, // FSELXSPIn = 110b
     {BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED, BSP_PRV_XSPI_CLK_FREQ_NOT_SUPPORTED}, // FSELXSPIn = 111b
 };
+
+/* System clock frequency information for SPI_CLK */
+#if (1 == BSP_FEATURE_CGC_PCLKSPI_CLOCK_FREQ_TYPE)
+const uint32_t g_bsp_system_clock_select_spi_clk[] =
+{
+    BSP_PRV_PCLKSPI_FREQ_75_MHZ,       // SPInASYNCSEL = 0b
+    BSP_PRV_PCLKSPI_FREQ_96_MHZ,       // SPInASYNCSEL = 1b
+};
+#elif (2 == BSP_FEATURE_CGC_PCLKSCI_CLOCK_FREQ_TYPE)
+const uint32_t g_bsp_system_clock_select_spi_clk[] =
+{
+    BSP_PRV_PCLKSPI_FREQ_75_MHZ,       // SPInASYNCSEL = 00b
+    BSP_PRV_PCLKSPI_FREQ_80_MHZ,       // SPInASYNCSEL = 01b
+    BSP_PRV_PCLKSPI_FREQ_96_MHZ,       // SPInASYNCSEL = 10b
+    BSP_PRV_PCLKSPI_FREQ_100_MHZ,      // SPInASYNCSEL = 11b
+};
+#endif
+
+/* System clock frequency information for SCI_CLK */
+#if (1 == BSP_FEATURE_CGC_PCLKSCI_CLOCK_FREQ_TYPE)
+const uint32_t g_bsp_system_clock_select_sci_clk[] =
+{
+    BSP_PRV_PCLKSCI_FREQ_75_MHZ,       // SCInASYNCSEL = 0b
+    BSP_PRV_PCLKSCI_FREQ_96_MHZ,       // SCInASYNCSEL = 1b
+};
+#elif (2 == BSP_FEATURE_CGC_PCLKSCI_CLOCK_FREQ_TYPE)
+const uint32_t g_bsp_system_clock_select_sci_clk[] =
+{
+    BSP_PRV_PCLKSCI_FREQ_75_MHZ,       // SCInASYNCSEL = 00b
+    BSP_PRV_PCLKSCI_FREQ_80_MHZ,       // SCInASYNCSEL = 01b
+    BSP_PRV_PCLKSCI_FREQ_96_MHZ,       // SCInASYNCSEL = 10b
+    BSP_PRV_PCLKSCI_FREQ_100_MHZ,      // SCInASYNCSEL = 11b
+};
+#endif
 
 /***********************************************************************************************************************
  * Private global variables and functions
@@ -205,3 +233,41 @@ void __aeabi_assert (const char * expr, const char * file, int line) {
 }
 
 #endif
+
+/*******************************************************************************************************************//**
+ * Allocate memory dynamically to heap.
+ *
+ * @param[in]   size    Size of memory allocated.
+ *
+ * @return      Returns a void pointer to the allocated area. If no memory is allocated, returns NULL.
+ **********************************************************************************************************************/
+void * bsp_prv_malloc (size_t size)
+{
+#if (2 == BSP_CFG_RTOS) && configSUPPORT_DYNAMIC_ALLOCATION
+
+    /* Use FreeRTOS heap */
+    return pvPortMalloc(size);
+#else
+
+    /* If RTOS dynamic allocation is disabled or RTOS is not in use, allocate heap data to the main heap. */
+    return malloc(size);
+#endif
+}
+
+/*******************************************************************************************************************//**
+ * Free dynamically allocated memory on heap.
+ *
+ * @param[in]   ptr     Pointer to memory to be released
+ **********************************************************************************************************************/
+void bsp_prv_free (void * ptr)
+{
+#if (2 == BSP_CFG_RTOS) && configSUPPORT_DYNAMIC_ALLOCATION
+
+    /* Use FreeRTOS heap */
+    vPortFree(ptr);
+#else
+
+    /* If RTOS dynamic allocation is disabled or RTOS is not in use, use free(). */
+    free(ptr);
+#endif
+}

@@ -140,6 +140,8 @@ fsp_err_t R_ICU_ExternalIrqOpen (external_irq_ctrl_t * const p_ctrl, external_ir
     }
     else
     {
+#if (1 == BSP_FEATURE_ICU_SAFETY_REGISTER_TYPE)
+
         /* Set the digital filter divider. */
         uint32_t clksel = R_ICU->S_PORTNF_CLKSEL;
         clksel &= ~(ICU_PORTNF_CLKSEL_MASK << ICU_S_PORTNF_OFFSET(p_cfg->channel));
@@ -164,6 +166,33 @@ fsp_err_t R_ICU_ExternalIrqOpen (external_irq_ctrl_t * const p_ctrl, external_ir
 
         /* Write S_PORTNF_FLTSEL. */
         R_ICU->S_PORTNF_FLTSEL = fltsel;
+#else
+
+        /* Set the digital filter divider. */
+        uint32_t clksel = R_ICU_S->S_PORTNF_CLKSEL;
+        clksel &= ~(ICU_PORTNF_CLKSEL_MASK << ICU_S_PORTNF_OFFSET(p_cfg->channel));
+        clksel |= (uint32_t) (p_cfg->clock_source_div << ICU_S_PORTNF_OFFSET(p_cfg->channel));
+
+        /* Enable/Disable digital filter. */
+        uint32_t fltsel = R_ICU_S->S_PORTNF_FLTSEL;
+        fltsel &= ~(ICU_PORTNF_FLTSEL_MASK << (p_cfg->channel - ICU_SAFETY_REGISTER_OFFSET));
+        fltsel |=
+            (uint32_t) (((true == p_cfg->filter_enable) ? 1U : 0U) << (p_cfg->channel - ICU_SAFETY_REGISTER_OFFSET));
+
+        /* Set the IRQ trigger. */
+        uint32_t md = R_ICU_S->S_PORTNF_MD;
+        md &= ~(ICU_PORTNF_MD_MASK << ICU_S_PORTNF_OFFSET(p_cfg->channel));
+        md |= (uint32_t) (g_icu_detect_mode[p_cfg->trigger] << (ICU_S_PORTNF_OFFSET(p_cfg->channel)));
+
+        /* Write S_PORTNF_CLKSEL. */
+        R_ICU_S->S_PORTNF_CLKSEL = clksel;
+
+        /* Write S_PORTNF_MD. */
+        R_ICU_S->S_PORTNF_MD = md;
+
+        /* Write S_PORTNF_FLTSEL. */
+        R_ICU_S->S_PORTNF_FLTSEL = fltsel;
+#endif
     }
 
     /* NOTE: User can have the driver opened when the IRQ is not in the vector table. This is for use cases

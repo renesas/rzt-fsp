@@ -4,12 +4,16 @@
   * Analog
     * [ADC (r_adc)](https://renesas.github.io/rzt-fsp/group___a_d_c.html)
     * [ADC (r_tsu)](https://renesas.github.io/rzt-fsp/group___t_s_u.html)
+    * [ADC (r_tsu_b)](https://renesas.github.io/rzt-fsp/group___t_s_u___b.html)
     * [ADC Driver (r_dsmif)](https://renesas.github.io/rzt-fsp/group___d_s_m_i_f.html)
   * Connectivity
     * [CAN FD (r_canfd)](https://renesas.github.io/rzt-fsp/group___c_a_n_f_d.html)
     * [I2C Master (r_iic_master)](https://renesas.github.io/rzt-fsp/group___i_i_c___m_a_s_t_e_r.html)
     * [I2C Master (r_sci_i2c)](https://renesas.github.io/rzt-fsp/group___s_c_i___i2_c.html)
     * [I2C Slave (r_iic_slave)](https://renesas.github.io/rzt-fsp/group___i_i_c___s_l_a_v_e.html)
+    * [OpenAMP](https://github.com/OpenAMP)
+    * [PCI (r_pcie_ep)](https://renesas.github.io/rzt-fsp/group___p_c_i_e___e_p.html)
+    * [PCI (r_pcie_rc)](https://renesas.github.io/rzt-fsp/group___p_c_i_e___r_c.html)
     * [SPI (r_sci_spi)](https://renesas.github.io/rzt-fsp/group___s_c_i___s_p_i.html)
     * [SPI (r_spi)](https://renesas.github.io/rzt-fsp/group___s_p_i.html)
     * [UART (r_sci_uart)](https://renesas.github.io/rzt-fsp/group___s_c_i___u_a_r_t.html)
@@ -30,14 +34,17 @@
     * [Ethernet (r_ether_selector)](https://renesas.github.io/rzt-fsp/group___e_t_h_e_r___s_e_l_e_c_t_o_r.html)
     * [Ethernet (r_ethsw)](https://renesas.github.io/rzt-fsp/group___e_t_h_e_r___s_w_i_t_c_h.html)
     * [Ethernet (r_gmac)](https://renesas.github.io/rzt-fsp/group___e_t_h_e_r.html)
+    * [Ethernet (r_gmac_b)](https://renesas.github.io/rzt-fsp/group___e_t_h_e_r___b.html)
     * [FreeRTOS+TCP](https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/TCP_IP_Configuration.html)
   * RTOS
-    * [FreeRTOS Buffer Allocation 2](https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/Embedded_Ethernet_Buffer_Management.html)
+    * [FreeRTOS Buffer Allocation 2](https://www.freertos.org/Documentation/03-Libraries/02-FreeRTOS-plus/02-FreeRTOS-plus-TCP/05-Buffer-management)
     * [FreeRTOS Heap 1](https://www.freertos.org/a00111.html#heap_1)
     * [FreeRTOS Heap 2](https://www.freertos.org/a00111.html#heap_2)
     * [FreeRTOS Heap 3](https://www.freertos.org/a00111.html#heap_3)
     * [FreeRTOS Heap 4](https://www.freertos.org/a00111.html#heap_4)
     * [FreeRTOS Heap 5](https://www.freertos.org/a00111.html#heap_5)
+  * Security
+    * [Renesas Secure IP Driver (r_rsip)](https://renesas.github.io/rzt-fsp/group___r_s_i_p___p_r_o_t_e_c_t_e_d.html)
   * Storage
     * [BSC (r_bsc)](https://renesas.github.io/rzt-fsp/group___b_s_c.html)
     * [BSC_NOR (r_bsc_nor)](https://renesas.github.io/rzt-fsp/group___b_s_c___n_o_r.html)
@@ -82,6 +89,11 @@
     * [USB PMSC (r_usb_pmsc_class)](https://renesas.github.io/rzt-fsp/group___u_s_b___p_m_s_c.html)
   * Networking
     * [FreeRTOS+TCP Wrapper to r_ether (rm_freertos_plus_tcp)](https://renesas.github.io/rzt-fsp/group___f_r_e_e_r_t_o_s___p_l_u_s___t_c_p.html)
+  * Security
+    * [RSIP Engine for RZ/T2H](https://renesas.github.io/rzt-fsp/group___r_s_i_p___p_r_o_t_e_c_t_e_d.html)
+    * [RSIP Engine for RZ/T2L](https://renesas.github.io/rzt-fsp/group___r_s_i_p___p_r_o_t_e_c_t_e_d.html)
+    * [RSIP Engine for RZ/T2M](https://renesas.github.io/rzt-fsp/group___r_s_i_p___p_r_o_t_e_c_t_e_d.html)
+    * [RSIP Engine for RZ/T2ME](https://renesas.github.io/rzt-fsp/group___r_s_i_p___p_r_o_t_e_c_t_e_d.html)
   * Storage
     * [Block Media Custom Implementation](https://renesas.github.io/rzt-fsp/group___r_m___b_l_o_c_k___m_e_d_i_a___u_s_e_r.html)
     * [FreeRTOS+FAT Port for RZT (rm_freertos_plus_fat)](https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_FAT/index.html)

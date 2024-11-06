@@ -80,7 +80,7 @@ typedef struct usb_utr
 #endif /* #if (BSP_CFG_RTOS == 2) */
     uint8_t errcnt;                            /* Error count */
     uint8_t segment;                           /* Last flag */
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     const transfer_instance_t * p_transfer_tx; ///< Send context
     const transfer_instance_t * p_transfer_rx; ///< Receive context
 #endif

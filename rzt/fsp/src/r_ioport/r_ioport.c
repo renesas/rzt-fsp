@@ -34,18 +34,40 @@
 #define IOPORT_REGION_SEL_NSAFE    (1U)
 #define IOPORT_RSEL_MASK           (0x01U)
 #define IOPORT_PM_BIT_MASK         (0x0003U)
-#define IOPORT_PFC_BIT_MASK        (0x0000000FU)
+
+#if BSP_FEATURE_IOPORT_PIN_PFC_TYPE == 3
+ #define IOPORT_PFC_BIT_MASK       (0x0000003FU)
+#else
+ #define IOPORT_PFC_BIT_MASK       (0x0000000FU)
+#endif
+
 #define IOPORT_DRTCL_BIT_MASK      (0x000000FFU)
 #define IOPORT_ELC_PEL_MASK        (0x80)
 #define IOOPRT_ELC_PGC_MASK        (0x88)
 #define IOPORT_ELC_PEL_PSM_HIGH    (0x20)
 
 /* Switch IOPORT register region either safety or non safety */
-#define IOPORT_PRV_PORT_ADDRESS(region_sel)    (region_sel == 1 ? (R_PORT_NSR) : (R_PORT_SR))
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+ #define IOPORT_PRV_PORT_ADDRESS(region_sel)    (region_sel == 1 ? (R_PORT_SRN) : (R_PORT_SRS))
+#else
+ #define IOPORT_PRV_PORT_ADDRESS(region_sel)    (region_sel == 1 ? (R_PORT_NSR) : (R_PORT_SR))
+#endif
 
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
+#if BSP_FEATURE_IOPORT_PIN_PFC_TYPE == 3
+typedef struct st_ioport_cfg_data
+{
+    uint32_t p_reg    : 1;
+    uint32_t pm_reg   : 2;
+    uint32_t pmc_reg  : 1;
+    uint32_t pfc_reg  : 6;
+    uint32_t drct_reg : 6;
+    uint32_t rsel_reg : 1;
+    uint32_t reserved : 15;
+} ioport_cfg_data_t;
+#else
 typedef struct st_ioport_cfg_data
 {
     uint32_t p_reg    : 1;
@@ -56,6 +78,7 @@ typedef struct st_ioport_cfg_data
     uint32_t rsel_reg : 1;
     uint32_t reserved : 17;
 } ioport_cfg_data_t;
+#endif
 
 /***********************************************************************************************************************
  * Private function prototypes
@@ -63,6 +86,16 @@ typedef struct st_ioport_cfg_data
 static void r_ioport_pins_config(const ioport_cfg_t * p_cfg);
 static void r_ioport_pin_set(bsp_io_port_pin_t pin, ioport_cfg_data_t * p_cfg_data);
 static void r_ioport_event_config(const ioport_extend_cfg_t * p_extend_cfg_data);
+static void r_ioport_pin_set_safety(R_PORT_COMMON_Type * p_ioport_regs,
+                                    bsp_io_port_pin_t    pin,
+                                    ioport_cfg_data_t  * p_cfg_data);
+
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+static void r_ioport_pin_set_non_safety(R_PORT_NS_COMMON_Type * p_ioport_regs,
+                                        bsp_io_port_pin_t       pin,
+                                        ioport_cfg_data_t     * p_cfg_data);
+
+#endif
 
 /***********************************************************************************************************************
  * Private global variables
@@ -272,8 +305,22 @@ fsp_err_t R_IOPORT_PortRead (ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, i
     /* Get port number */
     uint32_t port_num = (IOPORT_PRV_PORT_BITS & (ioport_size_t) port) >> IOPORT_PRV_PORT_OFFSET;
 
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (port_num > BSP_FEATURE_IOPORT_SELECTABLE_PORT_MAX)
+    {
+        /* Read the specified port states */
+        *p_port_value = (ioport_size_t) R_PORT_NSR->PIN[port_num];
+
+        return FSP_SUCCESS;
+    }
+#endif
+
     /* Get the RSELP register value */
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    ioport_size_t rselp_value = (ioport_size_t) R_PORT_SRS->RSELP[port_num];
+#else
     ioport_size_t rselp_value = (ioport_size_t) R_PTADR->RSELP[port_num];
+#endif
 
     /* Get the port register address in non safety region */
     p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
@@ -332,8 +379,25 @@ fsp_err_t R_IOPORT_PortWrite (ioport_ctrl_t * const p_ctrl, bsp_io_port_t port, 
     /* Get port number */
     uint32_t port_num = (IOPORT_PRV_PORT_BITS & (ioport_size_t) port) >> IOPORT_PRV_PORT_OFFSET;
 
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (port_num > BSP_FEATURE_IOPORT_SELECTABLE_PORT_MAX)
+    {
+        /* Output data store of the specified pins sets to low output */
+        temp_value = (ioport_size_t) (R_PORT_NSR->P[port_num] & (~mask));
+
+        /* Write output data to P register of the specified pins */
+        R_PORT_NSR->P[port_num] = (uint8_t) (temp_value | (value & mask));
+
+        return FSP_SUCCESS;
+    }
+#endif
+
     /* Get the RSELP register value */
-    ioport_size_t rselp_value = R_PTADR->RSELP[port_num];
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    ioport_size_t rselp_value = (ioport_size_t) R_PORT_SRS->RSELP[port_num];
+#else
+    ioport_size_t rselp_value = (ioport_size_t) R_PTADR->RSELP[port_num];
+#endif
 
     /* Set value to non safety region register */
     write_mask = rselp_value & mask;
@@ -388,15 +452,50 @@ fsp_err_t R_IOPORT_PinWrite (ioport_ctrl_t * const p_ctrl, bsp_io_port_pin_t pin
     FSP_PARAMETER_NOT_USED(p_ctrl);
 #endif
 
-    R_PORT_COMMON_Type * p_ioport_regs;
-
     /* Get port and pin number */
     uint32_t port_num = (IOPORT_PRV_PORT_BITS & (ioport_size_t) pin) >> IOPORT_PRV_PORT_OFFSET;
     uint32_t pin_num  = (IOPORT_PRV_PIN_BITS & (ioport_size_t) pin);
 
     /* Get the port register address */
-    p_ioport_regs = (IOPORT_PRV_PORT_ADDRESS(((uint16_t) (R_PTADR->RSELP[port_num] >> pin_num) &
-                                              IOPORT_RSEL_MASK)));
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (port_num > BSP_FEATURE_IOPORT_SELECTABLE_PORT_MAX)
+    {
+        /* Get the port register address */
+        R_PORT_NS_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+
+        /* Set output level to P register of the specified pin */
+        if (BSP_IO_LEVEL_LOW == level)
+        {
+            p_ioport_regs->P[port_num] &= (uint8_t) (~(1U << pin_num));
+        }
+        else
+        {
+            p_ioport_regs->P[port_num] |= (uint8_t) (1U << pin_num);
+        }
+    }
+    else
+    {
+        /* Get the port register address */
+        R_PORT_COMMON_Type * p_ioport_regs =
+            (IOPORT_PRV_PORT_ADDRESS(((uint16_t) (R_PORT_SRS->RSELP[port_num] >> pin_num) &
+                                      IOPORT_RSEL_MASK)));
+
+        /* Set output level to P register of the specified pin */
+        if (BSP_IO_LEVEL_LOW == level)
+        {
+            p_ioport_regs->P[port_num] &= (uint8_t) (~(1U << pin_num));
+        }
+        else
+        {
+            p_ioport_regs->P[port_num] |= (uint8_t) (1U << pin_num);
+        }
+    }
+
+#else
+
+    /* Get the port register address */
+    R_PORT_COMMON_Type * p_ioport_regs = (IOPORT_PRV_PORT_ADDRESS(((uint16_t) (R_PTADR->RSELP[port_num] >> pin_num) &
+                                                                   IOPORT_RSEL_MASK)));
 
     /* Set output level to P register of the specified pin */
     if (BSP_IO_LEVEL_LOW == level)
@@ -407,6 +506,7 @@ fsp_err_t R_IOPORT_PinWrite (ioport_ctrl_t * const p_ctrl, bsp_io_port_pin_t pin
     {
         p_ioport_regs->P[port_num] |= (uint8_t) (1U << pin_num);
     }
+#endif
 
     return FSP_SUCCESS;
 }
@@ -453,10 +553,42 @@ fsp_err_t R_IOPORT_PortDirectionSet (ioport_ctrl_t * const p_ctrl,
             /* Get port number */
             uint32_t port_num = (IOPORT_PRV_PORT_BITS & (ioport_size_t) port) >> IOPORT_PRV_PORT_OFFSET;
 
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+            if (port_num > BSP_FEATURE_IOPORT_SELECTABLE_PORT_MAX)
+            {
+                /* Get the port register address */
+                R_PORT_NS_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+
+                /* Set  */
+                uint16_t set_bits = (uint16_t) (direction_values & (IOPORT_PM_BIT_MASK << (pin_num * 2U)));
+
+                /* Set the direction value */
+                uint16_t temp_value =
+                    (uint16_t) (p_ioport_regs->PM[port_num] & ~(IOPORT_PM_BIT_MASK << (pin_num * 2U)));
+                p_ioport_regs->PM[port_num] = temp_value | set_bits;
+            }
+            else
+            {
+                /* Get the port register address */
+                R_PORT_COMMON_Type * p_ioport_regs =
+                    (IOPORT_PRV_PORT_ADDRESS(((uint16_t) (R_PORT_SRS->RSELP[port_num] >> pin_num) &
+                                              IOPORT_RSEL_MASK)));
+
+                /* Set  */
+                uint16_t set_bits = (uint16_t) (direction_values & (IOPORT_PM_BIT_MASK << (pin_num * 2U)));
+
+                /* Set the direction value */
+                uint16_t temp_value =
+                    (uint16_t) (p_ioport_regs->PM[port_num] & ~(IOPORT_PM_BIT_MASK << (pin_num * 2U)));
+                p_ioport_regs->PM[port_num] = temp_value | set_bits;
+            }
+
+#else
+
             /* Get the port register address */
             R_PORT_COMMON_Type * p_ioport_regs =
-                IOPORT_PRV_PORT_ADDRESS(((uint16_t) (R_PTADR->RSELP[port_num] >> pin_num) &
-                                         IOPORT_RSEL_MASK));
+                (IOPORT_PRV_PORT_ADDRESS(((uint16_t) (R_PTADR->RSELP[port_num] >> pin_num) &
+                                          IOPORT_RSEL_MASK)));
 
             /* Set  */
             uint16_t set_bits = (uint16_t) (direction_values & (IOPORT_PM_BIT_MASK << (pin_num * 2U)));
@@ -464,6 +596,7 @@ fsp_err_t R_IOPORT_PortDirectionSet (ioport_ctrl_t * const p_ctrl,
             /* Set the direction value */
             uint16_t temp_value = (uint16_t) (p_ioport_regs->PM[port_num] & ~(IOPORT_PM_BIT_MASK << (pin_num * 2U)));
             p_ioport_regs->PM[port_num] = temp_value | set_bits;
+#endif
         }
     }
 
@@ -493,7 +626,8 @@ fsp_err_t R_IOPORT_PortEventInputRead (ioport_ctrl_t * const p_ctrl, bsp_io_port
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(IOPORT_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     FSP_ASSERT(NULL != p_event_data);
-    FSP_ERROR_RETURN((port == BSP_IO_PORT_16) || (port == BSP_IO_PORT_18), FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((port == BSP_FEATURE_ELC_GROUP1_PORT_NUM) || (port == BSP_FEATURE_ELC_GROUP2_PORT_NUM),
+                     FSP_ERR_INVALID_ARGUMENT);
 #else
     FSP_PARAMETER_NOT_USED(p_ctrl);
 #endif
@@ -501,14 +635,18 @@ fsp_err_t R_IOPORT_PortEventInputRead (ioport_ctrl_t * const p_ctrl, bsp_io_port
     const ioport_extend_cfg_t * elc_cfg = p_instance_ctrl->p_cfg->p_extend;
 
     /* Get register address */
-    R_PORT_COMMON_Type * p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    R_PORT_NS_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+#else
+    R_PORT_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+#endif
 
     /* Get port group number for the specified port */
-    if (BSP_IO_PORT_16 == port)
+    if (BSP_FEATURE_ELC_GROUP1_PORT_NUM == port)
     {
         portgroup = 0U;
     }
-    else if (BSP_IO_PORT_18 == port)
+    else if (BSP_FEATURE_ELC_GROUP2_PORT_NUM == port)
     {
         portgroup = 1U;
     }
@@ -547,8 +685,8 @@ fsp_err_t R_IOPORT_PinEventInputRead (ioport_ctrl_t * const p_ctrl, bsp_io_port_
     FSP_ERROR_RETURN(IOPORT_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     FSP_ASSERT(NULL != p_pin_event);
     uint32_t port_number = pin >> IOPORT_PRV_PORT_OFFSET;
-    FSP_ERROR_RETURN((port_number == BSP_IO_PORT_16 >> IOPORT_PRV_PORT_OFFSET) ||
-                     (port_number == BSP_IO_PORT_18 >> IOPORT_PRV_PORT_OFFSET),
+    FSP_ERROR_RETURN((port_number == BSP_FEATURE_ELC_GROUP1_PORT_NUM >> IOPORT_PRV_PORT_OFFSET) ||
+                     (port_number == BSP_FEATURE_ELC_GROUP2_PORT_NUM >> IOPORT_PRV_PORT_OFFSET),
                      FSP_ERR_INVALID_ARGUMENT);
 #else
     FSP_PARAMETER_NOT_USED(p_ctrl);
@@ -559,14 +697,18 @@ fsp_err_t R_IOPORT_PinEventInputRead (ioport_ctrl_t * const p_ctrl, bsp_io_port_
     uint32_t pin_num  = (IOPORT_PRV_PIN_BITS & (ioport_size_t) pin);
 
     /* Get register address */
-    R_PORT_COMMON_Type * p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    R_PORT_NS_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+#else
+    R_PORT_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+#endif
 
     /* Get port group number for the specified port */
-    if (BSP_IO_PORT_16 == port_num)
+    if (BSP_FEATURE_ELC_GROUP1_PORT_NUM == port_num)
     {
         portgroup = 0U;
     }
-    else if (BSP_IO_PORT_18 == port_num)
+    else if (BSP_FEATURE_ELC_GROUP2_PORT_NUM == port_num)
     {
         portgroup = 1U;
     }
@@ -620,7 +762,8 @@ fsp_err_t R_IOPORT_PortEventOutputWrite (ioport_ctrl_t * const p_ctrl,
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(IOPORT_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     FSP_ERROR_RETURN(mask_value > (ioport_size_t) 0, FSP_ERR_INVALID_ARGUMENT);
-    FSP_ERROR_RETURN((port == BSP_IO_PORT_16) || (port == BSP_IO_PORT_18), FSP_ERR_INVALID_ARGUMENT);
+    FSP_ERROR_RETURN((port == BSP_FEATURE_ELC_GROUP1_PORT_NUM) || (port == BSP_FEATURE_ELC_GROUP2_PORT_NUM),
+                     FSP_ERR_INVALID_ARGUMENT);
 #else
     FSP_PARAMETER_NOT_USED(p_ctrl);
 #endif
@@ -628,14 +771,18 @@ fsp_err_t R_IOPORT_PortEventOutputWrite (ioport_ctrl_t * const p_ctrl,
     R_BSP_PinAccessEnable();           // Unlock Register Write Protection
 
     /* Get register address */
-    R_PORT_COMMON_Type * p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    R_PORT_NS_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+#else
+    R_PORT_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+#endif
 
     /* Get port group number for the specified port */
-    if (BSP_IO_PORT_16 == port)
+    if (BSP_FEATURE_ELC_GROUP1_PORT_NUM == port)
     {
         portgroup = 0U;
     }
-    else if (BSP_IO_PORT_18 == port)
+    else if (BSP_FEATURE_ELC_GROUP2_PORT_NUM == port)
     {
         portgroup = 1U;
     }
@@ -676,8 +823,8 @@ fsp_err_t R_IOPORT_PinEventOutputWrite (ioport_ctrl_t * const p_ctrl, bsp_io_por
     FSP_ERROR_RETURN(IOPORT_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     FSP_ERROR_RETURN((pin_value == BSP_IO_LEVEL_HIGH) || (pin_value == BSP_IO_LEVEL_LOW), FSP_ERR_INVALID_ARGUMENT);
     uint32_t port_number = pin >> IOPORT_PRV_PORT_OFFSET;
-    FSP_ERROR_RETURN((port_number == BSP_IO_PORT_16 >> IOPORT_PRV_PORT_OFFSET) ||
-                     (port_number == BSP_IO_PORT_18 >> IOPORT_PRV_PORT_OFFSET),
+    FSP_ERROR_RETURN((port_number == BSP_FEATURE_ELC_GROUP1_PORT_NUM >> IOPORT_PRV_PORT_OFFSET) ||
+                     (port_number == BSP_FEATURE_ELC_GROUP2_PORT_NUM >> IOPORT_PRV_PORT_OFFSET),
                      FSP_ERR_INVALID_ARGUMENT);
 #endif
 
@@ -686,7 +833,11 @@ fsp_err_t R_IOPORT_PinEventOutputWrite (ioport_ctrl_t * const p_ctrl, bsp_io_por
     R_BSP_PinAccessEnable();           // Unlock Register Write Protection
 
     /* Get register address */
-    R_PORT_COMMON_Type * p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    R_PORT_NS_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+#else
+    R_PORT_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+#endif
 
     for (cnt = 0; cnt < IOPORT_SINGLE_PORT_NUM; cnt++)
     {
@@ -750,9 +901,6 @@ void r_ioport_pins_config (const ioport_cfg_t * p_cfg)
  **********************************************************************************************************************/
 static void r_ioport_pin_set (bsp_io_port_pin_t pin, ioport_cfg_data_t * p_cfg_data)
 {
-    R_PORT_COMMON_Type * p_ioport_regs;
-    uint32_t             temp_value;
-
     /* Get port and pin number */
     uint32_t port    = (IOPORT_PRV_PORT_BITS & (ioport_size_t) pin) >> IOPORT_PRV_PORT_OFFSET;
     uint32_t pin_num = (IOPORT_PRV_PIN_BITS & (ioport_size_t) pin);
@@ -760,14 +908,54 @@ static void r_ioport_pin_set (bsp_io_port_pin_t pin, ioport_cfg_data_t * p_cfg_d
     /* Setting for Safety region or Non safety region */
     if (p_cfg_data->rsel_reg == 1U)    // Setting for Non safety region
     {
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+        if (port > BSP_FEATURE_IOPORT_SELECTABLE_PORT_MAX)
+        {
+            R_PORT_NS_COMMON_Type * p_ioport_regs = R_PORT_NSR;
+            r_ioport_pin_set_non_safety(p_ioport_regs, pin, p_cfg_data);
+        }
+        else
+        {
+            R_PORT_SRS->RSELP[port] |= (uint8_t) (1U << pin_num);
+            R_PORT_COMMON_Type * p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
+            r_ioport_pin_set_safety(p_ioport_regs, pin, p_cfg_data);
+        }
+
+#else
         R_PTADR->RSELP[port] |= (uint8_t) (1U << pin_num);
-        p_ioport_regs         = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
+        R_PORT_COMMON_Type * p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
+        r_ioport_pin_set_safety(p_ioport_regs, pin, p_cfg_data);
+#endif
     }
     else                               // Setting for Safety region
     {
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+        R_PORT_SRS->RSELP[port] &= (uint8_t) (~(1U << pin_num));
+#else
         R_PTADR->RSELP[port] &= (uint8_t) (~(1U << pin_num));
-        p_ioport_regs         = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_SAFE);
+#endif
+        R_PORT_COMMON_Type * p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_SAFE);
+        r_ioport_pin_set_safety(p_ioport_regs, pin, p_cfg_data);
     }
+}
+
+/*******************************************************************************************************************//**
+ * Writes to the specified pin's multiple registers for safety port
+ *
+ * @param[in]    p_ioport_regs Base address of register to be accessed
+ * @param[in]    pin           Pin to write parameter data for
+ * @param[in]    p_cfg_data    Value to be written to the multiple registers
+ *
+ **********************************************************************************************************************/
+static void r_ioport_pin_set_safety (R_PORT_COMMON_Type * p_ioport_regs,
+                                     bsp_io_port_pin_t    pin,
+                                     ioport_cfg_data_t  * p_cfg_data)
+{
+    uint32_t temp_value;
+
+    /* Get port and pin number */
+    uint32_t port    = (IOPORT_PRV_PORT_BITS & (ioport_size_t) pin) >> IOPORT_PRV_PORT_OFFSET;
+    uint32_t pin_num = (IOPORT_PRV_PIN_BITS & (ioport_size_t) pin);
 
     /* Setting DRCTL register */
     if (3U >= pin_num)
@@ -786,13 +974,35 @@ static void r_ioport_pin_set (bsp_io_port_pin_t pin, ioport_cfg_data_t * p_cfg_d
     }
 
     /* Setting for GPIO or peripheral */
-    if (1U == p_cfg_data->pmc_reg)                                                                  // Setting for peripheral
+    if (1U == p_cfg_data->pmc_reg)     // Setting for peripheral
     {
+#if BSP_FEATURE_IOPORT_PIN_PFC_TYPE == 3
+        if (3U >= pin_num)
+        {
+            /* Setting PFC register */
+            temp_value                 = p_ioport_regs->PFC[port].L & ~(IOPORT_PFC_BIT_MASK << (pin_num * 8U));
+            p_ioport_regs->PFC[port].L = temp_value | (uint32_t) (p_cfg_data->pfc_reg << (pin_num * 8U));
+        }
+        else if (3U < pin_num)
+        {
+            /* Setting PFC register */
+            temp_value                 = p_ioport_regs->PFC[port].H & ~(IOPORT_PFC_BIT_MASK << ((pin_num - 4U) * 8U));
+            p_ioport_regs->PFC[port].H = temp_value | (uint32_t) (p_cfg_data->pfc_reg << ((pin_num - 4U) * 8U));
+        }
+        else
+        {
+            /* Do Nothing */
+        }
+
+#else
+
+        /* Setting PFC register */
         temp_value               = p_ioport_regs->PFC[port] & ~(IOPORT_PFC_BIT_MASK << (pin_num * 4U));
-        p_ioport_regs->PFC[port] = temp_value | (uint32_t) (p_cfg_data->pfc_reg << (pin_num * 4U)); // Setting PFC register
+        p_ioport_regs->PFC[port] = temp_value | (uint32_t) (p_cfg_data->pfc_reg << (pin_num * 4U));
+#endif
 
         /* Setting peripheral for port mode */
-        p_ioport_regs->PMC[port] |= (uint8_t) (p_cfg_data->pmc_reg << pin_num);                     // Setting PMC register
+        p_ioport_regs->PMC[port] |= (uint8_t) (p_cfg_data->pmc_reg << pin_num); // Setting PMC register
     }
     else // Setting for GPIO
     {
@@ -836,6 +1046,117 @@ static void r_ioport_pin_set (bsp_io_port_pin_t pin, ioport_cfg_data_t * p_cfg_d
     }
 }
 
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+
+/*******************************************************************************************************************//**
+ * Writes to the specified pin's multiple registers for non safety port
+ *
+ * @param[in]    p_ioport_regs Base address of register to be accessed
+ * @param[in]    pin           Pin to write parameter data for
+ * @param[in]    p_cfg_data    Value to be written to the multiple registers
+ *
+ **********************************************************************************************************************/
+static void r_ioport_pin_set_non_safety (R_PORT_NS_COMMON_Type * p_ioport_regs,
+                                         bsp_io_port_pin_t       pin,
+                                         ioport_cfg_data_t     * p_cfg_data)
+{
+    uint32_t temp_value;
+
+    /* Get port and pin number */
+    uint32_t port    = (IOPORT_PRV_PORT_BITS & (ioport_size_t) pin) >> IOPORT_PRV_PORT_OFFSET;
+    uint32_t pin_num = (IOPORT_PRV_PIN_BITS & (ioport_size_t) pin);
+
+    /* Setting DRCTL register */
+    if (3U >= pin_num)
+    {
+        temp_value = p_ioport_regs->DRCTL[port].L & ~(IOPORT_DRTCL_BIT_MASK << (pin_num * 8U));
+        p_ioport_regs->DRCTL[port].L = temp_value | (uint32_t) (p_cfg_data->drct_reg << (pin_num * 8U));
+    }
+    else if (3U < pin_num)
+    {
+        temp_value = p_ioport_regs->DRCTL[port].H & ~(IOPORT_DRTCL_BIT_MASK << ((pin_num - 4U) * 8U));
+        p_ioport_regs->DRCTL[port].H = temp_value | (uint32_t) (p_cfg_data->drct_reg << ((pin_num - 4U) * 8U));
+    }
+    else
+    {
+        /* Do Nothing */
+    }
+
+    /* Setting for GPIO or peripheral */
+    if (1U == p_cfg_data->pmc_reg)     // Setting for peripheral
+    {
+ #if BSP_FEATURE_IOPORT_PIN_PFC_TYPE == 3
+        if (3U >= pin_num)
+        {
+            /* Setting PFC register */
+            temp_value                 = p_ioport_regs->PFC[port].L & ~(IOPORT_PFC_BIT_MASK << (pin_num * 8U));
+            p_ioport_regs->PFC[port].L = temp_value | (uint32_t) (p_cfg_data->pfc_reg << (pin_num * 8U));
+        }
+        else if (3U < pin_num)
+        {
+            /* Setting PFC register */
+            temp_value                 = p_ioport_regs->PFC[port].H & ~(IOPORT_PFC_BIT_MASK << ((pin_num - 4U) * 8U));
+            p_ioport_regs->PFC[port].H = temp_value | (uint32_t) (p_cfg_data->pfc_reg << ((pin_num - 4U) * 8U));
+        }
+        else
+        {
+            /* Do Nothing */
+        }
+
+ #else
+
+        /* Setting PFC register */
+        temp_value               = p_ioport_regs->PFC[port] & ~(IOPORT_PFC_BIT_MASK << (pin_num * 4U));
+        p_ioport_regs->PFC[port] = temp_value | (uint32_t) (p_cfg_data->pfc_reg << (pin_num * 4U));
+ #endif
+
+        /* Setting peripheral for port mode */
+        p_ioport_regs->PMC[port] |= (uint8_t) (p_cfg_data->pmc_reg << pin_num);
+    }
+    else                                                          // Setting for GPIO
+    {
+        /* Setting GPIO for port mode */
+        p_ioport_regs->PMC[port] &= (uint8_t) (~(1U << pin_num)); // Setting PMC register
+
+        /* Setting for input or output */
+        if (1U == p_cfg_data->pm_reg)                             // Setting for input
+        {
+            /* Setting PM register. */
+            /* 01b: Input           */
+            temp_value              = (uint32_t) (p_ioport_regs->PM[port] & ~(IOPORT_PM_BIT_MASK << (pin_num * 2U)));
+            p_ioport_regs->PM[port] = (uint16_t) (temp_value | (uint32_t) (1U << (pin_num * 2U)));
+        }
+        else if (1U < p_cfg_data->pm_reg)     // Setting for two kinds of Output
+        {
+            /* Setting P register */
+            if (0U == p_cfg_data->p_reg)      // Low output setting
+            {
+                p_ioport_regs->P[port] &= (uint8_t) (~(1U << pin_num));
+            }
+            else if (1U == p_cfg_data->p_reg) // High output setting
+            {
+                p_ioport_regs->P[port] |= (uint8_t) (1U << pin_num);
+            }
+            else
+            {
+                /* Do Nothing */
+            }
+
+            /* Setting PM register.                              */
+            /* 10b: Output                                       */
+            /* 11b: Output(output data is input to input buffer) */
+            temp_value              = (uint32_t) (p_ioport_regs->PM[port] & ~(IOPORT_PM_BIT_MASK << (pin_num * 2U)));
+            p_ioport_regs->PM[port] = (uint16_t) (temp_value | (uint32_t) (p_cfg_data->pm_reg << (pin_num * 2U)));
+        }
+        else
+        {
+            /* Do Nothing */
+        }
+    }
+}
+
+#endif
+
 /*******************************************************************************************************************//**
  * Writes to the specified pin's multiple registers to generate event link function
  *
@@ -844,11 +1165,16 @@ static void r_ioport_pin_set (bsp_io_port_pin_t pin, ioport_cfg_data_t * p_cfg_d
  **********************************************************************************************************************/
 static void r_ioport_event_config (const ioport_extend_cfg_t * p_extend_cfg_data)
 {
-    uint8_t               event_num;
-    uint8_t               temp_value    = 0x00;
-    uint8_t               single_enable = 0x00;
-    uint8_t               group_enable  = 0x00;
-    R_PORT_COMMON_Type  * p_ioport_regs;
+    uint8_t event_num;
+    uint8_t temp_value    = 0x00;
+    uint8_t single_enable = 0x00;
+    uint8_t group_enable  = 0x00;
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    R_PORT_NS_COMMON_Type * p_ioport_regs;
+#else
+    R_PORT_COMMON_Type * p_ioport_regs;
+#endif
+
     ioport_extend_cfg_t * ex_cfg;
 
     ex_cfg = (ioport_extend_cfg_t *) p_extend_cfg_data;
@@ -856,7 +1182,7 @@ static void r_ioport_event_config (const ioport_extend_cfg_t * p_extend_cfg_data
     R_BSP_PinAccessEnable();           // Unlock Register Write Protection
 
     /* Get register address */
-    p_ioport_regs = IOPORT_PRV_PORT_ADDRESS(IOPORT_REGION_SEL_NSAFE);
+    p_ioport_regs = R_PORT_NSR;
 
     /* Single port configuration */
     for (event_num = 0U; event_num < IOPORT_SINGLE_PORT_NUM; event_num++)
@@ -868,11 +1194,11 @@ static void r_ioport_event_config (const ioport_extend_cfg_t * p_extend_cfg_data
         temp_value = p_ioport_regs->ELC_PEL[event_num] & IOPORT_ELC_PEL_MASK;
 
         /* Port selection */
-        if ((BSP_IO_PORT_16 >> IOPORT_PRV_PORT_OFFSET) == port)
+        if ((BSP_FEATURE_ELC_GROUP1_PORT_NUM >> IOPORT_PRV_PORT_OFFSET) == port)
         {
             temp_value |= 1U << 3;
         }
-        else if ((BSP_IO_PORT_18 >> IOPORT_PRV_PORT_OFFSET) == port)
+        else if ((BSP_FEATURE_ELC_GROUP2_PORT_NUM >> IOPORT_PRV_PORT_OFFSET) == port)
         {
             temp_value |= 1U << 4;
         }
@@ -919,7 +1245,7 @@ static void r_ioport_event_config (const ioport_extend_cfg_t * p_extend_cfg_data
         {
             /* Input port group control */
             temp_value  = p_ioport_regs->ELC_PGC[event_num] & IOOPRT_ELC_PGC_MASK;
-            temp_value |= ex_cfg->port_group_input_cfg[event_num].edge_detection;                      // Edge detection
+            temp_value |= (uint8_t) (ex_cfg->port_group_input_cfg[event_num].edge_detection);          // Edge detection
             temp_value |= (uint8_t) (ex_cfg->port_group_input_cfg[event_num].overwrite_control << 2U); // Overwrite setting
 
             /* Buffer register initialization */

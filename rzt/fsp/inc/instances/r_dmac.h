@@ -65,6 +65,30 @@ typedef enum e_dmac_link_interrupt_mask
 } dmac_link_interrupt_mask_t;
 
 /** Descriptor structure used in DMAC link mode, and variables of dmac_link_cfg_t must be allocated in the memory area. */
+#if defined(BSP_CFG_CORE_CA55)
+typedef struct st_dmac_link_cfg
+{
+    union
+    {
+        uint32_t header_u32;                                   ///< Descriptor header
+        struct
+        {
+            dmac_link_valid_t          link_valid         : 1; ///< The descriptor is valid or not.
+            dmac_link_end_t            link_end           : 1; ///< The descriptor is end or not.
+            dmac_link_write_back_t     write_back_disable : 1; ///< Write back enable or not.
+            dmac_link_interrupt_mask_t interrupt_mask     : 1; ///< Interrupt mask is enable or not.
+            uint32_t                                      : 28;
+        } header;
+    };
+    volatile uint32_t src_addr;                                ///< Source address.
+    volatile uint32_t dest_addr;                               ///< Destination address.
+    volatile uint32_t transaction_byte;                        ///< Transaction byte.
+    volatile uint32_t channel_cfg;                             ///< Channel configuration (Set value for CHCFG_n register).
+    volatile uint32_t channel_interval;                        ///< Channel interval (Set value for CHITVL register).
+    volatile uint32_t channel_extension_cfg;                   ///< Channel extension configuration (Set value for CHEXT_n register).
+    volatile uint32_t next_link_addr;                          ///< Next link address.
+} dmac_link_cfg_t;
+#else
 typedef struct st_dmac_link_cfg
 {
     union
@@ -87,6 +111,7 @@ typedef struct st_dmac_link_cfg
     volatile uint32_t     channel_extension_cfg;               ///< Channel extension configuration (Set value for CHEXT_n register).
     void * volatile       p_next_link_addr;                    ///< Next link address.
 } dmac_link_cfg_t;
+#endif
 
 /** Select the Next register set to be executed next. */
 typedef enum e_dmac_register_select_reverse

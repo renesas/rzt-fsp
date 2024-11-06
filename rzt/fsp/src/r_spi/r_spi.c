@@ -22,8 +22,8 @@
 #define SPI_OPEN                        (0x52535049ULL)
 
 /** SPI base register access macro.  */
-#define SPI_REG(channel)    ((R_SPI0_Type *) ((uint32_t) R_SPI0 +                       \
-                                              ((uint32_t) R_SPI1 - (uint32_t) R_SPI0) * \
+#define SPI_REG(channel)    ((R_SPI0_Type *) ((uintptr_t) R_SPI0 +                        \
+                                              ((uintptr_t) R_SPI1 - (uintptr_t) R_SPI0) * \
                                               (channel)))
 
 #define SPI_CLK_N_DIV_MULTIPLIER        (512U)  ///< Maximum divider for N=0
@@ -606,7 +606,7 @@ static void r_spi_hw_config (spi_instance_ctrl_t * p_instance_ctrl)
 #endif
 
         /* Configure 4-Wire Mode Setting. */
-        spcr &= ~R_SPI0_SPCR_SPMS_Msk;
+        spcr &= (uint32_t) ~R_SPI0_SPCR_SPMS_Msk;
     }
     else
     {
@@ -625,7 +625,7 @@ static void r_spi_hw_config (spi_instance_ctrl_t * p_instance_ctrl)
     sslp |= (uint32_t) p_extend->ssl_polarity << p_extend->ssl_select;
 
     /* Configure SSLn setting. (SSL0, SSL1, SSL2, SSL3)*/
-    spcmd0 &= ~R_SPI0_SPCMD_SSLA_Msk;
+    spcmd0 &= (uint32_t) ~R_SPI0_SPCMD_SSLA_Msk;
     spcmd0 |= (uint32_t) p_extend->ssl_select << R_SPI0_SPCMD_SSLA_Pos;
 
     if (SPI_MOSI_IDLE_VALUE_FIXING_DISABLE != p_extend->mosi_idle)
@@ -675,6 +675,21 @@ static void r_spi_hw_config (spi_instance_ctrl_t * p_instance_ctrl)
 
     /* Sets the received data ready detection timing */
     spdrcr = p_extend->receive_data_ready_detect_adjustment;
+
+    /* Configure master receive clock. */
+    if (SPI_MASTER_RECEIVE_CLOCK_MRIOCLK == p_extend->master_receive_clock)
+    {
+        /* Configure max analog delay for MRIOCLK. */
+        spcr2 = p_extend->mrioclk_analog_delay;
+    }
+    else
+    {
+        /* Configure MRCLK as master receive clock (Default is MRIOCLK). */
+        spcr |= R_SPI0_SPCR_SPSCKSEL_Msk;
+
+        /* Configure digital delay for MRCLK. */
+        mrckd = p_extend->mrclk_digital_delay;
+    }
 
     /* Power up the SPI module. */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
@@ -727,7 +742,7 @@ static void r_spi_bit_width_config (spi_instance_ctrl_t * p_instance_ctrl)
     uint32_t spcmd0 = p_instance_ctrl->p_regs->SPCMD[0];
 
     /* Configure data length based on the selected bit width . */
-    spcmd0 &= ~R_SPI0_SPCMD_SPB_Msk;
+    spcmd0 &= (uint32_t) ~R_SPI0_SPCMD_SPB_Msk;
     spcmd0 |= (uint32_t) (p_instance_ctrl->bit_width) << R_SPI0_SPCMD_SPB_Pos;
 
     p_instance_ctrl->p_regs->SPCMD[0] = spcmd0;

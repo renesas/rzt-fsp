@@ -138,7 +138,7 @@ fsp_err_t R_CMTW_Open (timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 #endif
 
-    uint32_t base_address = (uint32_t) R_CMTW0 + (p_cfg->channel * ((uint32_t) R_CMTW1 - (uint32_t) R_CMTW0));
+    uintptr_t base_address = (uintptr_t) R_CMTW0 + (p_cfg->channel * ((uintptr_t) R_CMTW1 - (uintptr_t) R_CMTW0));
     p_instance_ctrl->p_reg = (R_CMTW0_Type *) base_address;
     p_instance_ctrl->p_cfg = p_cfg;
 

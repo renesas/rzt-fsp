@@ -30,6 +30,7 @@ FSP_HEADER
 #define BSP_RESET_MRCTLI_SELECT           (0x00480000U)
 #define BSP_RESET_MRCTLJ_SELECT           (0x00090000U)
 #define BSP_RESET_MRCTLK_SELECT           (0x000A0000U)
+#define BSP_RESET_MRCTLM_SELECT           (0x000C0000U)
 
 /* MRCTL register bit number.  */
 #define BSP_RESET_MRCTL_BIT0_SHIFT        (0x00000000U)
@@ -77,9 +78,21 @@ FSP_HEADER
 /** CPU to be reset target.*/
 typedef enum e_bsp_reset
 {
-    BSP_RESET_CR52_0 = 0,              ///< Software reset for CR52_0
-    BSP_RESET_CR52_1 = 1,              ///< Software reset for CR52_1
+    BSP_RESET_CR52_0       = 0,        ///< Software reset for CR52_0
+    BSP_RESET_CR52_1       = 1,        ///< Software reset for CR52_1
+    BSP_RESET_CA55_CLUSTER = 2,        ///< Software reset for CA55_CLUSTER
+    BSP_RESET_CA55_0       = 3,        ///< Software reset for CA55_0
+    BSP_RESET_CA55_1       = 4,        ///< Software reset for CA55_1
+    BSP_RESET_CA55_2       = 5,        ///< Software reset for CA55_2
+    BSP_RESET_CA55_3       = 6,        ///< Software reset for CA55_3
 } bsp_reset_t;
+
+/** CA55 cluster reset auto reset release status. */
+typedef enum e_bsp_cluster_reset_auto_release
+{
+    BSP_CLUSTER_RESET_AUTO_RELEASE_DISABLE = 0,
+    BSP_CLUSTER_RESET_AUTO_RELEASE_ENABLE  = 1,
+} bsp_cluster_reset_auto_release_t;
 
 /** The different types of registers that can control the reset of peripheral modules related to Ethernet. */
 typedef enum e_bsp_module_reset
@@ -110,6 +123,18 @@ typedef enum e_bsp_module_reset
 
     /** Enables writing to the registers related to MII converter reset control. */
     BSP_MODULE_RESET_MII = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT6_SHIFT),
+
+    /** Enables writing to the registers related to GMAC Unit 1 (PCLKAH clock domain) reset control. */
+    BSP_MODULE_RESET_GMAC1_ACLK = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT16_SHIFT),
+
+    /** Enables writing to the registers related to GMAC Unit 1 (PCLKAM clock domain) reset control. */
+    BSP_MODULE_RESET_GMAC1_HCLK = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT17_SHIFT),
+
+    /** Enables writing to the registers related to GMAC Unit 2 (PCLKAH clock domain) reset control. */
+    BSP_MODULE_RESET_GMAC2_ACLK = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT18_SHIFT),
+
+    /** Enables writing to the registers related to GMAC Unit 2 (PCLKAM clock domain) reset control. */
+    BSP_MODULE_RESET_GMAC2_HCLK = (BSP_RESET_MRCTLE_SELECT | BSP_RESET_MRCTL_BIT19_SHIFT),
 
     /** Enables writing to the registers related to SHOSTIF (Master bus clock domain) reset control. */
     BSP_MODULE_RESET_SHOSTIF_MASTER_BUS_CLOCK = (BSP_RESET_MRCTLI_SELECT | BSP_RESET_MRCTL_BIT1_SHIFT),
@@ -143,6 +168,39 @@ typedef enum e_bsp_module_reset
 
     /** Enables writing to the registers related to ENDAT1 reset control. */
     BSP_MODULE_RESET_ENDAT1 = (BSP_RESET_MRCTLK_SELECT | BSP_RESET_MRCTL_BIT3_SHIFT),
+
+    /** Enables writing to the registers related to PCIE reset control. */
+    BSP_MODULE_RESET_PCIE = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT8_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS rst_n reset control. */
+    BSP_MODULE_RESET_DDRSS_RST_N = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT16_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS PwrOkln reset control. */
+    BSP_MODULE_RESET_DDRSS_RST_PWROKLN = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT17_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS Reset reset control. */
+    BSP_MODULE_RESET_DDRSS_RESET = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT18_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS axi0_ARESETn reset control. */
+    BSP_MODULE_RESET_DDRSS_AXI0_ARESETN = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT19_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS axi1_ARESETn reset control. */
+    BSP_MODULE_RESET_DDRSS_AXI1_ARESETN = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT20_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS axi2_ARESETn reset control. */
+    BSP_MODULE_RESET_DDRSS_AXI2_ARESETN = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT21_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS axi3_ARESETn reset control. */
+    BSP_MODULE_RESET_DDRSS_AXI3_ARESETN = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT22_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS axi4_ARESETn reset control. */
+    BSP_MODULE_RESET_DDRSS_AXI4_ARESETN = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT23_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS MC_PRESETn reset control. */
+    BSP_MODULE_RESET_DDRSS_MC_PRESETN = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT24_SHIFT),
+
+    /** Enables writing to the registers related to DDRSS PHY_PRESETn reset control. */
+    BSP_MODULE_RESET_DDRSS_PHY_PRESETN = (BSP_RESET_MRCTLM_SELECT | BSP_RESET_MRCTL_BIT25_SHIFT),
 } bsp_module_reset_t;
 
 /** @} (end addtogroup BSP_MCU) */

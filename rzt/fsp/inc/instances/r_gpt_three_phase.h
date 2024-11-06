@@ -32,11 +32,15 @@ FSP_HEADER
 /** Channel control block. DO NOT INITIALIZE.  Initialization occurs when @ref three_phase_api_t::open is called. */
 typedef struct st_gpt_three_phase_instance_ctrl
 {
-    uint32_t                  open;         // Whether or not channel is open
-    R_GPT0_Type             * p_reg[3];     // Pointer to GPT channel registers
-    uint32_t                  channel_mask; // Bitmask of GPT channels used
-    three_phase_buffer_mode_t buffer_mode;  // Single- or double-buffer mode
-    three_phase_cfg_t const * p_cfg;        // Pointer to configuration struct
+    uint32_t open;                         // Whether or not channel is open
+#if (1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE)
+    R_GPT0_Type * p_reg[3];                // Pointer to GPT channel registers
+#elif (2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE)
+    R_GPT00_0_Type * p_reg[3];             // Pointer to GPT channel registers
+#endif
+    uint32_t channel_mask;                 // Bitmask of GPT channels used
+    three_phase_buffer_mode_t buffer_mode; // Single- or double-buffer mode
+    three_phase_cfg_t const * p_cfg;       // Pointer to configuration struct
 } gpt_three_phase_instance_ctrl_t;
 
 /**********************************************************************************************************************

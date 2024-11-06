@@ -399,6 +399,10 @@ typedef struct st_mtu3_extended_cfg
     mtu3_phase_counting_mode_t      counting_mode;  ///< Select the counting mode.
     mtu3_bit_mode_t                 bit_mode;       ///< Select bit mode
     mtu3_external_clock_t           external_clock; ///< Select External Clock Input Pins
+
+    uint8_t capture_a_source_select;                ///< Identify the GPT_INT for capture a
+    uint8_t capture_b_source_select;                ///< Identify the GPT_INT for capture b
+    uint8_t cycle_end_source_select;                ///< Identify the GPT_INT for capture overflow/underflow
 } mtu3_extended_cfg_t;
 
 /**********************************************************************************************************************

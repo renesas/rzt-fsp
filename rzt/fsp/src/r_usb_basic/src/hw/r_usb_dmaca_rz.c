@@ -81,7 +81,7 @@ usb_dmaca_return_t r_usb_dmaca_create (uint8_t channel, usb_dmaca_transfer_data_
         return USB_DMACA_ERR_INVALID_CH;
     }
 
-    if ((uint32_t) NULL == (uint32_t) p_data_cfg)
+    if (NULL == p_data_cfg)
     {
         return USB_DMACA_ERR_NULL_PTR;
     }
@@ -186,7 +186,7 @@ usb_dmaca_return_t r_usb_dmaca_control (uint8_t channel, usb_dmaca_command_t com
         case USB_DMACA_CMD_STATUS_GET:
         {
   #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
-            if ((uint32_t) NULL == (uint32_t) p_stat)
+            if ( NULL ==  p_stat)
             {
                 return USB_DMACA_ERR_NULL_PTR;
             }
@@ -325,7 +325,7 @@ usb_dmaca_return_t r_usb_dmaca_int_callback (uint8_t channel, void * p_callback)
     }
 
     /* Check for valid address. */
-    if ((uint32_t) NULL == (uint32_t) p_callback)
+    if ( NULL ==  p_callback)
     {
         p_USB_DMACI_Handlers[channel] = NULL;
 
@@ -435,8 +435,13 @@ uint32_t r_usb_dmaca_getversion (void)
  *******************************************************************************/
 static bool r_usb_dmaca_set_transfer_data (uint8_t channel, usb_dmaca_transfer_data_cfg_t * p_cfg)
 {
+#if 1 == BSP_LP64_SUPPORT
+    uint32_t p_src_pa_adr;
+    uint32_t p_des_pa_adr;
+#else
     void * p_src_pa_adr;
     void * p_des_pa_adr;
+#endif
 
   #if (1 == USB_DMACA_CFG_PARAM_CHECKING_ENABLE)
     if (USB_DMACA_CONFIG_SRC_SIZE_LWORD < (p_cfg->src_size & USB_DMACA_INVALID_SRC_SIZE_MASK))

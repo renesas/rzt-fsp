@@ -16,18 +16,29 @@
 /**********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
-#define DSMIF_VALID_UNIT_MASK                       (0x3U) /* Unit0-1 */
-
 #define DSMIF_CMSH_DEFAULT                          (0x0U)
 
-#define VECNUM_DSMIF0_CDRUI                         ((IRQn_Type) 343)
-#define VECNUM_DSMIF1_CDRUI                         ((IRQn_Type) 344)
+#if 2U == BSP_FEATURE_DSMIF_UNIT
+ #define VECNUM_DSMIF0_CDRUI                        ((IRQn_Type) 343)
+ #define VECNUM_DSMIF1_CDRUI                        ((IRQn_Type) 344)
+#elif 10U == BSP_FEATURE_DSMIF_UNIT
+ #define VECNUM_DSMIF0_CDRUI                        ((IRQn_Type) 658)
+ #define VECNUM_DSMIF1_CDRUI                        ((IRQn_Type) 662)
+ #define VECNUM_DSMIF2_CDRUI                        ((IRQn_Type) 666)
+ #define VECNUM_DSMIF3_CDRUI                        ((IRQn_Type) 670)
+ #define VECNUM_DSMIF4_CDRUI                        ((IRQn_Type) 674)
+ #define VECNUM_DSMIF5_CDRUI                        ((IRQn_Type) 678)
+ #define VECNUM_DSMIF6_CDRUI                        ((IRQn_Type) 682)
+ #define VECNUM_DSMIF7_CDRUI                        ((IRQn_Type) 686)
+ #define VECNUM_DSMIF8_CDRUI                        ((IRQn_Type) 690)
+ #define VECNUM_DSMIF9_CDRUI                        ((IRQn_Type) 694)
+#endif
 
 #define DSMIF_OPEN                                  (0x44534D49U)
 
-#define DSMIF_DATA_TYPE_MASK                        (0x0300U)
-#define DSMIF_DATA_CHANNEL_MASK                     (0x0003U)
-#define DSMIF_DATA_TYPE_SHIFT                       (0x8U)
+#define DSMIF_DATA_TYPE_MASK                        (0x0300)
+#define DSMIF_DATA_CHANNEL_MASK                     (0x0003)
+#define DSMIF_DATA_TYPE_SHIFT                       (0x8)
 
 #if (4 == BSP_FEATURE_DSMIF_OVERCURRENT_DETECT_NOTIFY)
 
@@ -96,6 +107,22 @@ const adc_api_t g_adc_on_dsmif =
     .callbackSet   = R_DSMIF_CallbackSet
 };
 
+static IRQn_Type dsmif_irq_num[BSP_FEATURE_DSMIF_UNIT] =
+{
+    (IRQn_Type) 0U,
+    (IRQn_Type) 0U,
+#if 10U == BSP_FEATURE_DSMIF_UNIT
+    (IRQn_Type) 0U,
+    (IRQn_Type) 0U,
+    (IRQn_Type) 0U,
+    (IRQn_Type) 0U,
+    (IRQn_Type) 0U,
+    (IRQn_Type) 0U,
+    (IRQn_Type) 0U,
+    (IRQn_Type) 0U,
+#endif
+};
+
 /*******************************************************************************************************************//**
  * @addtogroup DSMIF
  * @{
@@ -140,20 +167,24 @@ fsp_err_t R_DSMIF_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
 
     dsmif_extended_cfg_t const * p_cfg_extend = p_cfg->p_extend;
 
-    /* mask_bit DSMIF unit0 0-2bit, DSMIF unit1 0-2bit */
+    /* mask_bit DSMIF 0 to 2 bits per unit */
     /* Calculate the register base address. */
-    uint32_t base_address;
-    if (0U == p_cfg->unit)
+    uintptr_t base_address = (uintptr_t) R_DSMIF0;
+    p_instance_ctrl->channel_mask = (uint32_t) (p_cfg_extend->channel_mask >> (p_cfg->unit * 3U));
+    if (p_cfg->unit < BSP_FEATURE_DSMIF_HAS_LLPP_UNIT)
     {
-        p_instance_ctrl->channel_mask = p_cfg_extend->channel_mask;
-        base_address = (uint32_t) R_DSMIF0;
-    }
-    else
-    {
-        p_instance_ctrl->channel_mask = (p_cfg_extend->channel_mask >> 3U);
-        base_address = (uint32_t) R_DSMIF1;
+        base_address =
+            (uintptr_t) ((uintptr_t) R_DSMIF0 + (uint32_t) (BSP_FEATURE_DSMIF_ADDRESS_OFFSET * p_cfg->unit));
     }
 
+#if (0U != BSP_FEATURE_DSMIF_LLPP1_BASE_ADDRESS)
+    else
+    {
+        base_address =
+            (uintptr_t) ((uintptr_t) R_DSMIF6 +
+                         (BSP_FEATURE_DSMIF_ADDRESS_OFFSET * (p_cfg->unit % BSP_FEATURE_DSMIF_HAS_LLPP_UNIT)));
+    }
+#endif
     p_instance_ctrl->p_reg = (R_DSMIF0_Type *) base_address;
 
     /* Figure 39.2 Start flow of DSMIF */
@@ -182,6 +213,11 @@ fsp_err_t R_DSMIF_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
     /* Set data format, Common Interrupt mode */
     p_instance_ctrl->p_reg->DSCMSR = (uint32_t) (p_cfg_extend->dfs << R_DSMIF0_DSCMSR_DFS_Pos);
 #endif
+#if 1U == BSP_FEATURE_DSMIF_CORE_CLOCK_SELECTABLE
+
+    /* Core Clock Selection */
+    p_instance_ctrl->p_reg->DSCCSCR = (uint32_t) (p_cfg_extend->clksel << R_DSMIF0_DSCCSCR_CLKSEL_Pos);
+#endif
 
     /* Register settings for each channel */
     for (uint32_t ch = 0U; ch < DSMIF_MAX_NUM_CHANNELS; ch++)
@@ -193,30 +229,30 @@ fsp_err_t R_DSMIF_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
             /* DSICRCHn : Interrupt Control Register Channel */
 #if (3 == BSP_FEATURE_DSMIF_OVERCURRENT_DETECT_ISR)
             p_instance_ctrl->p_reg->CH[ch].DSICR =
-                ((((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->iue <<
-                    R_DSMIF0_CH_DSICR_IUE_Pos) & R_DSMIF0_CH_DSICR_IUE_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ise <<
-                    R_DSMIF0_CH_DSICR_ISE_Pos) & R_DSMIF0_CH_DSICR_ISE_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioel[0] << R_DSMIF0_CH_DSICR_IOEL0_Pos) &
-                  R_DSMIF0_CH_DSICR_IOEL0_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioel[1] << R_DSMIF0_CH_DSICR_IOEL1_Pos) &
-                  R_DSMIF0_CH_DSICR_IOEL1_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioel[2] << R_DSMIF0_CH_DSICR_IOEL2_Pos) &
-                  R_DSMIF0_CH_DSICR_IOEL2_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioeh[0] <<
-                    R_DSMIF0_CH_DSICR_IOEH0_Pos) & R_DSMIF0_CH_DSICR_IOEH0_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioeh[1] <<
-                    R_DSMIF0_CH_DSICR_IOEH1_Pos) & R_DSMIF0_CH_DSICR_IOEH1_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioeh[2] <<
-                    R_DSMIF0_CH_DSICR_IOEH2_Pos) & R_DSMIF0_CH_DSICR_IOEH2_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->owne[0] <<
-                    R_DSMIF0_CH_DSICR_OWNE0_Pos) & R_DSMIF0_CH_DSICR_OWNE0_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->owne[1] <<
-                    R_DSMIF0_CH_DSICR_OWNE1_Pos) & R_DSMIF0_CH_DSICR_OWNE1_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->owne[2] <<
-                    R_DSMIF0_CH_DSICR_OWNE2_Pos) & R_DSMIF0_CH_DSICR_OWNE2_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->owne[3] <<
-                    R_DSMIF0_CH_DSICR_OWNE3_Pos) & R_DSMIF0_CH_DSICR_OWNE3_Msk));
+                (uint32_t) ((((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->iue <<
+                              R_DSMIF0_CH_DSICR_IUE_Pos) & R_DSMIF0_CH_DSICR_IUE_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ise <<
+                              R_DSMIF0_CH_DSICR_ISE_Pos) & R_DSMIF0_CH_DSICR_ISE_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioel[0] << R_DSMIF0_CH_DSICR_IOEL0_Pos) &
+                             R_DSMIF0_CH_DSICR_IOEL0_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioel[1] << R_DSMIF0_CH_DSICR_IOEL1_Pos) &
+                             R_DSMIF0_CH_DSICR_IOEL1_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioel[2] << R_DSMIF0_CH_DSICR_IOEL2_Pos) &
+                             R_DSMIF0_CH_DSICR_IOEL2_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioeh[0] <<
+                              R_DSMIF0_CH_DSICR_IOEH0_Pos) & R_DSMIF0_CH_DSICR_IOEH0_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioeh[1] <<
+                              R_DSMIF0_CH_DSICR_IOEH1_Pos) & R_DSMIF0_CH_DSICR_IOEH1_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioeh[2] <<
+                              R_DSMIF0_CH_DSICR_IOEH2_Pos) & R_DSMIF0_CH_DSICR_IOEH2_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->owne[0] <<
+                              R_DSMIF0_CH_DSICR_OWNE0_Pos) & R_DSMIF0_CH_DSICR_OWNE0_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->owne[1] <<
+                              R_DSMIF0_CH_DSICR_OWNE1_Pos) & R_DSMIF0_CH_DSICR_OWNE1_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->owne[2] <<
+                              R_DSMIF0_CH_DSICR_OWNE2_Pos) & R_DSMIF0_CH_DSICR_OWNE2_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->owne[3] <<
+                              R_DSMIF0_CH_DSICR_OWNE3_Pos) & R_DSMIF0_CH_DSICR_OWNE3_Msk));
 #else
             p_instance_ctrl->p_reg->CH[ch].DSICR =
                 ((((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ioel << R_DSMIF0_CH_DSICR_IOEL_Pos) &
@@ -255,14 +291,17 @@ fsp_err_t R_DSMIF_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
 
             /* Set each channel's Overcurrent Detect Window Control setting */
             p_instance_ctrl->p_reg->CH[ch].DSODWCR =
-                (((uint32_t) (p_cfg_extend->p_channel_cfgs[ch]->ownm0_2[0] << R_DSMIF0_CH_DSODWCR_OWNM0_Pos) &
-                  R_DSMIF0_CH_DSODWCR_OWNM0_Msk) |
-                 ((uint32_t) (p_cfg_extend->p_channel_cfgs[ch]->ownm0_2[1] << R_DSMIF0_CH_DSODWCR_OWNM1_Pos) &
-                  R_DSMIF0_CH_DSODWCR_OWNM1_Msk) |
-                 ((uint32_t) (p_cfg_extend->p_channel_cfgs[ch]->ownm0_2[2] << R_DSMIF0_CH_DSODWCR_OWNM2_Pos) &
-                  R_DSMIF0_CH_DSODWCR_OWNM2_Msk) |
-                 ((uint32_t) (p_cfg_extend->p_channel_cfgs[ch]->ownm3 << R_DSMIF0_CH_DSODWCR_OWNM3_Pos) &
-                  R_DSMIF0_CH_DSODWCR_OWNM3_Msk));
+                (uint32_t) (((uint32_t) (p_cfg_extend->p_channel_cfgs[ch]->ownm0_2[0] <<
+                                         R_DSMIF0_CH_DSODWCR_OWNM0_Pos) &
+                             R_DSMIF0_CH_DSODWCR_OWNM0_Msk) |
+                            ((uint32_t) (p_cfg_extend->p_channel_cfgs[ch]->ownm0_2[1] <<
+                                         R_DSMIF0_CH_DSODWCR_OWNM1_Pos) &
+                             R_DSMIF0_CH_DSODWCR_OWNM1_Msk) |
+                            ((uint32_t) (p_cfg_extend->p_channel_cfgs[ch]->ownm0_2[2] <<
+                                         R_DSMIF0_CH_DSODWCR_OWNM2_Pos) &
+                             R_DSMIF0_CH_DSODWCR_OWNM2_Msk) |
+                            ((uint32_t) (p_cfg_extend->p_channel_cfgs[ch]->ownm3 << R_DSMIF0_CH_DSODWCR_OWNM3_Pos) &
+                             R_DSMIF0_CH_DSODWCR_OWNM3_Msk));
 #endif
 #if (1 == BSP_FEATURE_DSMIF_OVERCURRENT_DETECT_CONTROL)
             p_instance_ctrl->p_reg->CH[ch].DSOCLTR =
@@ -274,10 +313,10 @@ fsp_err_t R_DSMIF_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
 #endif
 
             p_instance_ctrl->p_reg->CH[ch].DSSCTSR =
-                (((p_cfg_extend->p_channel_cfgs[ch]->scntl << R_DSMIF0_CH_DSSCTSR_SCNTL_Pos) &
-                  R_DSMIF0_CH_DSSCTSR_SCNTL_Msk) |
-                 ((p_cfg_extend->p_channel_cfgs[ch]->scnth <<
-                    R_DSMIF0_CH_DSSCTSR_SCNTH_Pos) & R_DSMIF0_CH_DSSCTSR_SCNTH_Msk));
+                (uint32_t) (((p_cfg_extend->p_channel_cfgs[ch]->scntl << R_DSMIF0_CH_DSSCTSR_SCNTL_Pos) &
+                             R_DSMIF0_CH_DSSCTSR_SCNTL_Msk) |
+                            ((p_cfg_extend->p_channel_cfgs[ch]->scnth <<
+                              R_DSMIF0_CH_DSSCTSR_SCNTH_Pos) & R_DSMIF0_CH_DSSCTSR_SCNTH_Msk));
             p_instance_ctrl->p_reg->CH[ch].DSEDCR =
                 ((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->sde << R_DSMIF0_CH_DSEDCR_SDE_Pos) &
                 R_DSMIF0_CH_DSEDCR_SDE_Msk;
@@ -304,11 +343,11 @@ fsp_err_t R_DSMIF_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
             }
 
             p_instance_ctrl->p_reg->CH[ch].DSCMCCR =
-                ((((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ckdir << R_DSMIF0_CH_DSCMCCR_CKDIR_Pos) &
-                  R_DSMIF0_CH_DSCMCCR_CKDIR_Msk) |
-                 (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->sedge <<
-                    R_DSMIF0_CH_DSCMCCR_SEDGE_Pos) & R_DSMIF0_CH_DSCMCCR_SEDGE_Msk) |
-                 ((ckdiv << R_DSMIF0_CH_DSCMCCR_CKDIV_Pos) & R_DSMIF0_CH_DSCMCCR_CKDIV_Msk));
+                (uint32_t) ((((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->ckdir << R_DSMIF0_CH_DSCMCCR_CKDIR_Pos) &
+                             R_DSMIF0_CH_DSCMCCR_CKDIR_Msk) |
+                            (((uint32_t) p_cfg_extend->p_channel_cfgs[ch]->sedge <<
+                              R_DSMIF0_CH_DSCMCCR_SEDGE_Pos) & R_DSMIF0_CH_DSCMCCR_SEDGE_Msk) |
+                            ((ckdiv << R_DSMIF0_CH_DSCMCCR_CKDIV_Pos) & R_DSMIF0_CH_DSCMCCR_CKDIV_Msk));
 
             /* Set Current Measurement Filter Control Register */
             p_instance_ctrl->p_reg->CH[ch].DSCMFCR =
@@ -461,33 +500,16 @@ fsp_err_t R_DSMIF_StatusGet (adc_ctrl_t * p_ctrl, adc_status_t * p_status)
     FSP_ERROR_RETURN(DSMIF_OPEN == p_instance_ctrl->opened, FSP_ERR_NOT_OPEN);
 #endif
 
-    if (ADC_MODE_SYNCHRONIZE_SCAN == p_instance_ctrl->mode)
-    {
-        /* Channel synchronization control mode */
+    /* Channel synchronization control mode */
 
-        if (0U == (p_instance_ctrl->p_reg->DSCSSR & (R_DSMIF0_DSCSSR_CHSTATE0_Msk | \
-                                                     R_DSMIF0_DSCSSR_CHSTATE1_Msk | R_DSMIF0_DSCSSR_CHSTATE2_Msk)))
-        {
-            p_status->state = ADC_STATE_IDLE;
-        }
-        else
-        {
-            p_status->state = ADC_STATE_SCAN_IN_PROGRESS;
-        }
+    if (0U == (p_instance_ctrl->p_reg->DSCSSR & (R_DSMIF0_DSCSSR_CHSTATE0_Msk | \
+                                                 R_DSMIF0_DSCSSR_CHSTATE1_Msk | R_DSMIF0_DSCSSR_CHSTATE2_Msk)))
+    {
+        p_status->state = ADC_STATE_IDLE;
     }
     else
     {
-        /* Channel individual control mode */
-        if ((0U == (p_instance_ctrl->p_reg->CH[0].DSCSR & R_DSMIF0_CH_DSCSR_CHSTATE_Msk)) &&
-            (0U == (p_instance_ctrl->p_reg->CH[1].DSCSR & R_DSMIF0_CH_DSCSR_CHSTATE_Msk)) &&
-            (0U == (p_instance_ctrl->p_reg->CH[2].DSCSR & R_DSMIF0_CH_DSCSR_CHSTATE_Msk)))
-        {
-            p_status->state = ADC_STATE_IDLE;
-        }
-        else
-        {
-            p_status->state = ADC_STATE_SCAN_IN_PROGRESS;
-        }
+        p_status->state = ADC_STATE_SCAN_IN_PROGRESS;
     }
 
     return FSP_SUCCESS;
@@ -685,7 +707,7 @@ static fsp_err_t r_dsmif_open_param_check (dsmif_instance_ctrl_t * const p_insta
     FSP_ERROR_RETURN(DSMIF_OPEN != p_instance_ctrl->opened, FSP_ERR_ALREADY_OPEN);
 
     /* Verify the unit exists on the MCU. */
-    FSP_ERROR_RETURN(((1U << p_cfg->unit) & DSMIF_VALID_UNIT_MASK), FSP_ERR_IP_UNIT_NOT_PRESENT);
+    FSP_ERROR_RETURN(((1U << p_cfg->unit) & BSP_FEATURE_DSMIF_VALID_UNIT_MASK), FSP_ERR_IP_UNIT_NOT_PRESENT);
 
     /* If a callback is used, then make sure the scan end interrupt is enabled */
     if (NULL != p_cfg->p_callback)
@@ -708,26 +730,7 @@ static void r_dsmif_start (dsmif_instance_ctrl_t * const p_instance_ctrl)
 {
     /* DSCSTRTR : Channel Software Start Trigger Register (Channel synchronization control mode)*/
     /* Write 1 to Channel's start trigger */
-    if (ADC_MODE_SYNCHRONIZE_SCAN == p_instance_ctrl->mode)
-    {
-        p_instance_ctrl->p_reg->DSCSTRTR = p_instance_ctrl->channel_mask;
-    }
-    else
-    {
-        uint32_t ch_mask = p_instance_ctrl->channel_mask;
-        for (uint32_t ch = 0U; ch < DSMIF_MAX_NUM_CHANNELS; ch++)
-        {
-            /* Start if channel mask bit is set */
-            if (1U == (ch_mask & 0x1U))
-            {
-                /* DSCSTRTRCHn : Channel Software Start Trigger Register (Channel individual control mode)*/
-                /* Write 1 to Channel's start trigger */
-                p_instance_ctrl->p_reg->CH[ch].DSCSTRTR_b.STRTRG = R_DSMIF0_CH_DSCSTRTR_STRTRG_Msk;
-            }
-
-            ch_mask >>= 1U;
-        }
-    }
+    p_instance_ctrl->p_reg->DSCSTRTR = p_instance_ctrl->channel_mask;
 }
 
 /*******************************************************************************************************************//**
@@ -743,66 +746,33 @@ static fsp_err_t r_dsmif_stop (dsmif_instance_ctrl_t * const p_instance_ctrl)
     fsp_err_t err     = FSP_SUCCESS;
     uint32_t  timeout = DSMIF_STOP_TIMEOUT;
 
-    if (ADC_MODE_SYNCHRONIZE_SCAN == p_instance_ctrl->mode)
+    /* DSCSTPTR : Channel Software Stop Trigger Register (Channel synchronization control mode) */
+    /* Write 1 to Channel's stop trigger */
+    p_instance_ctrl->p_reg->DSCSTPTR = p_instance_ctrl->channel_mask;
+
+    /* Check that all channels are down */
+    while (0 != (p_instance_ctrl->p_reg->DSCSSR & (R_DSMIF0_DSCSSR_CHSTATE0_Msk | \
+                                                   R_DSMIF0_DSCSSR_CHSTATE1_Msk | R_DSMIF0_DSCSSR_CHSTATE2_Msk)))
     {
-        /* DSCSTPTR : Channel Software Stop Trigger Register (Channel synchronization control mode) */
-        /* Write 1 to Channel's stop trigger */
-        p_instance_ctrl->p_reg->DSCSTPTR = p_instance_ctrl->channel_mask;
-
-        /* Check that all channels are down */
-        while (0 != (p_instance_ctrl->p_reg->DSCSSR & (R_DSMIF0_DSCSSR_CHSTATE0_Msk | \
-                                                       R_DSMIF0_DSCSSR_CHSTATE1_Msk | R_DSMIF0_DSCSSR_CHSTATE2_Msk)))
+        /* Exit processing when time out. */
+        if (0U == timeout)
         {
-            /* Exit processing when time out. */
-            if (0U == timeout)
-            {
-                err = FSP_ERR_TIMEOUT;
-                break;
-            }
-
-            timeout--;
+            err = FSP_ERR_TIMEOUT;
+            break;
         }
 
-        /* Disable overcurrent detection of all target channels */
-        for (uint32_t ch = 0U; ch < DSMIF_MAX_NUM_CHANNELS; ch++)
-        {
-            p_instance_ctrl->p_reg->CH[ch].DSODCR = 0x00000000U;
-        }
-
-        /* Disable sum error detection  */
-        /* DSSECR : Overcurrent Sum Error Detect Control Register */
-        p_instance_ctrl->p_reg->DSSECR = 0x00000000U;
+        timeout--;
     }
-    else
+
+    /* Disable overcurrent detection of all target channels */
+    for (uint32_t ch = 0U; ch < DSMIF_MAX_NUM_CHANNELS; ch++)
     {
-        /* DSCSTPTRCH : Channel Software Stop Trigger Register (Channel individual control mode)*/
-        /* Write 1 to Channel's stop trigger */
-        for (uint32_t ch = 0U; ch < DSMIF_MAX_NUM_CHANNELS; ch++)
-        {
-            p_instance_ctrl->p_reg->CH[ch].DSCSTPTR = R_DSMIF0_CH_DSCSTPTR_STPTRG_Msk;
-        }
-
-        /* Check that all channels are down */
-        while ((0 != (p_instance_ctrl->p_reg->CH[0].DSCSR & R_DSMIF0_CH_DSCSR_CHSTATE_Msk)) &&
-               (0 != (p_instance_ctrl->p_reg->CH[1].DSCSR & R_DSMIF0_CH_DSCSR_CHSTATE_Msk)) &&
-               (0 != (p_instance_ctrl->p_reg->CH[2].DSCSR & R_DSMIF0_CH_DSCSR_CHSTATE_Msk)))
-        {
-            /* Exit processing when time out. */
-            if (0U == timeout)
-            {
-                err = FSP_ERR_TIMEOUT;
-                break;
-            }
-
-            timeout--;
-        }
-
-        /* Disable overcurrent detection of all target channels */
-        for (uint32_t ch = 0U; ch < DSMIF_MAX_NUM_CHANNELS; ch++)
-        {
-            p_instance_ctrl->p_reg->CH[ch].DSODCR = 0x00000000U;
-        }
+        p_instance_ctrl->p_reg->CH[ch].DSODCR = 0x00000000U;
     }
+
+    /* Disable sum error detection  */
+    /* DSSECR : Overcurrent Sum Error Detect Control Register */
+    p_instance_ctrl->p_reg->DSSECR = 0x00000000U;
 
     return err;
 }
@@ -820,6 +790,7 @@ static void r_dsmif_open_irq_cfg (dsmif_instance_ctrl_t * const p_instance_ctrl,
     if (p_cfg->scan_end_irq >= 0)
     {
         R_BSP_IrqCfgEnable(p_cfg->scan_end_irq, p_cfg->scan_end_ipl, p_instance_ctrl);
+        dsmif_irq_num[p_cfg->unit] = p_cfg->scan_end_irq;
     }
 }
 
@@ -869,15 +840,17 @@ void dsmif_cdrui_isr (void)
     if (NULL != p_instance_ctrl->p_callback)
     {
         /* Store the event into the callback argument */
-        if (VECNUM_DSMIF0_CDRUI == irq)
+        /* Check interrupts that have occurred */
+        uint8_t dsmif_unit_no;
+        for (dsmif_unit_no = 0U; dsmif_unit_no < BSP_FEATURE_DSMIF_UNIT; dsmif_unit_no++)
         {
-            p_args->unit = 0U;
-        }
-        else
-        {
-            p_args->unit = 1U;
+            if (dsmif_irq_num[dsmif_unit_no] == irq)
+            {
+                break;
+            }
         }
 
+        p_args->unit      = dsmif_unit_no;
         p_args->event     = ADC_EVENT_SCAN_COMPLETE;
         p_args->p_context = p_instance_ctrl->p_context;
         p_instance_ctrl->p_callback(p_args);

@@ -44,6 +44,8 @@ fsp_err_t R_USB_HMSC_StorageWriteSector(uint16_t              drive_number,
                                         uint32_t              sector_number,
                                         uint16_t              sector_count);
 
+extern uint8_t  g_format_flag;
+
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER
 

@@ -59,6 +59,7 @@ typedef enum e_dsmif_clock_edge
 
 typedef enum e_dsmif_master_clock
 {
+#if 1U == BSP_FEATURE_DSMIF_MCLK_FREQ_TYPE
     DSMIF_MASTER_CLOCK_25MHZ_PCLKH200   = 3,   ///< Master clock 25MHz, PCLKH 200MHz
     DSMIF_MASTER_CLOCK_20MHZ_PCLKH200   = 4,   ///< Master clock 20MHz, PCLKH 200MHz
     DSMIF_MASTER_CLOCK_12_5MHZ_PCLKH200 = 7,   ///< Master clock 12.5MHz, PCLKH 200MHz
@@ -72,7 +73,30 @@ typedef enum e_dsmif_master_clock
     DSMIF_MASTER_CLOCK_9_375MHZ_PCLKH150 = 7,  ///< Master clock 9.375MHz, PCLKH 150MHz
     DSMIF_MASTER_CLOCK_6_25MHZ_PCLKH150  = 11, ///< Master clock 6.25MHz, PCLKH 150MHz
     DSMIF_MASTER_CLOCK_5MHZ_PCLKH150     = 14, ///< Master clock 5MHz, PCLKH 150MHz
+#elif 2U == BSP_FEATURE_DSMIF_MCLK_FREQ_TYPE
+    DSMIF_MASTER_CLOCK_25MHZ_CLK400   = 7,     ///< Master clock 25MHz, Core Clock 400MHz
+    DSMIF_MASTER_CLOCK_20MHZ_CLK400   = 9,     ///< Master clock 20MHz, Core Clock 400MHz
+    DSMIF_MASTER_CLOCK_12_5MHZ_CLK400 = 15,    ///< Master clock 12.5MHz, Core Clock 400MHz
+    DSMIF_MASTER_CLOCK_10MHZ_CLK400   = 19,    ///< Master clock 10MHz, Core Clock 400MHz
+    DSMIF_MASTER_CLOCK_6_25MHZ_CLK400 = 31,    ///< Master clock 6.25MHz, Core Clock 400MHz
+    DSMIF_MASTER_CLOCK_5MHZ_CLK400    = 39,    ///< Master clock 5MHz, Core Clock 400MHz
+
+    DSMIF_MASTER_CLOCK_25MHZ_CLK250   = 4,     ///< Master clock 25MHz, Core Clock 250MHz
+    DSMIF_MASTER_CLOCK_20_8MHZ_CLK250 = 5,     ///< Master clock 20.8MHz, Core Clock 250MHz
+    DSMIF_MASTER_CLOCK_12_5MHZ_CLK250 = 9,     ///< Master clock 12.5MHz, Core Clock 250MHz
+    DSMIF_MASTER_CLOCK_10_4MHZ_CLK250 = 11,    ///< Master clock 10.4MHz, Core Clock 250MHz
+    DSMIF_MASTER_CLOCK_6_25MHZ_CLK250 = 19,    ///< Master clock 6.25MHz, Core Clock 250MHz
+    DSMIF_MASTER_CLOCK_5MHZ_CLK250    = 24,    ///< Master clock 5MHz, Core Clock 250MHz
+#endif
 } dsmif_master_clock_t;
+
+#if 1U == BSP_FEATURE_DSMIF_CORE_CLOCK_SELECTABLE
+typedef enum e_dsmif_core_clock_select
+{
+    DSMIF_CORE_CLOCK_SELECT_250MHZ = 0, ///< Core Clock Selection 250MHz
+    DSMIF_CORE_CLOCK_SELECT_400MHZ = 1, ///< Core Clock Selection 400MHz
+} dsmif_core_clock_select_t;
+#endif
 
 /* 39.2.2.3 DSCMFCRCHn : Current Measurement Filter Control Register Channel n (n = 0 to 2) */
 /* 39.2.2.6 DSOCFCRCHn : Overcurrent Detect Filter Control Register Channel n (n = 0 to 2) */
@@ -146,6 +170,32 @@ typedef enum e_dsmif_channel_mask
     DSMIF_CHANNEL_MASK_3   = (1U << 3U), ///< Channel 3 mask
     DSMIF_CHANNEL_MASK_4   = (1U << 4U), ///< Channel 4 mask
     DSMIF_CHANNEL_MASK_5   = (1U << 5U), ///< Channel 5 mask
+#if 10U == BSP_FEATURE_DSMIF_UNIT
+    DSMIF_CHANNEL_MASK_6  = (1U << 6U),  ///< Channel 6 mask
+    DSMIF_CHANNEL_MASK_7  = (1U << 7U),  ///< Channel 7 mask
+    DSMIF_CHANNEL_MASK_8  = (1U << 8U),  ///< Channel 8 mask
+    DSMIF_CHANNEL_MASK_9  = (1U << 9U),  ///< Channel 9 mask
+    DSMIF_CHANNEL_MASK_10 = (1U << 10U), ///< Channel 10 mask
+    DSMIF_CHANNEL_MASK_11 = (1U << 11U), ///< Channel 11 mask
+    DSMIF_CHANNEL_MASK_12 = (1U << 12U), ///< Channel 12 mask
+    DSMIF_CHANNEL_MASK_13 = (1U << 13U), ///< Channel 13 mask
+    DSMIF_CHANNEL_MASK_14 = (1U << 14U), ///< Channel 14 mask
+    DSMIF_CHANNEL_MASK_15 = (1U << 15U), ///< Channel 15 mask
+    DSMIF_CHANNEL_MASK_16 = (1U << 16U), ///< Channel 16 mask
+    DSMIF_CHANNEL_MASK_17 = (1U << 17U), ///< Channel 17 mask
+    DSMIF_CHANNEL_MASK_18 = (1U << 18U), ///< Channel 18 mask
+    DSMIF_CHANNEL_MASK_19 = (1U << 19U), ///< Channel 19 mask
+    DSMIF_CHANNEL_MASK_20 = (1U << 20U), ///< Channel 20 mask
+    DSMIF_CHANNEL_MASK_21 = (1U << 21U), ///< Channel 21 mask
+    DSMIF_CHANNEL_MASK_22 = (1U << 22U), ///< Channel 22 mask
+    DSMIF_CHANNEL_MASK_23 = (1U << 23U), ///< Channel 23 mask
+    DSMIF_CHANNEL_MASK_24 = (1U << 24U), ///< Channel 24 mask
+    DSMIF_CHANNEL_MASK_25 = (1U << 25U), ///< Channel 25 mask
+    DSMIF_CHANNEL_MASK_26 = (1U << 26U), ///< Channel 26 mask
+    DSMIF_CHANNEL_MASK_27 = (1U << 27U), ///< Channel 27 mask
+    DSMIF_CHANNEL_MASK_28 = (1U << 28U), ///< Channel 28 mask
+    DSMIF_CHANNEL_MASK_29 = (1U << 29U), ///< Channel 29 mask
+#endif
 } dsmif_channel_mask_t;
 
 #if (1 == BSP_FEATURE_DSMIF_DATA_FORMAT_SEL)
@@ -236,6 +286,9 @@ typedef struct st_dsmif_extended_cfg
     dsmif_clock_edge_t           edge;                            ///< DSCMCTCRCHn.DEDGE[2:0]  : Current measurement filter initialization trigger for division counter for decimation edge.
 #if (1 == BSP_FEATURE_DSMIF_DATA_FORMAT_SEL)
     dsmif_format_t dfs;                                           ///< Data Format Select
+#endif
+#if 1U == BSP_FEATURE_DSMIF_CORE_CLOCK_SELECTABLE
+    dsmif_core_clock_select_t clksel;                             ///< Core Clock Selection
 #endif
     dsmif_channel_cfg_t * p_channel_cfgs[DSMIF_MAX_NUM_CHANNELS]; ///< Configuration for each channel, set to NULL if unused
     dsmif_channel_mask_t  channel_mask;                           ///< Channel bitmask

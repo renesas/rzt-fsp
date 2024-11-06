@@ -172,7 +172,7 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init (void)
         "    MCR   p15, #0, r0, c12, c0, #0       \n" /* Write r0 to VBAR */
         ::: "memory");
 
-#if (0 == BSP_CFG_CORE_CR52)
+#if (0 == BSP_CFG_CORE_CR52) || (1 == BSP_FEATURE_BSP_HAS_CR52_CPU1_LLPP)
     __asm volatile (
         "LLPP_access_enable:                      \n"
 

@@ -28,7 +28,9 @@
  * Private function prototypes
  *********************************************************************************************************************/
 
-void r_shared_memory_callback(icu_inter_cpu_irq_callback_args_t * p_args);
+void            r_shared_memory_callback(icu_inter_cpu_irq_callback_args_t * p_args);
+static void     r_shared_memory_release_resource(uint8_t semaphore_reg);
+static uint32_t r_shared_memory_read_resource_status(uint8_t semaphore_reg);
 
 /**********************************************************************************************************************
  * Private global variables
@@ -75,7 +77,8 @@ shared_memory_api_t const g_shared_memory_on_shared_memory =
 fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_ctrl, shared_memory_cfg_t const * const p_cfg)
 {
     shared_memory_instance_ctrl_t * p_instance_ctrl = (shared_memory_instance_ctrl_t *) p_ctrl;
-    fsp_err_t err;
+    fsp_err_t         err;
+    volatile uint32_t resource_status = 0;
 
 #if SHARED_MEMORY_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl != NULL);
@@ -95,8 +98,13 @@ fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_ctrl, shared_memo
                       (SHARED_MEMORY_MEMORY_OPEN == p_cfg->p_memory[0])),
                      FSP_ERR_ALREADY_OPEN);
 
-    R_SEM->SYTSEMFEN_b.SEMFEN = 1;     // Enable Read clear function
-    R_SEM->SYTSEMF_b[p_cfg->semaphore_reg].SEMF = 1;
+#if 1U == BSP_FEATURE_SHARED_MEMORY_SETTING_TYPE
+    R_SEM->SYTSEMFEN_b.SEMFEN = 1;                       // Enable Read clear function
+#elif 2U == BSP_FEATURE_SHARED_MEMORY_SETTING_TYPE
+    R_MBXSEM->SEMRCENAR |= (1U << p_cfg->semaphore_reg); // Enable Read clear function
+#endif
+
+    r_shared_memory_release_resource(p_cfg->semaphore_reg);
 
     /* Record the configuration for using it later */
     p_instance_ctrl->p_cfg = p_cfg;
@@ -127,7 +135,8 @@ fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_ctrl, shared_memo
         return err;
     }
 
-    if (0x00000000 == R_SEM->SYTSEMF[p_instance_ctrl->p_cfg->semaphore_reg]) // wait Shared memory available
+    resource_status = r_shared_memory_read_resource_status(p_instance_ctrl->p_cfg->semaphore_reg);
+    if (0x00000000 == resource_status) // wait Shared memory available
     {
         return FSP_ERR_IN_USE;
     }
@@ -135,14 +144,14 @@ fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_ctrl, shared_memo
     if (SHARED_MEMORY_MEMORY_INIT == p_instance_ctrl->p_cfg->p_memory[0])
     {
         p_instance_ctrl->p_cfg->p_memory[0] = SHARED_MEMORY_MEMORY_OPEN;
-        __asm("dmb");                  /* Ensuring data-changing */
+        __asm("dmb sy");               /* Ensuring data-changing */
         p_instance_ctrl->state = SHARED_MEMORY_STATE_NOT_READY;
     }
     else
     {
         p_instance_ctrl->p_cfg->p_memory[0] =
             (uint8_t) (p_instance_ctrl->p_cfg->p_memory[0] + SHARED_MEMORY_MEMORY_OPEN);
-        __asm("dmb");                  /* Ensuring data-changing */
+        __asm("dmb sy");               /* Ensuring data-changing */
 
         err = p_software_int_tx->p_api->generate(p_software_int_tx->p_ctrl);
         if (FSP_SUCCESS != err)
@@ -153,7 +162,7 @@ fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_ctrl, shared_memo
         p_instance_ctrl->state = SHARED_MEMORY_STATE_READY_TO_WRITE;
     }
 
-    R_SEM->SYTSEMF[p_instance_ctrl->p_cfg->semaphore_reg] = 0x00000001; // Shared memory becomes available
+    r_shared_memory_release_resource(p_instance_ctrl->p_cfg->semaphore_reg); // Shared memory becomes available
 
     /* Finally, we can consider this module opened */
     p_instance_ctrl->open = SHARED_MEMORY_OPEN;
@@ -176,6 +185,7 @@ fsp_err_t R_SHARED_MEMORY_Read (shared_memory_ctrl_t * const p_ctrl,
                                 uint32_t const               bytes)
 {
     shared_memory_instance_ctrl_t * p_instance_ctrl = (shared_memory_instance_ctrl_t *) p_ctrl;
+    volatile uint32_t               resource_status = 0;
 
 #if SHARED_MEMORY_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl != NULL);
@@ -191,14 +201,15 @@ fsp_err_t R_SHARED_MEMORY_Read (shared_memory_ctrl_t * const p_ctrl,
         return FSP_ERR_INVALID_ARGUMENT;
     }
 
-    if (0x00000000 == R_SEM->SYTSEMF[p_instance_ctrl->p_cfg->semaphore_reg]) // wait Shared memory available
+    resource_status = r_shared_memory_read_resource_status(p_instance_ctrl->p_cfg->semaphore_reg);
+    if (0x00000000 == resource_status) // wait Shared memory available
     {
         return FSP_ERR_IN_USE;
     }
 
     memcpy(p_dest, &p_instance_ctrl->p_cfg->p_memory[offset], bytes);
 
-    R_SEM->SYTSEMF[p_instance_ctrl->p_cfg->semaphore_reg] = 0x00000001; // Shared memory becomes available
+    r_shared_memory_release_resource(p_instance_ctrl->p_cfg->semaphore_reg); // Shared memory becomes available
 
     if (SHARED_MEMORY_STATE_READY_TO_READ_WRITE == p_instance_ctrl->state)
     {
@@ -223,6 +234,7 @@ fsp_err_t R_SHARED_MEMORY_Write (shared_memory_ctrl_t * const p_ctrl,
                                  uint32_t const               bytes)
 {
     shared_memory_instance_ctrl_t * p_instance_ctrl = (shared_memory_instance_ctrl_t *) p_ctrl;
+    volatile uint32_t               resource_status = 0;
 
 #if SHARED_MEMORY_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl != NULL);
@@ -242,15 +254,16 @@ fsp_err_t R_SHARED_MEMORY_Write (shared_memory_ctrl_t * const p_ctrl,
         return FSP_ERR_INVALID_ARGUMENT;
     }
 
-    if (0x00000000 == R_SEM->SYTSEMF[p_instance_ctrl->p_cfg->semaphore_reg]) // wait Shared memory available
+    resource_status = r_shared_memory_read_resource_status(p_instance_ctrl->p_cfg->semaphore_reg);
+    if (0x00000000 == resource_status) // wait Shared memory available
     {
         return FSP_ERR_IN_USE;
     }
 
     memcpy(&p_instance_ctrl->p_cfg->p_memory[offset], p_src, bytes);
-    __asm("dmb");                                                       /*Ensuring data-changing */
+    __asm("dmb sy");                                                         /*Ensuring data-changing */
 
-    R_SEM->SYTSEMF[p_instance_ctrl->p_cfg->semaphore_reg] = 0x00000001; // Shared memory becomes available
+    r_shared_memory_release_resource(p_instance_ctrl->p_cfg->semaphore_reg); // Shared memory becomes available
 
     p_software_int_tx->p_api->generate(p_software_int_tx->p_ctrl);
 
@@ -336,7 +349,7 @@ fsp_err_t R_SHARED_MEMORY_Close (shared_memory_ctrl_t * const p_ctrl)
         (icu_inter_cpu_irq_instance_t *) ((shared_memory_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend)->
         p_software_int_rx;
 
-    R_SEM->SYTSEMF_b[p_instance_ctrl->p_cfg->semaphore_reg].SEMF = 1; // Shared memory becomes available
+    r_shared_memory_release_resource(p_instance_ctrl->p_cfg->semaphore_reg); // Shared memory becomes available
 
     p_software_int_tx->p_api->close(p_software_int_tx->p_ctrl);
     p_software_int_rx->p_api->close(p_software_int_rx->p_ctrl);
@@ -354,6 +367,44 @@ fsp_err_t R_SHARED_MEMORY_Close (shared_memory_ctrl_t * const p_ctrl)
 /**********************************************************************************************************************
  * Private Functions
  *********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * Releases the resource so that share memory becomes available.
+ *
+ * @param[in]  semaphore_reg               Select semaphore register
+ **********************************************************************************************************************/
+static void r_shared_memory_release_resource (uint8_t semaphore_reg)
+{
+#if 1U == BSP_FEATURE_SHARED_MEMORY_SETTING_TYPE
+    R_SEM->SYTSEMF_b[semaphore_reg].SEMF = 1;
+#elif 2U == BSP_FEATURE_SHARED_MEMORY_SETTING_TYPE
+    R_MBXSEM->SEMAR_b[semaphore_reg].SEM = 1;
+#else
+    FSP_PARAMETER_NOT_USED(semaphore_reg);
+#endif
+}
+
+/*******************************************************************************************************************//**
+ * Reads and returns the status of resource.
+ *
+ * @param[in]  semaphore_reg               Select semaphore register
+ *
+ * @retval resource_status                  Status of semaphore bit
+ **********************************************************************************************************************/
+static uint32_t r_shared_memory_read_resource_status (uint8_t semaphore_reg)
+{
+    uint32_t resource_status;
+
+#if 1U == BSP_FEATURE_SHARED_MEMORY_SETTING_TYPE
+    resource_status = R_SEM->SYTSEMF_b[semaphore_reg].SEMF;
+#elif 2U == BSP_FEATURE_SHARED_MEMORY_SETTING_TYPE
+    resource_status = R_MBXSEM->SEMAR_b[semaphore_reg].SEM;
+#else
+    resource_status = 0;
+#endif
+
+    return resource_status;
+}
 
 /**********************************************************************************************************************
  * Interrupt Vectors

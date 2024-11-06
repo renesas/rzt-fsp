@@ -239,8 +239,13 @@ typedef struct st_usb_dmaca_transfer_data_cfg
     usb_dmaca_chcfg_tc_msk_t        dmatc_msk;    /* Channel Configuration Register .b25:TCM bit set */
     usb_dmaca_ch_interval_t         ch_interval;  /* Channel Interval Register set */
     usb_dmaca_dctrl_priority_t      trx_priority; /* DMA Control Register .b00:PR bit set */
+#if 1 == BSP_LP64_SUPPORT
+    uint32_t p_src_addr;                          /* Start Address of Source */
+    uint32_t p_des_addr;                          /* Start Address of Destination */
+#else
     void   * p_src_addr;                          /* Start Address of Source */
     void   * p_des_addr;                          /* Start Address of Destination */
+#endif
     uint32_t transfer_count;                      /* Transfer Count */
     uint8_t  rsv[2];
 } usb_dmaca_transfer_data_cfg_t;

@@ -51,7 +51,6 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 /* Define overrides required for this MPU. */
-#define BSP_OVERRIDE_ADC_MODE_T
 #define BSP_OVERRIDE_ADC_CHANNEL_T
 #define BSP_OVERRIDE_CGC_CLOCK_T
 #define BSP_OVERRIDE_CGC_PLL_CFG_T
@@ -91,16 +90,6 @@ FSP_HEADER
 /*==============================================
  * ADC API Overrides
  *==============================================*/
-
-/** ADC operation mode definitions  */
-typedef enum e_adc_mode
-{
-    ADC_MODE_SINGLE_SCAN      = 0,     ///< Single scan - one or more channels
-    ADC_MODE_GROUP_SCAN       = 1,     ///< Two trigger sources to trigger scan for two groups which contain one or more channels
-    ADC_MODE_CONTINUOUS_SCAN  = 2,     ///< Continuous scan - one or more channels
-    ADC_MODE_SYNCHRONIZE_SCAN = 3,     ///< Channel synchronization control mode
-    ADC_MODE_INDIVIDUAL_SCAN  = 4,     ///< Channel individual control mode
-} adc_mode_t;
 
 /** ADC channels */
 typedef enum e_adc_channel

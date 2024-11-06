@@ -27,8 +27,8 @@
 /* Calculate the mask bits for byte alignment from the transfer_size_t. */
 #define DMAC_PRV_MASK_ALIGN_N_BYTES(x)    ((1U << (x)) - 1U)
 
-#define DMAC_PRV_REG(unit)                ((R_DMAC0_Type *) (((uint32_t) R_DMAC1 - (uint32_t) R_DMAC0) * unit + \
-                                                             (uint32_t) R_DMAC0))
+#define DMAC_PRV_REG(unit)                ((R_DMAC0_Type *) (((uintptr_t) R_DMAC1 - (uintptr_t) R_DMAC0) * unit + \
+                                                             (uintptr_t) R_DMAC0))
 
 #define DMAC_PRV_CHANNEL(channel)         (channel % 8)
 #define DMAC_PRV_GROUP(channel)           (channel / 8)
@@ -36,7 +36,8 @@
 #define DMAC_PRV_ATCM_END_ADDRESS          (0x0007FFFF)
 #define DMAC_PRV_BTCM_START_ADDRESS        (0x00100000)
 #define DMAC_PRV_BTCM_END_ADDRESS          (0x0010FFFF)
-#define DMAC_PRV_CPUTCM_BASE_ADDRESS       (0x20000000)
+#define DMAC_PRV_CPU0_TCM_BASE_ADDRESS     (0x20000000)
+#define DMAC_PRV_CPU1_TCM_BASE_ADDRESS     (0x21000000)
 
 #define DMAC_PRV_DCTRL_DEFAULT_VALUE       (0x00000000U)
 #define DMAC_PRV_CHCFG_DEFAULT_VALUE       (0x00000000U)
@@ -232,6 +233,11 @@ fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_ctrl, dmac_link_cf
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
+#if defined(BSP_CFG_CORE_CA55)
+    uint64_t pa;                       /* Physical Address */
+    uint64_t va;                       /* Virtual Address */
+#endif
+
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
     FSP_ERROR_RETURN(p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DMS == 1U, FSP_ERR_INVALID_MODE);
 #endif
@@ -239,8 +245,17 @@ fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_ctrl, dmac_link_cf
     /* Store current descriptor */
     p_instance_ctrl->p_descriptor = p_descriptor;
 
+#if defined(BSP_CFG_CORE_CA55)
+
+    /* Set address of the link destination */
+    va = (uint64_t) p_descriptor;
+    R_BSP_MmuVatoPa(va, &pa);
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) pa;
+#else
+
     /* Set address of the link destination */
     p_instance_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) p_descriptor;
+#endif
 
     err = r_dmac_prv_enable(p_instance_ctrl);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_NOT_ENABLED);
@@ -434,10 +449,18 @@ fsp_err_t R_DMAC_Reload (transfer_ctrl_t * const p_ctrl,
 {
     dmac_instance_ctrl_t * p_instance_ctrl = (dmac_instance_ctrl_t *) p_ctrl;
 
+    uint32_t * p_src_cast;
+    uint32_t * p_dest_cast;
+
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
     FSP_ERROR_RETURN(p_instance_ctrl->dmac_mode == DMAC_MODE_SELECT_REGISTER, FSP_ERR_INVALID_MODE);
+#endif
+
+#if defined(BSP_CFG_CORE_CA55)
+    uint64_t pa;                       /* Physical Address */
+    uint64_t va;                       /* Virtual Address */
 #endif
 
     dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
@@ -458,30 +481,80 @@ fsp_err_t R_DMAC_Reload (transfer_ctrl_t * const p_ctrl,
     if ((1 == p_instance_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.EN) &&
         (0 == p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.REN))
     {
+        p_src_cast  = (uint32_t *) p_src;
+        p_dest_cast = (uint32_t *) p_dest;
+
         /* Obtain register set currently in use */
         if (1 == p_instance_ctrl->p_reg->GRP[group].CH[channel].CHSTAT_b.SR)
         {
+#if defined(BSP_CFG_CORE_CA55)
+
+            /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
+            va = (uint64_t) p_src_cast;
+            R_BSP_MmuVatoPa(va, &pa);
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA = (uint32_t) pa;
+
+            va = (uint64_t) p_dest_cast;
+            R_BSP_MmuVatoPa(va, &pa);
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA = (uint32_t) pa;
+#elif ((1 == BSP_CFG_CORE_CR52) && (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA))
+
             /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_src)) ?
-                ((uint32_t) p_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_src);
+                (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+                ((uint32_t) p_src_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_src_cast);
 
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_dest)) ?
-                ((uint32_t) p_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_dest);
+                (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+                ((uint32_t) p_dest_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_dest_cast);
+#else
 
+            /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
+                (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+                ((uint32_t) p_src_cast +
+                 DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_src_cast);
+
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
+                (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+                ((uint32_t) p_dest_cast +
+                 DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_dest_cast);
+#endif
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].TB = num_transfers;
         }
         else
         {
+#if defined(BSP_CFG_CORE_CA55)
+
+            /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
+            va = (uint64_t) p_src_cast;
+            R_BSP_MmuVatoPa(va, &pa);
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA = (uint32_t) pa;
+
+            va = (uint64_t) p_dest_cast;
+            R_BSP_MmuVatoPa(va, &pa);
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA = (uint32_t) pa;
+#elif ((1 == BSP_CFG_CORE_CR52) && (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA))
+
             /* Register set currently in use is the Next0 register. Set the Next1 register for the next transfer. */
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
                 (true == r_dmac_address_tcm_check((uint32_t) p_src)) ?
-                ((uint32_t) p_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_src);
+                ((uint32_t) p_src + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_src);
 
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
                 (true == r_dmac_address_tcm_check((uint32_t) p_dest)) ?
-                ((uint32_t) p_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_dest);
+                ((uint32_t) p_dest + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_dest);
+#else
+
+            /* Register set currently in use is the Next0 register. Set the Next1 register for the next transfer. */
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
+                (true == r_dmac_address_tcm_check((uint32_t) p_src)) ?
+                ((uint32_t) p_src + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_src);
+
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
+                (true == r_dmac_address_tcm_check((uint32_t) p_dest)) ?
+                ((uint32_t) p_dest + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_dest);
+#endif
 
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].TB = num_transfers;
         }
@@ -555,10 +628,22 @@ fsp_err_t R_DMAC_Close (transfer_ctrl_t * const p_ctrl)
         R_DMA->DMAC0_RSSEL[rssel_register_num] |=
             (uint32_t) (DMAC_PRV_RSSEL_REQ_SEL_MASK << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum));
     }
-    else
+    else if (1 == p_extend->unit)
     {
         R_DMA->DMAC1_RSSEL[rssel_register_num] |=
             (uint32_t) (DMAC_PRV_RSSEL_REQ_SEL_MASK << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum));
+    }
+
+#if (3 == BSP_FEATURE_DMAC_MAX_UNIT)
+    else if (2 == p_extend->unit)
+    {
+        R_DMA->DMAC2_RSSEL[rssel_register_num] |=
+            (uint32_t) (DMAC_PRV_RSSEL_REQ_SEL_MASK << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum));
+    }
+#endif
+    else
+    {
+        /* Do nothing */
     }
 
     /* Disable DMA transfer */
@@ -667,6 +752,14 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
+    uint32_t * p_src_cast;
+    uint32_t * p_dest_cast;
+
+#if defined(BSP_CFG_CORE_CA55)
+    uint64_t pa;                       /* Physical Address */
+    uint64_t va;                       /* Virtual Address */
+#endif
+
     uint32_t dctrl = DMAC_PRV_DCTRL_DEFAULT_VALUE;
     uint32_t chcfg = DMAC_PRV_CHCFG_DEFAULT_VALUE;
 
@@ -735,7 +828,7 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
 
         R_DMA->DMAC0_RSSEL[rssel_register_num] = rssel;
     }
-    else
+    else if (1 == p_extend->unit)
     {
         /* DMAC1 trigger source set. */
         uint32_t rssel = R_DMA->DMAC1_RSSEL[rssel_register_num];
@@ -749,45 +842,117 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
         R_DMA->DMAC1_RSSEL[rssel_register_num] = rssel;
     }
 
+#if (3 == BSP_FEATURE_DMAC_MAX_UNIT)
+    else if (2 == p_extend->unit)
+    {
+        /* DMAC2 trigger source set. */
+        uint32_t rssel = R_DMA->DMAC2_RSSEL[rssel_register_num];
+        rssel &=
+            (uint32_t) ~(DMAC_PRV_RSSEL_REQ_SEL_MASK << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum));
+
+        rssel |= (ELC_EVENT_NONE != p_extend->activation_source) ?
+                 (uint32_t) ((p_extend->activation_source) << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum)) :
+                 (uint32_t) (DMAC_PRV_RSSEL_REQ_SEL_MASK << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum));
+
+        R_DMA->DMAC2_RSSEL[rssel_register_num] = rssel;
+    }
+#endif
+    else
+    {
+        /* Do nothing */
+    }
+
     /* Get the current value of DCTRL.LVINT to avoid overwriting setting of another channel and OR it. */
     dctrl |= (uint32_t) (p_instance_ctrl->p_reg->GRP[group].DCTRL_b.LVINT << DMAC_PRV_DCTRL_LVINT_OFFSET);
 
     p_instance_ctrl->p_reg->GRP[group].DCTRL = dctrl;
 
-    /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
+    p_src_cast  = (uint32_t *) p_info->p_src;
+    p_dest_cast = (uint32_t *) p_info->p_dest;
+
+#if defined(BSP_CFG_CORE_CA55)
+    va = (uint64_t) p_src_cast;
+    R_BSP_MmuVatoPa(va, &pa);
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA = (uint32_t) pa;
+
+    va = (uint64_t) p_dest_cast;
+    R_BSP_MmuVatoPa(va, &pa);
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA = (uint32_t) pa;
+#elif ((1 == BSP_CFG_CORE_CR52) && (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA))
+
+    /* When DMAC accesses TCM, use CPU1ATCM(0x21000000 - 0x2107FFFF) / CPU1BTCM(0x21100000 - 0x2110FFFF) area. */
     p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
-        (true == r_dmac_address_tcm_check((uint32_t) p_info->p_src)) ?
-        ((uint32_t) p_info->p_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_info->p_src);
+        (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+        ((uint32_t) p_src_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_src_cast);
 
     p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
-        (true == r_dmac_address_tcm_check((uint32_t) p_info->p_dest)) ?
-        ((uint32_t) p_info->p_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) : ((uint32_t) p_info->p_dest);
+        (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+        ((uint32_t) p_dest_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_dest_cast);
+#else
+
+    /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
+        (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+        ((uint32_t) p_src_cast +
+         DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_src_cast);
+
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
+        (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+        ((uint32_t) p_dest_cast +
+         DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_dest_cast);
+#endif
 
     p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].TB       = p_info->length;
     p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG         = chcfg;
     p_instance_ctrl->p_reg->GRP[group].CH[channel].CHITVL_b.ITVL = p_extend->transfer_interval;
 
-    uint32_t src_address  = (uint32_t) p_info->p_src;
-    uint32_t dest_address = (uint32_t) p_info->p_dest;
+    uint32_t src_address  = (uint32_t) (uintptr_t) p_info->p_src;
+    uint32_t dest_address = (uint32_t) (uintptr_t) p_info->p_dest;
     uint32_t chext        = r_dmac_config_chext(src_address, dest_address);
 
     if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operaion)
     {
+        p_src_cast  = (uint32_t *) p_info->p_next1_src;
+        p_dest_cast = (uint32_t *) p_info->p_next1_dest;
+
+#if defined(BSP_CFG_CORE_CA55)
+        va = (uint64_t) p_src_cast;
+        R_BSP_MmuVatoPa(va, &pa);
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA = (uint32_t) pa;
+
+        va = (uint64_t) p_dest_cast;
+        R_BSP_MmuVatoPa(va, &pa);
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA = (uint32_t) pa;
+#elif ((1 == BSP_CFG_CORE_CR52) && (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA))
+
         /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
         p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
-            (true == r_dmac_address_tcm_check((uint32_t) p_info->p_next1_src)) ?
-            ((uint32_t) p_info->p_next1_src + DMAC_PRV_CPUTCM_BASE_ADDRESS) :
-            ((uint32_t) p_info->p_next1_src);
+            (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+            ((uint32_t) p_src_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) :
+            ((uint32_t) p_src_cast);
 
         p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
-            (true == r_dmac_address_tcm_check((uint32_t) p_info->p_next1_dest)) ?
-            ((uint32_t) p_info->p_next1_dest + DMAC_PRV_CPUTCM_BASE_ADDRESS) :
-            ((uint32_t) p_info->p_next1_dest);
+            (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+            ((uint32_t) p_dest_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) :
+            ((uint32_t) p_dest_cast);
+#else
+
+        /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
+            (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+            ((uint32_t) p_src_cast + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) :
+            ((uint32_t) p_src_cast);
+
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
+            (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+            ((uint32_t) p_dest_cast + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) :
+            ((uint32_t) p_dest_cast);
+#endif
 
         p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].TB = p_info->next1_length;
 
-        src_address  = (uint32_t) p_info->p_next1_src;
-        dest_address = (uint32_t) p_info->p_next1_dest;
+        src_address  = (uint32_t) (uintptr_t) p_info->p_next1_src;
+        dest_address = (uint32_t) (uintptr_t) p_info->p_next1_dest;
 
         chext |= r_dmac_config_chext(src_address, dest_address);
     }
@@ -806,6 +971,11 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_inst
 
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
+
+#if defined(BSP_CFG_CORE_CA55)
+    uint64_t pa;                       /* Physical Address */
+    uint64_t va;                       /* Virtual Address */
+#endif
 
     uint32_t dctrl = DMAC_PRV_DCTRL_DEFAULT_VALUE;
 
@@ -840,7 +1010,7 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_inst
 
         R_DMA->DMAC0_RSSEL[rssel_register_num] = rssel;
     }
-    else
+    else if (1 == p_extend->unit)
     {
         /* DMAC1 trigger source set. */
         uint32_t rssel = R_DMA->DMAC1_RSSEL[rssel_register_num];
@@ -854,10 +1024,38 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_inst
         R_DMA->DMAC1_RSSEL[rssel_register_num] = rssel;
     }
 
+#if (3 == BSP_FEATURE_DMAC_MAX_UNIT)
+    else if (2 == p_extend->unit)
+    {
+        /* DMAC2 trigger source set. */
+        uint32_t rssel = R_DMA->DMAC2_RSSEL[rssel_register_num];
+        rssel &=
+            (uint32_t) ~(DMAC_PRV_RSSEL_REQ_SEL_MASK << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum));
+
+        rssel |= (ELC_EVENT_NONE != p_extend->activation_source) ?
+                 (uint32_t) ((p_extend->activation_source) << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum)) :
+                 (uint32_t) (DMAC_PRV_RSSEL_REQ_SEL_MASK << (DMAC_PRV_RSSEL_REQ_SEL_OFFSET * rssel_bit_bum));
+
+        R_DMA->DMAC2_RSSEL[rssel_register_num] = rssel;
+    }
+#endif
+    else
+    {
+        /* Do nothing */
+    }
     p_instance_ctrl->p_reg->GRP[group].DCTRL = dctrl;
+
+#if defined(BSP_CFG_CORE_CA55)
+
+    /* Set address of the link destination */
+    va = (uint64_t) (p_extend->p_descriptor);
+    R_BSP_MmuVatoPa(va, &pa);
+    p_instance_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) pa;
+#else
 
     /* Set address of the link destination */
     p_instance_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) (p_extend->p_descriptor);
+#endif
 
     /* Store current descriptor. */
     p_instance_ctrl->p_descriptor = p_extend->p_descriptor;
@@ -986,12 +1184,13 @@ static fsp_err_t r_dmac_link_descriptor_paramter_checking (dmac_link_cfg_t const
     {
         /* Start address of the link destination must be 4 byte align.
          * (See section 'Next Link Address Register n (NXLA_n)' of the RZ microprocessor manual) */
-        FSP_ASSERT(0U == ((uint32_t) p_current_descriptor & DMAC_PRV_MASK_ALIGN_N_BYTES(DMAC_PRV_MASK_ALIGN_4_BYTES)));
+        FSP_ASSERT(0U == ((uintptr_t) p_current_descriptor & DMAC_PRV_MASK_ALIGN_N_BYTES(DMAC_PRV_MASK_ALIGN_4_BYTES)));
 
         /* Start address of the link destination must not be in TCM area.
          * (See section 'TCM Access via AXIS Interface of Cortex-R52' of the RZ microprocessor manual) */
-        FSP_ERROR_RETURN(false == r_dmac_address_tcm_check((uint32_t) p_current_descriptor), FSP_ERR_ASSERTION);
-        FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uint32_t) p_current_descriptor),
+        FSP_ERROR_RETURN(false == r_dmac_address_tcm_check((uint32_t) (uintptr_t) p_current_descriptor),
+                         FSP_ERR_ASSERTION);
+        FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uint32_t) (uintptr_t) p_current_descriptor),
                          FSP_ERR_ASSERTION);
 
         if (DMAC_LINK_END_ENABLE == p_current_descriptor->header.link_end)
@@ -999,7 +1198,11 @@ static fsp_err_t r_dmac_link_descriptor_paramter_checking (dmac_link_cfg_t const
             break;
         }
 
-        p_current_descriptor = (dmac_link_cfg_t *) (p_current_descriptor->p_next_link_addr);
+ #if defined(BSP_CFG_CORE_CA55)
+        p_current_descriptor = (dmac_link_cfg_t *) (uintptr_t) (p_current_descriptor->next_link_addr);
+ #else
+        p_current_descriptor = (dmac_link_cfg_t *) (uintptr_t) (p_current_descriptor->p_next_link_addr);
+ #endif
     } while (NULL != p_current_descriptor);
 
     return FSP_SUCCESS;
@@ -1047,8 +1250,8 @@ static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_c
     uint8_t group   = DMAC_PRV_GROUP(p_extend->channel);
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
-    void const * p_src  = (void const *) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA;
-    void const * p_dest = (void const *) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA;
+    void const * p_src  = (void const *) (uintptr_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA;
+    void const * p_dest = (void const *) (uintptr_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA;
 
     transfer_size_t src_size  = (transfer_size_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.SDS;
     transfer_size_t dest_size = (transfer_size_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DDS;
@@ -1060,22 +1263,22 @@ static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_c
 
     /* When the transfer source address is beat-aligned, specify SAD = 0 (increment).
      * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
-    if (0U != ((uint32_t) p_src & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
+    if (0U != ((uintptr_t) p_src & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
     {
         FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == src_addr_mode);
     }
 
     /* When the transfer destination address is beat-aligned, specify DAD = 0 (increment).
      * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
-    if (0U != ((uint32_t) p_dest & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
+    if (0U != ((uintptr_t) p_dest & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
     {
         FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == dest_addr_mode);
     }
 
     if (1 == p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.RSW)
     {
-        void const * p_src_next1  = (void const *) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA;
-        void const * p_dest_next1 = (void const *) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA;
+        void const * p_src_next1  = (void const *) (uintptr_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA;
+        void const * p_dest_next1 = (void const *) (uintptr_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA;
 
         /* The next1 register set source and destination pointers cannot be NULL. */
         FSP_ASSERT(NULL != p_src_next1);
@@ -1083,14 +1286,14 @@ static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_c
 
         /* When the transfer source address is beat-aligned, specify SAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
-        if (0U != ((uint32_t) p_src_next1 & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
+        if (0U != ((uintptr_t) p_src_next1 & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
         {
             FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == src_addr_mode);
         }
 
         /* When the transfer destination address is beat-aligned, specify DAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
-        if (0U != ((uint32_t) p_dest_next1 & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
+        if (0U != ((uintptr_t) p_dest_next1 & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
         {
             FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == dest_addr_mode);
         }
@@ -1115,8 +1318,13 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
     dmac_link_cfg_t const * p_current_descriptor = p_instance_ctrl->p_descriptor;
     do
     {
+ #if defined(BSP_CFG_CORE_CA55)
+        void const * p_src  = (void *) (uintptr_t) p_current_descriptor->src_addr;
+        void const * p_dest = (void *) (uintptr_t) p_current_descriptor->dest_addr;
+ #else
         void const * p_src  = p_current_descriptor->p_src;
-        void const * p_dest = (void const *) p_current_descriptor->p_dest;
+        void const * p_dest = p_current_descriptor->p_dest;
+ #endif
 
         uint32_t channel_cfg = p_current_descriptor->channel_cfg;
 
@@ -1132,14 +1340,14 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
 
         /* When the transfer source address is beat-aligned, specify SAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
-        if (0U != ((uint32_t) p_src & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
+        if (0U != ((uintptr_t) p_src & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
         {
             FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == src_addr_mode);
         }
 
         /* When the transfer destination address is beat-aligned, specify DAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
-        if (0U != ((uint32_t) p_dest & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
+        if (0U != ((uintptr_t) p_dest & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
         {
             FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == dest_addr_mode);
         }
@@ -1149,7 +1357,11 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
             break;
         }
 
-        p_current_descriptor = (dmac_link_cfg_t *) (p_current_descriptor->p_next_link_addr);
+ #if defined(BSP_CFG_CORE_CA55)
+        p_current_descriptor = (dmac_link_cfg_t *) (uintptr_t) (p_current_descriptor->next_link_addr);
+ #else
+        p_current_descriptor = (dmac_link_cfg_t *) (uintptr_t) (p_current_descriptor->p_next_link_addr);
+ #endif
     } while (NULL != p_current_descriptor);
 
     return FSP_SUCCESS;
@@ -1164,10 +1376,23 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
  **********************************************************************************************************************/
 static bool r_dmac_address_tcm_via_axis_check (uint32_t address)
 {
-    return (bool) (((DMAC_PRV_CPUTCM_BASE_ADDRESS <= address) &&
-                    (address <= (DMAC_PRV_ATCM_END_ADDRESS + DMAC_PRV_CPUTCM_BASE_ADDRESS))) ||
-                   (((DMAC_PRV_BTCM_START_ADDRESS + DMAC_PRV_CPUTCM_BASE_ADDRESS) <= address) &&
-                    (address <= (DMAC_PRV_BTCM_END_ADDRESS + DMAC_PRV_CPUTCM_BASE_ADDRESS))));
+ #if (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA)
+
+    return (bool) (((DMAC_PRV_CPU0_TCM_BASE_ADDRESS <= address) &&
+                    (address <= (DMAC_PRV_ATCM_END_ADDRESS + DMAC_PRV_CPU0_TCM_BASE_ADDRESS))) ||
+                   (((DMAC_PRV_BTCM_START_ADDRESS + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) <= address) &&
+                    (address <= (DMAC_PRV_BTCM_END_ADDRESS + DMAC_PRV_CPU0_TCM_BASE_ADDRESS))) ||
+                   (((DMAC_PRV_CPU1_TCM_BASE_ADDRESS) <= address) &&
+                    (address <= (DMAC_PRV_ATCM_END_ADDRESS + DMAC_PRV_CPU1_TCM_BASE_ADDRESS))) ||
+                   (((DMAC_PRV_BTCM_START_ADDRESS + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) <= address) &&
+                    (address <= (DMAC_PRV_BTCM_END_ADDRESS + DMAC_PRV_CPU1_TCM_BASE_ADDRESS))));
+ #elif (0 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA)
+
+    return (bool) (((DMAC_PRV_CPU0_TCM_BASE_ADDRESS <= address) &&
+                    (address <= (DMAC_PRV_ATCM_END_ADDRESS + DMAC_PRV_CPU0_TCM_BASE_ADDRESS))) ||
+                   (((DMAC_PRV_BTCM_START_ADDRESS + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) <= address) &&
+                    (address <= (DMAC_PRV_BTCM_END_ADDRESS + DMAC_PRV_CPU0_TCM_BASE_ADDRESS))));
+ #endif
 }
 
 #endif
@@ -1294,7 +1519,7 @@ void dmac_err_int_isr (uint32_t id)
         }
 
         /* Clear the scanned flags one by one */
-        dstat_err_mask &= ~(1UL);
+        dstat_err_mask &= ~(uint32_t) (1UL);
     }
 
     DMAC_CFG_MULTIPLEX_INTERRUPT_DISABLE;

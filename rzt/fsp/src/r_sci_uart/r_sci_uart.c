@@ -353,7 +353,7 @@ fsp_err_t R_SCI_UART_Open (uart_ctrl_t * const p_ctrl, uart_cfg_t const * const 
 
     if (SCI_UART_FLOW_CONTROL_HARDWARE_CTSRTS == ((sci_uart_extended_cfg_t *) p_cfg->p_extend)->flow_control)
     {
-        FSP_ERROR_RETURN((0U != (((1U << (p_cfg->channel)) & BSP_FEATURE_SCI_UART_CSTPEN_CHANNELS))),
+        FSP_ERROR_RETURN((0U != (((1U << (p_cfg->channel)) & BSP_FEATURE_SCI_UART_CTSPEN_CHANNELS))),
                          FSP_ERR_INVALID_ARGUMENT);
     }
 
@@ -399,7 +399,7 @@ fsp_err_t R_SCI_UART_Open (uart_ctrl_t * const p_ctrl, uart_cfg_t const * const 
     {
         /* Non-Safety Peripheral */
         p_instance_ctrl->p_reg =
-            (R_SCI0_Type *) ((uint32_t) R_SCI0 + (p_cfg->channel * ((uint32_t) R_SCI1 - (uint32_t) R_SCI0)));
+            (R_SCI0_Type *) ((uintptr_t) R_SCI0 + (p_cfg->channel * ((uintptr_t) R_SCI1 - (uintptr_t) R_SCI0)));
     }
     else
     {
@@ -1149,7 +1149,7 @@ static fsp_err_t r_sci_read_write_param_check (sci_uart_instance_ctrl_t const * 
     if (2U == p_instance_ctrl->data_bytes)
     {
         /* Do not allow odd buffer address if data length is 9 bits. */
-        FSP_ERROR_RETURN((0U == ((uint32_t) addr & SCI_UART_ALIGN_2_BYTES)), FSP_ERR_INVALID_ARGUMENT);
+        FSP_ERROR_RETURN((0U == ((uintptr_t) addr & SCI_UART_ALIGN_2_BYTES)), FSP_ERR_INVALID_ARGUMENT);
 
         /* Do not allow odd number of data bytes if data length is 9 bits. */
         FSP_ERROR_RETURN(0U == (bytes % 2U), FSP_ERR_INVALID_ARGUMENT);
@@ -1243,7 +1243,7 @@ static fsp_err_t r_sci_uart_transfer_open (sci_uart_instance_ctrl_t * const p_in
             r_sci_uart_transfer_configure(p_instance_ctrl,
                                           p_cfg->p_transfer_rx,
                                           (uint32_t *) &p_info->p_src,
-                                          (uint32_t) &(p_instance_ctrl->p_reg->RDR));
+                                          (uint32_t) (uintptr_t) &(p_instance_ctrl->p_reg->RDR));
         FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
     }
  #endif
@@ -1262,7 +1262,7 @@ static fsp_err_t r_sci_uart_transfer_open (sci_uart_instance_ctrl_t * const p_in
             r_sci_uart_transfer_configure(p_instance_ctrl,
                                           p_cfg->p_transfer_tx,
                                           (uint32_t *) &p_info->p_dest,
-                                          (uint32_t) &p_instance_ctrl->p_reg->TDR);
+                                          (uint32_t) (uintptr_t) &p_instance_ctrl->p_reg->TDR);
 
   #if (SCI_UART_CFG_RX_ENABLE)
         if ((err != FSP_SUCCESS) && (NULL != p_cfg->p_transfer_rx))
@@ -1329,7 +1329,7 @@ static void r_sci_uart_config_set (sci_uart_instance_ctrl_t * const p_instance_c
      * of RXD). */
     ccr3 |= (p_extend->rx_edge_start & 1U) << SCI_UART_CCR3_RxDSEL_OFFSET;
 
-    ccr3 |= ((uint32_t) p_extend->rs485_setting.enable << R_SCI0_CCR3_DEN_Pos) & R_SCI0_CCR3_DEN_Msk;
+    ccr3 |= ((uint32_t) p_extend->rs485_setting.enable << R_SCI0_CCR3_DEN_Pos) & (uint32_t) R_SCI0_CCR3_DEN_Msk;
 
     /* Configure SPEN bit. */
     if (SCI_UART_CLOCK_SOURCE_PCLKM == p_extend->clock_source)
@@ -1389,9 +1389,9 @@ static void r_sci_uart_config_set (sci_uart_instance_ctrl_t * const p_instance_c
     /* Configure RS-485 DE assertion settings. */
     uint32_t dcr = ((uint32_t) (p_extend->rs485_setting.polarity << R_SCI0_DCR_DEPOL_Pos)) & R_SCI0_DCR_DEPOL_Msk;
     dcr |= ((uint32_t) p_extend->rs485_setting.assertion_time << R_SCI0_DCR_DEAST_Pos) &
-           R_SCI0_DCR_DEAST_Msk;
+           (uint32_t) R_SCI0_DCR_DEAST_Msk;
     dcr |= ((uint32_t) p_extend->rs485_setting.negation_time << R_SCI0_DCR_DENGT_Pos) &
-           R_SCI0_DCR_DENGT_Msk;
+           (uint32_t) R_SCI0_DCR_DENGT_Msk;
     p_instance_ctrl->p_reg->DCR = dcr;
 }
 

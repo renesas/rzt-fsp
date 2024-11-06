@@ -335,6 +335,9 @@ fsp_err_t R_USB_HMSC_StorageWriteSector (uint16_t              drive_number,
     usb_utr_t   ptr;
     uint16_t    err_code;
     usb_cfg_t * p_cfg = NULL;
+#if 1 == BSP_LP64_SUPPORT
+    uint8_t * temp_buf;
+#endif                                 /* defined(BSP_MCU_GROUP_RZA3UL) */
 
 #if USB_CFG_PARAM_CHECKING_ENABLE == BSP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(buff)
@@ -372,6 +375,13 @@ fsp_err_t R_USB_HMSC_StorageWriteSector (uint16_t              drive_number,
     FSP_PARAMETER_NOT_USED(p_cfg);
 #endif
     g_usb_hmsc_strg_process[ptr.ip] = USB_MSG_HMSC_STRG_RW_END;
+#if 1 == BSP_LP64_SUPPORT
+    temp_buf = (uint8_t *) r_usb_pa_to_va((uint64_t) buff);
+    if (buff != temp_buf)
+    {
+        memcpy(temp_buf, buff, trans_byte);
+    }
+#endif                                 /* defined(BSP_MCU_GROUP_RZA3UL) */
     err_code = usb_hmsc_write10(&ptr, drive_number, buff, sector_number, sector_count, trans_byte);
     if (USB_HMSC_OK == err_code)
     {

@@ -898,10 +898,10 @@ void pmsc_atapi_command_processing (uint8_t * cbw, uint16_t usb_result, usb_cb_t
     atapi_mess.tranlen       = this_transfer_size;
     atapi_mess.status        = status;
     atapi_mess.ip            = module_number;
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
     atapi_mess.p_transfer_rx = g_usb_pmsc_utr.p_transfer_rx;
     atapi_mess.p_transfer_tx = g_usb_pmsc_utr.p_transfer_tx;
-#endif /*!defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)*/
+#endif /*!defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)*/
 
     complete(&atapi_mess, USB_NULL, USB_NULL);
 }                                      /* End of function pmsc_atapi_command_processing() */

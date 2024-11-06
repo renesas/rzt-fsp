@@ -314,7 +314,11 @@ uint16_t         g_usb_cstd_bemp_skip[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
 
 #if USB_IP_EHCI_OHCI == 1
 uint8_t  g_data_read_buf[USB_NUM_USBIP][USB_VAL_1024 + 4]  USB_BUFFER_PLACE_IN_SECTION;
+#if 1 == BSP_LP64_SUPPORT
+uintptr_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+#else
 uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+#endif
 uint8_t  g_data_read_flag;
 uint8_t  g_data_write_buf[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1][USB_VAL_1024 +
                                                                                             4]
@@ -322,7 +326,11 @@ USB_BUFFER_PLACE_IN_SECTION;
 #else
  #if (USB_CFG_DMA == USB_CFG_ENABLE)
 uint8_t  g_data_read_buf[USB_NUM_USBIP][USB_VAL_1024 + 4]  USB_BUFFER_PLACE_IN_SECTION;
+#if 1 == BSP_LP64_SUPPORT
+uintptr_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+#else
 uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+#endif
 uint8_t  g_data_write_buf[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1][USB_VAL_1024 +
                                                                                             4]
 USB_BUFFER_PLACE_IN_SECTION;
@@ -572,12 +580,15 @@ usb_er_t usb_data_read (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t si
         p_tran_data->segment   = USB_TRAN_END;
         p_tran_data->ip        = p_ctrl->module_number;
         p_tran_data->ipp       = usb_hstd_get_usb_ip_adr(p_ctrl->module_number);
-
+#if 1 == BSP_LP64_SUPPORT
+        g_data_buf_addr[p_tran_data->ip][p_ctrl->device_address] = (uintptr_t)buf;
+#else
         g_data_buf_addr[p_tran_data->ip][p_ctrl->device_address] = (uint32_t) buf;
+#endif
         g_data_read_flag = 1;
 
  #if (USB_CFG_DMA == USB_CFG_ENABLE)
- #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         if (0 != p_ctrl->p_transfer_tx)
         {
             p_tran_data->p_transfer_tx = p_ctrl->p_transfer_tx;
@@ -621,9 +632,12 @@ usb_er_t usb_data_read (usb_instance_ctrl_t * p_ctrl, uint8_t * buf, uint32_t si
         p_tran_data->tranlen  = size;                                        /* Data Size */
         p_tran_data->complete = (usb_cb_t) g_usb_callback[p_ctrl->type * 2]; /* Callback function */
  #if (USB_CFG_DMA == USB_CFG_ENABLE)
+#if 1 == BSP_LP64_SUPPORT
+        g_data_buf_addr[p_tran_data->ip][pipe] = (uintptr_t) buf;
+#else
         g_data_buf_addr[p_tran_data->ip][pipe] = (uint32_t) buf;
-
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#endif
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         if (0 != p_ctrl->p_transfer_tx)
         {
             p_tran_data->p_transfer_tx = p_ctrl->p_transfer_tx;
@@ -694,7 +708,7 @@ usb_er_t usb_data_write (usb_instance_ctrl_t * p_ctrl, uint8_t const * const buf
         p_tran_data->ip        = p_ctrl->module_number;
         p_tran_data->ipp       = usb_hstd_get_usb_ip_adr(p_ctrl->module_number);
  #if (USB_CFG_DMA == USB_CFG_ENABLE)
-  #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+  #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         if (0 != p_ctrl->p_transfer_tx)
         {
             p_tran_data->p_transfer_tx = p_ctrl->p_transfer_tx;
@@ -752,7 +766,7 @@ usb_er_t usb_data_write (usb_instance_ctrl_t * p_ctrl, uint8_t const * const buf
         p_tran_data->keyword  = pipe;                                              /* Pipe No */
         p_tran_data->complete = (usb_cb_t) g_usb_callback[(p_ctrl->type * 2) + 1]; /* Callback function */
  #if (USB_CFG_DMA == USB_CFG_ENABLE)
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         if (0 != p_ctrl->p_transfer_tx)
         {
             p_tran_data->p_transfer_tx = p_ctrl->p_transfer_tx;
@@ -842,8 +856,8 @@ uint8_t usb_get_usepipe (usb_instance_ctrl_t * p_ctrl, usb_transfer_t dir)
 
         /* Host */
         idx =
-            (uint8_t) (((((usb_class_internal_t) p_ctrl->type - USB_CLASS_INTERNAL_HCDC) * 8) +
-                        ((p_ctrl->device_address - 1) * 2)) + dir);
+            (uint8_t) (((((usb_class_internal_t) p_ctrl->type - (unsigned int)USB_CLASS_INTERNAL_HCDC) * 8U) +
+                        ((p_ctrl->device_address - 1U) * 2U)) + dir);
         pipe = g_usb_pipe_host[idx];
 #endif
     }

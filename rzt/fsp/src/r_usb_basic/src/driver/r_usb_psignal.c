@@ -50,7 +50,7 @@ void usb_pstd_bus_reset (usb_utr_t * p_utr)
     connect_info = usb_cstd_port_speed(p_utr);
 
     /* Callback */
-    if (USB_NULL != g_usb_pstd_driver.devdefault)
+    if (NULL != g_usb_pstd_driver.devdefault)
     {
  #if USB_CFG_BC == USB_CFG_ENABLE
         (*g_usb_pstd_driver.devdefault)(p_utr, connect_info, g_usb_bc_detect);
@@ -100,7 +100,8 @@ void usb_pstd_detach_process (usb_utr_t * p_utr)
 {
     uint16_t i;
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || \
+    defined(BSP_MCU_GROUP_RZT2H)
     hw_usb_clear_cnen(p_utr);
  #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
     /* Pull-up disable */
@@ -123,7 +124,7 @@ void usb_pstd_detach_process (usb_utr_t * p_utr)
     }
 
     /* Callback */
-    if (USB_NULL != g_usb_pstd_driver.devdetach)
+    if (NULL != g_usb_pstd_driver.devdetach)
     {
         (*g_usb_pstd_driver.devdetach)(p_utr, USB_NO_ARG, USB_NULL);
     }
@@ -158,7 +159,7 @@ void usb_pstd_suspend_process (usb_utr_t * p_utr)
         usb_pstd_suspend_function();
 
         /* Callback */
-        if (USB_NULL != g_usb_pstd_driver.devsuspend)
+        if (NULL != g_usb_pstd_driver.devsuspend)
         {
             (*g_usb_pstd_driver.devsuspend)(p_utr, g_usb_pstd_remote_wakeup, USB_NULL);
         }

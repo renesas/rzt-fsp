@@ -643,6 +643,9 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
     gmac_port_mask_t        previous_link_establish_status;
     ether_phy_instance_t ** pp_phy_instance;
     gmac_extend_cfg_t     * p_extend;
+    void (* temp_p_callback)(ether_callback_args_t *);
+    ether_callback_args_t * temp_p_callback_memory;
+    void const            * temp_p_context;
 
     uint32_t i;
 
@@ -667,6 +670,11 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
          *//* back up previous_link_status */
         temp_previous_link_status = p_instance_ctrl->previous_link_status;
 
+        /* back up callback and contex */
+        temp_p_callback        = p_instance_ctrl->p_callback;
+        temp_p_callback_memory = p_instance_ctrl->p_callback_memory;
+        temp_p_context         = p_instance_ctrl->p_context;
+
         err = R_GMAC_Close((ether_ctrl_t *) p_instance_ctrl);
         GMAC_ERROR_RETURN(FSP_SUCCESS == err, err);
 
@@ -675,6 +683,11 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
 
         /* restore previous_link_status */
         p_instance_ctrl->previous_link_status = temp_previous_link_status;
+
+        /* restore callback and contex */
+        p_instance_ctrl->p_callback        = temp_p_callback;
+        p_instance_ctrl->p_callback_memory = temp_p_callback_memory;
+        p_instance_ctrl->p_context         = temp_p_context;
     }
 
     previous_link_establish_status = p_instance_ctrl->link_establish_status;
@@ -715,8 +728,12 @@ fsp_err_t R_GMAC_LinkProcess (ether_ctrl_t * const p_ctrl)
              * and sending and receiving is permitted.
              */
             gmac_configure_mac(p_instance_ctrl, p_gmac_cfg->p_mac_address, GMAC_NO_USE_MAGIC_PACKET_DETECT);
-
             gmac_configure_operation(p_instance_ctrl);
+
+            if (GMAC_MAGIC_PACKET_DETECTING == p_instance_ctrl->magic_packet)
+            {
+                R_GMAC_WakeOnLANEnable(p_ctrl);
+            }
         }
     }
     else
@@ -807,6 +824,8 @@ fsp_err_t R_GMAC_WakeOnLANEnable (ether_ctrl_t * const p_ctrl)
     FSP_ASSERT(p_instance_ctrl);
     GMAC_ERROR_RETURN(GMAC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
+
+    p_instance_ctrl->magic_packet = GMAC_MAGIC_PACKET_DETECTING;
 
     /* When the Link up processing is completed */
     /* Change to the magic packet detection mode.  */

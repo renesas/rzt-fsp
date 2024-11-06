@@ -75,7 +75,7 @@
 #define USB_HCD_MPL                    (USB_HCD_TSK) /* Memory pool ID */
 
 /* Host Manager Task */
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
  #define USB_MGR_TSK                   (USB_TID_1)   /* Task ID */
  #define USB_MGR_MBX                   (USB_MGR_TSK) /* Mailbox ID */
  #define USB_MGR_MPL                   (USB_MGR_TSK) /* Memory pool ID */
@@ -83,7 +83,7 @@
  #define USB_MGR_TSK                   (USB_TID_2)   /* Task ID */
  #define USB_MGR_MBX                   (USB_MGR_TSK) /* Mailbox ID */
  #define USB_MGR_MPL                   (USB_MGR_TSK) /* Memory pool ID */
-#endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+#endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 
 /* Hub Task */
 #define USB_HUB_TSK                    (USB_TID_3)   /* Task ID */
@@ -207,9 +207,9 @@
 /* USB module definition */
 #define USB_M0                                 (R_USBF)
 #define USB_M1                                 (R_USBF)
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
  #define USB00                                 (R_USBHC)
-#endif                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+#endif                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 
 #if defined(BSP_MCU_GROUP_RA6M3)       /* High-speed module */
  #define USB_M1                                (R_USB_HS0)
@@ -274,7 +274,7 @@
 #define USB_CFG_HOST                           (1)
 #define USB_CFG_PERI                           (2)
 
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
   #define USB_IP_EHCI_OHCI                     (1)
  #else
@@ -607,7 +607,7 @@
 #define USB_NOPORT                             (0xFFFFU) /* Not connect */
 
 /* Condition compilation by the difference of IP */
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
  #define USB_MAXDEVADDR                        (1U)
 #else
  #define USB_MAXDEVADDR                        (10U)

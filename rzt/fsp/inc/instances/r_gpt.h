@@ -66,6 +66,7 @@ typedef enum e_gpt_pin_level
     GPT_PIN_LEVEL_HIGH = 1,            ///< Pin level high
 } gpt_pin_level_t;
 
+#if 18U == BSP_FEATURE_GPT_CHANNEL
 typedef enum e_gpt_channel
 {
     GPT_CHANNEL_UNIT0_0 = 0,           ///< Unit0 channel0
@@ -87,6 +88,67 @@ typedef enum e_gpt_channel
     GPT_CHANNEL_UNIT2_2 = 16,          ///< Unit2 channel2
     GPT_CHANNEL_UNIT2_3 = 17,          ///< Unit2 channel3
 } gpt_channel_t;
+#elif 56U == BSP_FEATURE_GPT_CHANNEL
+typedef enum e_gpt_channel
+{
+    GPT_CHANNEL_UNIT0_0  = 0,          ///< Unit0 channel0
+    GPT_CHANNEL_UNIT0_1  = 1,          ///< Unit0 channel1
+    GPT_CHANNEL_UNIT0_2  = 2,          ///< Unit0 channel2
+    GPT_CHANNEL_UNIT0_3  = 3,          ///< Unit0 channel3
+    GPT_CHANNEL_UNIT0_4  = 4,          ///< Unit0 channel4
+    GPT_CHANNEL_UNIT1_0  = 5,          ///< Unit1 channel0
+    GPT_CHANNEL_UNIT1_1  = 6,          ///< Unit1 channel1
+    GPT_CHANNEL_UNIT1_2  = 7,          ///< Unit1 channel2
+    GPT_CHANNEL_UNIT1_3  = 8,          ///< Unit1 channel3
+    GPT_CHANNEL_UNIT1_4  = 9,          ///< Unit1 channel4
+    GPT_CHANNEL_UNIT2_0  = 10,         ///< Unit2 channel0
+    GPT_CHANNEL_UNIT2_1  = 11,         ///< Unit2 channel1
+    GPT_CHANNEL_UNIT2_2  = 12,         ///< Unit2 channel2
+    GPT_CHANNEL_UNIT2_3  = 13,         ///< Unit2 channel3
+    GPT_CHANNEL_UNIT2_4  = 14,         ///< Unit2 channel4
+    GPT_CHANNEL_UNIT3_0  = 15,         ///< Unit3 channel0
+    GPT_CHANNEL_UNIT3_1  = 16,         ///< Unit3 channel1
+    GPT_CHANNEL_UNIT3_2  = 17,         ///< Unit3 channel2
+    GPT_CHANNEL_UNIT3_3  = 18,         ///< Unit3 channel3
+    GPT_CHANNEL_UNIT3_4  = 19,         ///< Unit3 channel4
+    GPT_CHANNEL_UNIT4_0  = 20,         ///< Unit4 channel0
+    GPT_CHANNEL_UNIT4_1  = 21,         ///< Unit4 channel1
+    GPT_CHANNEL_UNIT4_2  = 22,         ///< Unit4 channel2
+    GPT_CHANNEL_UNIT4_3  = 23,         ///< Unit4 channel3
+    GPT_CHANNEL_UNIT4_4  = 24,         ///< Unit4 channel4
+    GPT_CHANNEL_UNIT5_0  = 25,         ///< Unit5 channel0
+    GPT_CHANNEL_UNIT5_1  = 26,         ///< Unit5 channel1
+    GPT_CHANNEL_UNIT5_2  = 27,         ///< Unit5 channel2
+    GPT_CHANNEL_UNIT5_3  = 28,         ///< Unit5 channel3
+    GPT_CHANNEL_UNIT5_4  = 29,         ///< Unit5 channel4
+    GPT_CHANNEL_UNIT6_0  = 30,         ///< Unit6 channel0
+    GPT_CHANNEL_UNIT6_1  = 31,         ///< Unit6 channel1
+    GPT_CHANNEL_UNIT6_2  = 32,         ///< Unit6 channel2
+    GPT_CHANNEL_UNIT6_3  = 33,         ///< Unit6 channel3
+    GPT_CHANNEL_UNIT6_4  = 34,         ///< Unit6 channel4
+    GPT_CHANNEL_UNIT7_0  = 35,         ///< Unit7 channel0
+    GPT_CHANNEL_UNIT7_1  = 36,         ///< Unit7 channel1
+    GPT_CHANNEL_UNIT7_2  = 37,         ///< Unit7 channel2
+    GPT_CHANNEL_UNIT7_3  = 38,         ///< Unit7 channel3
+    GPT_CHANNEL_UNIT7_4  = 39,         ///< Unit7 channel4
+    GPT_CHANNEL_UNIT8_0  = 40,         ///< Unit8 channel0
+    GPT_CHANNEL_UNIT8_1  = 41,         ///< Unit8 channel1
+    GPT_CHANNEL_UNIT8_2  = 42,         ///< Unit8 channel2
+    GPT_CHANNEL_UNIT8_3  = 43,         ///< Unit8 channel3
+    GPT_CHANNEL_UNIT8_4  = 44,         ///< Unit8 channel4
+    GPT_CHANNEL_UNIT9_0  = 45,         ///< Unit9 channel0
+    GPT_CHANNEL_UNIT9_1  = 46,         ///< Unit9 channel1
+    GPT_CHANNEL_UNIT9_2  = 47,         ///< Unit9 channel2
+    GPT_CHANNEL_UNIT9_3  = 48,         ///< Unit9 channel3
+    GPT_CHANNEL_UNIT9_4  = 49,         ///< Unit9 channel4
+    GPT_CHANNEL_UNIT9_5  = 50,         ///< Unit9 channel5
+    GPT_CHANNEL_UNIT9_6  = 51,         ///< Unit9 channel6
+    GPT_CHANNEL_UNIT10_0 = 52,         ///< Unit10 channel0
+    GPT_CHANNEL_UNIT10_1 = 53,         ///< Unit10 channel1
+    GPT_CHANNEL_UNIT10_2 = 54,         ///< Unit10 channel2
+    GPT_CHANNEL_UNIT10_3 = 55,         ///< Unit10 channel3
+} gpt_channel_t;
+#endif
 
 /** Sources can be used to start the timer, stop the timer, count up, or count down. These enumerations represent
  * a bitmask. Multiple sources can be ORed together. */
@@ -295,14 +357,47 @@ typedef enum e_gpt_interrupt_skip_select
     GPT_INTERRUPT_SKIP_SELECT_EITVTT1_2 = 7U, ///< An interrupt is output in the period of EITCNT1[3:0] bits = EIVTT1[3:0] bits and EITCNT2[3:0] bits = EIVTT2[3:0] bits.
 } gpt_interrupt_skip_select_t;
 
+#if 1U == BSP_FEATURE_GPT_INPUT_CAPTURE_SIGNAL_SELECTABLE
+
+/** Input Capture Signal Select  */
+typedef enum e_gpt_input_signal_select
+{
+    GPT_INPUT_SIGNAL_SELECT_GTIOC00_4A_4B = (0U << 0U), ///< GTIOC00_4A / GTIOC00_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC00_3A_3B = (1U << 0U), ///< GTIOC00_3A / GTIOC00_3B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC01_4A_4B = (0U << 1U), ///< GTIOC01_4A / GTIOC01_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC01_3A_3B = (1U << 1U), ///< GTIOC01_3A / GTIOC01_3B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC02_4A_4B = (0U << 2U), ///< GTIOC02_4A / GTIOC02_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC02_3A_3B = (1U << 2U), ///< GTIOC02_3A / GTIOC02_3B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC03_4A_4B = (0U << 3U), ///< GTIOC03_4A / GTIOC03_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC03_3A_3B = (1U << 3U), ///< GTIOC03_3A / GTIOC03_3B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC04_4A_4B = (0U << 4U), ///< GTIOC04_4A / GTIOC04_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC04_3A_3B = (1U << 4U), ///< GTIOC04_3A / GTIOC04_3B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC05_4A_4B = (0U << 5U), ///< GTIOC05_4A / GTIOC05_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC05_3A_3B = (1U << 5U), ///< GTIOC05_3A / GTIOC05_3B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC06_4A_4B = (0U << 6U), ///< GTIOC06_4A / GTIOC06_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC06_3A_3B = (1U << 6U), ///< GTIOC06_3A / GTIOC06_3B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC07_4A_4B = (0U << 7U), ///< GTIOC07_4A / GTIOC07_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC07_3A_3B = (1U << 7U), ///< GTIOC07_3A / GTIOC07_3B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC08_4A_4B = (0U << 8U), ///< GTIOC08_4A / GTIOC08_4B input signals are selected
+    GPT_INPUT_SIGNAL_SELECT_GTIOC08_3A_3B = (1U << 8U), ///< GTIOC08_3A / GTIOC08_3B input signals are selected
+} gpt_input_signal_select_t;
+#endif
+
 /** Channel control block. DO NOT INITIALIZE.  Initialization occurs when @ref timer_api_t::open is called. */
 typedef struct st_gpt_instance_ctrl
 {
     uint32_t            open;                     // Whether or not channel is open
     const timer_cfg_t * p_cfg;                    // Pointer to initial configurations
-    R_GPT0_Type       * p_reg;                    // Base register for this channel
-    uint32_t            channel_mask;             // Channel bitmask
-    timer_variant_t     variant;                  // Timer variant
+#if (1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE)
+    R_GPT0_Type * p_reg;                          // Base register for this channel
+#elif (2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE)
+    R_GPT00_0_Type * p_reg;                       // Base register for this channel
+#endif
+#if 1U == BSP_FEATURE_GPT_INPUT_CAPTURE_SIGNAL_SELECTABLE
+    R_GPT_IC_Type * p_reg_com;                    // Base register for this channel(common ch)
+#endif
+    uint32_t        channel_mask;                 // Channel bitmask
+    timer_variant_t variant;                      // Timer variant
 
     void (* p_callback)(timer_callback_args_t *); // Pointer to callback
     timer_callback_args_t * p_callback_memory;    // Pointer to optional callback argument memory
@@ -364,12 +459,19 @@ typedef struct st_gpt_extended_cfg
     uint8_t dead_time_ipl;                      ///< Dead time error interrupt priority
 
     uint8_t icds;                               ///< Input Capture Operation Select at Count Stop
-
+#if 1U == BSP_FEATURE_GPT_INPUT_CAPTURE_SIGNAL_SELECTABLE
+    gpt_input_signal_select_t gtioc_isel;       ///< Input Capture Signal Select
+#endif
     IRQn_Type capture_a_irq;                    ///< Capture A interrupt
     IRQn_Type capture_b_irq;                    ///< Capture B interrupt
     IRQn_Type dead_time_irq;                    ///< Dead time error interrupt
 
     gpt_extended_pwm_cfg_t const * p_pwm_cfg;   ///< Advanced PWM features, optional
+    uint8_t capture_a_source_select;            ///< Capture A interrupt source select
+    uint8_t capture_b_source_select;            ///< Capture B interrupt source select
+    uint8_t cycle_end_source_select;            ///< Cycle end interrupt source select
+    uint8_t dead_time_error_source_select;      ///< Dead time error interrupt source select
+    uint8_t trough_source_select;               ///< Trough interrupt source select
 } gpt_extended_cfg_t;
 
 /**********************************************************************************************************************

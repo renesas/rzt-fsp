@@ -104,6 +104,39 @@ typedef enum e_spi_clock_source
     SPI_CLOCK_SOURCE_PCLKM
 } spi_clock_source_t;
 
+/** SPI master receive clock. */
+typedef enum e_spi_master_receive_clock
+{
+    SPI_MASTER_RECEIVE_CLOCK_MRIOCLK,  ///< MRIOCLK
+    SPI_MASTER_RECEIVE_CLOCK_MRCLK,    ///< MRCLK
+} spi_master_receive_clock_t;
+
+/** SPI max analog delay for MRIOCLK. */
+typedef enum e_spi_mrioclk_analog_delay
+{
+    SPI_MRIOCLK_ANALOG_DELAY_NODELAY,  ///< No delay
+    SPI_MRIOCLK_ANALOG_DELAY_1_1_NS,   ///< 1.1 ns
+    SPI_MRIOCLK_ANALOG_DELAY_2_2_NS,   ///< 2.2 ns
+    SPI_MRIOCLK_ANALOG_DELAY_3_3_NS,   ///< 3.3 ns
+    SPI_MRIOCLK_ANALOG_DELAY_4_4_NS,   ///< 4.4 ns
+    SPI_MRIOCLK_ANALOG_DELAY_5_5_NS,   ///< 5.5 ns
+    SPI_MRIOCLK_ANALOG_DELAY_6_6_NS,   ///< 6.6 ns
+    SPI_MRIOCLK_ANALOG_DELAY_7_7_NS,   ///< 7.7 ns
+} spi_mrioclk_analog_delay_t;
+
+/** SPI digital delay for MRCLK. */
+typedef enum e_spi_mrclk_digital_delay
+{
+    SPI_MRCLK_DIGITAL_DELAY_CLOCK_0,   ///< 0 PCLKSPIn
+    SPI_MRCLK_DIGITAL_DELAY_CLOCK_1,   ///< 1 PCLKSPIn
+    SPI_MRCLK_DIGITAL_DELAY_CLOCK_2,   ///< 2 PCLKSPIn
+    SPI_MRCLK_DIGITAL_DELAY_CLOCK_3,   ///< 3 PCLKSPIn
+    SPI_MRCLK_DIGITAL_DELAY_CLOCK_4,   ///< 4 PCLKSPIn
+    SPI_MRCLK_DIGITAL_DELAY_CLOCK_5,   ///< 5 PCLKSPIn
+    SPI_MRCLK_DIGITAL_DELAY_CLOCK_6,   ///< 6 PCLKSPIn
+    SPI_MRCLK_DIGITAL_DELAY_CLOCK_7,   ///< 7 PCLKSPIn
+} spi_mrclk_digital_delay_t;
+
 /** SPI Clock Divider settings. */
 typedef struct
 {
@@ -129,6 +162,9 @@ typedef struct st_spi_extended_cfg
     uint8_t transmit_fifo_threshold;                 ///< Transmit FIFO threshold (0~3)
     uint8_t receive_fifo_threshold;                  ///< Receive FIFO threshold (0~3)
     uint8_t receive_data_ready_detect_adjustment;    ///< Receive data ready detect timing(0~255PCLKSPIn)
+    spi_master_receive_clock_t master_receive_clock; ///< SPI master receive clock
+    spi_mrioclk_analog_delay_t mrioclk_analog_delay; ///< SPI max analog delay for MRIOCLK
+    spi_mrclk_digital_delay_t  mrclk_digital_delay;  ///< SPI digital delay for MRCLK
 } spi_extended_cfg_t;
 
 /** Channel control block. DO NOT INITIALIZE.  Initialization occurs when @ref spi_api_t::open is called. */

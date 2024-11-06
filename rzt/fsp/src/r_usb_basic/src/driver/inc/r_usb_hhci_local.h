@@ -164,6 +164,5 @@ uint32_t              usb_hstd_hci_get_pollrate(st_usb_hci_tr_req_t * tr_req);
 void                  usb_hstd_hci_lock_resouce(void);
 void                  usb_hstd_hci_unlock_resouce(void);
 void                  R_MMU_VAtoPA(uint32_t vaddress, uint32_t * paddress);
-uint32_t              r_usb_pa_to_va(uint32_t paddr);
 
 #endif                                 /* R_USB_HHCILOCAL_H */

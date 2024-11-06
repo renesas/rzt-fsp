@@ -51,7 +51,8 @@ typedef enum e_gmac_link_change
 typedef enum e_gmac_magic_packet
 {
     GMAC_MAGIC_PACKET_NOT_DETECTED = 0, ///< Magic packet is not detected
-    GMAC_MAGIC_PACKET_DETECTED     = 1, ///< Magic packet is detected
+    GMAC_MAGIC_PACKET_DETECTING    = 1, ///< Magic packet is detecting
+    GMAC_MAGIC_PACKET_DETECTED     = 2, ///< Magic packet is detected
 } gmac_magic_packet_t;
 
 /** GMAC descriptor as defined in the hardware manual. */

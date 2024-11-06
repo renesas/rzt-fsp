@@ -21,6 +21,9 @@
 #include "fsp_common_api.h"
 #include "../../fsp/src/bsp/mcu/all/bsp_compiler_support.h"
 
+/** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
+FSP_HEADER
+
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
@@ -567,5 +570,8 @@ typedef enum e_fsp_signal
 typedef void (* fsp_vector_t)(void);
 
 /** @} (end addtogroup BSP_MCU) */
+
+/** Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
+FSP_FOOTER
 
 #endif

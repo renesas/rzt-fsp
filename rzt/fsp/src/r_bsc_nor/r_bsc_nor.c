@@ -21,12 +21,8 @@
 
 #define BSC_NOR_CHANNEL_DUMMY                                      (0x0U)
 
-/* Address definition for CS space (Use non-cacheable mirror address) */
+/* Address definition for CS space  */
 #define BSC_NOR_PRV_NUM_CS                                         (6U)
-#define BSC_NOR_CS0_BASE_ADDRESS                                   ((uint8_t *) 0x50000000)
-#define BSC_NOR_CS2_BASE_ADDRESS                                   ((uint8_t *) 0x54000000)
-#define BSC_NOR_CS3_BASE_ADDRESS                                   ((uint8_t *) 0x58000000)
-#define BSC_NOR_CS5_BASE_ADDRESS                                   ((uint8_t *) 0x5C000000)
 
 #define BSC_NOR_PRV_WORD_SIZE                                      (2U)
 
@@ -153,15 +149,28 @@ static fsp_err_t r_bsc_nor_get_sector_number_in_block(bsc_nor_instance_ctrl_t   
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
+#if 1 == BSP_FEATURE_BSC_HAS_CS_MIRROR_AREA
+
 static uint8_t volatile * const gp_bsc_nor_cs_base_address[BSC_NOR_PRV_NUM_CS] =
 {
-    BSC_NOR_CS0_BASE_ADDRESS,
+    (uint8_t *) BSP_FEATURE_BSC_NOR_CS0_BASE_MIRROR_ADDRESS,
     0,
-    BSC_NOR_CS2_BASE_ADDRESS,
-    BSC_NOR_CS3_BASE_ADDRESS,
+    (uint8_t *) BSP_FEATURE_BSC_NOR_CS2_BASE_MIRROR_ADDRESS,
+    (uint8_t *) BSP_FEATURE_BSC_NOR_CS3_BASE_MIRROR_ADDRESS,
     0,
-    BSC_NOR_CS5_BASE_ADDRESS
+    (uint8_t *) BSP_FEATURE_BSC_NOR_CS5_BASE_MIRROR_ADDRESS
 };
+#else
+static uint8_t volatile * const gp_bsc_nor_cs_base_address[BSC_NOR_PRV_NUM_CS] =
+{
+    (uint8_t *) BSP_FEATURE_BSC_NOR_CS0_BASE_ADDRESS,
+    0,
+    (uint8_t *) BSP_FEATURE_BSC_NOR_CS2_BASE_ADDRESS,
+    (uint8_t *) BSP_FEATURE_BSC_NOR_CS3_BASE_ADDRESS,
+    0,
+    (uint8_t *) BSP_FEATURE_BSC_NOR_CS5_BASE_ADDRESS
+};
+#endif
 
 static bsc_nor_block_info_t block_info[BSC_NOR_CFI_BLOCK_MEMORY_STORE_SIZE];
 
@@ -240,8 +249,8 @@ fsp_err_t R_BSC_NOR_Open (nor_flash_ctrl_t * p_ctrl, nor_flash_cfg_t const * con
     p_instance_ctrl->p_cs_base = (void *) gp_bsc_nor_cs_base_address[chip_select];
 
     /* Calculate the CSnWCR register base address. */
-    uint32_t   address_gap = (uint32_t) &R_BSC->CS3WCR_0 - (uint32_t) &R_BSC->CS2WCR_0;
-    uint32_t * p_csnwcr    = (uint32_t *) ((uint32_t) &R_BSC->CS0WCR_0 + (address_gap * p_cfg->chip_select));
+    uint32_t   address_gap = (uint32_t) ((uintptr_t) &R_BSC->CS3WCR_0 - (uintptr_t) &R_BSC->CS2WCR_0);
+    uint32_t * p_csnwcr    = (uint32_t *) ((uintptr_t) &R_BSC->CS0WCR_0 + (address_gap * p_cfg->chip_select));
 
     /* Set bus access idle cycle. */
     uint32_t csnbcr = (((p_cfg->data_width & BSC_NOR_PRV_CSNBCR_BSZ_VALUE_MASK) <<
@@ -276,7 +285,7 @@ fsp_err_t R_BSC_NOR_Open (nor_flash_ctrl_t * p_ctrl, nor_flash_cfg_t const * con
         else
         {
             /* Set 0 if set write access wait cycle to be the same as the read access wait cycle. */
-            csnwcr &= ~R_BSC_CS5WCR_WW_Msk;
+            csnwcr &= ~(uint32_t) R_BSC_CS5WCR_WW_Msk;
         }
     }
 
@@ -341,13 +350,13 @@ fsp_err_t R_BSC_NOR_Write (nor_flash_ctrl_t    * p_ctrl,
 
         /* Start Write Program Sequence */
         *((volatile uint16_t *) p_cs_base + BSC_NOR_WORD_PROGRAM_1ST_ADDRESS) = BSC_NOR_WORD_PROGRAM_1ST_DATA;
-        __asm volatile ("dsb");
+        __DSB();
         *((volatile uint16_t *) p_cs_base + BSC_NOR_WORD_PROGRAM_2ND_ADDRESS) = BSC_NOR_WORD_PROGRAM_2ND_DATA;
-        __asm volatile ("dsb");
+        __DSB();
         *((volatile uint16_t *) p_cs_base + BSC_NOR_WORD_PROGRAM_3RD_ADDRESS) = BSC_NOR_WORD_PROGRAM_3RD_DATA;
-        __asm volatile ("dsb");
+        __DSB();
         *((volatile uint16_t *) p_dest) = *(uint16_t *) p_src;
-        __asm volatile ("dsb");
+        __DSB();
     }
     else
     {
@@ -365,27 +374,27 @@ fsp_err_t R_BSC_NOR_Write (nor_flash_ctrl_t    * p_ctrl,
 
         FSP_ERROR_RETURN(false == r_bsc_nor_status_sub(p_dest), FSP_ERR_DEVICE_BUSY);
 
-        uint32_t sect_addr  = (uint32_t) write_target_sector.p_sector_start_address;
+        uint32_t sect_addr  = (uint32_t) (uintptr_t) write_target_sector.p_sector_start_address;
         uint32_t word_count = byte_count / BSC_NOR_PRV_WORD_SIZE;
 
         /* Start Write to Buffer Sequence */
         *((volatile uint16_t *) p_cs_base + BSC_NOR_WRITE_BUFFER_1ST_ADDRESS) = BSC_NOR_WRITE_BUFFER_1ST_DATA;
-        __asm volatile ("dsb");
+        __DSB();
         *((volatile uint16_t *) p_cs_base + BSC_NOR_WRITE_BUFFER_2ND_ADDRESS) = BSC_NOR_WRITE_BUFFER_2ND_DATA;
-        __asm volatile ("dsb");
-        *((volatile uint16_t *) sect_addr) = BSC_NOR_WRITE_BUFFER_3RD_DATA;
-        __asm volatile ("dsb");
-        *((volatile uint16_t *) sect_addr) = (uint16_t) (word_count - 1);
-        __asm volatile ("dsb");
+        __DSB();
+        *((volatile uint16_t *) (uintptr_t) sect_addr) = BSC_NOR_WRITE_BUFFER_3RD_DATA;
+        __DSB();
+        *((volatile uint16_t *) (uintptr_t) sect_addr) = (uint16_t) (word_count - 1);
+        __DSB();
         for (uint32_t i = 0U; i < word_count; i++)
         {
             *((volatile uint16_t *) p_dest + i) = *((uint16_t *) p_src + i);
-            __asm volatile ("dsb");
+            __DSB();
         }
 
         /* Start Program Buffer To Flash Sequence */
-        *((volatile uint16_t *) sect_addr) = BSC_NOR_PROGRAM_BUFFER_TO_FLASH_DATA;
-        __asm volatile ("dsb");
+        *((volatile uint16_t *) (uintptr_t) sect_addr) = BSC_NOR_PROGRAM_BUFFER_TO_FLASH_DATA;
+        __DSB();
     }
 
     return FSP_SUCCESS;
@@ -440,28 +449,28 @@ fsp_err_t R_BSC_NOR_Erase (nor_flash_ctrl_t * p_ctrl, uint8_t * const p_device_a
 
     /* Start Sector/Chip Erase Sequence */
     *((volatile uint16_t *) p_cs_base + BSC_NOR_ERASE_1ST_ADDRESS) = BSC_NOR_ERASE_1ST_DATA;
-    __asm volatile ("dsb");
+    __DSB();
     *((volatile uint16_t *) p_cs_base + BSC_NOR_ERASE_2ND_ADDRESS) = BSC_NOR_ERASE_2ND_DATA;
-    __asm volatile ("dsb");
+    __DSB();
     *((volatile uint16_t *) p_cs_base + BSC_NOR_ERASE_3RD_ADDRESS) = BSC_NOR_ERASE_3RD_DATA;
-    __asm volatile ("dsb");
+    __DSB();
     *((volatile uint16_t *) p_cs_base + BSC_NOR_ERASE_4TH_ADDRESS) = BSC_NOR_ERASE_4TH_DATA;
-    __asm volatile ("dsb");
+    __DSB();
     *((volatile uint16_t *) p_cs_base + BSC_NOR_ERASE_5TH_ADDRESS) = BSC_NOR_ERASE_5TH_DATA;
-    __asm volatile ("dsb");
+    __DSB();
 
     if (BSC_NOR_FLASH_ERASE_SIZE_SECTOR == erase_type)
     {
         /* Do the 6th of Sector Erase Sequence Cycles */
         *((volatile uint16_t *) p_device_address) = BSC_NOR_SECTOR_ERASE_6TH_DATA;
-        __asm volatile ("dsb");
+        __DSB();
     }
 
     if (BSC_NOR_FLASH_ERASE_SIZE_CHIP == erase_type)
     {
         /* Do the 6th of Chip Erase Sequence Cycles */
         *((volatile uint16_t *) p_cs_base + BSC_NOR_CHIP_ERASE_6TH_ADDRESS) = BSC_NOR_CHIP_ERASE_6TH_DATA;
-        __asm volatile ("dsb");
+        __DSB();
     }
 
     return FSP_SUCCESS;
@@ -540,9 +549,9 @@ static bool r_bsc_nor_status_sub (uint8_t * const p_device_address)
     /* During a Program or Erase operation, read cycles cause 6th bit toggle.
      * When the operation is complete, 6th bit stops toggling. */
     uint16_t read1 = *(volatile uint16_t *) p_device_address;
-    __asm volatile ("dsb");
+    __DSB();
     uint16_t read2 = *(volatile uint16_t *) p_device_address;
-    __asm volatile ("dsb");
+    __DSB();
 
     return (bool) (((read1 ^ read2) & BSC_NOR_STATUS_Q6_TOGGLE_BIT_Msk) >> BSC_NOR_STATUS_Q6_TOGGLE_BIT_Pos);
 }
@@ -562,7 +571,7 @@ static fsp_err_t r_bsc_nor_cfi_query_sector_block_info (bsc_nor_instance_ctrl_t 
 
     /* CFI Enter Sequence */
     *((volatile uint16_t *) p_cs_base + BSC_NOR_COMMAND_CFI_ENTER_1ST_ADDRESS) = BSC_NOR_COMMAND_CFI_ENTER_1ST_DATA;
-    __asm volatile ("dsb");
+    __DSB();
 
 #if BSC_NOR_CFG_PARAM_CHECKING_ENABLE
 
@@ -570,13 +579,13 @@ static fsp_err_t r_bsc_nor_cfi_query_sector_block_info (bsc_nor_instance_ctrl_t 
     uint8_t cfi_query_unique_string[BSC_NOR_COMMAND_CFI_ID_STRING_LENGTH];
     cfi_query_unique_string[0] =
         (uint8_t) (*((volatile uint16_t *) p_cs_base + BSC_NOR_COMMAND_CFI_ID_STRING_1ST_ADDRESS));
-    __asm volatile ("dsb");
+    __DSB();
     cfi_query_unique_string[1] =
         (uint8_t) (*((volatile uint16_t *) p_cs_base + BSC_NOR_COMMAND_CFI_ID_STRING_2ND_ADDRESS));
-    __asm volatile ("dsb");
+    __DSB();
     cfi_query_unique_string[2] =
         (uint8_t) (*((volatile uint16_t *) p_cs_base + BSC_NOR_COMMAND_CFI_ID_STRING_3RD_ADDRESS));
-    __asm volatile ("dsb");
+    __DSB();
 
     FSP_ASSERT('Q' == cfi_query_unique_string[0]);
     FSP_ASSERT('R' == cfi_query_unique_string[1]);
@@ -585,7 +594,7 @@ static fsp_err_t r_bsc_nor_cfi_query_sector_block_info (bsc_nor_instance_ctrl_t 
 
     /* Query Number of erase blocks within device */
     uint16_t block_number = *((volatile uint16_t *) p_cs_base + BSC_NOR_CFI_DEV_GEO_NUM_ERASE_BLOCK_ADDRESS);
-    __asm volatile ("dsb");
+    __DSB();
 
     p_instance_ctrl->block_number = block_number;
 
@@ -603,19 +612,19 @@ static fsp_err_t r_bsc_nor_cfi_query_sector_block_info (bsc_nor_instance_ctrl_t 
         uint16_t block_num_l = *((volatile uint16_t *) p_cs_base +
                                  BSC_NOR_CFI_DEV_GEO_ERASE_BLOCK_INFO_1ST_ADDRESS + i *
                                  BSC_NOR_CFI_DEV_GEO_ERASE_BLOCK_INFO_NEXT_ADDRESS_DELTA);
-        __asm volatile ("dsb");
+        __DSB();
         uint16_t block_num_h = *((volatile uint16_t *) p_cs_base +
                                  BSC_NOR_CFI_DEV_GEO_ERASE_BLOCK_INFO_2ND_ADDRESS + i *
                                  BSC_NOR_CFI_DEV_GEO_ERASE_BLOCK_INFO_NEXT_ADDRESS_DELTA);
-        __asm volatile ("dsb");
+        __DSB();
         uint16_t block_size_l = *((volatile uint16_t *) p_cs_base +
                                   BSC_NOR_CFI_DEV_GEO_ERASE_BLOCK_INFO_3RD_ADDRESS + i *
                                   BSC_NOR_CFI_DEV_GEO_ERASE_BLOCK_INFO_NEXT_ADDRESS_DELTA);
-        __asm volatile ("dsb");
+        __DSB();
         uint16_t block_size_h = *((volatile uint16_t *) p_cs_base +
                                   BSC_NOR_CFI_DEV_GEO_ERASE_BLOCK_INFO_4TH_ADDRESS + i *
                                   BSC_NOR_CFI_DEV_GEO_ERASE_BLOCK_INFO_NEXT_ADDRESS_DELTA);
-        __asm volatile ("dsb");
+        __DSB();
 
         /* Number of block in the block = N + 1 (see CFI specification). */
         p_block_info[i].sector_number = (uint32_t) ((block_num_h << 8U) | block_num_l) + 1;
@@ -635,7 +644,7 @@ static fsp_err_t r_bsc_nor_cfi_query_sector_block_info (bsc_nor_instance_ctrl_t 
 
     /* CFI Exit Sequence */
     *((volatile uint16_t *) p_cs_base + BSC_NOR_COMMAND_CFI_EXIT_1ST_ADDRESS) = BSC_NOR_COMMAND_CFI_EXIT_1ST_DATA;
-    __asm volatile ("dsb");
+    __DSB();
 
     return FSP_SUCCESS;
 }
@@ -657,7 +666,7 @@ static fsp_err_t r_bsc_nor_get_geometry_block_number (bsc_nor_instance_ctrl_t   
     fsp_err_t err = FSP_ERR_INVALID_ARGUMENT;
 
     /* The initial value of the block start address is the start address of the CS space. */
-    uint32_t block_start_addr = (uint32_t) p_instance_ctrl->p_cs_base;
+    uint32_t block_start_addr = (uint32_t) (uintptr_t) p_instance_ctrl->p_cs_base;
 
     /* Loop through each block. */
     uint32_t block_number = p_instance_ctrl->block_number;
@@ -689,10 +698,11 @@ static fsp_err_t r_bsc_nor_get_geometry_block_number (bsc_nor_instance_ctrl_t   
          *           therefore 0x50040020 address belongs to the Block 1 immediately before Block 2.
          *           so p_block_start_address = 0x50040000, block_position = 1.
          */
-        if ((uint32_t) p_address < block_start_addr)
+        if ((uint32_t) (uintptr_t) p_address < block_start_addr)
         {
-            p_write_target_block->p_block_start_address = (uint8_t *) (block_start_addr - previous_block_size);
-            p_write_target_block->block_position        = i - 1;
+            p_write_target_block->p_block_start_address =
+                (uint8_t *) (uintptr_t) (block_start_addr - previous_block_size);
+            p_write_target_block->block_position = i - 1;
             err = FSP_SUCCESS;
             break;
         }
@@ -733,7 +743,7 @@ static fsp_err_t r_bsc_nor_get_sector_number_in_block (bsc_nor_instance_ctrl_t  
     bsc_nor_block_info_t block    = p_instance_ctrl->p_block_info[position];
 
     /* The initial value of the sector start address is the start address of the block to which the sector belongs. */
-    uint32_t sector_start_address = (uint32_t) p_write_target_block->p_block_start_address;
+    uint32_t sector_start_address = (uint32_t) (uintptr_t) p_write_target_block->p_block_start_address;
 
     /* Loop through each sector in the block. */
     for (uint32_t i = 0; i < block.sector_number + 1; i++)
@@ -753,11 +763,12 @@ static fsp_err_t r_bsc_nor_get_sector_number_in_block (bsc_nor_instance_ctrl_t  
          *           therefore 0x50040020 address belongs to the Sector 2 immediately before Sector 3.
          *           so p_sector_start_address = 0x50040000, sector_position = 2.
          */
-        if ((uint32_t) p_address < sector_start_address)
+        if ((uint32_t) (uintptr_t) p_address < sector_start_address)
         {
             /* The previous sector is the sector it belongs to. */
-            p_write_target_sector->p_sector_start_address = (uint8_t *) (sector_start_address - block.sector_size);
-            p_write_target_sector->sector_position        = i - 1;
+            p_write_target_sector->p_sector_start_address =
+                (uint8_t *) (uintptr_t) (sector_start_address - block.sector_size);
+            p_write_target_sector->sector_position = i - 1;
             err = FSP_SUCCESS;
             break;
         }

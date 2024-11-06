@@ -35,7 +35,7 @@
 /* The maximum number of Transfer Descriptor memory */
 #define USB_OHCI_NUM_TD                  (64) // (0x100000 / USB_OHCI_MAXTDSIZE)
 
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
 
 /* The maximum number of OHCI Isochronous Device */
  #define USB_OHCI_ISO_MAXDEVICE          (4U)

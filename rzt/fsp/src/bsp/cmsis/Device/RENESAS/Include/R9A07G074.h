@@ -16479,63 +16479,155 @@ typedef struct                         /*!< (@ 0x90001C00) R_MTU5 Structure     
 
 typedef struct                         /*!< (@ 0x90003000) R_TFU Structure                                            */
 {
-    __IM uint32_t RESERVED[2];
+    __IM uint32_t RESERVED;
 
     union
     {
-        __IM uint8_t TRGSTS;           /*!< (@ 0x00000008) Trigonometric Status Register                              */
+        __IOM uint8_t FXSCIOC;         /*!< (@ 0x00000004) Fixed-point Sine Cosine Input/Output Setting
+                                        *                  Register                                                   */
 
         struct
         {
-            __IM uint8_t BSYF : 1;     /*!< [0..0] Calculation in progress flag                                       */
-            __IM uint8_t ERRF : 1;     /*!< [1..1] Input error flag                                                   */
-            uint8_t           : 6;
+            __IOM uint8_t IUF : 1;     /*!< [0..0] Input unit and format setting                                      */
+            uint8_t           : 3;
+            __IOM uint8_t OF  : 2;     /*!< [5..4] Output format setting                                              */
+            uint8_t           : 2;
+        } FXSCIOC_b;
+    };
+
+    union
+    {
+        __IOM uint8_t FXATIOC;         /*!< (@ 0x00000005) Fixed-point Arctangent hypot_k Input/Output Setting
+                                        *                  Register                                                   */
+
+        struct
+        {
+            uint8_t           : 4;
+            __IOM uint8_t OUF : 1;     /*!< [4..4] Output unit and format setting                                     */
+            uint8_t           : 3;
+        } FXATIOC_b;
+    };
+    __IM uint16_t RESERVED1;
+
+    union
+    {
+        __IOM uint8_t TRGSTS;          /*!< (@ 0x00000008) Trigonometric Status Register                              */
+
+        struct
+        {
+            __IOM uint8_t BSYF : 1;    /*!< [0..0] Calculation in progress flag                                       */
+            __IOM uint8_t ERRF : 1;    /*!< [1..1] Input error flag                                                   */
+            uint8_t            : 6;
         } TRGSTS_b;
     };
-    __IM uint8_t  RESERVED1;
-    __IM uint16_t RESERVED2;
-    __IM uint32_t RESERVED3;
+    __IM uint8_t  RESERVED2;
+    __IM uint16_t RESERVED3;
+    __IM uint32_t RESERVED4;
 
     union
     {
-        __IOM float SCDT0;             /*!< (@ 0x00000010) Sine Cosine Data Register 0                                */
+        __IOM float FPSCDT0;             /*!< (@ 0x00000010) Floating-point Sine Cosine Data Register 0                 */
 
         struct
         {
-            __IOM uint32_t SCDT0 : 32; /*!< [31..0] Sine Cosine Data Register 0 (single-precision floating-point)     */
-        } SCDT0_b;
+            __IOM uint32_t FPSCDT0 : 32; /*!< [31..0] Floating-point Sine Cosine Data Register 0                        */
+        } FPSCDT0_b;
     };
 
     union
     {
-        __IOM float SCDT1;             /*!< (@ 0x00000014) Sine Cosine Data Register 1                                */
+        __IOM float FPSCDT1;             /*!< (@ 0x00000014) Floating-point Sine Cosine Data Register 1                 */
 
         struct
         {
-            __IOM uint32_t SCDT1 : 32; /*!< [31..0] Sine Cosine Data Register 1 (single-precision floating-point)     */
-        } SCDT1_b;
+            __IOM uint32_t FPSCDT1 : 32; /*!< [31..0] Floating-point Sine Cosine Data Register 1                        */
+        } FPSCDT1_b;
     };
 
     union
     {
-        __IOM float ATDT0;             /*!< (@ 0x00000018) Arctangent Data Register 0                                 */
+        __IOM float FPATDT0;             /*!< (@ 0x00000018) Floating-point Arctangent hypot_k Data Register
+                                          *                  0                                                          */
 
         struct
         {
-            __IOM uint32_t ATDT0 : 32; /*!< [31..0] Arctangent Data Register 0 (single-precision floating-point)      */
-        } ATDT0_b;
+            __IOM uint32_t FPATDT0 : 32; /*!< [31..0] Floating-point Arctangent hypot_k Data Register 0                 */
+        } FPATDT0_b;
     };
 
     union
     {
-        __IOM float ATDT1;             /*!< (@ 0x0000001C) Arctangent Data Register 1                                 */
+        __IOM float FPATDT1;             /*!< (@ 0x0000001C) Floating-point Arctangent hypot_k Data Register
+                                          *                  1                                                          */
 
         struct
         {
-            __IOM uint32_t ATDT1 : 32; /*!< [31..0] Arctangent Data Register 1 (single-precision floating-point)      */
-        } ATDT1_b;
+            __IOM uint32_t FPATDT1 : 32; /*!< [31..0] Floating-point Arctangent hypot_k Data Register 1                 */
+        } FPATDT1_b;
     };
-} R_TFU_Type;                          /*!< Size = 32 (0x20)                                                          */
+
+    union
+    {
+        __IOM uint32_t FXSCDT0;          /*!< (@ 0x00000020) Fixed-point Sine Cosine Data Register 0                    */
+
+        struct
+        {
+            __IOM uint32_t FXSCDT0 : 32; /*!< [31..0] Fixed-point Sine Cosine Data Register 0                           */
+        } FXSCDT0_b;
+    };
+
+    union
+    {
+        __IOM uint32_t FXSCDT1;          /*!< (@ 0x00000024) Fixed-point Sine Cosine Data Register 1                    */
+
+        struct
+        {
+            __IOM uint32_t FXSCDT1 : 32; /*!< [31..0] Fixed-point Sine Cosine Data Register 1                           */
+        } FXSCDT1_b;
+    };
+
+    union
+    {
+        __IOM uint32_t FXATDT0;          /*!< (@ 0x00000028) Fixed-point Arctangent hypot_k Data Register
+                                          *                  0                                                          */
+
+        struct
+        {
+            __IOM uint32_t FXATDT0 : 32; /*!< [31..0] Fixed-point Arctangent hypot_k Data Register 0                    */
+        } FXATDT0_b;
+    };
+
+    union
+    {
+        __IOM uint32_t FXATDT1;          /*!< (@ 0x0000002C) Fixed-point Arctangent hypot_k Data Register
+                                          *                  1                                                          */
+
+        struct
+        {
+            __IOM uint32_t FXATDT1 : 32; /*!< [31..0] Fixed-point Arctangent hypot_k Data Register 1                    */
+        } FXATDT1_b;
+    };
+
+    union
+    {
+        __IOM uint32_t DTSR0;          /*!< (@ 0x00000030) Data Save Restore Register 0                               */
+
+        struct
+        {
+            __IOM uint32_t DTSR0 : 32; /*!< [31..0] Data Save Restore Register 0                                      */
+        } DTSR0_b;
+    };
+
+    union
+    {
+        __IOM uint32_t DTSR1;          /*!< (@ 0x00000034) Data Save Restore Register 1                               */
+
+        struct
+        {
+            __IOM uint32_t DTSR1 : 32; /*!< [31..0] Data Save Restore Register 1                                      */
+        } DTSR1_b;
+    };
+} R_TFU_Type;                          /*!< Size = 56 (0x38)                                                          */
 
 /* =========================================================================================================================== */
 /* ================                                         R_ADC120                                          ================ */
@@ -18581,7 +18673,7 @@ typedef struct                              /*!< (@ 0x90042000) R_BISS0 Structur
             __IOM uint32_t SCDLEN      : 6; /*!< [5..0] Single-cycle data length of slave n                                */
             __IOM uint32_t ENSCD       : 1; /*!< [6..6] Enable single-cycle data for slave n                               */
             uint32_t                   : 1;
-            __IOM uint32_t SCRCLENPOLY : 7; /*!< [14..8]  CRC length with predefined CRC polynomial for slave
+            __IOM uint32_t SCRCLENPOLY : 7; /*!< [14..8] CRC length with predefined CRC polynomial for slave
                                              *   n (SCRCLEN[6:0])                                                          */
             __IOM uint32_t SELCRCS   : 1;   /*!< [15..15] CRC polynomial selection for slave n                             */
             __IOM uint32_t SCRCSTART : 16;  /*!< [31..16] CRC calculation start value for slave n                          */
@@ -18611,7 +18703,7 @@ typedef struct                              /*!< (@ 0x90042000) R_BISS0 Structur
             uint32_t                   : 8;
             __IOM uint32_t HOLDCDM     : 1; /*!< [8..8] Behavior of MA signal at the end of frame                          */
             uint32_t                   : 2;
-            __IOM uint32_t SID_CMD_IDT : 3; /*!< [13..11]  Slave addressing for register communication (SLAVEID[2:0])   */
+            __IOM uint32_t SID_CMD_IDT : 3; /*!< [13..11] Slave addressing for register communication (SLAVEID[2:0])   */
             __IOM uint32_t REGVERS     : 1; /*!< [14..14] Type of protocol for register communication                      */
             __IOM uint32_t CTS         : 1; /*!< [15..15] Type of control communication                                    */
             __IOM uint32_t FREQS       : 5; /*!< [20..16] Single-cycle data clock frequency at MA (fMA)                    */
@@ -30266,23 +30358,49 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
 /* ================                                           R_TFU                                           ================ */
 /* =========================================================================================================================== */
 
+/* ========================================================  FXSCIOC  ======================================================== */
+ #define R_TFU_FXSCIOC_IUF_Pos        (0UL)          /*!< IUF (Bit 0)                                           */
+ #define R_TFU_FXSCIOC_IUF_Msk        (0x1UL)        /*!< IUF (Bitfield-Mask: 0x01)                             */
+ #define R_TFU_FXSCIOC_OF_Pos         (4UL)          /*!< OF (Bit 4)                                            */
+ #define R_TFU_FXSCIOC_OF_Msk         (0x30UL)       /*!< OF (Bitfield-Mask: 0x03)                              */
+/* ========================================================  FXATIOC  ======================================================== */
+ #define R_TFU_FXATIOC_OUF_Pos        (4UL)          /*!< OUF (Bit 4)                                           */
+ #define R_TFU_FXATIOC_OUF_Msk        (0x10UL)       /*!< OUF (Bitfield-Mask: 0x01)                             */
 /* ========================================================  TRGSTS  ========================================================= */
- #define R_TFU_TRGSTS_BSYF_Pos    (0UL)          /*!< BSYF (Bit 0)                                          */
- #define R_TFU_TRGSTS_BSYF_Msk    (0x1UL)        /*!< BSYF (Bitfield-Mask: 0x01)                            */
- #define R_TFU_TRGSTS_ERRF_Pos    (1UL)          /*!< ERRF (Bit 1)                                          */
- #define R_TFU_TRGSTS_ERRF_Msk    (0x2UL)        /*!< ERRF (Bitfield-Mask: 0x01)                            */
-/* =========================================================  SCDT0  ========================================================= */
- #define R_TFU_SCDT0_SCDT0_Pos    (0UL)          /*!< SCDT0 (Bit 0)                                         */
- #define R_TFU_SCDT0_SCDT0_Msk    (0xffffffffUL) /*!< SCDT0 (Bitfield-Mask: 0xffffffff)                     */
-/* =========================================================  SCDT1  ========================================================= */
- #define R_TFU_SCDT1_SCDT1_Pos    (0UL)          /*!< SCDT1 (Bit 0)                                         */
- #define R_TFU_SCDT1_SCDT1_Msk    (0xffffffffUL) /*!< SCDT1 (Bitfield-Mask: 0xffffffff)                     */
-/* =========================================================  ATDT0  ========================================================= */
- #define R_TFU_ATDT0_ATDT0_Pos    (0UL)          /*!< ATDT0 (Bit 0)                                         */
- #define R_TFU_ATDT0_ATDT0_Msk    (0xffffffffUL) /*!< ATDT0 (Bitfield-Mask: 0xffffffff)                     */
-/* =========================================================  ATDT1  ========================================================= */
- #define R_TFU_ATDT1_ATDT1_Pos    (0UL)          /*!< ATDT1 (Bit 0)                                         */
- #define R_TFU_ATDT1_ATDT1_Msk    (0xffffffffUL) /*!< ATDT1 (Bitfield-Mask: 0xffffffff)                     */
+ #define R_TFU_TRGSTS_BSYF_Pos        (0UL)          /*!< BSYF (Bit 0)                                          */
+ #define R_TFU_TRGSTS_BSYF_Msk        (0x1UL)        /*!< BSYF (Bitfield-Mask: 0x01)                            */
+ #define R_TFU_TRGSTS_ERRF_Pos        (1UL)          /*!< ERRF (Bit 1)                                          */
+ #define R_TFU_TRGSTS_ERRF_Msk        (0x2UL)        /*!< ERRF (Bitfield-Mask: 0x01)                            */
+/* ========================================================  FPSCDT0  ======================================================== */
+ #define R_TFU_FPSCDT0_FPSCDT0_Pos    (0UL)          /*!< FPSCDT0 (Bit 0)                                       */
+ #define R_TFU_FPSCDT0_FPSCDT0_Msk    (0xffffffffUL) /*!< FPSCDT0 (Bitfield-Mask: 0xffffffff)                   */
+/* ========================================================  FPSCDT1  ======================================================== */
+ #define R_TFU_FPSCDT1_FPSCDT1_Pos    (0UL)          /*!< FPSCDT1 (Bit 0)                                       */
+ #define R_TFU_FPSCDT1_FPSCDT1_Msk    (0xffffffffUL) /*!< FPSCDT1 (Bitfield-Mask: 0xffffffff)                   */
+/* ========================================================  FPATDT0  ======================================================== */
+ #define R_TFU_FPATDT0_FPATDT0_Pos    (0UL)          /*!< FPATDT0 (Bit 0)                                       */
+ #define R_TFU_FPATDT0_FPATDT0_Msk    (0xffffffffUL) /*!< FPATDT0 (Bitfield-Mask: 0xffffffff)                   */
+/* ========================================================  FPATDT1  ======================================================== */
+ #define R_TFU_FPATDT1_FPATDT1_Pos    (0UL)          /*!< FPATDT1 (Bit 0)                                       */
+ #define R_TFU_FPATDT1_FPATDT1_Msk    (0xffffffffUL) /*!< FPATDT1 (Bitfield-Mask: 0xffffffff)                   */
+/* ========================================================  FXSCDT0  ======================================================== */
+ #define R_TFU_FXSCDT0_FXSCDT0_Pos    (0UL)          /*!< FXSCDT0 (Bit 0)                                       */
+ #define R_TFU_FXSCDT0_FXSCDT0_Msk    (0xffffffffUL) /*!< FXSCDT0 (Bitfield-Mask: 0xffffffff)                   */
+/* ========================================================  FXSCDT1  ======================================================== */
+ #define R_TFU_FXSCDT1_FXSCDT1_Pos    (0UL)          /*!< FXSCDT1 (Bit 0)                                       */
+ #define R_TFU_FXSCDT1_FXSCDT1_Msk    (0xffffffffUL) /*!< FXSCDT1 (Bitfield-Mask: 0xffffffff)                   */
+/* ========================================================  FXATDT0  ======================================================== */
+ #define R_TFU_FXATDT0_FXATDT0_Pos    (0UL)          /*!< FXATDT0 (Bit 0)                                       */
+ #define R_TFU_FXATDT0_FXATDT0_Msk    (0xffffffffUL) /*!< FXATDT0 (Bitfield-Mask: 0xffffffff)                   */
+/* ========================================================  FXATDT1  ======================================================== */
+ #define R_TFU_FXATDT1_FXATDT1_Pos    (0UL)          /*!< FXATDT1 (Bit 0)                                       */
+ #define R_TFU_FXATDT1_FXATDT1_Msk    (0xffffffffUL) /*!< FXATDT1 (Bitfield-Mask: 0xffffffff)                   */
+/* =========================================================  DTSR0  ========================================================= */
+ #define R_TFU_DTSR0_DTSR0_Pos        (0UL)          /*!< DTSR0 (Bit 0)                                         */
+ #define R_TFU_DTSR0_DTSR0_Msk        (0xffffffffUL) /*!< DTSR0 (Bitfield-Mask: 0xffffffff)                     */
+/* =========================================================  DTSR1  ========================================================= */
+ #define R_TFU_DTSR1_DTSR1_Pos        (0UL)          /*!< DTSR1 (Bit 0)                                         */
+ #define R_TFU_DTSR1_DTSR1_Msk        (0xffffffffUL) /*!< DTSR1 (Bitfield-Mask: 0xffffffff)                     */
 
 /* =========================================================================================================================== */
 /* ================                                         R_ADC120                                          ================ */

@@ -26,7 +26,7 @@
 uint16_t g_usb_hstd_response_counter[USB_NUM_USBIP];
  #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
 
- #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+ #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
 
 /******************************************************************************
  * Function Name   : usb_hstd_ctrl_write_start

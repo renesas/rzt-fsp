@@ -47,7 +47,7 @@ typedef enum e_bsp_resource_num
     BSP_RESOURCE_NUM_7 = 7,            ///< Semaphore resource number 7
 } bsp_resource_num_t;
 
-#if BSP_FEATURE_SEM_SUPPORTED
+#if BSP_FEATURE_BSP_SEMAPHORE_SUPPORTED
 
 /***********************************************************************************************************************
  * Exported global variables
@@ -70,7 +70,15 @@ typedef enum e_bsp_resource_num
  **********************************************************************************************************************/
 __STATIC_INLINE uint32_t R_BSP_SemaphoreStateRead (bsp_resource_num_t sem_num)
 {
-    return R_SEM->SYTSEMF[sem_num];
+ #if BSP_FEATURE_SEM_SUPPORTED
+    uint32_t sem = R_SEM->SYTSEMF[sem_num];
+ #elif BSP_FEATURE_MAILBOX_SEM_SUPPORTED
+    uint32_t sem = R_MBXSEM->SEM[sem_num];
+ #else
+    uint32_t sem = 0;
+ #endif
+
+    return sem;
 }
 
 #endif

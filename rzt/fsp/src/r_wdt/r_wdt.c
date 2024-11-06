@@ -154,10 +154,23 @@ fsp_err_t R_WDT_Open (wdt_ctrl_t * const p_ctrl, wdt_cfg_t const * const p_cfg)
     p_instance_ctrl->p_callback = p_cfg->p_callback;
     p_instance_ctrl->p_context  = p_cfg->p_context;
 
-#if (0 == BSP_CFG_CORE_CR52)
+#ifdef BSP_CFG_CORE_CR52
+ #if (0 == BSP_CFG_CORE_CR52)
     p_instance_ctrl->p_reg = R_WDT0;
-#elif (1 == BSP_CFG_CORE_CR52)
+ #elif (1 == BSP_CFG_CORE_CR52)
     p_instance_ctrl->p_reg = R_WDT1;
+ #endif
+#endif
+#ifdef BSP_CFG_CORE_CA55
+ #if (0 == BSP_CFG_CORE_CA55)
+    p_instance_ctrl->p_reg = R_WDT2;
+ #elif (1 == BSP_CFG_CORE_CA55)
+    p_instance_ctrl->p_reg = R_WDT3;
+ #elif (2 == BSP_CFG_CORE_CA55)
+    p_instance_ctrl->p_reg = R_WDT4;
+ #elif (3 == BSP_CFG_CORE_CA55)
+    p_instance_ctrl->p_reg = R_WDT5;
+ #endif
 #endif
 
     /* Error notification to ICU is permitted. */

@@ -225,7 +225,7 @@ fsp_err_t R_IIC_MASTER_Open (i2c_master_ctrl_t * const p_ctrl, i2c_master_cfg_t 
     {
         /* Non-Safety Peripheral */
         p_instance_ctrl->p_reg =
-            (R_IIC0_Type *) ((uint32_t) R_IIC0 + (p_cfg->channel * ((uint32_t) R_IIC1 - (uint32_t) R_IIC0)));
+            (R_IIC0_Type *) ((uintptr_t) R_IIC0 + (p_cfg->channel * ((uintptr_t) R_IIC1 - (uintptr_t) R_IIC0)));
     }
     else
     {
@@ -782,24 +782,73 @@ static void iic_master_open_hw_master (iic_master_instance_ctrl_t * const p_inst
  **********************************************************************************************************************/
 static fsp_err_t iic_master_run_hw_master (iic_master_instance_ctrl_t * const p_instance_ctrl)
 {
+    uint32_t timeout_count = 0;
+    uint32_t cpufsel       = 0;
+
+#if (2U == BSP_FEATURE_CGC_SCKCR_TYPE)
+ #if defined(BSP_CFG_CORE_CA55)
+
+    /* IICn operates using PCLKL. The ratio CPUnCLK (System Clock)/PCLKL gives the CPU cycles for 1 ICBRL count.
+     * (CPUnCLK/PCLKL)*ICBRL gives the CPU cycles for entire ICBRL count.
+     * Since each time we loop the timeout count will be decremented by 1 this would require at least 4 CPU clocks,
+     * making the final timeout count as:
+     * Timeout = ((CPUnCLK/PCLKL)*ICBRL)/4.
+     * CPUnCLK * ICBRL * 1/PCLKL * 1/4
+     *
+     * When CA55 is operating, cpufsel becomes 0U or 1U.
+     * When cpufsel is 0U, CA55CLK/PCLKL is 9.6. Similarly, 1U is 19.2.
+     * Compute the bus free time using the following equation.
+     * Note that CPU0CLK/PCLKL is rounded up so that bus free time obtained by the computation is not smaller than the original bus free time.
+     */
+  #if (0 == BSP_CFG_CORE_CA55)
+    cpufsel =
+        (uint32_t) ((R_SYSC_S->SCKCR2 & R_SYSC_S_SCKCR2_CA55CORE0_Msk) >> R_SYSC_S_SCKCR2_CA55CORE0_Pos);
+  #elif (1 == BSP_CFG_CORE_CA55)
+    cpufsel =
+        (uint32_t) ((R_SYSC_S->SCKCR2 & R_SYSC_S_SCKCR2_CA55CORE1_Msk) >> R_SYSC_S_SCKCR2_CA55CORE1_Pos);
+  #elif (2 == BSP_CFG_CORE_CA55)
+    cpufsel =
+        (uint32_t) ((R_SYSC_S->SCKCR2 & R_SYSC_S_SCKCR2_CA55CORE2_Msk) >> R_SYSC_S_SCKCR2_CA55CORE2_Pos);
+  #elif (3 == BSP_CFG_CORE_CA55)
+    cpufsel =
+        (uint32_t) ((R_SYSC_S->SCKCR2 & R_SYSC_S_SCKCR2_CA55CORE3_Msk) >> R_SYSC_S_SCKCR2_CA55CORE3_Pos);
+  #endif
+
+    /*When CR52 is operating, cpufsel becomes 0U or 1U.
+     * When cpufsel is 0U, CR52CLK/PCLKL is 8. Similarly, 1U is 16.
+     * Compute the bus free time using the following equation.
+     * Note that CPU0CLK/PCLKL is rounded up so that bus free time obtained by the computation is not smaller than the original bus free time.
+     */
+ #elif defined(BSP_CFG_CORE_CR52)
+  #if (0 == BSP_CFG_CORE_CR52)
+    cpufsel =
+        (uint32_t) ((R_SYSC_S->SCKCR2 & R_SYSC_S_SCKCR2_CR52CPU0_Msk) >> R_SYSC_S_SCKCR2_CR52CPU0_Pos);
+  #elif (1 == BSP_CFG_CORE_CR52)
+    cpufsel =
+        (uint32_t) ((R_SYSC_S->SCKCR2 & R_SYSC_S_SCKCR2_CR52CPU1_Msk) >> R_SYSC_S_SCKCR2_CR52CPU1_Pos);
+  #endif
+ #endif
+    timeout_count = ((10U << cpufsel) * p_instance_ctrl->p_reg->ICBRL) >> 2U;
+#elif (1U == BSP_FEATURE_CGC_SCKCR_TYPE)
+
     /* IICn operates using PCLKL. The ratio CPUnCLK (System Clock)/PCLKL gives the CPU cycles for 1 ICBRL count.
      * (CPUnCLK/PCLKL)*ICBRL gives the CPU cycles for entire ICBRL count.
      * Since each time we loop the timeout count will be decremented by 1 this would require at least 4 CPU clocks,
      * making the final timeout count as:
      * Timeout = ((CPUnCLK/PCLKL)*ICBRL)/4.
      */
-#if (0 == BSP_CFG_CPU)
-    uint32_t cpufsel = (uint32_t) (R_SYSC_S->SCKCR2 & IIC_MASTER_SCKCR2_CPU0CLK_MASK);
-#else
-    uint32_t cpufsel =
+ #if (0 == BSP_CFG_CPU)
+    cpufsel = (uint32_t) (R_SYSC_S->SCKCR2 & IIC_MASTER_SCKCR2_CPU0CLK_MASK);
+ #else
+    cpufsel =
         (uint32_t) ((R_SYSC_S->SCKCR2 & IIC_MASTER_SCKCR2_CPU1CLK_MASK) >> IIC_MASTER_SCKCR2_CPU1CLK_OFFSET);
-#endif
+ #endif
 
     /* With this masking, cpu0fsel becomes 0U, 1U, 2U or 3U.
      * When cpu0fsel is 0U, CPU0CLK/PCLKL is 16U. Similarly, 1U is 8U, 2U is 4U, and 3U is 2U.
      */
-
-    uint32_t timeout_count = ((1U << (4U - cpufsel)) * p_instance_ctrl->p_reg->ICBRL) >> 2U;
+    timeout_count = ((1U << (4U - cpufsel)) * p_instance_ctrl->p_reg->ICBRL) >> 2U;
+#endif
 
     /* Bus free time is counted by the Internal reference clock, so consider the division ratio. */
     timeout_count <<= p_instance_ctrl->p_reg->ICMR1_b.CKS;

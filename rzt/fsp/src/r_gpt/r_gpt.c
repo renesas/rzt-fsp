@@ -41,6 +41,43 @@
 
 /* GPT_CFG_OUTPUT_SUPPORT_ENABLE is set to 2 to enable extra features. */
 #define GPT_PRV_EXTRA_FEATURES_ENABLED                   (2U)
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
+/* Define the GPT_INTERRUPT_SELECT_ENABLE macro */
+ #define GPT_INTERRUPT_SELECT_ENABLE(irq, source_selected, selected, function)                                  \
+    if ((irq) > FSP_INVALID_VECTOR)                                                                             \
+    {                                                                                                           \
+        if ((GPT_INT4) != (source_selected))                                                                    \
+        {                                                                                                       \
+            R_BSP_IrqGptSelectedSet((irq), (BSP_IRQ_GPT_SELECTED_EVENT_GPT_ ## selected));                      \
+        }                                                                                                       \
+        else                                                                                                    \
+        {                                                                                                       \
+            R_BSP_IrqGptCombinedTableSet((irq), (BSP_IRQ_GPT_COMBINED_EVENT_GPT_ ## selected), p_instance_ctrl, \
+                                         function);                                                             \
+            R_BSP_IrqGptCombinedMaskClear((irq), (BSP_IRQ_GPT_COMBINED_EVENT_GPT_ ## selected));                \
+        }                                                                                                       \
+    }
+
+/* Define the GPT_INTERRUPT_SELECT_DISABLE macro. */
+ #define GPT_INTERRUPT_SELECT_DISABLE(irq, source_selected, selected)                             \
+    if ((irq) > FSP_INVALID_VECTOR)                                                               \
+    {                                                                                             \
+        if ((GPT_INT4) != (source_selected))                                                      \
+        {                                                                                         \
+            R_BSP_IrqGptSelectedClear((irq));                                                     \
+        }                                                                                         \
+        else                                                                                      \
+        {                                                                                         \
+            R_BSP_IrqGptCombinedMaskSet((irq), (BSP_IRQ_GPT_COMBINED_EVENT_GPT_ ## selected));    \
+            R_BSP_IrqGptCombinedTableClear((irq), (BSP_IRQ_GPT_COMBINED_EVENT_GPT_ ## selected)); \
+        }                                                                                         \
+    }
+
+/* Macro definition of GPT_INT4. */
+ #define GPT_INT_NUM    (5)
+ #define GPT_INT4       (4)
+#endif
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -87,6 +124,7 @@ static uint32_t gpt_clock_frequency_get(gpt_instance_ctrl_t * const p_instance_c
 static void gpt_hardware_events_disable(gpt_instance_ctrl_t * p_instance_ctrl);
 
 static void r_gpt_disable_irq(IRQn_Type irq);
+
 static void gpt_disable_interrupt(gpt_instance_ctrl_t * const p_instance_ctrl);
 
 static inline void r_gpt_write_protect_enable(gpt_instance_ctrl_t * const p_instance_ctrl);
@@ -94,6 +132,7 @@ static inline void r_gpt_write_protect_disable(gpt_instance_ctrl_t * const p_ins
 
 /* Noinline attribute added to reduce code size for CM23 GCC build. */
 static void r_gpt_enable_irq(IRQn_Type const irq, uint32_t priority, void * p_context) __attribute__((noinline));
+
 static void gpt_enable_interrupt(gpt_instance_ctrl_t * const p_instance_ctrl);
 
 #if GPT_CFG_OUTPUT_SUPPORT_ENABLE
@@ -116,6 +155,13 @@ void gpt_counter_underflow_isr(void);
 void gpt_dead_time_isr(void);
 void gpt_capture_a_isr(void);
 void gpt_capture_b_isr(void);
+
+#if 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+
+/* Function for GPT_INT0-3 */
+void gpt_int_select_isr(void);
+
+#endif
 
 /***********************************************************************************************************************
  * Private global variables
@@ -182,6 +228,8 @@ fsp_err_t R_GPT_Open (timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_c
     FSP_ERROR_RETURN(GPT_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 #endif
 
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+
     /** mask_bit GPTunit0 0-6bit, GPTunit1 0-6bit, GPTunit2 0-3bit*/
     if (p_cfg->channel <= GPT_CHANNEL_UNIT0_6)
     {
@@ -195,6 +243,22 @@ fsp_err_t R_GPT_Open (timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_c
     {
         p_instance_ctrl->channel_mask = (1U << (p_cfg->channel - GPT_CHANNEL_UNIT2_0));
     }
+
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+    if (p_cfg->channel < BSP_FEATURE_GPT_NONSAFETY_BASE_CHANNEL)
+    {
+        p_instance_ctrl->channel_mask = (1U << p_cfg->channel % BSP_FEATURE_GPT_LLPP_CHANNEL_PER_UNIT);
+    }
+    else if ((BSP_FEATURE_GPT_NONSAFETY_BASE_CHANNEL <= p_cfg->channel) &&
+             (p_cfg->channel < BSP_FEATURE_GPT_SAFETY_BASE_CHANNEL))
+    {
+        p_instance_ctrl->channel_mask = (1U << (p_cfg->channel - BSP_FEATURE_GPT_NONSAFETY_BASE_CHANNEL));
+    }
+    else
+    {
+        p_instance_ctrl->channel_mask = (1U << (p_cfg->channel - BSP_FEATURE_GPT_SAFETY_BASE_CHANNEL));
+    }
+#endif
 
     /* Verify the configuration parameters are valid   */
     fsp_err_t err = r_gpt_open_cfg_check(p_cfg);
@@ -483,15 +547,25 @@ fsp_err_t R_GPT_DutyCycleSet (timer_ctrl_t * const p_ctrl, uint32_t const duty_c
     if (GPT_IO_PIN_GTIOCB != pin)
     {
         /* GTIOCA or both GTIOCA and GTIOCB. */
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtuddtyc &= ~R_GPT7_GTUDDTYC_OADTY_Msk;
         gtuddtyc |= duty_regs.omdty << R_GPT7_GTUDDTYC_OADTY_Pos;
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtuddtyc &= (uint32_t) ~R_GPT09_0_GTUDDTYC_OADTY_Msk;
+        gtuddtyc |= duty_regs.omdty << R_GPT09_0_GTUDDTYC_OADTY_Pos;
+ #endif
     }
 
     if (GPT_IO_PIN_GTIOCA != pin)
     {
         /* GTIOCB or both GTIOCA and GTIOCB. */
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtuddtyc &= ~R_GPT7_GTUDDTYC_OBDTY_Msk;
         gtuddtyc |= duty_regs.omdty << R_GPT7_GTUDDTYC_OBDTY_Pos;
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtuddtyc &= (uint32_t) ~R_GPT09_0_GTUDDTYC_OBDTY_Msk;
+        gtuddtyc |= duty_regs.omdty << R_GPT09_0_GTUDDTYC_OBDTY_Pos;
+ #endif
     }
 
     p_instance_ctrl->p_reg->GTUDDTYC = gtuddtyc;
@@ -621,13 +695,21 @@ fsp_err_t R_GPT_OutputEnable (timer_ctrl_t * const p_ctrl, gpt_io_pin_t pin)
     if (GPT_IO_PIN_GTIOCB != pin)
     {
         /* GTIOCA or both GTIOCA and GTIOCB. */
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtior |= R_GPT7_GTIOR_OAE_Msk;
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtior |= R_GPT09_0_GTIOR_OAE_Msk;
+#endif
     }
 
     if (GPT_IO_PIN_GTIOCA != pin)
     {
         /* GTIOCB or both GTIOCA and GTIOCB. */
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtior |= R_GPT7_GTIOR_OBE_Msk;
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtior |= R_GPT09_0_GTIOR_OBE_Msk;
+#endif
     }
 
     p_instance_ctrl->p_reg->GTIOR = gtior;
@@ -658,13 +740,21 @@ fsp_err_t R_GPT_OutputDisable (timer_ctrl_t * const p_ctrl, gpt_io_pin_t pin)
     if (GPT_IO_PIN_GTIOCB != pin)
     {
         /* GTIOCA or both GTIOCA and GTIOCB. */
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtior &= ~R_GPT7_GTIOR_OAE_Msk;
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtior &= (uint32_t) ~R_GPT09_0_GTIOR_OAE_Msk;
+#endif
     }
 
     if (GPT_IO_PIN_GTIOCA != pin)
     {
         /* GTIOCB or both GTIOCA and GTIOCB. */
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtior &= ~R_GPT7_GTIOR_OBE_Msk;
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtior &= (uint32_t) ~R_GPT09_0_GTIOR_OBE_Msk;
+#endif
     }
 
     p_instance_ctrl->p_reg->GTIOR = gtior;
@@ -817,8 +907,11 @@ static inline void r_gpt_write_protect_disable (gpt_instance_ctrl_t * const p_in
 static fsp_err_t r_gpt_open_cfg_check (timer_cfg_t const * const p_cfg)
 {
 #if GPT_CFG_PARAM_CHECKING_ENABLE
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
     FSP_ERROR_RETURN((p_cfg->channel <= GPT_CHANNEL_UNIT2_3), FSP_ERR_IP_CHANNEL_NOT_PRESENT);
-
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+    FSP_ERROR_RETURN((p_cfg->channel < BSP_FEATURE_GPT_CHANNEL), FSP_ERR_IP_CHANNEL_NOT_PRESENT);
+ #endif
     if ((p_cfg->p_callback) || (TIMER_MODE_ONE_SHOT == p_cfg->mode))
     {
         FSP_ERROR_RETURN(p_cfg->cycle_end_irq >= 0, FSP_ERR_IRQ_BSP_DISABLED);
@@ -866,6 +959,8 @@ static void gpt_common_open (gpt_instance_ctrl_t * const p_instance_ctrl, timer_
         p_instance_ctrl->variant = TIMER_VARIANT_32_BIT;
     }
 
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+
     /* Save register base address. */
     uint32_t base_address;
     if (p_cfg->channel <= GPT_CHANNEL_UNIT0_6)
@@ -883,7 +978,65 @@ static void gpt_common_open (gpt_instance_ctrl_t * const p_instance_ctrl, timer_
                        (((uint32_t) p_cfg->channel - GPT_CHANNEL_UNIT2_0) * ((uint32_t) R_GPT15 - (uint32_t) R_GPT14));
     }
 
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+
+    /* Save register base address. */
+    uintptr_t base_address;
+ #if (BSP_FEATURE_GPT_LLPP1_BASE_CHANNEL != 0)
+    if (p_cfg->channel < BSP_FEATURE_GPT_LLPP1_BASE_CHANNEL)
+ #else
+    if (p_cfg->channel < BSP_FEATURE_GPT_NONSAFETY_BASE_CHANNEL)
+ #endif
+    {
+        /* LLPP base address setting */
+        base_address = (uintptr_t) BSP_FEATURE_GPT_LLPP_BASE_ADDRESS +
+                       (uintptr_t) p_cfg->channel / BSP_FEATURE_GPT_LLPP_CHANNEL_PER_UNIT *
+                       BSP_FEATURE_GPT_LLPP_UNIT_ADDRESS_OFFSET +
+                       (uintptr_t) p_cfg->channel % BSP_FEATURE_GPT_LLPP_CHANNEL_PER_UNIT *
+                       BSP_FEATURE_GPT_LLPP_CHANNEL_ADDRESS_OFFSET;
+    }
+
+ #if (BSP_FEATURE_GPT_LLPP1_BASE_CHANNEL != 0)
+    else if ((p_cfg->channel >= BSP_FEATURE_GPT_LLPP1_BASE_CHANNEL) &&
+             (p_cfg->channel < BSP_FEATURE_GPT_NONSAFETY_BASE_CHANNEL))
+    {
+        /* LLPP1 base address setting */
+        base_address = (uintptr_t) BSP_FEATURE_GPT_LLPP1_BASE_ADDRESS +
+                       ((uintptr_t) p_cfg->channel - BSP_FEATURE_GPT_LLPP1_BASE_CHANNEL) /
+                       BSP_FEATURE_GPT_LLPP_CHANNEL_PER_UNIT *
+                       BSP_FEATURE_GPT_LLPP1_UNIT_ADDRESS_OFFSET +
+                       (uintptr_t) p_cfg->channel % BSP_FEATURE_GPT_LLPP_CHANNEL_PER_UNIT *
+                       BSP_FEATURE_GPT_LLPP1_CHANNEL_ADDRESS_OFFSET;
+    }
+ #endif
+    else if ((p_cfg->channel >= BSP_FEATURE_GPT_NONSAFETY_BASE_CHANNEL) &&
+             (p_cfg->channel < BSP_FEATURE_GPT_SAFETY_BASE_CHANNEL))
+    {
+        base_address =
+            (uintptr_t) BSP_FEATURE_GPT_NONSAFETY_BASE_ADDRESS +
+            ((uintptr_t) (p_cfg->channel - BSP_FEATURE_GPT_NONSAFETY_BASE_CHANNEL) *
+             BSP_FEATURE_GPT_NONSAFETY_CHANNEL_ADDRESS_OFFSET);
+    }
+    else
+    {
+        base_address =
+            (uintptr_t) BSP_FEATURE_GPT_SAFETY_BASE_ADDRESS +
+            ((uintptr_t) (p_cfg->channel - BSP_FEATURE_GPT_SAFETY_BASE_CHANNEL) *
+             BSP_FEATURE_GPT_SAFETY_CHANNEL_ADDRESS_OFFSET);
+    }
+#endif
+
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
     p_instance_ctrl->p_reg = (R_GPT0_Type *) base_address;
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+    p_instance_ctrl->p_reg = (R_GPT00_0_Type *) base_address;
+#endif
+
+#if 1U == BSP_FEATURE_GPT_INPUT_CAPTURE_SIGNAL_SELECTABLE
+
+    /* Since it's a common channel, it keeps the previous value. */
+    p_instance_ctrl->p_reg_com = R_GPT_IC;
+#endif
 
     /* Set callback and context pointers, if configured */
     p_instance_ctrl->p_callback        = p_cfg->p_callback;
@@ -934,20 +1087,33 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
     p_instance_ctrl->p_reg->GTCCR[GPT_PRV_GTCCRE] = duty_regs.gtccr_buffer;
 
     /* If the requested duty cycle is 0% or 100%, set this in the registers. */
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
     gtuddtyc |= duty_regs.omdty << R_GPT7_GTUDDTYC_OADTY_Pos;
     gtuddtyc |= duty_regs.omdty << R_GPT7_GTUDDTYC_OBDTY_Pos;
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+    gtuddtyc |= duty_regs.omdty << R_GPT09_0_GTUDDTYC_OADTY_Pos;
+    gtuddtyc |= duty_regs.omdty << R_GPT09_0_GTUDDTYC_OBDTY_Pos;
+ #endif
 
     /* Calculate GTIOR. */
     if (p_extend->gtioca.output_enabled)
     {
         uint32_t gtioca_gtior = gpt_gtior_calculate(p_cfg, p_extend->gtioca.stop_level);
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtior |= gtioca_gtior << R_GPT7_GTIOR_GTIOA_Pos;
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtior |= gtioca_gtior << R_GPT09_0_GTIOR_GTIOA_Pos;
+ #endif
     }
 
     if (p_extend->gtiocb.output_enabled)
     {
         uint32_t gtiocb_gtior = gpt_gtior_calculate(p_cfg, p_extend->gtiocb.stop_level);
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtior |= gtiocb_gtior << R_GPT7_GTIOR_GTIOB_Pos;
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtior |= gtiocb_gtior << R_GPT09_0_GTIOR_GTIOB_Pos;
+ #endif
     }
 #endif
 
@@ -960,15 +1126,21 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
     gpt_extended_pwm_cfg_t const * p_pwm_cfg = p_extend->p_pwm_cfg;
     if (NULL != p_pwm_cfg)
     {
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         p_instance_ctrl->p_reg->GTINTAD = ((uint32_t) p_pwm_cfg->output_disable << R_GPT7_GTINTAD_GRPDTE_Pos) |
                                           ((uint32_t) p_pwm_cfg->poeg_link << R_GPT7_GTINTAD_GRP_Pos) |
                                           ((uint32_t) p_pwm_cfg->adc_trigger << R_GPT7_GTINTAD_ADTRAUEN_Pos);
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        p_instance_ctrl->p_reg->GTINTAD = ((uint32_t) p_pwm_cfg->output_disable << R_GPT09_0_GTINTAD_GRPDTE_Pos) |
+                                          ((uint32_t) p_pwm_cfg->poeg_link << R_GPT09_0_GTINTAD_GRP_Pos) |
+                                          ((uint32_t) p_pwm_cfg->adc_trigger << R_GPT09_0_GTINTAD_ADTRAUEN_Pos);
+ #endif
         p_instance_ctrl->p_reg->GTDVU = p_pwm_cfg->dead_time_count_up;
 
         /* Set GTDTCR.TDE only if one of the dead time values is non-zero. */
         uint32_t gtdtcr =
             ((p_pwm_cfg->dead_time_count_up > 0) || (p_pwm_cfg->dead_time_count_down > 0));
-
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         p_instance_ctrl->p_reg->GTITC = ((uint32_t) p_pwm_cfg->interrupt_skip_source << R_GPT7_GTITC_IVTC_Pos) |
                                         ((uint32_t) p_pwm_cfg->interrupt_skip_count << R_GPT7_GTITC_IVTT_Pos) |
                                         ((uint32_t) p_pwm_cfg->interrupt_skip_adc << R_GPT7_GTITC_ADTAL_Pos);
@@ -985,7 +1157,27 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
             ((uint32_t) p_pwm_cfg->interrupt_skip_func_adc_a << R_GPT7_GTEITLI2_EADTAL_Pos) |
             ((uint32_t) p_pwm_cfg->interrupt_skip_func_adc_b <<
                 R_GPT7_GTEITLI2_EADTBL_Pos);
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        p_instance_ctrl->p_reg->GTITC = ((uint32_t) p_pwm_cfg->interrupt_skip_source << R_GPT09_0_GTITC_IVTC_Pos) |
+                                        ((uint32_t) p_pwm_cfg->interrupt_skip_count << R_GPT09_0_GTITC_IVTT_Pos) |
+                                        ((uint32_t) p_pwm_cfg->interrupt_skip_adc << R_GPT09_0_GTITC_ADTAL_Pos);
+        p_instance_ctrl->p_reg->GTEITC =
+            ((uint32_t) p_pwm_cfg->interrupt_skip_source_ext1 << R_GPT09_0_GTEITC_EIVTC1_Pos) |
+            ((uint32_t) p_pwm_cfg->interrupt_skip_count_ext1 << R_GPT09_0_GTEITC_EIVTT1_Pos) |
+            ((uint32_t) p_pwm_cfg->interrupt_skip_source_ext2 <<
+                R_GPT09_0_GTEITC_EIVTC2_Pos) |
+            ((uint32_t) p_pwm_cfg->interrupt_skip_count_ext2 << R_GPT09_0_GTEITC_EIVTT2_Pos);
+        p_instance_ctrl->p_reg->GTEITLI1 =
+            ((uint32_t) p_pwm_cfg->interrupt_skip_func_ovf << R_GPT09_0_GTEITLI1_EITLV_Pos) |
+            ((uint32_t) p_pwm_cfg->interrupt_skip_func_unf << R_GPT09_0_GTEITLI1_EITLU_Pos);
+        p_instance_ctrl->p_reg->GTEITLI2 =
+            ((uint32_t) p_pwm_cfg->interrupt_skip_func_adc_a << R_GPT09_0_GTEITLI2_EADTAL_Pos) |
+            ((uint32_t) p_pwm_cfg->interrupt_skip_func_adc_b <<
+                R_GPT09_0_GTEITLI2_EADTBL_Pos);
+ #endif
         p_instance_ctrl->p_reg->GTDVD = p_pwm_cfg->dead_time_count_down;
+
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
 
         /* GADTRm does not exist in the SAFETY area, so it is not accessed. */
         if (0 ==
@@ -995,10 +1187,22 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
             p_instance_ctrl->p_reg->GTADTRB = p_pwm_cfg->adc_b_compare_match;
         }
 
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        if (p_cfg->channel < BSP_FEATURE_GPT_SAFETY_BASE_CHANNEL)
+        {
+            p_instance_ctrl->p_reg->GTADTRA = p_pwm_cfg->adc_a_compare_match;
+            p_instance_ctrl->p_reg->GTADTRB = p_pwm_cfg->adc_b_compare_match;
+        }
+ #endif
+
         /* If custom GTIOR settings are not provided, set gtioca_disable_settings and gtiocb_disable_settings. */
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtior |= (uint32_t) (p_pwm_cfg->gtioca_disable_setting << R_GPT7_GTIOR_OADF_Pos);
         gtior |= (uint32_t) (p_pwm_cfg->gtiocb_disable_setting << R_GPT7_GTIOR_OBDF_Pos);
-
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtior |= (uint32_t) (p_pwm_cfg->gtioca_disable_setting << R_GPT09_0_GTIOR_OADF_Pos);
+        gtior |= (uint32_t) (p_pwm_cfg->gtiocb_disable_setting << R_GPT09_0_GTIOR_OBDF_Pos);
+ #endif
         p_instance_ctrl->p_reg->GTDTCR = gtdtcr;
     }
     else
@@ -1012,8 +1216,13 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
     }
 
     /* Configure the noise filter for the GTIOC pins. */
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
     gtior |= (uint32_t) (p_extend->capture_filter_gtioca << R_GPT7_GTIOR_NFAEN_Pos);
     gtior |= (uint32_t) (p_extend->capture_filter_gtiocb << R_GPT7_GTIOR_NFBEN_Pos);
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+    gtior |= (uint32_t) (p_extend->capture_filter_gtioca << R_GPT09_0_GTIOR_NFAEN_Pos);
+    gtior |= (uint32_t) (p_extend->capture_filter_gtiocb << R_GPT09_0_GTIOR_NFBEN_Pos);
+#endif
 
     /* Enable the compare match buffer. */
     p_instance_ctrl->p_reg->GTBER = GPT_PRV_GTBER_BUFFER_ENABLE_FORCE_TRANSFER;
@@ -1041,6 +1250,10 @@ static void gpt_hardware_initialize (gpt_instance_ctrl_t * const p_instance_ctrl
      * and Duty Setting Register (GTUDDTYC)" in the RZ microprocessor User's Manual for details). */
     p_instance_ctrl->p_reg->GTUDDTYC = gtuddtyc | 3U;
     p_instance_ctrl->p_reg->GTUDDTYC = gtuddtyc | 1U;
+
+#if 1U == BSP_FEATURE_GPT_INPUT_CAPTURE_SIGNAL_SELECTABLE
+    p_instance_ctrl->p_reg_com->GTIOCSEL |= p_extend->gtioc_isel;
+#endif
 
     r_gpt_write_protect_enable(p_instance_ctrl);
 
@@ -1079,7 +1292,11 @@ static void gpt_counter_initialize (gpt_instance_ctrl_t * const p_instance_ctrl,
 
     /* Dividers for GPT are half the enum value. */
     uint32_t gtcr_tpcs = p_cfg->source_div;
-    uint32_t gtcr      = ((uint32_t) (p_extend->icds << R_GPT7_GTCR_ICDS_Pos) | (gtcr_tpcs << R_GPT7_GTCR_TPCS_Pos));
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+    uint32_t gtcr = ((uint32_t) (p_extend->icds << R_GPT7_GTCR_ICDS_Pos) | (gtcr_tpcs << R_GPT7_GTCR_TPCS_Pos));
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+    uint32_t gtcr = ((uint32_t) (p_extend->icds << R_GPT09_0_GTCR_ICDS_Pos) | (gtcr_tpcs << R_GPT09_0_GTCR_TPCS_Pos));
+#endif
 
     /* Store period register setting. The actual period and is one cycle longer than the register value for saw waves
      * and twice the register value for triangle waves. Reference section 19.2.21 "General PWM Timer Cycle Setting
@@ -1092,8 +1309,12 @@ static void gpt_counter_initialize (gpt_instance_ctrl_t * const p_instance_ctrl,
      * TIMER_MODE_TRIANGLE_WAVE_ASYMMETRIC_PWM. */
     if (p_cfg->mode >= TIMER_MODE_TRIANGLE_WAVE_SYMMETRIC_PWM)
     {
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         gtcr |= ((uint32_t) p_cfg->mode << R_GPT7_GTCR_MD_Pos);
-        gtpr  = p_cfg->period_counts;
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        gtcr |= ((uint32_t) p_cfg->mode << R_GPT09_0_GTCR_MD_Pos);
+ #endif
+        gtpr = p_cfg->period_counts;
     }
 #endif
 
@@ -1168,7 +1389,11 @@ static void gpt_disable_interrupt (gpt_instance_ctrl_t * const p_instance_ctrl)
     gpt_extended_cfg_t * p_extend = (gpt_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
     if (p_instance_ctrl->p_cfg->cycle_end_irq > FSP_INVALID_VECTOR)
     {
+#if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
         p_instance_ctrl->p_reg->GTINTAD &= ~(1U << R_GPT7_GTINTAD_GTINTPR_Pos);
+#elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+        p_instance_ctrl->p_reg->GTINTAD &= ~(1U << R_GPT09_0_GTINTAD_GTINTPR_Pos);
+#endif
     }
 
     if (p_extend->capture_a_irq > FSP_INVALID_VECTOR)
@@ -1186,19 +1411,44 @@ static void gpt_disable_interrupt (gpt_instance_ctrl_t * const p_instance_ctrl)
         p_instance_ctrl->p_reg->GTINTAD_b.GRPDTE = 0U;
     }
 
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
+    /* Use the GPT_INTERRUPT_SELECT_DISABLE macro for disable the cycle end interrupt. */
+    GPT_INTERRUPT_SELECT_DISABLE(p_instance_ctrl->p_cfg->cycle_end_irq, p_extend->cycle_end_source_select, OVF);
+
+    /* Use the GPT_INTERRUPT_SELECT_DISABLE macro for disable interrupt capture a. */
+    GPT_INTERRUPT_SELECT_DISABLE(p_extend->capture_a_irq, p_extend->capture_a_source_select, CCMPA);
+
+    /* Use the GPT_INTERRUPT_SELECT_DISABLE macro for disable interrupt capture b. */
+    GPT_INTERRUPT_SELECT_DISABLE(p_extend->capture_b_irq, p_extend->capture_b_source_select, CCMPB);
+
+    /* Use the GPT_INTERRUPT_SELECT_DISABLE macro for disable interrupt deadtime error. */
+    GPT_INTERRUPT_SELECT_DISABLE(p_extend->dead_time_irq, p_extend->dead_time_error_source_select, DTE);
+#endif
+
     r_gpt_disable_irq(p_instance_ctrl->p_cfg->cycle_end_irq);
     r_gpt_disable_irq(p_extend->capture_a_irq);
     r_gpt_disable_irq(p_extend->capture_b_irq);
     r_gpt_disable_irq(p_extend->dead_time_irq);
+
 #if GPT_PRV_EXTRA_FEATURES_ENABLED == GPT_CFG_OUTPUT_SUPPORT_ENABLE
     gpt_extended_pwm_cfg_t const * p_pwm_cfg = p_extend->p_pwm_cfg;
     if (NULL != p_pwm_cfg)
     {
         if (p_pwm_cfg->trough_irq > FSP_INVALID_VECTOR)
         {
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
             p_instance_ctrl->p_reg->GTINTAD &= ~(2U << R_GPT7_GTINTAD_GTINTPR_Pos);
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+            p_instance_ctrl->p_reg->GTINTAD &= ~(2U << R_GPT09_0_GTINTAD_GTINTPR_Pos);
+ #endif
         }
 
+ #if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
+        /* Use the GPT_INTERRUPT_SELECT_DISABLE macro for disable the trough interrupt. */
+        GPT_INTERRUPT_SELECT_DISABLE(p_pwm_cfg->trough_irq, p_extend->trough_source_select, UDF);
+ #endif
         r_gpt_disable_irq(p_pwm_cfg->trough_irq);
     }
 #endif
@@ -1236,10 +1486,32 @@ static void gpt_enable_interrupt (gpt_instance_ctrl_t * const p_instance_ctrl)
         p_instance_ctrl->p_reg->GTINTAD_b.GRPDTE = 1U;
     }
 
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
+    /* GPT_INT select  and combine enable */
+
+    /* Use the GPT_INTERRUPT_SELECT_ENABLE macro for enable the cycle end interrupt. */
+    GPT_INTERRUPT_SELECT_ENABLE(p_instance_ctrl->p_cfg->cycle_end_irq,
+                                p_extend->cycle_end_source_select,
+                                OVF,
+                                gpt_counter_overflow_isr);
+
+    /* Use the GPT_INTERRUPT_SELECT_ENABLE macro for enable interrupt capture a. */
+    GPT_INTERRUPT_SELECT_ENABLE(p_extend->capture_a_irq, p_extend->capture_a_source_select, CCMPA, gpt_capture_a_isr);
+
+    /* Use the GPT_INTERRUPT_SELECT_ENABLE macro for enable interrupt capture b. */
+    GPT_INTERRUPT_SELECT_ENABLE(p_extend->capture_b_irq, p_extend->capture_b_source_select, CCMPB, gpt_capture_b_isr);
+
+    /* Use the GPT_INTERRUPT_SELECT_ENABLE macro for enable interrupt deadtime error. */
+    GPT_INTERRUPT_SELECT_ENABLE(p_extend->dead_time_irq, p_extend->dead_time_error_source_select, DTE,
+                                gpt_dead_time_isr);
+#endif
+
     r_gpt_enable_irq(p_instance_ctrl->p_cfg->cycle_end_irq, p_instance_ctrl->p_cfg->cycle_end_ipl, p_instance_ctrl);
     r_gpt_enable_irq(p_extend->capture_a_irq, p_extend->capture_a_ipl, p_instance_ctrl);
     r_gpt_enable_irq(p_extend->capture_b_irq, p_extend->capture_b_ipl, p_instance_ctrl);
     r_gpt_enable_irq(p_extend->dead_time_irq, p_extend->dead_time_ipl, p_instance_ctrl);
+
 #if GPT_PRV_EXTRA_FEATURES_ENABLED == GPT_CFG_OUTPUT_SUPPORT_ENABLE
     gpt_extended_pwm_cfg_t const * p_pwm_cfg = p_extend->p_pwm_cfg;
     if (NULL != p_pwm_cfg)
@@ -1249,6 +1521,14 @@ static void gpt_enable_interrupt (gpt_instance_ctrl_t * const p_instance_ctrl)
             p_instance_ctrl->p_reg->GTINTAD_b.GTINTPR |= 0x02U;
         }
 
+ #if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
+        /* Use the GPT_INTERRUPT_SELECT_ENABLE macro for enable the trough interrupt. */
+        GPT_INTERRUPT_SELECT_ENABLE(p_pwm_cfg->trough_irq,
+                                    p_extend->trough_source_select,
+                                    UDF,
+                                    gpt_counter_underflow_isr);
+ #endif
         r_gpt_enable_irq(p_pwm_cfg->trough_irq, p_pwm_cfg->trough_ipl, p_instance_ctrl);
     }
 #endif
@@ -1347,9 +1627,13 @@ static uint32_t gpt_clock_frequency_get (gpt_instance_ctrl_t * const p_instance_
 static uint32_t gpt_gtior_calculate (timer_cfg_t const * const p_cfg, gpt_pin_level_t const stop_level)
 {
     /* The stop level is used as both the initial level and the stop level. */
+ #if 1U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
     uint32_t gtior = R_GPT7_GTIOR_OAE_Msk | ((uint32_t) stop_level << R_GPT7_GTIOR_OADFLT_Pos) |
                      ((uint32_t) stop_level << GPT_PRV_GTIOR_INITIAL_LEVEL_BIT);
-
+ #elif 2U == BSP_FEATURE_GPT_REGISTER_MASK_TYPE
+    uint32_t gtior = R_GPT09_0_GTIOR_OAE_Msk | ((uint32_t) stop_level << R_GPT09_0_GTIOR_OADFLT_Pos) |
+                     ((uint32_t) stop_level << GPT_PRV_GTIOR_INITIAL_LEVEL_BIT);
+ #endif
     uint32_t gtion = GPT_PRV_GTIO_LOW_COMPARE_MATCH_HIGH_CYCLE_END;
 
     if (TIMER_MODE_PWM == p_cfg->mode)
@@ -1427,8 +1711,11 @@ static void r_gpt_capture_common_isr (gpt_prv_capture_event_t event)
 {
     GPT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
+#endif
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
@@ -1464,8 +1751,11 @@ static void r_gpt_capture_common_isr (gpt_prv_capture_event_t event)
                             counter);
     }
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+#endif
 
     GPT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
@@ -1477,9 +1767,11 @@ void gpt_counter_overflow_isr (void)
 {
     GPT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
-
+#endif
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
     /* Recover ISR context saved in open. */
@@ -1508,9 +1800,11 @@ void gpt_counter_overflow_isr (void)
         r_gpt_call_callback(p_instance_ctrl, TIMER_EVENT_CYCLE_END, 0);
     }
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
-
+#endif
     GPT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
@@ -1523,8 +1817,11 @@ void gpt_counter_underflow_isr (void)
 {
     GPT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 
+ #if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
+ #endif
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
@@ -1534,8 +1831,11 @@ void gpt_counter_underflow_isr (void)
     /* Call user callback. */
     r_gpt_call_callback(p_instance_ctrl, TIMER_EVENT_TROUGH, 0);
 
+ #if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+ #endif
 
     GPT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
@@ -1549,8 +1849,11 @@ void gpt_dead_time_isr (void)
 {
     GPT_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE;
+#endif
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
@@ -1560,8 +1863,11 @@ void gpt_dead_time_isr (void)
     /* Call user callback. */
     r_gpt_call_callback(p_instance_ctrl, TIMER_EVENT_DEAD_TIME, 0);
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+#endif
 
     GPT_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
@@ -1585,3 +1891,56 @@ void gpt_capture_b_isr (void)
 {
     r_gpt_capture_common_isr(GPT_PRV_CAPTURE_EVENT_B);
 }
+
+#if 1U == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED
+
+/*******************************************************************************************************************//**
+ * Interrupt triggered by a INT0-3.
+ *
+ * Executes each interrupt process according to the cause of the interrupt.
+ **********************************************************************************************************************/
+void gpt_int_select_isr (void)
+{
+    /* Save context if RTOS is used */
+    FSP_CONTEXT_SAVE;
+
+    IRQn_Type irq = R_FSP_CurrentIrqGet();
+
+    gpt_instance_ctrl_t * p_instance_ctrl = (gpt_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
+
+    /* Save pointer to extended configuration structure. */
+    gpt_extended_cfg_t           * p_extend  = (gpt_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+    gpt_extended_pwm_cfg_t const * p_pwm_cfg = p_extend->p_pwm_cfg;
+
+    /* Clearing event state and executing ISR function. */
+    if (irq == p_extend->capture_a_irq)
+    {
+        gpt_capture_a_isr();
+    }
+    else if (irq == p_extend->capture_b_irq)
+    {
+        gpt_capture_b_isr();
+    }
+    else if (irq == p_instance_ctrl->p_cfg->cycle_end_irq)
+    {
+        gpt_counter_overflow_isr();
+    }
+    else if (irq == p_extend->dead_time_irq)
+    {
+        gpt_dead_time_isr();
+    }
+    else if (irq == p_pwm_cfg->trough_irq)
+    {
+        gpt_counter_underflow_isr();
+    }
+    else
+    {
+        /* Do Nothing */
+        ;
+    }
+
+    /* Restore context if RTOS is used */
+    FSP_CONTEXT_RESTORE;
+}
+
+#endif

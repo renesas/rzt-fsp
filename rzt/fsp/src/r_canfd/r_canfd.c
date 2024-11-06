@@ -256,7 +256,7 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
         {
             /* Configure the Common FIFOs. Mask out the enable bit because it can only be set once operating.
              * See Section "Common FIFO Configuration/Control Register n" in the RZ microprocessor User's Manual for more details. */
-            p_reg->CFDCFCC[i] = p_global_cfg->common_fifo_config[i] & ~R_CANFD_CFDCFCC_CFE_Msk;
+            p_reg->CFDCFCC[i] = p_global_cfg->common_fifo_config[i] & (uint32_t) ~R_CANFD_CFDCFCC_CFE_Msk;
         }
     }
 
@@ -303,8 +303,13 @@ fsp_err_t R_CANFD_Open (can_ctrl_t * const p_ctrl, can_cfg_t const * const p_cfg
         p_reg->CFDGAFLECTR = (afl_entry >> 4) | R_CANFD_CFDGAFLECTR_AFLDAE_Msk;
 
         /* Get pointer to current AFL rule and set it to the rule pointed to by p_afl */
-        volatile R_CANFD_CFDGAFL_Type * cfdgafl = &p_reg->CFDGAFL[afl_entry & 0xF];
-        *cfdgafl = *p_afl++;
+        volatile R_CANFD_CFDGAFL_Type * cfdgafl = &R_CANFD->CFDGAFL[afl_entry & 0xF];
+
+        cfdgafl->ID = p_afl->ID;
+        cfdgafl->M  = p_afl->M;
+        cfdgafl->P0 = p_afl->P0;
+        cfdgafl->P1 = p_afl->P1;
+        p_afl++;
 
         /* Set Information Label 0 to the channel being configured */
         cfdgafl->P0_b.GAFLIFL0 = channel & 1U;
@@ -725,7 +730,7 @@ fsp_err_t R_CANFD_ModeTransition (can_ctrl_t * const   p_ctrl,
 
             /* Set channel test mode */
             uint32_t cfdcnctr = p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR;
-            cfdcnctr &= ~(R_CANFD_CFDC_CTR_CTME_Msk | R_CANFD_CFDC_CTR_CTMS_Msk);
+            cfdcnctr &= (uint32_t) ~(R_CANFD_CFDC_CTR_CTME_Msk | R_CANFD_CFDC_CTR_CTMS_Msk);
             p_instance_ctrl->p_reg->CFDC[interlaced_channel].CTR = cfdcnctr |
                                                                    ((uint32_t) test_mode << R_CANFD_CFDC_CTR_CTME_Pos);
         }
@@ -982,7 +987,7 @@ static void r_candfd_global_error_handler (uint32_t instance)
     {
         /* Get lowest RX FIFO with Message Lost condition and clear the flag */
         args.buffer = __CLZ(__RBIT(p_instance_ctrl->p_reg->CFDFMSTS));
-        p_instance_ctrl->p_reg->CFDRFSTS[args.buffer] &= ~R_CANFD_CFDRFSTS_RFMLT_Msk;
+        p_instance_ctrl->p_reg->CFDRFSTS[args.buffer] &= (uint32_t) ~R_CANFD_CFDRFSTS_RFMLT_Msk;
 
         /* Dummy read to ensure that interrupt event is cleared. */
         dummy = p_instance_ctrl->p_reg->CFDRFSTS[args.buffer];
@@ -1110,7 +1115,7 @@ static void r_canfd_rx_fifo_handler (uint32_t instance)
         }
 
         /* Clear RX FIFO Interrupt Flag */
-        p_reg->CFDRFSTS[fifo] &= ~R_CANFD_CFDRFSTS_RFIF_Msk;
+        p_reg->CFDRFSTS[fifo] &= (uint32_t) ~R_CANFD_CFDRFSTS_RFIF_Msk;
 
         /* Dummy read to ensure that interrupt event is cleared. */
         volatile uint32_t dummy = p_reg->CFDRFSTS[fifo];
@@ -1234,7 +1239,7 @@ void canfd_channel_tx_isr (void)
             txmb = __CLZ(__RBIT(*p_cfdtm_sts & cfdtm_mask));
 
             /* Clear the interrupt flag for Common FIFO TX. */
-            p_instance_ctrl->p_reg->CFDCFSTS[txmb] &= ~R_CANFD_CFDCFSTS_CFTXIF_Msk;
+            p_instance_ctrl->p_reg->CFDCFSTS[txmb] &= (uint32_t) ~R_CANFD_CFDCFSTS_CFTXIF_Msk;
 
             /* Dummy read to ensure that interrupt event is cleared. */
             volatile uint32_t dummy = p_instance_ctrl->p_reg->CFDCFSTS[txmb];
@@ -1316,7 +1321,7 @@ void canfd_common_fifo_rx_isr (void)
     }
 
     /* Clear Common FIFO RX Interrupt Flag */
-    p_instance_ctrl->p_reg->CFDCFSTS[fifo] &= ~R_CANFD_CFDCFSTS_CFRXIF_Msk;
+    p_instance_ctrl->p_reg->CFDCFSTS[fifo] &= (uint32_t) ~R_CANFD_CFDCFSTS_CFRXIF_Msk;
 
     /* Dummy read to ensure that interrupt event is cleared. */
     volatile uint32_t dummy = p_instance_ctrl->p_reg->CFDCFSTS[fifo];
@@ -1351,13 +1356,13 @@ static void r_canfd_mode_transition (canfd_instance_ctrl_t * p_instance_ctrl, ca
             /* Disable RX FIFOs */
             for (uint32_t i = 0; i < CANFD_PRV_RX_FIFO_MAX; i++)
             {
-                p_instance_ctrl->p_reg->CFDRFCC[i] &= ~R_CANFD_CFDRFCC_RFE_Msk;
+                p_instance_ctrl->p_reg->CFDRFCC[i] &= (uint32_t) ~R_CANFD_CFDRFCC_RFE_Msk;
             }
 
             /* Disable Common FIFOs */
             for (uint32_t i = 0; i < CANFD_PRV_COMMON_FIFO_MAX * BSP_FEATURE_CANFD_NUM_CHANNELS; i++)
             {
-                p_instance_ctrl->p_reg->CFDCFCC[i] &= ~R_CANFD_CFDCFCC_CFE_Msk;
+                p_instance_ctrl->p_reg->CFDCFCC[i] &= (uint32_t) ~R_CANFD_CFDCFCC_CFE_Msk;
             }
         }
 
@@ -1406,7 +1411,7 @@ static void r_canfd_mode_transition (canfd_instance_ctrl_t * p_instance_ctrl, ca
             for (uint32_t i = 0; i < CANFD_PRV_COMMON_FIFO_MAX; i++)
             {
                 p_instance_ctrl->p_reg->CFDCFCC[ch_offset + i] |=
-                    (p_global_cfg->common_fifo_config[ch_offset + i] & R_CANFD_CFDCFCC_CFE_Msk);
+                    (p_global_cfg->common_fifo_config[ch_offset + i] & (uint32_t) R_CANFD_CFDCFCC_CFE_Msk);
             }
         }
     }
@@ -1425,7 +1430,7 @@ static void r_canfd_mode_ctr_set (volatile uint32_t * p_ctr_reg, can_operation_m
     volatile uint32_t * p_sts_reg = p_ctr_reg + 1;
 
     /* See definitions for CFDCnCTR, CFDCnSTS, CFDGCTR and CFDGSTS in the RZ microprocessor User's Manual */
-    *p_ctr_reg = (*p_ctr_reg & ~CANFD_PRV_CTR_MODE_MASK) | operation_mode;
+    *p_ctr_reg = (*p_ctr_reg & (uint32_t) ~CANFD_PRV_CTR_MODE_MASK) | operation_mode;
     FSP_HARDWARE_REGISTER_WAIT((*p_sts_reg & CANFD_PRV_CTR_MODE_MASK), operation_mode);
 }
 

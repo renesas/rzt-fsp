@@ -32,6 +32,7 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
+#if 1U == BSP_FEATURE_ADC_SAMPLE_STATE_COUNT_TYPE
 
 /* Typical values that can be used to modify the sample states.
  * The minimum sample state count value is either 6 or 7 depending on the clock ratios.
@@ -39,12 +40,28 @@ FSP_HEADER
  * this extra state will lead to at worst a "1 microsecond" increase in conversion time.
  * At 60 MHz the extra sample state will add 16.7 ns to the conversion time.
  */
-#define ADC_SAMPLE_STATE_COUNT_MIN             (7U)
-#define ADC_SAMPLE_STATE_COUNT_MAX             (255U)
+ #define ADC_SAMPLE_STATE_COUNT_MIN            (7U)
+ #define ADC_SAMPLE_STATE_COUNT_MAX            (255U)
 
 /* Typical values that can be used for the sample and hold counts for the channels 0-2*/
 /* Minimum sample and hold states */
-#define ADC_SAMPLE_STATE_HOLD_COUNT_MIN        (4U)
+ #define ADC_SAMPLE_STATE_HOLD_COUNT_MIN       (4U)
+
+#elif 2U == BSP_FEATURE_ADC_SAMPLE_STATE_COUNT_TYPE
+
+/* Typical values that can be used to modify the sample states.
+ * The minimum sample state count value is either 6 or 7 depending on the clock ratios.
+ * It is fixed to 6 based on the fact that at the lowest ADC conversion clock supported (1 MHz)
+ * this extra state will lead to at worst a "1 microsecond" increase in conversion time.
+ * At 60 MHz the extra sample state will add 16.7 ns to the conversion time.
+ */
+ #define ADC_SAMPLE_STATE_COUNT_MIN            (6U)
+ #define ADC_SAMPLE_STATE_COUNT_MAX            (255U)
+
+/* Typical values that can be used for the sample and hold counts for the channels 0-2*/
+/* Minimum sample and hold states */
+ #define ADC_SAMPLE_STATE_HOLD_COUNT_MIN       (8U)
+#endif
 
 /* Default sample and hold states */
 #define ADC_SAMPLE_STATE_HOLD_COUNT_DEFAULT    (24U)
@@ -84,7 +101,7 @@ typedef enum e_adc_add
     ADC_ADD_AVERAGE_TWO     = 0x81,    ///< Average two samples
     ADC_ADD_AVERAGE_THREE   = 0x82,    ///< Average three samples
     ADC_ADD_AVERAGE_FOUR    = 0x83,    ///< Average four samples
-    ADC_ADD_AVERAGE_SIXTEEN = 0x85,    ///< Add sixteen samples
+    ADC_ADD_AVERAGE_SIXTEEN = 0x85,    ///< Average sixteen samples
 } adc_add_t;
 
 /** ADC clear after read definitions */
@@ -123,7 +140,7 @@ typedef enum e_adc_compare_cfg
     ADC_COMPARE_CFG_A_ENABLE      = R_ADC121_ADCMPCR_CMPAE_Msk | R_ADC121_ADCMPCR_CMPAIE_Msk, ///< Window A operation enabled
     ADC_COMPARE_CFG_B_ENABLE      = R_ADC121_ADCMPCR_CMPBE_Msk | R_ADC121_ADCMPCR_CMPBIE_Msk, ///< Window B operation enabled
     ADC_COMPARE_CFG_WINDOW_ENABLE = R_ADC121_ADCMPCR_WCMPE_Msk,                               ///< Window function enabled
-#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     ADC_COMPARE_CFG_A_ENABLE      = R_ADC120_ADCMPCR_CMPAE_Msk | R_ADC120_ADCMPCR_CMPAIE_Msk, ///< Window A operation enabled
     ADC_COMPARE_CFG_B_ENABLE      = R_ADC120_ADCMPCR_CMPBE_Msk | R_ADC120_ADCMPCR_CMPBIE_Msk, ///< Window B operation enabled
     ADC_COMPARE_CFG_WINDOW_ENABLE = R_ADC120_ADCMPCR_WCMPE_Msk,                               ///< Window function enabled
@@ -157,7 +174,7 @@ typedef enum e_adc_window_b_mode
     ADC_WINDOW_B_MODE_LESS_THAN_OR_OUTSIDE = 0,                              ///< Window B comparison condition is less than or outside
 #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     ADC_WINDOW_B_MODE_GREATER_THAN_OR_INSIDE = R_ADC121_ADCMPBNSR_CMPLB_Msk, ///< Window B comparison condition is greater than or inside
-#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     ADC_WINDOW_B_MODE_GREATER_THAN_OR_INSIDE = R_ADC120_ADCMPBNSR_CMPLB_Msk, ///< Window B comparison condition is greater than or inside
 #endif
 } adc_window_b_mode_t;
@@ -196,10 +213,9 @@ typedef enum e_adc_active_trigger
     ADC_ACTIVE_TRIGGER_TRG7AN_BN = (0x0FU),           ///< Compare match between MTU7.TADCORA and MTU7.TCNT, or between MTU7.TADCORB and MTU7.TCNT
     ADC_ACTIVE_TRIGGER_TRG7ABN   = (0x10U),           ///< Compare match between MTU7.TADCORA and MTU7.TCNT, and between MTU7.TADCORB and MTU7.TCNT
     ///< (when interrupt skipping function 2 is in use)
-
     ADC_ACTIVE_TRIGGER_ELC_TRIGGER         = (0x11U), ///< A/D Startup source A from ELC
     ADC_ACTIVE_TRIGGER_ELC_TRIGGER_GROUP_B = (0x12U), ///< A/D Startup source B from ELC
-    ADC_ACTIVE_TRIGGER_DISABLED            = (0x3FU)  ///< A/D Start trigger disabled
+    ADC_ACTIVE_TRIGGER_DISABLED            = (0x3FU), ///< A/D Start trigger disabled
 } adc_active_trigger_t;
 
 /** ADC double-trigger mode definitions */
@@ -283,10 +299,12 @@ typedef struct st_adc_channel_cfg
 /** ADC instance control block. DO NOT INITIALIZE.  Initialized in @ref adc_api_t::open(). */
 typedef struct
 {
-#if BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 1
+#if 1 == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     R_ADC121_Type * p_reg;                      // Base register for this unit
-#elif BSP_FEATURE_ADC_REGISTER_MASK_TYPE == 2
+#elif 2 == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     R_ADC120_Type * p_reg;                      // Base register for this unit
+#elif 3 == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+    R_ADC122_Type * p_reg;                      // Base register for this unit
 #endif
 
     adc_cfg_t const * p_cfg;

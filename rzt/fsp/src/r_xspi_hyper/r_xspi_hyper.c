@@ -16,12 +16,6 @@
  **********************************************************************************************************************/
 #define XSPI_HYPER_PRV_OPEN                                  (0x48595045)
 
-#define XSPI_HYPER_DEVICE_START_ADDRESS                      (0x60000000)
-#define XSPI_HYPER_DEVICE_XSPI0_1_ADDRESS_DELTA              (0x8000000)
-#define XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA                (0x4000000)
-#define XSPI_HYPER_MIRROR_ADDRESS_DELTA                      (0x20000000)
-#define XSPI_HYPER_DEVICE_START_MIRROR_ADDRESS               (0X40000000)
-
 #define XSPI_HYPER_PRV_WRAPCFG_DSSFTCS0_OFFSET               (8U)
 #define XSPI_HYPER_PRV_WRAPCFG_DSSFTCS0_VALUE_MASK           (0x1FU)
 #define XSPI_HYPER_PRV_WRAPCFG_DSSFTCS1_OFFSET               (24U)
@@ -175,10 +169,32 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     /* Enable clock to the HYPER block */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_START(FSP_IP_XSPI, p_cfg_extend->unit);
+    if (0U == p_cfg_extend->unit)
+    {
+        R_BSP_ModuleResetDisable(BSP_MODULE_RESET_XSPI0);
+    }
+    else
+    {
+        R_BSP_ModuleResetDisable(BSP_MODULE_RESET_XSPI1);
+    }
+
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
-#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+#if BSP_FEATURE_BSP_SLAVE_STOP_SUPPORTED
+
+    /* Release from slave stop. */
+    if (0U == p_cfg_extend->unit)
+    {
+        R_BSP_SlaveStopRelease(BSP_BUS_SLAVE_XSPI0);
+    }
+    else
+    {
+        R_BSP_SlaveStopRelease(BSP_BUS_SLAVE_XSPI1);
+    }
+#endif
+
+#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
 
     /* Bus release request */
     R_XSPI_MISC2->MSTP_CTRL_XSPI &=
@@ -195,11 +211,11 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
                                  (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
                                 XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK),
                                0U);
-    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 #endif
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 
     /* Set base address. */
-    uint32_t base_address = (uint32_t) R_XSPI0 + (p_cfg_extend->unit * ((uint32_t) R_XSPI1 - (uint32_t) R_XSPI0));
+    uintptr_t base_address = (uintptr_t) R_XSPI0 + (p_cfg_extend->unit * ((uintptr_t) R_XSPI1 - (uintptr_t) R_XSPI0));
     p_instance_ctrl->p_reg = (R_XSPI0_Type *) base_address;
 
     /* Initialize control block. */
@@ -208,13 +224,32 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     /* xSPI configuration (see RZ microprocessor User's Manual section "Flow of Configuration"). */
     /* Set xSPI CSn slave memory size. */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+
+    /* Set xSPI IO voltage */
+#if BSP_FEATURE_XSPI_VOLTAGE_SETTING_SUPPORTED
+    if (0 == p_cfg_extend->unit)
+    {
+        R_XSPI0_MISC->IOVOLCTL = p_cfg_extend->io_voltage;
+    }
+    else
+    {
+        R_XSPI1_MISC->IOVOLCTL = p_cfg_extend->io_voltage;
+    }
+#endif
+
 #if XSPI_HYPER_CFG_CUSTOM_ADDR_SPACE_ENABLE
-    R_XSPI0_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit0_cs0_end_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
-    R_XSPI0_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit0_cs1_start_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
-    R_XSPI0_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit0_cs1_end_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
-    R_XSPI1_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit1_cs0_end_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
-    R_XSPI1_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit1_cs1_start_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
-    R_XSPI1_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit1_cs1_end_address - XSPI_HYPER_MIRROR_ADDRESS_DELTA;
+    uint32_t mirror_address_delta;
+ #if 0 == BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS
+    mirror_address_delta = 0;
+ #else
+    mirror_address_delta = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS;
+ #endif
+    R_XSPI0_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit0_cs0_end_address - mirror_address_delta;
+    R_XSPI0_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit0_cs1_start_address - mirror_address_delta;
+    R_XSPI0_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit0_cs1_end_address - mirror_address_delta;
+    R_XSPI1_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit1_cs0_end_address - mirror_address_delta;
+    R_XSPI1_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit1_cs1_start_address - mirror_address_delta;
+    R_XSPI1_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit1_cs1_end_address - mirror_address_delta;
 #else
  #if 1 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
 
@@ -229,18 +264,24 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     }
 
  #elif 2 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
+    uint32_t mirror_address_delta;
+  #if 0 == BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS
+    mirror_address_delta = 0U;
+  #else
+    mirror_address_delta = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS;
+  #endif
+
     if (XSPI_HYPER_CHIP_SELECT_0 == p_cfg_extend->chip_select)
     {
         if (0 == p_cfg_extend->unit)
         {
-            R_XSPI0_MISC->CS0ENDAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
+            R_XSPI0_MISC->CS0ENDAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - mirror_address_delta +
                                      (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
                                      XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
         }
         else
         {
-            R_XSPI1_MISC->CS0ENDAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
-                                     XSPI_HYPER_DEVICE_XSPI0_1_ADDRESS_DELTA +
+            R_XSPI1_MISC->CS0ENDAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS - mirror_address_delta +
                                      (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
                                      XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
         }
@@ -249,21 +290,21 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     {
         if (0 == p_cfg_extend->unit)
         {
-            R_XSPI0_MISC->CS1STRAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
-                                     XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA;
-            R_XSPI0_MISC->CS1ENDAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
-                                     XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA +
+            R_XSPI0_MISC->CS1STRAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS +
+                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta;
+
+            R_XSPI0_MISC->CS1ENDAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS +
+                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta +
                                      (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
                                      XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
         }
         else
         {
-            R_XSPI1_MISC->CS1STRAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
-                                     XSPI_HYPER_DEVICE_XSPI0_1_ADDRESS_DELTA +
-                                     XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA;
-            R_XSPI1_MISC->CS1ENDAD = XSPI_HYPER_DEVICE_START_ADDRESS - XSPI_HYPER_MIRROR_ADDRESS_DELTA +
-                                     XSPI_HYPER_DEVICE_XSPI0_1_ADDRESS_DELTA +
-                                     XSPI_HYPER_DEVICE_CS0_1_ADDRESS_DELTA +
+            R_XSPI1_MISC->CS1STRAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS +
+                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta;
+
+            R_XSPI1_MISC->CS1ENDAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS +
+                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta +
                                      (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
                                      XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
         }
@@ -505,8 +546,9 @@ fsp_err_t R_XSPI_HYPER_Close (hyperbus_ctrl_t * p_ctrl) {
 
     p_instance_ctrl->open = 0U;
 
-#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+
+#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
 
     /* Module stop request */
     R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_MASK <<
@@ -523,11 +565,34 @@ fsp_err_t R_XSPI_HYPER_Close (hyperbus_ctrl_t * p_ctrl) {
                                  (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
                                 XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK),
                                XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK);
-    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 #endif
+
+#if BSP_FEATURE_BSP_SLAVE_STOP_SUPPORTED
+
+    /* Slave stop request */
+    if (0U == p_cfg_extend->unit)
+    {
+        R_BSP_SlaveStop(BSP_BUS_SLAVE_XSPI0);
+    }
+    else
+    {
+        R_BSP_SlaveStop(BSP_BUS_SLAVE_XSPI1);
+    }
+#endif
+
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 
     /* Disable clock to the Hyper block */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
+    if (0U == p_cfg_extend->unit)
+    {
+        R_BSP_ModuleResetEnable(BSP_MODULE_RESET_XSPI0);
+    }
+    else
+    {
+        R_BSP_ModuleResetEnable(BSP_MODULE_RESET_XSPI1);
+    }
+
     R_BSP_MODULE_STOP(FSP_IP_XSPI, p_cfg_extend->unit);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 

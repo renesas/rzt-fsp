@@ -73,8 +73,8 @@
  #if USB_IP_EHCI_OHCI == 0
 static uint16_t usb_shstd_clr_stall_pipe[USB_NUM_USBIP];
  #endif                                /* USB_IP_EHCI_OHCI == 0 */
-static uint16_t  usb_shstd_clr_stall_request[USB_NUM_USBIP][5];
-static usb_utr_t usb_shstd_clr_stall_ctrl[USB_NUM_USBIP];
+static uint16_t  usb_shstd_clr_stall_request[USB_NUM_USBIP][5] USB_BUFFER_PLACE_IN_SECTION;
+static usb_utr_t usb_shstd_clr_stall_ctrl[USB_NUM_USBIP] USB_BUFFER_PLACE_IN_SECTION;
 
  #if defined(USB_CFG_HVND_USE)
 static void usb_hvnd_configured(usb_utr_t * ptr, uint16_t dev_addr, uint16_t data2);
@@ -307,7 +307,7 @@ usb_er_t usb_hstd_transfer_start_req (usb_utr_t * ptr)
 
     p_tran_data->cur_task_hdl = xTaskGetCurrentTaskHandle();
   #if ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE))
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
     if (0 != ptr->p_transfer_tx)
     {
         p_tran_data->p_transfer_tx = ptr->p_transfer_tx;
@@ -325,7 +325,7 @@ usb_er_t usb_hstd_transfer_start_req (usb_utr_t * ptr)
     {
         p_tran_data->p_transfer_rx = 0;
     }
-#endif /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) */
+#endif /* !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H) */
   #endif
 
     /* Send message */
@@ -389,7 +389,7 @@ usb_er_t usb_hstd_hcd_snd_mbx (usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, 
         hp->ipp       = ptr->ipp;
         hp->ip        = ptr->ip;
  #if ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE))
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         hp->p_transfer_rx = ptr->p_transfer_rx;
         hp->p_transfer_tx = ptr->p_transfer_tx;
 #endif
@@ -454,7 +454,7 @@ void usb_hstd_mgr_snd_mbx (usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, uint
         mp->ipp     = ptr->ipp;
         mp->ip      = ptr->ip;
  #if ((USB_CFG_DTC == USB_CFG_ENABLE) || (USB_CFG_DMA == USB_CFG_ENABLE))
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         mp->p_transfer_rx = ptr->p_transfer_rx;
         mp->p_transfer_tx = ptr->p_transfer_tx;
  #endif

@@ -799,8 +799,9 @@ usb_rtos_err_t usb_rtos_delete (void)
     vQueueDelete(g_mgr_mbx_hdl);
 
     /** USB HUB task **/
+#if USB_CFG_HUB == USB_CFG_ENABLE
     vQueueDelete(g_hub_mbx_hdl);
-
+#endif
     /** USB Internal Communication mailbox **/
     vQueueDelete(g_cls_mbx_hdl);
 
@@ -852,11 +853,13 @@ usb_rtos_err_t usb_rtos_delete (void)
     }
 
     /** USB HUB task **/
+#if USB_CFG_HUB == USB_CFG_ENABLE
     vQueueDelete(g_hub_mpl_hdl);
     for (i = 0; i < QUEUE_SIZE; i++)
     {
         vPortFree(g_p_hub_mpl[i]);
     }
+#endif
 
     /** USB Internal Communication **/
     vQueueDelete(g_cls_mpl_hdl);

@@ -59,7 +59,11 @@ typedef enum e_ether_phy_mdio
 {
     ETHER_PHY_MDIO_GMAC  = 0,          ///< GMAC
     ETHER_PHY_MDIO_ETHSW = 1,          ///< Ether switch
-    ETHER_PHY_MDIO_ESC   = 2           ///< EtherCAT
+    ETHER_PHY_MDIO_ESC   = 2,          ///< EtherCAT
+#if defined(BSP_MCU_GROUP_RZT2H)
+    ETHER_PHY_MDIO_GMAC1 = 3,          ///< GMAC1
+    ETHER_PHY_MDIO_GMAC2 = 4           ///< GMAC2
+#endif
 } ether_phy_mdio_t;
 
 /** PHY Speed for setting */

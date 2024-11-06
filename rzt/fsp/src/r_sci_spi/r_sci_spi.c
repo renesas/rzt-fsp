@@ -19,14 +19,19 @@
  * Macro definitions
  **********************************************************************************************************************/
 
-#define SCI_SPI_PRV_CLK_MIN_DIV      (4U)
-#define SCI_SPI_PRV_CLK_MAX_DIV      ((UINT16_MAX + 1U) * 2U)
-#define SCI_SPI_PRV_CHR_RST_VALUE    (0x0200U)
-#define SCI_SPI_PRV_DATA_REG_MASK    (0xFFFFFF00)
-#define SCI_SPI_PRV_RDAT_MASK        (0xFFU)
+#define SCI_SPI_PRV_CLK_MIN_DIV            (4U)
+#define SCI_SPI_PRV_CLK_MAX_DIV            ((UINT16_MAX + 1U) * 2U)
+#define SCI_SPI_PRV_CHR_RST_VALUE          (0x0200U)
+#define SCI_SPI_PRV_DATA_REG_MASK          (0xFFFFFF00)
+#define SCI_SPI_PRV_RDAT_MASK              (0xFFU)
+
+/** Worst-case register access interval. */
+#define SCI_SPI_PRV_MAX_ACCESS_INTERVAL    (BSP_FEATURE_SCI_SPI_MAX_CPUCLK_MHZ * 3U /  \
+                                            BSP_FEATURE_SCI_SPI_MIN_SCINASYNCCLK_MHZ + \
+                                            BSP_FEATURE_SCI_SPI_MAX_CPUCLK_MHZ * 3U / BSP_FEATURE_SCI_SPI_MIN_PCLKM_MHZ)
 
 /** "SCIS" in ASCII, used to determine if channel is open. */
-#define SCI_SPI_OPEN                 (0x53434953ULL)
+#define SCI_SPI_OPEN                       (0x53434953ULL)
 
 /***********************************************************************************************************************
  * Private global variables.
@@ -138,7 +143,7 @@ fsp_err_t R_SCI_SPI_Open (spi_ctrl_t * p_ctrl, spi_cfg_t const * const p_cfg)
     {
         /* Non-Safety Peripheral */
         p_instance_ctrl->p_reg =
-            (R_SCI0_Type *) (((uint32_t) R_SCI1 - (uint32_t) R_SCI0) * p_cfg->channel + (uint32_t) R_SCI0);
+            (R_SCI0_Type *) (((uintptr_t) R_SCI1 - (uintptr_t) R_SCI0) * p_cfg->channel + (uintptr_t) R_SCI0);
     }
 
     p_instance_ctrl->p_cfg = p_cfg;
@@ -497,7 +502,7 @@ static void r_sci_spi_hw_config (sci_spi_instance_ctrl_t * const p_instance_ctrl
     if (SPI_BIT_ORDER_MSB_FIRST == p_cfg->bit_order)
     {
         /* Configure MSB first (Default is LSB). */
-        ccr3 &= ~R_SCI0_CCR3_LSBF_Msk;
+        ccr3 &= (uint32_t) ~R_SCI0_CCR3_LSBF_Msk;
     }
 
     if (SPI_MODE_SLAVE == p_cfg->operating_mode)
@@ -513,7 +518,7 @@ static void r_sci_spi_hw_config (sci_spi_instance_ctrl_t * const p_instance_ctrl
     if (SPI_CLK_PHASE_EDGE_ODD == p_cfg->clk_phase)
     {
         /* In order to get sampling on the ODD edge set CCR3.CPHA = 0. */
-        ccr3 &= ~R_SCI0_CCR3_CPHA_Msk;
+        ccr3 &= (uint32_t) ~R_SCI0_CCR3_CPHA_Msk;
     }
 
     /* In order to get sampling on the even clock edge set CCR3.CPHA = 1. */
@@ -521,7 +526,7 @@ static void r_sci_spi_hw_config (sci_spi_instance_ctrl_t * const p_instance_ctrl
     {
         /* Set CCR3.CPOL = 0 for clock polarity as low during idle (See Figure 'Relationship between clock and transmit
          * data/receive data in simple-SPI mode' in RZ microprocessor manual). */
-        ccr3 &= ~R_SCI0_CCR3_CPOL_Msk;
+        ccr3 &= (uint32_t) ~R_SCI0_CCR3_CPOL_Msk;
     }
 
     /* Apply the synchronization bypass settings. */
@@ -559,6 +564,15 @@ static void r_sci_spi_hw_config (sci_spi_instance_ctrl_t * const p_instance_ctrl
 
     /* Set FCR. Reset fifo/data registers. */
     p_instance_ctrl->p_reg->FCR = (8U << R_SCI0_FCR_RTRG_Pos);
+
+    /* Write all settings except MOD[2:0] to CCR3 (See Figure 'SCI initialization flowchart example (clock synchronous
+     * mode) in RZ microprocessor manual). */
+    p_instance_ctrl->p_reg->CCR3 = ccr3 & (uint32_t) ~(R_SCI0_CCR3_MOD_Msk);
+
+    /* Wait the interval for writing access to the same register. It takes a long time to get the clock, so it always
+     * waits regardless of whether PCLKSCIn is slower than PCLKM. Reference section 'Notes Regarding Register Access
+     * When Operation Clock (PCLKSCIn) Is Slower Than Bus Clock (PCLKM)' in the RZ microprocessor manual. */
+    bsp_prv_software_delay_loop(BSP_DELAY_LOOPS_CALCULATE(SCI_SPI_PRV_MAX_ACCESS_INTERVAL));
 
     /* Write settings to registers. */
     p_instance_ctrl->p_reg->CCR3  = ccr3;
@@ -781,7 +795,7 @@ static void r_sci_spi_start_transfer (sci_spi_instance_ctrl_t * const p_instance
          * data may be lost. Therefore, it is necessary to wait for TDRE to become 1 (transmission data empty occurs)
          * in order to write the next data after the previous data transitions from TDR to TSR.
          * Reference section 'Writing Data to TDR(Transmit FIFO)' in the RZ microprocessor manual.*/
-        FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->CSR_b.TDRE, 1)
+        FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->CSR_b.TDRE, 1);
 
         if ((SPI_MODE_SLAVE == p_instance_ctrl->p_cfg->operating_mode) && (1 < p_instance_ctrl->count))
         {

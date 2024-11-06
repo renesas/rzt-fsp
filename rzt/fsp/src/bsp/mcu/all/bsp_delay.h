@@ -12,6 +12,8 @@
  **********************************************************************************************************************/
 #if defined(BSP_CFG_CORE_CR52)
  #include "cr/bsp_delay_core.h"
+#elif defined(BSP_CFG_CORE_CA55)
+ #include "ca/bsp_delay_core.h"
 #endif
 
 #include "bsp_compiler_support.h"

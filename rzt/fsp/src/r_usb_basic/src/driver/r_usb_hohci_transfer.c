@@ -148,8 +148,8 @@ void usb_hstd_ohci_make_transfer_request (usb_utr_t * ptr, st_usb_hci_tr_req_t *
         return;
     }
 
- #if 0
-    R_MMU_VAtoPA((uint32_t) ohci_req, &p_tr_req->hci_info);
+#if 1 == BSP_LP64_SUPPORT
+    p_tr_req->hci_info = (void *) r_usb_va_to_pa((uint64_t) ohci_req);
  #else
     p_tr_req->hci_info = ohci_req;
  #endif
@@ -189,13 +189,19 @@ void usb_hstd_ohci_cancel_transfer_request (usb_utr_t * ptr, st_usb_hci_tr_req_t
 
     if (TRUE == p_tr_req->bit.enable)
     {
+ #if 1 == BSP_LP64_SUPPORT
+        if (0 != (r_usb_pa_to_va((uint64_t) p_tr_req->hci_info)))
+ #else
         if (NULL != p_tr_req->hci_info)
+ #endif
         {
             p_tr_req->bit.cancel_req = TRUE;
 
             /* Cancel Transfer Reques */
- #if 0
-            usb_hstd_ohci_cancel_request(ptr, (st_usb_ohci_request_p_t) r_usb_pa_to_va(p_tr_req->hci_info));
+ #if 1 == BSP_LP64_SUPPORT
+            usb_hstd_ohci_cancel_request(ptr,
+                                         (st_usb_ohci_request_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) p_tr_req->
+                                                                                               hci_info)));
  #else
             usb_hstd_ohci_cancel_request(ptr, (st_usb_ohci_request_p_t) p_tr_req->hci_info);
  #endif
@@ -223,6 +229,9 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
     st_usb_ohci_hcd_transfer_descriptor_p_t tmp_hcd_head_p;
     uint32_t tmp_hc_ed_head_p;
     st_usb_ohci_hcd_endpoint_descriptor_p_t tmp_hcd_ed;
+#if  1 == BSP_LP64_SUPPORT
+    st_usb_ohci_iso_info_p_t                      temp;
+#endif
 
     /* Reverse the queue passed from controller while virtualizing addresses */
     /* NOTE: The following code assumes that a uint32_t and a pointer are the same size */
@@ -251,7 +260,7 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
 
         if (NULL == td_list)
         {
-            td->hc_td.next_td = NULL;
+            td->hc_td.next_td = USB_NULL;
         }
         else
         {
@@ -262,20 +271,20 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
     } while (USB_OHCI_SHAREDMEMORY_OFFSET != phys_hc_td);
 
  #elif USB_OHCI_SHAREDMEMORYTYPE == USB_OHCI_SHAREDMEMORYTYPE_PCI
-  #if 0
-    phys_hc_td = r_usb_pa_to_va((uint32_t) phys_hc_td);
+ #if 1 == BSP_LP64_SUPPORT
+    phys_hc_td = (uint32_t) r_usb_pa_to_va((uint64_t) phys_hc_td);
   #endif
     do
     {
-        td = (st_usb_ohci_hcd_transfer_descriptor_p_t) usb_hstd_ohci_scan_containing_record(usb_hstd_ohci_virtual_address_of(
+        td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) usb_hstd_ohci_scan_containing_record(usb_hstd_ohci_virtual_address_of(
                                                                                                 phys_hc_td),
                                                                                             USB_OHCI_CR_TRANSFER_DESCRIPTOR,
                                                                                             USB_OHCI_CR_REQUESTLIST);
 
         if (0 != td->hc_td.next_td)
         {
-  #if 0
-            phys_hc_td = r_usb_pa_to_va((uint32_t) td->hc_td.next_td);
+ #if 1 == BSP_LP64_SUPPORT
+            phys_hc_td = (uint32_t) r_usb_pa_to_va((uint64_t) td->hc_td.next_td);
   #else
             phys_hc_td = td->hc_td.next_td;
   #endif
@@ -291,8 +300,8 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
         }
         else
         {
-  #if 0
-            td->hc_td.next_td = r_usb_pa_to_va((uint32_t) td_list->physical_address);
+ #if 1 == BSP_LP64_SUPPORT
+            td->hc_td.next_td = (uint32_t) (r_usb_pa_to_va((uint64_t) td_list->physical_address));
   #else
             td->hc_td.next_td = td_list->physical_address;
   #endif
@@ -308,15 +317,22 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
                                                                                                 phys_hc_td),
                                                                                             USB_OHCI_CR_TRANSFER_DESCRIPTOR,
                                                                                             USB_OHCI_CR_REQUESTLIST);
-
+ #if 1 == BSP_LP64_SUPPORT
+        phys_hc_td = (r_usb_pa_to_va((uint64_t) td->hc_td.next_td));
+  #else
         phys_hc_td = r_usb_pa_to_va((uint32_t) td->hc_td.next_td);
+  #endif
         if (NULL == td_list)
         {
-            td->hc_td.next_td = NULL;
+            td->hc_td.next_td = USB_NULL;
         }
         else
         {
+  #if 1 == BSP_LP64_SUPPORT
+            td->hc_td.next_td = (uint32_t) (r_usb_pa_to_va((uint64_t) td_list->physical_address));
+  #else
             td->hc_td.next_td = (uint32_t) r_usb_pa_to_va((uint32_t) td_list->physical_address);
+  #endif
         }
 
         td_list = td;
@@ -329,10 +345,12 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
         td = td_list;
         if (0 != td->hc_td.next_td)
         {
- #if 0
-            td_list = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(((td->hc_td.next_td) - USB_VAL_X20));
+ #if 1 == BSP_LP64_SUPPORT
+            td_list =
+                (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) ((td->hc_td.next_td) -
+                                                                                                  USB_VAL_X20)));
  #else
-            td_list = (st_usb_ohci_hcd_transfer_descriptor_p_t) ((td->hc_td.next_td) - USB_VAL_X20);
+            td_list = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) ((td->hc_td.next_td) - USB_VAL_X20);
  #endif
         }
         else
@@ -346,11 +364,11 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
             continue;
         }
 
- #if 0
-        ohci_req = (st_usb_ohci_request_p_t) r_usb_pa_to_va(td->usb_drequest);
-        endpoint = (st_usb_ohci_hcd_endpoint_p_t) r_usb_pa_to_va(td->endpoint);
- #else
-        ohci_req = (st_usb_ohci_request_p_t) td->usb_drequest;
+#if 1 == BSP_LP64_SUPPORT
+        ohci_req = (st_usb_ohci_request_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) td->usb_drequest));
+        endpoint = (st_usb_ohci_hcd_endpoint_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) td->endpoint));
+#else
+        ohci_req = (st_usb_ohci_request_p_t)(uintptr_t) td->usb_drequest;
         endpoint = td->endpoint;
  #endif
 
@@ -372,9 +390,9 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
             {
                 /* td completed without error, remove it from USB_OHCI_REQUEST list, */
                 /* if USB_OHCI_REQUEST list is now empty, then complete the request. */
- #if 0
-                endpoint->hcd_head_p = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(
-                    td->next_hcd_td);
+#if 1 == BSP_LP64_SUPPORT
+                endpoint->hcd_head_p =
+                    (uint32_t) usb_hstd_ohci_physical_address_of((void *) (uintptr_t) td->next_hcd_td);
  #else
                 endpoint->hcd_head_p = td->next_hcd_td;
  #endif
@@ -405,12 +423,18 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
                 /* for this the final status TD for the ohci_req should not be canceled, the */
                 /* ohci_req should not be completed, and the endpoint should be restarted. */
                 /* NOTE: The endpoint has been halted by the controller */
- #if 0
-                for (tn = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(endpoint->hcd_head_p);
-                     tn != (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(endpoint->hcd_tail_p);
-                     tn = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(tn->next_hcd_td))
+
+#if 1 == BSP_LP64_SUPPORT
+                for (tn =
+                         (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) endpoint->
+                                                                                               hcd_head_p));
+                     tn !=
+                     (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) endpoint->
+                                                                                           hcd_tail_p)); )
+
                 {
-                    if (((int) ohci_req != r_usb_pa_to_va(tn->usb_drequest)) ||
+                    if ((ohci_req !=
+                         (st_usb_ohci_request_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) tn->usb_drequest))) ||
                         ((USB_OHCI_CC_DATAUNDERRUN == td->hc_td.control.cc) &&
                          (0 != ohci_req->shortxferok) &&
                          (USB_OHCI_RS_CANCELING != ohci_req->status) &&
@@ -418,27 +442,17 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
                     {
                         break;
                     }
+
+                    tn =
+                        (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) tn->next_hcd_td));
                 }
 
- #else
-  #if 0
-                for (tn = (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_head_p;
-                     tn != (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_tail_p;
-                     tn = (st_usb_ohci_hcd_transfer_descriptor_p_t) tn->next_hcd_td)
-                {
-                    if ((ohci_req != tn->usb_drequest) ||
-                        ((USB_OHCI_CC_DATAUNDERRUN == td->hc_td.control.cc) &&
-                         (0 != ohci_req->shortxferok) &&
-                         (USB_OHCI_RS_CANCELING != ohci_req->status) &&
-                         (td->hc_td.control.dp != tn->hc_td.control.dp)))
-                    {
-                        break;
-                    }
-                }
-
+                endpoint->hcd_head_p = (uint32_t) usb_hstd_ohci_physical_address_of(tn);
+                tmp_hcd_ed =
+                    (st_usb_ohci_hcd_endpoint_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_ed));
   #else
-                tn = (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_head_p;
-                while (tn != (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_tail_p)
+                tn = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_head_p;
+                while (tn != (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_tail_p)
                 {
                     if ((ohci_req != tn->usb_drequest) ||
                         ((USB_OHCI_CC_DATAUNDERRUN == td->hc_td.control.cc) &&
@@ -449,34 +463,18 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
                         break;
                     }
 
-                    tn = (st_usb_ohci_hcd_transfer_descriptor_p_t) tn->next_hcd_td;
+                    tn = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) tn->next_hcd_td;
                 }
-  #endif
- #endif
-
- #if 0
-                endpoint->hcd_head_p =
-                    (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(tn);
-
-                tmp_hcd_ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) r_usb_pa_to_va(endpoint->hcd_ed);
- #else
                 endpoint->hcd_head_p = (struct usb_ohci_hcd_transfer_descriptor *) tn;
-                tmp_hcd_ed           = (st_usb_ohci_hcd_endpoint_descriptor_p_t) endpoint->hcd_ed;
+                tmp_hcd_ed           = (st_usb_ohci_hcd_endpoint_descriptor_p_t)(uintptr_t) endpoint->hcd_ed;
  #endif
                 tmp_hcd_ed->hc_ed.head_p = tn->physical_address |
                                            (tmp_hcd_ed->hc_ed.head_p &
                                             (USB_OHCI_HCED_HEADP_HALT | USB_OHCI_HCED_HEADP_CARRY));
 
-                /*  Delete TD about failed request  */
- #if 0
-                while ((tn =
-                            (st_usb_ohci_hcd_transfer_descriptor_p_t) usb_hstd_ohci_scan_containing_record(
-                                usb_hstd_ohci_remove_list_head(&ohci_req->hcd_list), USB_OHCI_CR_TRANSFER_DESCRIPTOR,
-                                USB_OHCI_CR_REQUESTLIST)) !=
-                       NULL)
- #else
+
                 tn =
-                    (st_usb_ohci_hcd_transfer_descriptor_p_t) usb_hstd_ohci_scan_containing_record(usb_hstd_ohci_remove_list_head(
+                    (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) usb_hstd_ohci_scan_containing_record(usb_hstd_ohci_remove_list_head(
                                                                                                        &
                                                                                                        ohci_req
                                                                                                        ->
@@ -484,21 +482,22 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
                                                                                                    USB_OHCI_CR_TRANSFER_DESCRIPTOR,
                                                                                                    USB_OHCI_CR_REQUESTLIST);
                 while (tn != NULL)
- #endif
                 {
- #if 0
+ #if 1 == BSP_LP64_SUPPORT
                     if ((tn != td) &&
-                        (tn != (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(endpoint->hcd_head_p)))
+                        (tn !=
+                         (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) endpoint->
+                                                                                               hcd_head_p))))
  #else
                     if ((tn != td) &&
-                        (tn != (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_head_p))
+                        (tn != (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_head_p))
  #endif
                     {
                         usb_hstd_ohci_free_transfer_descriptor(tn);
                     }
 
                     tn =
-                        (st_usb_ohci_hcd_transfer_descriptor_p_t) usb_hstd_ohci_scan_containing_record(usb_hstd_ohci_remove_list_head(
+                        (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) usb_hstd_ohci_scan_containing_record(usb_hstd_ohci_remove_list_head(
                                                                                                            &
                                                                                                            ohci_req
                                                                                                            ->
@@ -507,21 +506,26 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
                                                                                                        USB_OHCI_CR_REQUESTLIST);
                 }
 
- #if 0
-                tmp_hc_ed_head_p = r_usb_pa_to_va((uint32_t) tmp_hcd_ed->hc_ed.head_p);
-                tmp_hcd_head_p   = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(
-                    (uint32_t) endpoint->hcd_head_p);
+ #if 1 == BSP_LP64_SUPPORT
+                tmp_hc_ed_head_p = (uint32_t) (r_usb_pa_to_va((uint64_t) tmp_hcd_ed->hc_ed.head_p));
+                tmp_hcd_head_p   =
+                    (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) endpoint->
+                                                                                          hcd_head_p));
  #else
                 tmp_hc_ed_head_p = tmp_hcd_ed->hc_ed.head_p;
-                tmp_hcd_head_p   = (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_head_p;
+                tmp_hcd_head_p   = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_head_p;
  #endif
-
+#if 1 == BSP_LP64_SUPPORT
+                if (tmp_hcd_head_p->usb_drequest == (uint32_t)(uintptr_t) ohci_req)
+#else
                 if (tmp_hcd_head_p->usb_drequest == ohci_req)
+#endif
                 {
                     usb_hstd_ohci_insert_tail_list(&ohci_req->hcd_list, &tmp_hcd_head_p->request_list);
- #if 0
+ #if 1 == BSP_LP64_SUPPORT
                     tmp_hcd_ed->hc_ed.head_p =
-                        usb_hstd_ohci_physical_address_of((void *) (tmp_hc_ed_head_p & ~USB_OHCI_HCED_HEADP_HALT));
+                        (uint32_t) usb_hstd_ohci_physical_address_of((void *) (uintptr_t) (tmp_hc_ed_head_p &
+                                                                                           ~USB_OHCI_HCED_HEADP_HALT));
  #else
                     tmp_hcd_ed->hc_ed.head_p = (tmp_hc_ed_head_p & ~USB_OHCI_HCED_HEADP_HALT);
  #endif
@@ -539,10 +543,11 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
                             ohci_req->status = USB_OHCI_RS_CANCELED;
                         }
 
- #if 0
+ #if 1 == BSP_LP64_SUPPORT
                         tmp_hcd_ed->hc_ed.head_p &=
-                            usb_hstd_ohci_physical_address_of((void *) (tmp_hc_ed_head_p &
-                                                                        (uint32_t) ~USB_OHCI_HCED_HEADP_HALT));
+                            (uint32_t) usb_hstd_ohci_physical_address_of((void *) (uintptr_t) (tmp_hc_ed_head_p &
+                                                                                               (uint32_t) ~
+                                                                                               USB_OHCI_HCED_HEADP_HALT));
  #else
                         tmp_hcd_ed->hc_ed.head_p &= (tmp_hc_ed_head_p & (uint32_t) ~USB_OHCI_HCED_HEADP_HALT);
  #endif
@@ -582,25 +587,25 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
                 }
             }
         }
-        else
+        else if (USB_EP_ISO == endpoint->type)
         {
             /* Code for Isochronous */
- #if 0
-            hc_iso_td = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) r_usb_pa_to_va(&td->hc_td);
-
+#if 1 == BSP_LP64_SUPPORT
+            hc_iso_td =
+                (st_usb_ohci_hc_iso_transfer_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) &td->hc_td));
+            temp        = (st_usb_ohci_iso_info_p_t) (uintptr_t) &endpoint->iso_info;
             iso_tr_info =
-                (st_usb_ohci_iso_transfer_info_p_t) r_usb_pa_to_va(&endpoint->iso_info->transfer_info[endpoint->iso_info
-                                                                                                      ->
-                                                                                                      end_p]);
- #else
+                (st_usb_ohci_iso_transfer_info_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) &temp->transfer_info[temp->
+                                                                                                                end_p]));
+            temp->end_p++;
+            temp->end_p &= USB_OHCI_ISO_MAX_FRAME - 1;
+#else /* 1 == BSP_LP64_SUPPORT */
             hc_iso_td = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) &td->hc_td;
-
             iso_tr_info =
                 (st_usb_ohci_iso_transfer_info_p_t) &endpoint->iso_info->transfer_info[endpoint->iso_info->end_p];
- #endif
             endpoint->iso_info->end_p++;
             endpoint->iso_info->end_p &= USB_OHCI_ISO_MAX_FRAME - 1;
-
+#endif /* 1 == BSP_LP64_SUPPORT */
             iso_tr_info->control_cc = hc_iso_td->control.cc;
             if (endpoint->control.d == (USB_HCI_DIRECTION_IN + 1))
             {
@@ -619,33 +624,45 @@ void usb_hstd_ohci_process_done_queue (usb_utr_t * ptr, uint32_t phys_hc_td)
             {
                 if (1 == USB_HCI_GET_ENDIAN)
                 {
-                    /* iso_tr_info->size  -= hc_iso_td->usb_ohci_offset_psw[1].psw.size; */
                     iso_tr_info->size   = (uint16_t) (iso_tr_info->size - hc_iso_td->usb_ohci_offset_psw[1].psw.size);
                     iso_tr_info->psw_cc = hc_iso_td->usb_ohci_offset_psw[1].psw.cc;
                 }
                 else
                 {
-                    /* iso_tr_info->size  -= hc_iso_td->usb_ohci_offset_psw[0].psw.size; */
                     iso_tr_info->size   = (uint16_t) (iso_tr_info->size - hc_iso_td->usb_ohci_offset_psw[0].psw.size);
                     iso_tr_info->psw_cc = hc_iso_td->usb_ohci_offset_psw[0].psw.cc;
                 }
             }
 
+
+#if  1 == BSP_LP64_SUPPORT
+            temp->start_cnt--;
+            temp->end_cnt++;
+            endpoint->hcd_head_p = (uint32_t) usb_hstd_ohci_physical_address_of((void *) (uintptr_t) td->next_hcd_td);
+#else
             endpoint->iso_info->start_cnt--;
             endpoint->iso_info->end_cnt++;
- #if 0
-            endpoint->hcd_head_p = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(
-                td->next_hcd_td);
- #else
             endpoint->hcd_head_p = td->next_hcd_td;
  #endif
             usb_hstd_ohci_remove_list_entry(&td->request_list);
             usb_hstd_ohci_free_transfer_descriptor(td);
 
-            if (NULL != endpoint->iso_info->usb_drequest)
+#if   1 == BSP_LP64_SUPPORT
+            if (USB_NULL != temp->usb_drequest)
+#else
+            if (USB_NULL != endpoint->iso_info->usb_drequest)
+#endif
             {
                 usb_hstd_ohci_complete_transfer_request_iso(ptr, endpoint);
             }
+            else
+            {
+
+            }
+        }
+        else
+        {
+
         }
     }
 }
@@ -667,10 +684,10 @@ void usb_hstd_ohci_complete_transfer_request (usb_utr_t * ptr, st_usb_ohci_reque
         return;
     }
 
- #if 0
-    p_tr_req = (st_usb_hci_tr_req_t *) r_usb_pa_to_va(ohci_req->driver_request);
+#if 1 == BSP_LP64_SUPPORT
+    p_tr_req = (st_usb_hci_tr_req_t *) (uintptr_t) (r_usb_pa_to_va((uint64_t) ohci_req->driver_request));
  #else
-    p_tr_req = (st_usb_hci_tr_req_t *) ohci_req->driver_request;
+    p_tr_req = (st_usb_hci_tr_req_t *)(uintptr_t) ohci_req->driver_request;
  #endif
     if (FALSE == p_tr_req->bit.enable)
     {
@@ -765,7 +782,11 @@ void usb_hstd_ohci_complete_transfer_request (usb_utr_t * ptr, st_usb_ohci_reque
  ***********************************************************************************************************************/
 static void usb_hstd_ohci_setup_request (st_usb_hci_tr_req_t * p_tr_req, st_usb_ohci_request_p_t ohci_req)
 {
+  #if 1 == BSP_LP64_SUPPORT
+    ohci_req->buffer        = p_tr_req->databuf;
+#else
     ohci_req->buffer        = (uint8_t *) p_tr_req->databuf;
+#endif
     ohci_req->buffer_length = p_tr_req->trsize;
     ohci_req->xferinfo      = p_tr_req->bit.direction;
     ohci_req->max_int_delay = 0x00;
@@ -773,16 +794,16 @@ static void usb_hstd_ohci_setup_request (st_usb_hci_tr_req_t * p_tr_req, st_usb_
 
     if (0x00 == p_tr_req->bit.epnum)
     {
- #if 0
-        ohci_req->setup = (uint8_t *) usb_hstd_ohci_physical_address_of(p_tr_req->setupbuf);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        ohci_req->setup = (uint32_t) usb_hstd_ohci_physical_address_of(p_tr_req->setupbuf);
+#else
         ohci_req->setup = (uint8_t *) p_tr_req->setupbuf;
  #endif
     }
 
- #if 0
-    ohci_req->driver_request = (uint32_t *) usb_hstd_ohci_physical_address_of(p_tr_req);
- #else
+#if 1 == BSP_LP64_SUPPORT
+    ohci_req->driver_request = (uint32_t) usb_hstd_ohci_physical_address_of(p_tr_req);
+#else
     ohci_req->driver_request = (uint32_t *) p_tr_req;
  #endif
     ohci_req->status = USB_OHCI_RS_NOT_REQUESTED;
@@ -941,14 +962,18 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
     st_usb_ohci_hcd_transfer_descriptor_p_t list_td = NULL;
     uint32_t  remaining_length;
     uint32_t  count;
+#if 1 == BSP_LP64_SUPPORT
+    uint32_t  p_current_buffer_pointer;
+#else
     uint8_t * p_current_buffer_pointer;
+#endif
 
     st_usb_ohci_hcd_transfer_descriptor_p_t tmp_next_hcd_td;
 
- #if 0
-    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) r_usb_pa_to_va(endpoint->hcd_ed);
+ #if 1 == BSP_LP64_SUPPORT
+    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_ed));
  #else
-    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) endpoint->hcd_ed;
+    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t)(uintptr_t) endpoint->hcd_ed;
  #endif
 
     if ((NULL == ed) || (USB_OHCI_ED_EOF == ed->list_index))
@@ -958,19 +983,18 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
         return FALSE;
     }
 
- #if 0
-    td =
-        (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) endpoint->hcd_tail_p); /* hcd_head_p => hcd_tail_p */
+ #if 1 == BSP_LP64_SUPPORT
+    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_tail_p)); /* hcd_head_p => hcd_tail_p */
  #else
     td =
-        (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_tail_p;                            /* hcd_head_p => hcd_tail_p */
+        (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_tail_p;                            /* hcd_head_p => hcd_tail_p */
  #endif
     ohci_req->status        = USB_OHCI_RS_NOT_DONE;
     remaining_length        = ohci_req->buffer_length;
     ohci_req->buffer_length = 0;                                                                   /* Report back bytes transferred so far */
- #if 0
-    p_current_buffer_pointer = (uint8_t *) r_usb_pa_to_va((uint32_t) ohci_req->buffer);
- #else
+#if 1 == BSP_LP64_SUPPORT
+    p_current_buffer_pointer = (uint32_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) ohci_req->buffer));
+#else
     p_current_buffer_pointer = ohci_req->buffer;
  #endif
     usb_hstd_ohci_initialize_list_head(&ohci_req->hcd_list);
@@ -979,13 +1003,17 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
     {
         /* Setup a TD for setup packet */
         usb_hstd_ohci_insert_tail_list(&ohci_req->hcd_list, &td->request_list);
-
+#if 1 == BSP_LP64_SUPPORT
+        td->usb_drequest   = (uint32_t)(uintptr_t)ohci_req;
+        td->endpoint       = (uint32_t)(uintptr_t)endpoint;
+#else
         td->usb_drequest   = ohci_req;
         td->endpoint       = endpoint;
+#endif
         td->cancel_pending = FALSE;
- #if 0
-        td->hc_td.cbp = usb_hstd_ohci_physical_address_of(ohci_req->setup);
-        td->hc_td.be  = usb_hstd_ohci_physical_address_of(ohci_req->setup + 7);
+ #if 1 == BSP_LP64_SUPPORT
+        td->hc_td.cbp = (uint32_t) usb_hstd_ohci_physical_address_of((void *) (uintptr_t) ohci_req->setup);
+        td->hc_td.be  = (uint32_t) usb_hstd_ohci_physical_address_of((void *) (uintptr_t) (ohci_req->setup + 7));
  #else
         td->hc_td.cbp = (uint32_t) ohci_req->setup;
         td->hc_td.be  = (uint32_t) (ohci_req->setup + 7);
@@ -997,16 +1025,18 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
         td->hc_td.control.int_d  = 7;  /* Specify no interrupt */
         td->hc_td.control.cc     = USB_OHCI_CC_NOTACCESSED;
         tmp_next_hcd_td          = usb_hstd_ohci_allocate_transfer_descriptor();
- #if 0
-        td->next_hcd_td =
-            (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(tmp_next_hcd_td);
-        tmp_next_hcd_td->physical_address = td->hc_td.next_td = usb_hstd_ohci_physical_address_of(
-            &tmp_next_hcd_td->hc_td);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        td->next_hcd_td = (uint32_t) usb_hstd_ohci_physical_address_of(
+            (void *) (uintptr_t) tmp_next_hcd_td);
+        td->hc_td.next_td = (uint32_t) usb_hstd_ohci_physical_address_of(
+            (void *) (uintptr_t) &tmp_next_hcd_td->hc_td);
+        tmp_next_hcd_td->physical_address = (uint32_t) usb_hstd_ohci_physical_address_of(
+            (void *) (uintptr_t) &tmp_next_hcd_td->hc_td);
+#else
         td->next_hcd_td =
             (struct usb_ohci_hcd_transfer_descriptor *) tmp_next_hcd_td;
-        td->hc_td.next_td                 = (uint32_t) &tmp_next_hcd_td->hc_td;
-        tmp_next_hcd_td->physical_address = (uint32_t) &tmp_next_hcd_td->hc_td;
+        td->hc_td.next_td                 = (uint32_t)(uintptr_t) &tmp_next_hcd_td->hc_td;
+        tmp_next_hcd_td->physical_address = (uint32_t)(uintptr_t) &tmp_next_hcd_td->hc_td;
  #endif
 
         list_td = td;
@@ -1017,10 +1047,10 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
     while ((0 != remaining_length) || (NULL == list_td))
     {
         usb_hstd_ohci_insert_tail_list(&ohci_req->hcd_list, &td->request_list);
- #if 0
-        td->usb_drequest = (struct usb_ohci_request *) usb_hstd_ohci_physical_address_of(ohci_req);
-        td->endpoint     = (st_usb_ohci_hcd_endpoint_p_t) usb_hstd_ohci_physical_address_of(endpoint);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        td->usb_drequest = (uint32_t) usb_hstd_ohci_physical_address_of(ohci_req);
+        td->endpoint     = (uint32_t) usb_hstd_ohci_physical_address_of(endpoint);
+#else
         td->usb_drequest = (struct usb_ohci_request *) ohci_req;
         td->endpoint     = endpoint;
  #endif
@@ -1028,9 +1058,9 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
 
         if (0 != remaining_length)
         {
- #if 0
-            td->hc_td.cbp = usb_hstd_ohci_physical_address_of(p_current_buffer_pointer);
- #else
+#if 1 == BSP_LP64_SUPPORT
+            td->hc_td.cbp = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer);
+#else
             td->hc_td.cbp = (uint32_t) p_current_buffer_pointer;
  #endif
             count = USB_OHCI_MAXTDSIZE - (td->hc_td.cbp & USB_VAL_X0FFF);
@@ -1043,9 +1073,9 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
             }
 
             p_current_buffer_pointer += count - 1;
- #if 0
-            td->hc_td.be = usb_hstd_ohci_physical_address_of(p_current_buffer_pointer++);
- #else
+#if 1 == BSP_LP64_SUPPORT
+            td->hc_td.be = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer++);
+#else
             td->hc_td.be = (uint32_t) p_current_buffer_pointer++;
  #endif
         }
@@ -1081,15 +1111,14 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
         td->hc_td.control.cc    = USB_OHCI_CC_NOTACCESSED;
 
         tmp_next_hcd_td = usb_hstd_ohci_allocate_transfer_descriptor();
- #if 0
-        td->next_hcd_td =
-            (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(tmp_next_hcd_td);
-        td->hc_td.next_td                 = usb_hstd_ohci_physical_address_of(&tmp_next_hcd_td->hc_td);
-        tmp_next_hcd_td->physical_address = td->hc_td.next_td;
- #else
+#if 1 == BSP_LP64_SUPPORT
+        td->next_hcd_td                   = (uint32_t) usb_hstd_ohci_physical_address_of(tmp_next_hcd_td);
+        td->hc_td.next_td                 = (uint32_t) usb_hstd_ohci_physical_address_of(&tmp_next_hcd_td->hc_td);
+        tmp_next_hcd_td->physical_address = (uint32_t) usb_hstd_ohci_physical_address_of(&tmp_next_hcd_td->hc_td);
+#else
         td->next_hcd_td =
             (struct usb_ohci_hcd_transfer_descriptor *) tmp_next_hcd_td;
-        td->hc_td.next_td                 = (uint32_t) &tmp_next_hcd_td->hc_td;
+        td->hc_td.next_td                 = (uint32_t)(uintptr_t) &tmp_next_hcd_td->hc_td;
         tmp_next_hcd_td->physical_address = td->hc_td.next_td;
  #endif
 
@@ -1101,10 +1130,10 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
     {
         /* Setup TD for status phase */
         usb_hstd_ohci_insert_tail_list(&ohci_req->hcd_list, &td->request_list);
- #if 0
-        td->endpoint     = (st_usb_ohci_hcd_endpoint_p_t) usb_hstd_ohci_physical_address_of(endpoint);
-        td->usb_drequest = (struct usb_ohci_request *) usb_hstd_ohci_physical_address_of(ohci_req);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        td->endpoint     = (uint32_t) usb_hstd_ohci_physical_address_of(endpoint);
+        td->usb_drequest = (uint32_t) usb_hstd_ohci_physical_address_of(ohci_req);
+#else
         td->endpoint     = endpoint;
         td->usb_drequest = (struct usb_ohci_request *) ohci_req;
  #endif
@@ -1127,14 +1156,13 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
         td->hc_td.control.int_d  = 7;  /* Specify no interrupt */
         td->hc_td.control.cc     = USB_OHCI_CC_NOTACCESSED;
         tmp_next_hcd_td          = usb_hstd_ohci_allocate_transfer_descriptor();
- #if 0
-        td->next_hcd_td =
-            (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(tmp_next_hcd_td);
-        tmp_next_hcd_td->physical_address = td->hc_td.next_td = usb_hstd_ohci_physical_address_of(
-            &tmp_next_hcd_td->hc_td);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        td->next_hcd_td = (uint32_t) usb_hstd_ohci_physical_address_of(tmp_next_hcd_td);
+        tmp_next_hcd_td->physical_address = (uint32_t) usb_hstd_ohci_physical_address_of(&tmp_next_hcd_td->hc_td);
+        td->hc_td.next_td                 = (uint32_t) usb_hstd_ohci_physical_address_of(&tmp_next_hcd_td->hc_td);
+#else
         td->next_hcd_td                   = (struct usb_ohci_hcd_transfer_descriptor *) tmp_next_hcd_td;
-        td->hc_td.next_td                 = (uint32_t) &tmp_next_hcd_td->hc_td;
+        td->hc_td.next_td                 = (uint32_t)(uintptr_t) &tmp_next_hcd_td->hc_td;
         tmp_next_hcd_td->physical_address = td->hc_td.next_td;
  #endif
 
@@ -1147,15 +1175,22 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
     list_td->hc_td.control.int_d = usb_hstd_ohci_min_delay(6, ohci_req->max_int_delay) & 0x07U;
 
     /* Set new TailP in ED */
-    td->usb_drequest = NULL;
- #if 0
-    endpoint->hcd_tail_p = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(td);
- #else
+    #if 1 ==BSP_LP64_SUPPORT
+    td->usb_drequest = USB_NULL;
+    #else
+    td->usb_drequest = USB_NULL;
+    #endif
+#if 1 == BSP_LP64_SUPPORT
+    endpoint->hcd_tail_p = (uint32_t) usb_hstd_ohci_physical_address_of(td);
+#else
     endpoint->hcd_tail_p = (struct usb_ohci_hcd_transfer_descriptor *) td;
  #endif
     ed->hc_ed.tail_p = td->physical_address; /* Add null TD to the tail */
-
+#if 1 == BSP_LP64_SUPPORT
+    __asm volatile("DMB SY");
+#else
     __asm volatile ("dmb");
+#endif
 
     switch (endpoint->type)
     {
@@ -1221,7 +1256,11 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
     st_usb_ohci_hcd_endpoint_descriptor_p_t ed;
     st_usb_ohci_hcd_transfer_descriptor_p_t td;
     uint32_t  remaining_length;
+#if 1 == BSP_LP64_SUPPORT
+    uint32_t  p_current_buffer_pointer;
+#else
     uint8_t * p_current_buffer_pointer;
+#endif
     uint32_t  buffer_pointer_tmp;
     st_usb_ohci_iso_transfer_info_p_t          iso_tr_info;
     st_usb_ohci_hc_iso_transfer_descriptor_p_t hc_iso_td;
@@ -1229,11 +1268,14 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
     st_usb_ohci_hc_iso_transfer_descriptor_p_t last_iso_hctd;
     st_usb_ohci_hcd_transfer_descriptor_p_t    tmp_next_hcd_td_2;
     st_usb_ohci_hcd_transfer_descriptor_p_t    tmp_td_next_hcd_td;
+#if 1 == BSP_LP64_SUPPORT
+    st_usb_ohci_iso_info_p_t                      temp;
+#endif
 
- #if 0
-    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) r_usb_pa_to_va(endpoint->hcd_ed);
+ #if 1 == BSP_LP64_SUPPORT
+    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_ed));
  #else
-    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) endpoint->hcd_ed;
+    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t)(uintptr_t) endpoint->hcd_ed;
  #endif
 
     if (NULL == ed)
@@ -1248,11 +1290,20 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
         return FALSE;
     }
 
+#if 1 == BSP_LP64_SUPPORT
+    temp = (st_usb_ohci_iso_info_p_t)&endpoint->iso_info;
+    if (0 == temp->usb_drequest)
+    {
+        /* The relations between Endpoint and usb_drequest are linked here */
+        temp->usb_drequest = (uint32_t)(uintptr_t) ohci_req;
+    }
+#else
     if (NULL == endpoint->iso_info->usb_drequest)
     {
         /* The relations between Endpoint and usb_drequest are linked here */
         endpoint->iso_info->usb_drequest = ohci_req;
     }
+#endif
     else
     {
 
@@ -1260,17 +1311,22 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
         return FALSE;
     }
 
+#if 1 == BSP_LP64_SUPPORT
+    if (0 != temp->end_cnt)
+#else
     if (0 != endpoint->iso_info->end_cnt)
+#endif    
+
     {
         usb_hstd_ohci_complete_transfer_request_iso(ptr, endpoint);
 
         return TRUE;
     }
 
- #if 0
-    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) endpoint->hcd_tail_p); /* hcd_head_p => hcd_tail_p */
+ #if 1 == BSP_LP64_SUPPORT
+    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_tail_p)); /* hcd_head_p => hcd_tail_p */
  #else
-    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_tail_p;                            /* hcd_head_p => hcd_tail_p */
+    td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_tail_p;                            /* hcd_head_p => hcd_tail_p */
  #endif
     if (NULL == td)
     {
@@ -1279,49 +1335,64 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
 
     ohci_req->status        = USB_OHCI_RS_NOT_DONE;
     ohci_req->buffer_length = 0;       /* report back bytes transferred so far */
+#if 1 == BSP_LP64_SUPPORT
+    remaining_length = (USB_OHCI_ISO_MAX_FRAME - (temp->start_cnt + temp->end_cnt)) * endpoint->max_packet;
+#else    
     remaining_length        =
         ((uint32_t) ((uint8_t) USB_OHCI_ISO_MAX_FRAME - (endpoint->iso_info->start_cnt + endpoint->iso_info->end_cnt)) *
          endpoint->max_packet);
+#endif
     usb_hstd_ohci_initialize_list_head(&ohci_req->hcd_list);
 
     /* Setup TD(s) for data packets */
     while (0 != remaining_length)
     {
         usb_hstd_ohci_insert_tail_list(&ohci_req->hcd_list, &td->request_list);
+#if 1 == BSP_LP64_SUPPORT
+        td->usb_drequest = USB_NULL;
+        td->endpoint     = (uint32_t) usb_hstd_ohci_physical_address_of(endpoint);
+        hc_iso_td        = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) &td->hc_td));
+#else
         td->usb_drequest = NULL;
- #if 0
-        td->endpoint = (st_usb_ohci_hcd_endpoint_p_t) usb_hstd_ohci_physical_address_of(endpoint);
-        hc_iso_td    = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) &td->hc_td);
- #else
         td->endpoint = endpoint;
         hc_iso_td    = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) &td->hc_td;
  #endif
         td->cancel_pending = FALSE;
 
+#if 1 == BSP_LP64_SUPPORT
+        iso_tr_info             = &temp->transfer_info[temp->start_p];
+#else        
         iso_tr_info             = &endpoint->iso_info->transfer_info[endpoint->iso_info->start_p];
+#endif
         iso_tr_info->size       = 0;
         iso_tr_info->control_cc = 0;
         iso_tr_info->psw_cc     = 0;
 
- #if 0
-        p_current_buffer_pointer = (uint8_t *) r_usb_pa_to_va(&iso_tr_info->buffer[0]);
+#if 1 == BSP_LP64_SUPPORT
+        p_current_buffer_pointer = (uint32_t) (r_usb_pa_to_va((uint64_t) &iso_tr_info->buffer));
+        temp->start_cnt++;
+        temp->start_p++;
+        temp->start_p &= USB_OHCI_ISO_MAX_FRAME - 1;
  #else
         p_current_buffer_pointer = &iso_tr_info->buffer[0];
- #endif
         endpoint->iso_info->start_cnt++;
         endpoint->iso_info->start_p++;
         endpoint->iso_info->start_p &= USB_OHCI_ISO_MAX_FRAME - 1;
- #if 0
-        hc_iso_td->bp0 = usb_hstd_ohci_physical_address_of(p_current_buffer_pointer);
+#endif
+
+#if 1 == BSP_LP64_SUPPORT
+        hc_iso_td->bp0 = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer);
         if (remaining_length > endpoint->max_packet)
         {
-            hc_iso_td->be = usb_hstd_ohci_physical_address_of(p_current_buffer_pointer + endpoint->max_packet - 1);
+            hc_iso_td->be = (uint32_t) usb_hstd_ohci_physical_address_of(
+                (void *)(p_current_buffer_pointer + endpoint->max_packet - 1));
         }
         else
         {
-            hc_iso_td->be = usb_hstd_ohci_physical_address_of(p_current_buffer_pointer + remaining_length - 1);
+            hc_iso_td->be =
+                (uint32_t) usb_hstd_ohci_physical_address_of((void *)(p_current_buffer_pointer + remaining_length - 1));
         }
-
+        buffer_pointer_tmp = p_current_buffer_pointer & USB_VAL_X0FFF;
  #else
         hc_iso_td->bp0 = (uint32_t) p_current_buffer_pointer;
         if (remaining_length > endpoint->max_packet)
@@ -1332,12 +1403,13 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
         {
             hc_iso_td->be = (uint32_t) (p_current_buffer_pointer + remaining_length - 1);
         }
+        buffer_pointer_tmp = (uint32_t) p_current_buffer_pointer & USB_VAL_X0FFF;
  #endif
 
-        buffer_pointer_tmp = (uint32_t) p_current_buffer_pointer & USB_VAL_X0FFF;
- #if 0
+
+#if 1 == BSP_LP64_SUPPORT
         hc_iso_td->usb_ohci_offset_psw[gs_usb_hstd_ohci_offset_psw_table[USB_HCI_GET_ENDIAN][0]].offset.offset =
-            usb_hstd_ohci_physical_address_of((void *) (buffer_pointer_tmp & USB_VAL_X1FFF));
+            ((uint16_t) usb_hstd_ohci_physical_address_of((void *) (uintptr_t) buffer_pointer_tmp)) & USB_VAL_X1FFF;
  #else
         hc_iso_td->usb_ohci_offset_psw[gs_usb_hstd_ohci_offset_psw_table[USB_HCI_GET_ENDIAN][0]].offset.offset =
             (uint16_t) (buffer_pointer_tmp & USB_VAL_X1FFF);
@@ -1360,10 +1432,10 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
         hc_iso_td->control.fc    = 0;
         hc_iso_td->control.int_d = usb_hstd_ohci_min_delay(6, ohci_req->max_int_delay) & 0x07U; /* Setup interrupt delay */
 
- #if 0
-        last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) endpoint->hcd_head_p);
+#if 1 == BSP_LP64_SUPPORT
+        last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_head_p));
  #else
-        last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_head_p;
+        last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_head_p;
  #endif
         if (0 == last_valid_iso_td->next_hcd_td) /* Valid IsoTD is Empty */
         {
@@ -1371,26 +1443,26 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
         }
         else
         {
- #if 0
-            tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(
-                (uint32_t) last_valid_iso_td->next_hcd_td);
+#if 1 == BSP_LP64_SUPPORT
+            tmp_next_hcd_td_2 =
+                (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) last_valid_iso_td->next_hcd_td));
             while (0 != tmp_next_hcd_td_2->next_hcd_td)
             {
-                last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(
-                    last_valid_iso_td->next_hcd_td);
-                tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(
-                    last_valid_iso_td->next_hcd_td);
+                last_valid_iso_td =
+                    (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) last_valid_iso_td->next_hcd_td));
+                tmp_next_hcd_td_2 =
+                    (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) last_valid_iso_td->next_hcd_td));
             }
 
-            last_iso_hctd = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) r_usb_pa_to_va(
-                &last_valid_iso_td->hc_td);
-            hc_iso_td->control.sf = last_iso_hctd->control.sf + last_iso_hctd->control.fc + 1;
+            last_iso_hctd =
+                (st_usb_ohci_hc_iso_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) &last_valid_iso_td->hc_td));
+            hc_iso_td->control.sf = (uint16_t) (last_iso_hctd->control.sf + last_iso_hctd->control.fc + 1);
  #else
-            tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t) last_valid_iso_td->next_hcd_td;
+            tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) last_valid_iso_td->next_hcd_td;
             while (0 != tmp_next_hcd_td_2->next_hcd_td)
             {
-                last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) last_valid_iso_td->next_hcd_td;
-                tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t) last_valid_iso_td->next_hcd_td;
+                last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) last_valid_iso_td->next_hcd_td;
+                tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) last_valid_iso_td->next_hcd_td;
             }
 
             last_iso_hctd         = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) &last_valid_iso_td->hc_td;
@@ -1398,27 +1470,27 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
  #endif
         }
 
- #if 0
-        td->next_hcd_td = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(
-            usb_hstd_ohci_allocate_transfer_descriptor());
-        tmp_td_next_hcd_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) td->next_hcd_td);
-        tmp_td_next_hcd_td->physical_address = td->hc_td.next_td = usb_hstd_ohci_physical_address_of(
-            &tmp_td_next_hcd_td->hc_td);
-        td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) td->next_hcd_td);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        td->next_hcd_td    = (uint32_t) usb_hstd_ohci_physical_address_of(usb_hstd_ohci_allocate_transfer_descriptor());
+        tmp_td_next_hcd_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) td->next_hcd_td));
+        tmp_td_next_hcd_td->physical_address = (uint32_t) usb_hstd_ohci_physical_address_of(&tmp_td_next_hcd_td->hc_td);
+        td->hc_td.next_td = tmp_td_next_hcd_td->physical_address;
+        td                = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) td->next_hcd_td));
+#else
         td->next_hcd_td    = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_allocate_transfer_descriptor();
-        tmp_td_next_hcd_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) td->next_hcd_td;
-        td->hc_td.next_td  = (uint32_t) &tmp_td_next_hcd_td->hc_td;
+        tmp_td_next_hcd_td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) td->next_hcd_td;
+        td->hc_td.next_td  = (uint32_t)(uintptr_t) &tmp_td_next_hcd_td->hc_td;
         tmp_td_next_hcd_td->physical_address = td->hc_td.next_td;
-        td = (st_usb_ohci_hcd_transfer_descriptor_p_t) td->next_hcd_td;
+        td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) td->next_hcd_td;
  #endif
     }
 
     /* Set new TailP in ED */
+#if BSP_LP64_SUPPORT
+    td->usb_drequest = USB_NULL;
+    endpoint->hcd_tail_p = (uint32_t) usb_hstd_ohci_physical_address_of(td);
+#else
     td->usb_drequest = NULL;
- #if 0
-    endpoint->hcd_tail_p = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(td);
- #else
     endpoint->hcd_tail_p = (struct usb_ohci_hcd_transfer_descriptor *) td;
  #endif
     ed->hc_ed.tail_p = td->physical_address; /* Add null TD to the tail */
@@ -1441,7 +1513,11 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
     st_usb_ohci_hcd_endpoint_descriptor_p_t ed;
     st_usb_ohci_hcd_transfer_descriptor_p_t td;
     uint32_t  remaining_count;
+#if BSP_LP64_SUPPORT
+    uint32_t p_current_buffer_pointer;
+#else
     uint8_t * p_current_buffer_pointer;
+#endif
     uint32_t  buffer_pointer_tmp;
     uint32_t  total_size;
     st_usb_ohci_iso_transfer_info_p_t          iso_tr_info;
@@ -1449,14 +1525,21 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
     st_usb_ohci_hcd_transfer_descriptor_p_t    last_valid_iso_td;
     st_usb_ohci_hc_iso_transfer_descriptor_p_t last_iso_hctd;
     uint8_t * tmp_iso_tr_info_buffer;
+#if 1 == BSP_LP64_SUPPORT
+    uint32_t  tmp_ohci_req_buffer;
+#else
     uint8_t * tmp_ohci_req_buffer;
+#endif
     st_usb_ohci_hcd_transfer_descriptor_p_t tmp_next_hcd_td_2;
     st_usb_ohci_hcd_transfer_descriptor_p_t tmp_td_next_hcd_td;
+#if 1 == BSP_LP64_SUPPORT
+    st_usb_ohci_iso_info_p_t                      temp;
+#endif
 
- #if 0
-    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) r_usb_pa_to_va(endpoint->hcd_ed);
+#if 1 == BSP_LP64_SUPPORT
+    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_ed));
  #else
-    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t) endpoint->hcd_ed;
+    ed = (st_usb_ohci_hcd_endpoint_descriptor_p_t)(uintptr_t) endpoint->hcd_ed;
  #endif
 
     if (NULL == ed)
@@ -1471,11 +1554,20 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
         return FALSE;
     }
 
+#if 1 == BSP_LP64_SUPPORT
+    temp = (st_usb_ohci_iso_info_p_t)(uintptr_t) endpoint->iso_info;
+    if (USB_NULL == temp->usb_drequest)
+    {
+        /* The relations between Endpoint and usb_drequest are linked here */
+        temp->usb_drequest = (uint32_t)(uintptr_t) ohci_req;
+    }
+#else
     if (NULL == endpoint->iso_info->usb_drequest)
     {
         /* The relations between Endpoint and usb_drequest are linked here */
         endpoint->iso_info->usb_drequest = ohci_req;
     }
+#endif    
     else
     {
 
@@ -1485,9 +1577,16 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
 
     /* Buffering */
     total_size = 0;
+#if 1 == BSP_LP64_SUPPORT
+    while ((temp->copy_cnt < USB_OHCI_ISO_MAX_FRAME) && (0 != ohci_req->buffer_length))
+    {
+        iso_tr_info = &temp->transfer_info[temp->copy_p];
+#else
     while ((endpoint->iso_info->copy_cnt < USB_OHCI_ISO_MAX_FRAME) && (0 != ohci_req->buffer_length))
     {
         iso_tr_info = &endpoint->iso_info->transfer_info[endpoint->iso_info->copy_p];
+
+#endif        
 
         if (ohci_req->buffer_length > endpoint->max_packet)
         {
@@ -1500,40 +1599,61 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
 
         iso_tr_info->control_cc = 0;
         iso_tr_info->psw_cc     = 0;
- #if 0
-        tmp_iso_tr_info_buffer = (uint8_t *) r_usb_pa_to_va(&iso_tr_info->buffer[0]);
-        tmp_ohci_req_buffer    = (uint8_t *) r_usb_pa_to_va(ohci_req->buffer);
+
+#if 1 == BSP_LP64_SUPPORT
+        tmp_iso_tr_info_buffer = (uint8_t *) (r_usb_pa_to_va((uint64_t) &iso_tr_info->buffer));
+        tmp_ohci_req_buffer    = (uint32_t) (r_usb_pa_to_va((uint64_t) ohci_req->buffer));
+        memcpy(tmp_iso_tr_info_buffer, (void const *)(uintptr_t) tmp_ohci_req_buffer, iso_tr_info->size);
  #else
         tmp_iso_tr_info_buffer = &iso_tr_info->buffer[0];
         tmp_ohci_req_buffer    = ohci_req->buffer;
- #endif
         memcpy(tmp_iso_tr_info_buffer, tmp_ohci_req_buffer, iso_tr_info->size);
+ #endif
+
 
         tmp_ohci_req_buffer += iso_tr_info->size;
- #if 0
-        ohci_req->buffer = (uint8_t *) usb_hstd_ohci_physical_address_of(tmp_ohci_req_buffer);
+ #if 1 == BSP_LP64_SUPPORT
+        ohci_req->buffer = (uint32_t) usb_hstd_ohci_physical_address_of((void *)tmp_ohci_req_buffer);
  #else
         ohci_req->buffer = tmp_ohci_req_buffer;
  #endif
         ohci_req->buffer_length -= iso_tr_info->size;
         total_size              += iso_tr_info->size;
 
+#if 1 == BSP_LP64_SUPPORT
+        temp->copy_cnt++;
+        temp->copy_p++;
+        temp->copy_p &= USB_OHCI_ISO_MAX_FRAME - 1;
+#else
         endpoint->iso_info->copy_cnt++;
         endpoint->iso_info->copy_p++;
         endpoint->iso_info->copy_p &= USB_OHCI_ISO_MAX_FRAME - 1;
+
+#endif        
+
     }
 
     /* The transfer request size buffering is completed */
     /* However, the transfer completion is notified when not having arrived at USB_OHCI_ISO_MAX_FRAME yet */
     /* As a result, the following forwarding is requested */
+#if 1 == BSP_LP64_SUPPORT
+    if ((temp->copy_cnt < USB_OHCI_ISO_MAX_FRAME)
+            && (0 == ohci_req->buffer_length)
+            && (0 == temp->start_cnt))
+#else
     if ((endpoint->iso_info->copy_cnt < USB_OHCI_ISO_MAX_FRAME) &&
         (0 == ohci_req->buffer_length) &&
         (0 == endpoint->iso_info->start_cnt))
+#endif            
     {
         ohci_req->buffer_length = total_size;
 
         /* The relation between Endpoint and usb_drequest is released here */
+#if 1 == BSP_LP64_SUPPORT
+        temp->usb_drequest = 0;
+#else
         endpoint->iso_info->usb_drequest = NULL;
+#endif        
         if (USB_OHCI_RS_CANCELING != ohci_req->status)
         {
             ohci_req->status = USB_OHCI_RS_NORMAL_COMPLETION;
@@ -1548,60 +1668,71 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
         return TRUE;
     }
 
+#if 1 == BSP_LP64_SUPPORT
+    if (temp->end_cnt)
+#else
     if (endpoint->iso_info->end_cnt)
+#endif    
     {
         usb_hstd_ohci_complete_transfer_request_iso(ptr, endpoint);
 
         return TRUE;
     }
 
- #if 0
-    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) endpoint->hcd_tail_p); /* hcd_head_p => hcd_tail_p */
+ #if 1 == BSP_LP64_SUPPORT
+    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_tail_p)); /* hcd_head_p => hcd_tail_p */
  #else
-    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_tail_p;                            /* hcd_head_p => hcd_tail_p */
+    td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_tail_p;                            /* hcd_head_p => hcd_tail_p */
  #endif
     ohci_req->status = USB_OHCI_RS_NOT_DONE;
+#if 1 == BSP_LP64_SUPPORT
+    remaining_count = USB_OHCI_ISO_MAX_FRAME - temp->start_cnt;
+#else
     remaining_count  = USB_OHCI_ISO_MAX_FRAME - endpoint->iso_info->start_cnt;
+#endif    
     usb_hstd_ohci_initialize_list_head(&ohci_req->hcd_list);
 
     /* Setup TD(s) for data packets */
     while (0 != remaining_count)
     {
         usb_hstd_ohci_insert_tail_list(&ohci_req->hcd_list, &td->request_list);
+#if 1 == BSP_LP64_SUPPORT
+        td->usb_drequest = USB_NULL;
+        td->endpoint     = (uint32_t) usb_hstd_ohci_physical_address_of(endpoint);        
+#else
         td->usb_drequest = NULL;
- #if 0
-        td->endpoint = (st_usb_ohci_hcd_endpoint_p_t) usb_hstd_ohci_physical_address_of(endpoint);
- #else
         td->endpoint = endpoint;
  #endif
         td->cancel_pending = FALSE;
- #if 0
-        hc_iso_td = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) &td->hc_td);
+
+#if 1 == BSP_LP64_SUPPORT
+        hc_iso_td = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) &td->hc_td));
  #else
         hc_iso_td = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) &td->hc_td;
  #endif
 
-        iso_tr_info = &endpoint->iso_info->transfer_info[endpoint->iso_info->start_p];
- #if 0
-        p_current_buffer_pointer = (uint8_t *) r_usb_pa_to_va(&iso_tr_info->buffer[0]);
+#if 1 == BSP_LP64_SUPPORT
+        iso_tr_info = &temp->transfer_info[temp->start_p];
+        p_current_buffer_pointer = (uint32_t) (r_usb_pa_to_va((uint64_t) &iso_tr_info->buffer));
+        temp->start_cnt++;
+        temp->start_p++;
+        temp->start_p &= USB_OHCI_ISO_MAX_FRAME - 1;
+        hc_iso_td->bp0 = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer);
+        hc_iso_td->be  = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer + iso_tr_info->size - 1);
  #else
+        iso_tr_info = &endpoint->iso_info->transfer_info[endpoint->iso_info->start_p];
         p_current_buffer_pointer = &iso_tr_info->buffer[0];
- #endif
         endpoint->iso_info->start_cnt++;
         endpoint->iso_info->start_p++;
         endpoint->iso_info->start_p &= USB_OHCI_ISO_MAX_FRAME - 1;
- #if 0
-        hc_iso_td->bp0 = usb_hstd_ohci_physical_address_of(p_current_buffer_pointer);
-        hc_iso_td->be  = usb_hstd_ohci_physical_address_of(p_current_buffer_pointer + iso_tr_info->size - 1);
- #else
         hc_iso_td->bp0 = (uint32_t) p_current_buffer_pointer;
         hc_iso_td->be  = (uint32_t) (p_current_buffer_pointer + iso_tr_info->size - 1);
  #endif
 
         buffer_pointer_tmp = (uint32_t) p_current_buffer_pointer & USB_VAL_X0FFF;
- #if 0
+#if 1 == BSP_LP64_SUPPORT
         hc_iso_td->usb_ohci_offset_psw[gs_usb_hstd_ohci_offset_psw_table[USB_HCI_GET_ENDIAN][0]].offset.offset =
-            usb_hstd_ohci_physical_address_of((void *) (buffer_pointer_tmp & USB_VAL_X1FFF));
+            ((uint16_t) usb_hstd_ohci_physical_address_of((void *) (uintptr_t) buffer_pointer_tmp)) & USB_VAL_X1FFF;
  #else
         hc_iso_td->usb_ohci_offset_psw[gs_usb_hstd_ohci_offset_psw_table[USB_HCI_GET_ENDIAN][0]].offset.offset =
             (buffer_pointer_tmp & USB_VAL_X1FFF);
@@ -1609,7 +1740,11 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
         hc_iso_td->usb_ohci_offset_psw[gs_usb_hstd_ohci_offset_psw_table[USB_HCI_GET_ENDIAN][0]].offset.cc = 7;
         td->transfer_count += iso_tr_info->size;
 
+#if 1 == BSP_LP64_SUPPORT
+        temp->copy_cnt--;
+#else
         endpoint->iso_info->copy_cnt--;
+#endif        
         remaining_count--;
 
         hc_iso_td->control.int_d = 7;                                                           /* specify no interrupt */
@@ -1617,10 +1752,10 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
         hc_iso_td->control.fc    = 0;
         hc_iso_td->control.int_d = usb_hstd_ohci_min_delay(6, ohci_req->max_int_delay) & 0x07U; /* Setup interrupt delay */
 
- #if 0
-        last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(endpoint->hcd_head_p);
+#if 1 == BSP_LP64_SUPPORT
+        last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_head_p));
  #else
-        last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_head_p;
+        last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_head_p;
  #endif
         if (0 == last_valid_iso_td->next_hcd_td) /* Valid IsoTD is Empty */
         {
@@ -1628,51 +1763,54 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
         }
         else
         {
- #if 0
-            tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(
-                (uint32_t) last_valid_iso_td->next_hcd_td);
+#if 1 == BSP_LP64_SUPPORT
+            tmp_next_hcd_td_2 =
+                (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) last_valid_iso_td->next_hcd_td));
             while (0 != tmp_next_hcd_td_2->next_hcd_td)
             {
-                last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(
-                    last_valid_iso_td->next_hcd_td);
-                tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va(
-                    last_valid_iso_td->next_hcd_td);
+                last_valid_iso_td =
+                    (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) last_valid_iso_td->next_hcd_td));
+                tmp_next_hcd_td_2 =
+                    (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) last_valid_iso_td->next_hcd_td));
             }
 
-            last_iso_hctd = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) r_usb_pa_to_va(&last_valid_iso_td->hc_td);
+            last_iso_hctd =
+                (st_usb_ohci_hc_iso_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) &last_valid_iso_td->hc_td));
  #else
-            tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t) last_valid_iso_td->next_hcd_td;
+            tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) last_valid_iso_td->next_hcd_td;
             while (0 != tmp_next_hcd_td_2->next_hcd_td)
             {
-                last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) last_valid_iso_td->next_hcd_td;
-                tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t) last_valid_iso_td->next_hcd_td;
+                last_valid_iso_td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) last_valid_iso_td->next_hcd_td;
+                tmp_next_hcd_td_2 = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) last_valid_iso_td->next_hcd_td;
             }
             last_iso_hctd = (st_usb_ohci_hc_iso_transfer_descriptor_p_t) &last_valid_iso_td->hc_td;
  #endif
             hc_iso_td->control.sf = (uint16_t) (last_iso_hctd->control.sf + last_iso_hctd->control.fc + 1);
         }
 
- #if 0
-        td->next_hcd_td = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(
-            usb_hstd_ohci_allocate_transfer_descriptor());
-        tmp_td_next_hcd_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) td->next_hcd_td);
-        tmp_td_next_hcd_td->physical_address = td->hc_td.next_td = usb_hstd_ohci_physical_address_of(
-            &tmp_td_next_hcd_td->hc_td);
-        td = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) td->next_hcd_td);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        td->next_hcd_td    = (uint32_t) usb_hstd_ohci_physical_address_of(usb_hstd_ohci_allocate_transfer_descriptor());
+        tmp_td_next_hcd_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) td->next_hcd_td));
+        tmp_td_next_hcd_td->physical_address = (uint32_t) usb_hstd_ohci_physical_address_of(&tmp_td_next_hcd_td->hc_td);
+        td->hc_td.next_td = tmp_td_next_hcd_td->physical_address;
+        td                =
+            (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) td->next_hcd_td));
+#else
         td->next_hcd_td    = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_allocate_transfer_descriptor();
-        tmp_td_next_hcd_td = (st_usb_ohci_hcd_transfer_descriptor_p_t) td->next_hcd_td;
-        td->hc_td.next_td  = (uint32_t) &tmp_td_next_hcd_td->hc_td;
+        tmp_td_next_hcd_td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) td->next_hcd_td;
+        td->hc_td.next_td  = (uint32_t)(uintptr_t) &tmp_td_next_hcd_td->hc_td;
         tmp_td_next_hcd_td->physical_address = td->hc_td.next_td;
-        td = (st_usb_ohci_hcd_transfer_descriptor_p_t) td->next_hcd_td;
+        td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) td->next_hcd_td;
  #endif
     }
 
     /* Set new TailP in ED */
+    
+#if 1 == BSP_LP64_SUPPORT
+    td->usb_drequest = USB_NULL;
+    endpoint->hcd_tail_p = (uint32_t) usb_hstd_ohci_physical_address_of(td);
+#else
     td->usb_drequest = NULL;
- #if 0
-    endpoint->hcd_tail_p = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(td);
- #else
     endpoint->hcd_tail_p = (struct usb_ohci_hcd_transfer_descriptor *) td;
  #endif
     ed->hc_ed.tail_p = td->physical_address; /* Add null TD to the tail */
@@ -1696,10 +1834,11 @@ static uint32_t usb_hstd_ohci_insert_ed_for_endpoint (st_usb_ohci_hcd_endpoint_p
     st_usb_ohci_hcd_transfer_descriptor_p_t tmp_hcd_head_p;
     uint32_t * tmp_list_physical_head;
 
- #if 0
-    device_data = (st_usb_ohci_hcd_device_data_p_t) r_usb_pa_to_va(endpoint->device_data);
-    list        = (st_usb_ohci_hcd_ed_list_p_t) r_usb_pa_to_va(&device_data->ed_list[endpoint->list_index]);
- #else
+#if 1 == BSP_LP64_SUPPORT
+    device_data = (st_usb_ohci_hcd_device_data_p_t) (r_usb_pa_to_va((uint64_t) endpoint->device_data));
+    list        =
+        (st_usb_ohci_hcd_ed_list_p_t) (r_usb_pa_to_va((uint64_t) &device_data->ed_list[endpoint->list_index]));
+#else
     device_data = endpoint->device_data;
     list        = &device_data->ed_list[endpoint->list_index];
  #endif
@@ -1711,15 +1850,14 @@ static uint32_t usb_hstd_ohci_insert_ed_for_endpoint (st_usb_ohci_hcd_endpoint_p
         return FALSE;
     }
 
- #if 0
-    ed->endpoint         = (st_usb_ohci_hcd_endpoint_p_t) usb_hstd_ohci_physical_address_of(endpoint);
+#if 1 == BSP_LP64_SUPPORT
+    ed->endpoint         = (uint32_t) usb_hstd_ohci_physical_address_of(endpoint);
     ed->list_index       = endpoint->list_index;
-    ed->physical_address = usb_hstd_ohci_physical_address_of(&ed->hc_ed);
+    ed->physical_address = (uint32_t) usb_hstd_ohci_physical_address_of(&ed->hc_ed);
     ed->hc_ed.control    = endpoint->control;
 
-    endpoint->hcd_head_p = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_physical_address_of(
-        usb_hstd_ohci_allocate_transfer_descriptor()); /* Make Dummy TD */
- #else
+    endpoint->hcd_head_p = (uint32_t) usb_hstd_ohci_physical_address_of(usb_hstd_ohci_allocate_transfer_descriptor()); /* Make Dummy TD */
+#else
     ed->endpoint         = endpoint;
     ed->list_index       = endpoint->list_index;
     ed->physical_address = (uint32_t) &ed->hc_ed;
@@ -1727,8 +1865,11 @@ static uint32_t usb_hstd_ohci_insert_ed_for_endpoint (st_usb_ohci_hcd_endpoint_p
 
     endpoint->hcd_head_p = (struct usb_ohci_hcd_transfer_descriptor *) usb_hstd_ohci_allocate_transfer_descriptor(); /* Make Dummy TD */
  #endif
-
+#if 1 == BSP_LP64_SUPPORT
+    if (USB_NULL == endpoint->hcd_head_p)
+#else
     if (NULL == endpoint->hcd_head_p)
+#endif
     {
         usb_hstd_ohci_free_endpoint_descriptor(ed);
 
@@ -1736,22 +1877,23 @@ static uint32_t usb_hstd_ohci_insert_ed_for_endpoint (st_usb_ohci_hcd_endpoint_p
     }
 
     endpoint->hcd_tail_p = endpoint->hcd_head_p;
- #if 0
-    tmp_hcd_head_p   = (st_usb_ohci_hcd_transfer_descriptor_p_t) r_usb_pa_to_va((uint32_t) endpoint->hcd_head_p); /* debug */
-    ed->hc_ed.head_p = usb_hstd_ohci_physical_address_of(&tmp_hcd_head_p->hc_td);
+#if 1 == BSP_LP64_SUPPORT
+    tmp_hcd_head_p   = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) endpoint->hcd_head_p)); /* debug */
+    ed->hc_ed.head_p = (uint32_t) usb_hstd_ohci_physical_address_of(&tmp_hcd_head_p->hc_td);
  #else
-    tmp_hcd_head_p   = (st_usb_ohci_hcd_transfer_descriptor_p_t) endpoint->hcd_head_p;                            /* debug */
-    ed->hc_ed.head_p = (uint32_t) &tmp_hcd_head_p->hc_td;
+    tmp_hcd_head_p   = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) endpoint->hcd_head_p;                            /* debug */
+    ed->hc_ed.head_p = (uint32_t)(uintptr_t) &tmp_hcd_head_p->hc_td;
  #endif
 
     ed->hc_ed.tail_p                 = ed->hc_ed.head_p;
     tmp_hcd_head_p->physical_address = ed->hc_ed.tail_p;
- #if 0
-    endpoint->hcd_ed = (struct usb_ohci_hcd_endpoint_descriptor *) usb_hstd_ohci_physical_address_of(ed);
- #else
+#if 1 == BSP_LP64_SUPPORT
+    endpoint->hcd_ed             = (uint32_t) usb_hstd_ohci_physical_address_of(ed);
+    tmp_hcd_head_p->usb_drequest = 0;
+#else
     endpoint->hcd_ed = (struct usb_ohci_hcd_endpoint_descriptor *) ed;
- #endif
     tmp_hcd_head_p->usb_drequest = NULL;
+ #endif
 
     /* Link endpoint descriptor into HCD tracking queue */
     if ((USB_EP_ISO != endpoint->type) || (TRUE == usb_hstd_ohci_is_list_empty(&list->head)))
@@ -1760,9 +1902,9 @@ static uint32_t usb_hstd_ohci_insert_ed_for_endpoint (st_usb_ohci_hcd_endpoint_p
 
         /* Link ED into head of ED list */
         usb_hstd_ohci_insert_head_list(&list->head, &ed->link);
- #if 0
-        tmp_list_physical_head = (uint32_t *) r_usb_pa_to_va(list->physical_head);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        tmp_list_physical_head = (uint32_t *) (r_usb_pa_to_va((uint64_t) list->physical_head));
+#else
         tmp_list_physical_head = list->physical_head;
  #endif
         ed->hc_ed.next_ed       = *tmp_list_physical_head;
@@ -1773,16 +1915,23 @@ static uint32_t usb_hstd_ohci_insert_ed_for_endpoint (st_usb_ohci_hcd_endpoint_p
         /* Iso type ( List is not empty) */
 
         /* Link ED into tail of ED list */
- #if 0
+#if 1 == BSP_LP64_SUPPORT
         tail_ed =
-            (st_usb_ohci_hcd_endpoint_descriptor_p_t) usb_hstd_ohci_scan_containing_record((st_usb_ohci_list_entry_p_t) r_usb_pa_to_va(
-                                                                                               list->head.b_link),
+            (st_usb_ohci_hcd_endpoint_descriptor_p_t) (uintptr_t) usb_hstd_ohci_scan_containing_record((
+                                                                                                           st_usb_ohci_list_entry_p_t) (
+                                                                                                           r_usb_pa_to_va((
+                                                                                                                              uint64_t)
+                                                                                                                          list
+                                                                                                                          ->
+                                                                                                                          head
+                                                                                                                          .
+                                                                                                                          b_link)),
                                                                                            USB_OHCI_CR_ENDPOINT_DESCRIPTOR,
                                                                                            USB_OHCI_CR_LINK);
  #else
         tail_ed =
-            (st_usb_ohci_hcd_endpoint_descriptor_p_t) usb_hstd_ohci_scan_containing_record(
-                (st_usb_ohci_list_entry_p_t) list->head.b_link,
+            (st_usb_ohci_hcd_endpoint_descriptor_p_t)(uintptr_t) usb_hstd_ohci_scan_containing_record(
+                (st_usb_ohci_list_entry_p_t)(uintptr_t) list->head.b_link,
                 USB_OHCI_CR_ENDPOINT_DESCRIPTOR,
                 USB_OHCI_CR_LINK);
  #endif
@@ -1809,22 +1958,28 @@ static void usb_hstd_ohci_complete_transfer_request_iso (usb_utr_t * ptr, st_usb
     uint32_t  err;
     uint8_t * tmp_iso_tr_info_buffer;
     uint8_t * tmp_ohci_req_buffer;
+#if 1 == BSP_LP64_SUPPORT
+    st_usb_ohci_iso_info_p_t          temp;
+#endif    
 
- #if 0
-    ohci_req = (st_usb_ohci_request_p_t) r_usb_pa_to_va((uint32_t) endpoint->iso_info->usb_drequest);
+#if 1 == BSP_LP64_SUPPORT
+    temp = (st_usb_ohci_iso_info_p_t)&endpoint->iso_info;
+    ohci_req    = (st_usb_ohci_request_p_t) (r_usb_pa_to_va((uint64_t) temp->usb_drequest));
+    iso_tr_info = &temp->transfer_info[temp->complete_p];
+    temp->complete_p++;
+    temp->complete_p &= USB_OHCI_ISO_MAX_FRAME - 1;
  #else
     ohci_req = endpoint->iso_info->usb_drequest;
- #endif
-
     iso_tr_info = &endpoint->iso_info->transfer_info[endpoint->iso_info->complete_p];
     endpoint->iso_info->complete_p++;
     endpoint->iso_info->complete_p &= USB_OHCI_ISO_MAX_FRAME - 1;
+#endif    
     if (USB_HCI_DIRECTION_IN == ohci_req->xferinfo)
     {
- #if 0
-        tmp_iso_tr_info_buffer = (uint8_t *) r_usb_pa_to_va(iso_tr_info->buffer);
-        tmp_ohci_req_buffer    = (uint8_t *) r_usb_pa_to_va(ohci_req->buffer);
- #else
+#if 1 == BSP_LP64_SUPPORT
+        tmp_iso_tr_info_buffer = (uint8_t *) (r_usb_pa_to_va((uint64_t) iso_tr_info->buffer));
+        tmp_ohci_req_buffer    = (uint8_t *) (r_usb_pa_to_va((uint64_t) ohci_req->buffer));
+#else
         tmp_iso_tr_info_buffer = iso_tr_info->buffer;
         tmp_ohci_req_buffer    = ohci_req->buffer;
  #endif
@@ -1832,14 +1987,22 @@ static void usb_hstd_ohci_complete_transfer_request_iso (usb_utr_t * ptr, st_usb
     }
 
     ohci_req->buffer_length += iso_tr_info->size;
+#if 1 == BSP_LP64_SUPPORT
+    temp->end_cnt--; //RZA3
+#else
     endpoint->iso_info->end_cnt--;
+#endif    
 
     /* Check Transfer Request End */
     err = usb_hstd_ohci_check_transfer_request_end(ohci_req, endpoint->max_packet, iso_tr_info->size);
     if (TRUE == err)
     {
         /* The relation between Endpoint and usb_drequest is released here */
+#if 1 == BSP_LP64_SUPPORT
+        temp->usb_drequest = 0;
+#else
         endpoint->iso_info->usb_drequest = NULL;
+#endif 
         if (USB_OHCI_RS_CANCELING != ohci_req->status)
         {
             if (USB_OHCI_CC_NOERROR == iso_tr_info->control_cc)
@@ -1872,9 +2035,9 @@ static uint32_t usb_hstd_ohci_open_periodic_pipe (st_usb_ohci_hcd_endpoint_p_t e
     uint32_t which_list;
     uint32_t junk;
     st_usb_ohci_hcd_device_data_p_t device_data;
- #if 0
-    device_data = (st_usb_ohci_hcd_device_data_p_t) r_usb_pa_to_va(endpoint->device_data);
- #else
+#if 1 == BSP_LP64_SUPPORT
+    device_data = (st_usb_ohci_hcd_device_data_p_t) (r_usb_pa_to_va((uint64_t) endpoint->device_data));
+#else
     device_data = endpoint->device_data;
  #endif
 
@@ -1888,7 +2051,6 @@ static uint32_t usb_hstd_ohci_open_periodic_pipe (st_usb_ohci_hcd_endpoint_p_t e
     /* Commit this endpoints bandwidth to the proper scheduling slot */
     if (USB_OHCI_ED_ISOCHRONOUS == which_list)
     {
-        // device_data->ed_list[USB_OHCI_ED_ISOCHRONOUS].bandwidth += endpoint->bandwidth;
         device_data->ed_list[USB_OHCI_ED_ISOCHRONOUS].bandwidth =
             (uint16_t) (device_data->ed_list[USB_OHCI_ED_ISOCHRONOUS].bandwidth + endpoint->bandwidth);
         device_data->max_bandwidth_inuse += endpoint->bandwidth;
@@ -1897,8 +2059,6 @@ static uint32_t usb_hstd_ohci_open_periodic_pipe (st_usb_ohci_hcd_endpoint_p_t e
     {
         /* Determine which scheduling list has the least bandwidth */
         usb_hstd_ohci_check_bandwidth(device_data, which_list, &which_list);
-
-        // device_data->ed_list[which_list].bandwidth += endpoint->bandwidth;
         device_data->ed_list[which_list].bandwidth =
             (uint16_t) (device_data->ed_list[which_list].bandwidth + endpoint->bandwidth);
 
@@ -1913,7 +2073,6 @@ static uint32_t usb_hstd_ohci_open_periodic_pipe (st_usb_ohci_hcd_endpoint_p_t e
     {
         /* Too much, back this bandwidth out and fail the request */
 
-        // device_data->ed_list[which_list].bandwidth -= endpoint->bandwidth;
         device_data->ed_list[which_list].bandwidth =
             (uint16_t) (device_data->ed_list[which_list].bandwidth - endpoint->bandwidth);
         device_data->max_bandwidth_inuse =
@@ -2044,9 +2203,9 @@ static uint32_t usb_hstd_ohci_setup_endpoint (st_usb_ohci_hcd_device_data_p_t de
                                               uint32_t                        pollrate)
 {
     uint8_t endpoint_descriptor_type;
- #if 0
-    endpoint->device_data = (st_usb_ohci_hcd_device_data_p_t) usb_hstd_ohci_physical_address_of((void *) device_data);
- #else
+#if 1 == BSP_LP64_SUPPORT
+    endpoint->device_data = (uint32_t) usb_hstd_ohci_physical_address_of((void *) device_data);
+#else
     endpoint->device_data = device_data;
  #endif
 
@@ -2070,11 +2229,19 @@ static uint32_t usb_hstd_ohci_setup_endpoint (st_usb_ohci_hcd_device_data_p_t de
         {
             endpoint_descriptor_type = USB_OHCI_ED_ISOCHRONOUS;
             endpoint->type           = endpoint_type;
+#if 1 == BSP_LP64_SUPPORT
+            endpoint->iso_info       = (uint32_t)(uintptr_t) usb_hstd_ohci_alloc_endpoint_iso();
+            if (USB_NULL == endpoint->iso_info)
+            {
+                return FALSE;
+            }
+#else
             endpoint->iso_info       = usb_hstd_ohci_alloc_endpoint_iso();
             if (NULL == endpoint->iso_info)
             {
                 return FALSE;
             }
+#endif            
 
             break;
         }
@@ -2150,7 +2317,7 @@ static uint32_t usb_hstd_ohci_setup_endpoint (st_usb_ohci_hcd_device_data_p_t de
  ***********************************************************************************************************************/
 static st_usb_ohci_list_entry_p_t usb_hstd_ohci_virtual_address_of (uint32_t data)
 {
-    return (st_usb_ohci_list_entry_p_t) (data - 20);
+    return (st_usb_ohci_list_entry_p_t)(uintptr_t) (data - 20);
 }
 
 /***********************************************************************************************************************
@@ -2189,10 +2356,10 @@ static uint32_t usb_hstd_ohci_check_transfer_request_end (st_usb_ohci_request_p_
         return FALSE;
     }
 
- #if 0
-    p_tr_req = (st_usb_hci_tr_req_t *) r_usb_pa_to_va((uint32_t) ohci_req->driver_request);
+#if 1 == BSP_LP64_SUPPORT
+    p_tr_req = (st_usb_hci_tr_req_t *) (r_usb_pa_to_va((uint64_t) ohci_req->driver_request));
  #else
-    p_tr_req = (st_usb_hci_tr_req_t *) ohci_req->driver_request;
+    p_tr_req = (st_usb_hci_tr_req_t *)(uintptr_t) ohci_req->driver_request;
  #endif
 
     /* check short packet */
@@ -2232,14 +2399,22 @@ static uint32_t usb_hstd_ohci_cancel_request (usb_utr_t * ptr, st_usb_ohci_reque
 
     ohci_req->status = USB_OHCI_RS_CANCELING;
 
- #if 0
-    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) usb_hstd_ohci_scan_containing_record((st_usb_ohci_list_entry_p_t) r_usb_pa_to_va(
-                                                                                            ohci_req->hcd_list.f_link),
+#if 1 == BSP_LP64_SUPPORT
+    td =
+        (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) usb_hstd_ohci_scan_containing_record((
+                                                                                                       st_usb_ohci_list_entry_p_t) (
+                                                                                                       r_usb_pa_to_va((
+                                                                                                                          uint64_t)
+                                                                                                                      ohci_req
+                                                                                                                      ->
+                                                                                                                      hcd_list
+                                                                                                                      .
+                                                                                                                      f_link)),
                                                                                         USB_OHCI_CR_TRANSFER_DESCRIPTOR,
                                                                                         USB_OHCI_CR_REQUESTLIST);
  #else
-    td = (st_usb_ohci_hcd_transfer_descriptor_p_t) usb_hstd_ohci_scan_containing_record(
-        (st_usb_ohci_list_entry_p_t) ohci_req->hcd_list.f_link,
+    td = (st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t) usb_hstd_ohci_scan_containing_record(
+        (st_usb_ohci_list_entry_p_t)(uintptr_t) ohci_req->hcd_list.f_link,
         USB_OHCI_CR_TRANSFER_DESCRIPTOR,
         USB_OHCI_CR_REQUESTLIST);
  #endif
@@ -2251,12 +2426,12 @@ static uint32_t usb_hstd_ohci_cancel_request (usb_utr_t * ptr, st_usb_ohci_reque
 
     while (1)
     {
- #if 0
-        tmp_request_list = (st_usb_ohci_list_entry_p_t) r_usb_pa_to_va((uint32_t) &td->request_list);
-        tmp_b_link       = (st_usb_ohci_list_entry_p_t) r_usb_pa_to_va((uint32_t) ohci_req->hcd_list.b_link);
+#if 1 == BSP_LP64_SUPPORT
+        tmp_request_list = (st_usb_ohci_list_entry_p_t) (r_usb_pa_to_va((uint64_t) &td->request_list));
+        tmp_b_link       = (st_usb_ohci_list_entry_p_t) (r_usb_pa_to_va((uint64_t) ohci_req->hcd_list.b_link));
  #else
-        tmp_request_list = (st_usb_ohci_list_entry_p_t) &td->request_list;
-        tmp_b_link       = (st_usb_ohci_list_entry_p_t) ohci_req->hcd_list.b_link;
+        tmp_request_list = (st_usb_ohci_list_entry_p_t)(uintptr_t) &td->request_list;
+        tmp_b_link       = (st_usb_ohci_list_entry_p_t)(uintptr_t) ohci_req->hcd_list.b_link;
  #endif
 
         td->cancel_pending = TRUE;
@@ -2265,12 +2440,20 @@ static uint32_t usb_hstd_ohci_cancel_request (usb_utr_t * ptr, st_usb_ohci_reque
             break;
         }
 
- #if 0
-        td = (st_usb_ohci_hcd_transfer_descriptor_p_t) usb_hstd_ohci_scan_containing_record((st_usb_ohci_list_entry_p_t) r_usb_pa_to_va(
-                                                                                                td->request_list.f_link),
+#if 1 == BSP_LP64_SUPPORT
+        td =
+            (st_usb_ohci_hcd_transfer_descriptor_p_t) (uintptr_t) usb_hstd_ohci_scan_containing_record((
+                                                                                                           st_usb_ohci_list_entry_p_t) (
+                                                                                                           r_usb_pa_to_va((
+                                                                                                                              uint64_t)
+                                                                                                                          td
+                                                                                                                          ->
+                                                                                                                          request_list
+                                                                                                                          .
+                                                                                                                          f_link)),
                                                                                             USB_OHCI_CR_TRANSFER_DESCRIPTOR,
                                                                                             USB_OHCI_CR_REQUESTLIST);
- #else
+#else
         td = (st_usb_ohci_hcd_transfer_descriptor_p_t) usb_hstd_ohci_scan_containing_record(td->request_list.f_link,
                                                                                             USB_OHCI_CR_TRANSFER_DESCRIPTOR,
                                                                                             USB_OHCI_CR_REQUESTLIST);
@@ -2280,8 +2463,11 @@ static uint32_t usb_hstd_ohci_cancel_request (usb_utr_t * ptr, st_usb_ohci_reque
             return TRUE;
         }
     }
-
+#if 1 == BSP_LP64_SUPPORT
+    endpoint = (st_usb_ohci_hcd_endpoint_p_t)(uintptr_t)td->endpoint;
+#else
     endpoint = td->endpoint;
+#endif
     usb_hstd_ohci_pause_ed(ptr, endpoint); /* stop endpoint, schedule cleanup (see Section 5.2.7.1.3) */
 
     return TRUE;

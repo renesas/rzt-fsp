@@ -100,6 +100,13 @@ typedef enum e_xspi_ospi_prefetch_function
     XSPI_OSPI_PREFETCH_FUNCTION_ENABLE  = 0x01, ///< Prefetch function enable
 } xspi_ospi_prefetch_function_t;
 
+/* IO voltage settings */
+typedef enum e_xspi_ospi_io_voltage
+{
+    XSPI_OSPI_IO_VOLTAGE_1_8V = 0x00,  ///< IO voltage 1.8V
+    XSPI_OSPI_IO_VOLTAGE_3_3V = 0x01,  ///< IO voltage 3.3V
+} xspi_ospi_io_voltage_t;
+
 /* 8D-8D-8D(OPI) byte order options */
 typedef enum e_xspi_ospi_byte_order
 {
@@ -140,6 +147,7 @@ typedef struct st_xspi_ospi_extended_cfg
     uint8_t                           * p_autocalibration_preamble_pattern_addr; ///< OctaFlash memory address holding the preamble pattern
     uint8_t                             data_latch_delay_clocks;                 ///< Specify delay between OM_DQS and OM_DQS Strobe. Set to 0 to auto-callibrate. Typical value is 0x80.
     xspi_ospi_prefetch_function_t       prefetch_en;                             ///< Prefetch function settings
+    xspi_ospi_io_voltage_t              io_voltage;                              ///< Voltage setting of xSPI IO domain
     xspi_ospi_byte_order_t              byte_order;                              ///< Byte order on external bus. Only applicable in 8D-8D-8D(OPI) mode.
     xspi_ospi_address_space_t const   * p_address_space;                         ///< Address space settings when custom address space enabled
 } xspi_ospi_extended_cfg_t;

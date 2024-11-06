@@ -27,18 +27,15 @@ FSP_HEADER
  **********************************************************************************************************************/
 
 /* Private definition to set enumeration values. */
-#define BSP_IO_PRV_8BIT_MASK          (0xFF)
-#define BSP_IO_PM_OUTPUT              (3U)
+#define BSP_IO_PRV_8BIT_MASK       (0xFF)
+#define BSP_IO_PM_OUTPUT           (3U)
 
 /* Key code for writing PRCR register. */
-#define BSP_IO_PRV_PRCR_KEY           (0xA500U)
-#define BSP_IO_REG_PROTECT_GPIO       (0x0004U)
-
-/* Difference between safety and non safety I/O port region addresses. */
-#define BSP_IO_REGION_ADDRESS_DIFF    (R_PORT_SR_BASE - R_PORT_NSR_BASE)
+#define BSP_IO_PRV_PRCR_KEY        (0xA500U)
+#define BSP_IO_REG_PROTECT_GPIO    (0x0004U)
 
 /* Shift to get port in bsp_io_port_t and bsp_io_port_pin_t enums. */
-#define BSP_IO_PRV_PORT_OFFSET        (8U)
+#define BSP_IO_PRV_PORT_OFFSET     (8U)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -86,6 +83,17 @@ typedef enum e_bsp_io_port
     BSP_IO_PORT_22 = 0x1600,           ///< IO port 22
     BSP_IO_PORT_23 = 0x1700,           ///< IO port 23
     BSP_IO_PORT_24 = 0x1800,           ///< IO port 24
+    BSP_IO_PORT_25 = 0x1900,           ///< IO port 25
+    BSP_IO_PORT_26 = 0x1A00,           ///< IO port 26
+    BSP_IO_PORT_27 = 0x1B00,           ///< IO port 27
+    BSP_IO_PORT_28 = 0x1C00,           ///< IO port 28
+    BSP_IO_PORT_29 = 0x1D00,           ///< IO port 29
+    BSP_IO_PORT_30 = 0x1E00,           ///< IO port 30
+    BSP_IO_PORT_31 = 0x1F00,           ///< IO port 31
+    BSP_IO_PORT_32 = 0x2000,           ///< IO port 32
+    BSP_IO_PORT_33 = 0x2100,           ///< IO port 33
+    BSP_IO_PORT_34 = 0x2200,           ///< IO port 34
+    BSP_IO_PORT_35 = 0x2300,           ///< IO port 35
 } bsp_io_port_t;
 
 /** Superset list of all possible IO port pins. */
@@ -315,13 +323,112 @@ typedef enum e_bsp_io_port_pin
     BSP_IO_PORT_24_PIN_5 = 0x1805,     ///< IO port 24 pin 5
     BSP_IO_PORT_24_PIN_6 = 0x1806,     ///< IO port 24 pin 6
     BSP_IO_PORT_24_PIN_7 = 0x1807,     ///< IO port 24 pin 7
+
+    BSP_IO_PORT_25_PIN_0 = 0x1900,     ///< IO port 25 pin 0
+    BSP_IO_PORT_25_PIN_1 = 0x1901,     ///< IO port 25 pin 1
+    BSP_IO_PORT_25_PIN_2 = 0x1902,     ///< IO port 25 pin 2
+    BSP_IO_PORT_25_PIN_3 = 0x1903,     ///< IO port 25 pin 3
+    BSP_IO_PORT_25_PIN_4 = 0x1904,     ///< IO port 25 pin 4
+    BSP_IO_PORT_25_PIN_5 = 0x1905,     ///< IO port 25 pin 5
+    BSP_IO_PORT_25_PIN_6 = 0x1906,     ///< IO port 25 pin 6
+    BSP_IO_PORT_25_PIN_7 = 0x1907,     ///< IO port 25 pin 7
+
+    BSP_IO_PORT_26_PIN_0 = 0x1A00,     ///< IO port 26 pin 0
+    BSP_IO_PORT_26_PIN_1 = 0x1A01,     ///< IO port 26 pin 1
+    BSP_IO_PORT_26_PIN_2 = 0x1A02,     ///< IO port 26 pin 2
+    BSP_IO_PORT_26_PIN_3 = 0x1A03,     ///< IO port 26 pin 3
+    BSP_IO_PORT_26_PIN_4 = 0x1A04,     ///< IO port 26 pin 4
+    BSP_IO_PORT_26_PIN_5 = 0x1A05,     ///< IO port 26 pin 5
+    BSP_IO_PORT_26_PIN_6 = 0x1A06,     ///< IO port 26 pin 6
+    BSP_IO_PORT_26_PIN_7 = 0x1A07,     ///< IO port 26 pin 7
+
+    BSP_IO_PORT_27_PIN_0 = 0x1B00,     ///< IO port 27 pin 0
+    BSP_IO_PORT_27_PIN_1 = 0x1B01,     ///< IO port 27 pin 1
+    BSP_IO_PORT_27_PIN_2 = 0x1B02,     ///< IO port 27 pin 2
+    BSP_IO_PORT_27_PIN_3 = 0x1B03,     ///< IO port 27 pin 3
+    BSP_IO_PORT_27_PIN_4 = 0x1B04,     ///< IO port 27 pin 4
+    BSP_IO_PORT_27_PIN_5 = 0x1B05,     ///< IO port 27 pin 5
+    BSP_IO_PORT_27_PIN_6 = 0x1B06,     ///< IO port 27 pin 6
+    BSP_IO_PORT_27_PIN_7 = 0x1B07,     ///< IO port 27 pin 7
+
+    BSP_IO_PORT_28_PIN_0 = 0x1C00,     ///< IO port 28 pin 0
+    BSP_IO_PORT_28_PIN_1 = 0x1C01,     ///< IO port 28 pin 1
+    BSP_IO_PORT_28_PIN_2 = 0x1C02,     ///< IO port 28 pin 2
+    BSP_IO_PORT_28_PIN_3 = 0x1C03,     ///< IO port 28 pin 3
+    BSP_IO_PORT_28_PIN_4 = 0x1C04,     ///< IO port 28 pin 4
+    BSP_IO_PORT_28_PIN_5 = 0x1C05,     ///< IO port 28 pin 5
+    BSP_IO_PORT_28_PIN_6 = 0x1C06,     ///< IO port 28 pin 6
+    BSP_IO_PORT_28_PIN_7 = 0x1C07,     ///< IO port 28 pin 7
+
+    BSP_IO_PORT_29_PIN_0 = 0x1D00,     ///< IO port 29 pin 0
+    BSP_IO_PORT_29_PIN_1 = 0x1D01,     ///< IO port 29 pin 1
+    BSP_IO_PORT_29_PIN_2 = 0x1D02,     ///< IO port 29 pin 2
+    BSP_IO_PORT_29_PIN_3 = 0x1D03,     ///< IO port 29 pin 3
+    BSP_IO_PORT_29_PIN_4 = 0x1D04,     ///< IO port 29 pin 4
+    BSP_IO_PORT_29_PIN_5 = 0x1D05,     ///< IO port 29 pin 5
+    BSP_IO_PORT_29_PIN_6 = 0x1D06,     ///< IO port 29 pin 6
+    BSP_IO_PORT_29_PIN_7 = 0x1D07,     ///< IO port 29 pin 7
+
+    BSP_IO_PORT_30_PIN_0 = 0x1E00,     ///< IO port 30 pin 0
+    BSP_IO_PORT_30_PIN_1 = 0x1E01,     ///< IO port 30 pin 1
+    BSP_IO_PORT_30_PIN_2 = 0x1E02,     ///< IO port 30 pin 2
+    BSP_IO_PORT_30_PIN_3 = 0x1E03,     ///< IO port 30 pin 3
+    BSP_IO_PORT_30_PIN_4 = 0x1E04,     ///< IO port 30 pin 4
+    BSP_IO_PORT_30_PIN_5 = 0x1E05,     ///< IO port 30 pin 5
+    BSP_IO_PORT_30_PIN_6 = 0x1E06,     ///< IO port 30 pin 6
+    BSP_IO_PORT_30_PIN_7 = 0x1E07,     ///< IO port 30 pin 7
+
+    BSP_IO_PORT_31_PIN_0 = 0x1F00,     ///< IO port 31 pin 0
+    BSP_IO_PORT_31_PIN_1 = 0x1F01,     ///< IO port 31 pin 1
+    BSP_IO_PORT_31_PIN_2 = 0x1F02,     ///< IO port 31 pin 2
+    BSP_IO_PORT_31_PIN_3 = 0x1F03,     ///< IO port 31 pin 3
+    BSP_IO_PORT_31_PIN_4 = 0x1F04,     ///< IO port 31 pin 4
+    BSP_IO_PORT_31_PIN_5 = 0x1F05,     ///< IO port 31 pin 5
+    BSP_IO_PORT_31_PIN_6 = 0x1F06,     ///< IO port 31 pin 6
+    BSP_IO_PORT_31_PIN_7 = 0x1F07,     ///< IO port 31 pin 7
+
+    BSP_IO_PORT_32_PIN_0 = 0x2000,     ///< IO port 32 pin 0
+    BSP_IO_PORT_32_PIN_1 = 0x2001,     ///< IO port 32 pin 1
+    BSP_IO_PORT_32_PIN_2 = 0x2002,     ///< IO port 32 pin 2
+    BSP_IO_PORT_32_PIN_3 = 0x2003,     ///< IO port 32 pin 3
+    BSP_IO_PORT_32_PIN_4 = 0x2004,     ///< IO port 32 pin 4
+    BSP_IO_PORT_32_PIN_5 = 0x2005,     ///< IO port 32 pin 5
+    BSP_IO_PORT_32_PIN_6 = 0x2006,     ///< IO port 32 pin 6
+    BSP_IO_PORT_32_PIN_7 = 0x2007,     ///< IO port 32 pin 7
+
+    BSP_IO_PORT_33_PIN_0 = 0x2100,     ///< IO port 33 pin 0
+    BSP_IO_PORT_33_PIN_1 = 0x2101,     ///< IO port 33 pin 1
+    BSP_IO_PORT_33_PIN_2 = 0x2102,     ///< IO port 33 pin 2
+    BSP_IO_PORT_33_PIN_3 = 0x2103,     ///< IO port 33 pin 3
+    BSP_IO_PORT_33_PIN_4 = 0x2104,     ///< IO port 33 pin 4
+    BSP_IO_PORT_33_PIN_5 = 0x2105,     ///< IO port 33 pin 5
+    BSP_IO_PORT_33_PIN_6 = 0x2106,     ///< IO port 33 pin 6
+    BSP_IO_PORT_33_PIN_7 = 0x2107,     ///< IO port 33 pin 7
+
+    BSP_IO_PORT_34_PIN_0 = 0x2200,     ///< IO port 34 pin 0
+    BSP_IO_PORT_34_PIN_1 = 0x2201,     ///< IO port 34 pin 1
+    BSP_IO_PORT_34_PIN_2 = 0x2202,     ///< IO port 34 pin 2
+    BSP_IO_PORT_34_PIN_3 = 0x2203,     ///< IO port 34 pin 3
+    BSP_IO_PORT_34_PIN_4 = 0x2204,     ///< IO port 34 pin 4
+    BSP_IO_PORT_34_PIN_5 = 0x2205,     ///< IO port 34 pin 5
+    BSP_IO_PORT_34_PIN_6 = 0x2206,     ///< IO port 34 pin 6
+    BSP_IO_PORT_34_PIN_7 = 0x2207,     ///< IO port 34 pin 7
+
+    BSP_IO_PORT_35_PIN_0 = 0x2300,     ///< IO port 35 pin 0
+    BSP_IO_PORT_35_PIN_1 = 0x2301,     ///< IO port 35 pin 1
+    BSP_IO_PORT_35_PIN_2 = 0x2302,     ///< IO port 35 pin 2
+    BSP_IO_PORT_35_PIN_3 = 0x2303,     ///< IO port 35 pin 3
+    BSP_IO_PORT_35_PIN_4 = 0x2304,     ///< IO port 35 pin 4
+    BSP_IO_PORT_35_PIN_5 = 0x2305,     ///< IO port 35 pin 5
+    BSP_IO_PORT_35_PIN_6 = 0x2306,     ///< IO port 35 pin 6
 } bsp_io_port_pin_t;
 
 /** Offset for pin safety region access */
 typedef enum e_bsp_io_region
 {
-    BSP_IO_REGION_NOT_SAFE = 0,                          ///< Non safety region
-    BSP_IO_REGION_SAFE     = BSP_IO_REGION_ADDRESS_DIFF, ///< Safety region
+    BSP_IO_REGION_NOT_SAFE           = 0,                                                 ///< Non safety region
+    BSP_IO_REGION_SAFE               = BSP_FEATURE_BSP_IO_REGION_ADDRESS_DIFF_SELECTABLE, ///< Safety region
+    BSP_IO_REGION_NOT_SAFE_DEDICATED = BSP_FEATURE_BSP_IO_REGION_ADDRESS_DIFF_DEDICATED,  ///< Non safety dedicated region
 } bsp_io_region_t;
 
 /***********************************************************************************************************************
@@ -345,11 +452,23 @@ extern volatile uint32_t g_protect_port_counter;
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_PinSet (bsp_io_region_t region, bsp_io_port_pin_t pin)
 {
-    /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
-     * the right side. */
-    ((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->P[pin >>
-                                                           BSP_IO_PRV_PORT_OFFSET] |=
-        (uint8_t) (1UL << (pin & BSP_IO_PRV_8BIT_MASK));
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (region == BSP_IO_REGION_NOT_SAFE_DEDICATED)
+    {
+        /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+         * the right side. */
+        R_PORT_NSR->P[pin >> 8] |=
+            (uint8_t) (1UL << (pin & BSP_IO_PRV_8BIT_MASK));
+    }
+    else
+#endif
+    {
+        /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+         * the right side. */
+        ((R_PORT_COMMON_Type *) (BSP_FEATURE_BSP_IO_SELECTABLE_NON_SAFETY_BASE + region))->P[pin >>
+                                                                                             BSP_IO_PRV_PORT_OFFSET] |=
+            (uint8_t) (1UL << (pin & BSP_IO_PRV_8BIT_MASK));
+    }
 }
 
 /*******************************************************************************************************************//**
@@ -360,10 +479,23 @@ __STATIC_INLINE void R_BSP_PinSet (bsp_io_region_t region, bsp_io_port_pin_t pin
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_PinClear (bsp_io_region_t region, bsp_io_port_pin_t pin)
 {
-    /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
-     * the right side. */
-    ((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->P[pin >> BSP_IO_PRV_PORT_OFFSET] &=
-        (uint8_t) (~(1UL << (pin & BSP_IO_PRV_8BIT_MASK)));
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (region == BSP_IO_REGION_NOT_SAFE_DEDICATED)
+    {
+        /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+         * the right side. */
+        R_PORT_NSR->P[pin >> 8] &=
+            (uint8_t) (~(1UL << (pin & BSP_IO_PRV_8BIT_MASK)));
+    }
+    else
+#endif
+    {
+        /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+         * the right side. */
+        ((R_PORT_COMMON_Type *) (BSP_FEATURE_BSP_IO_SELECTABLE_NON_SAFETY_BASE + region))->P[pin >>
+                                                                                             BSP_IO_PRV_PORT_OFFSET] &=
+            (uint8_t) (~(1UL << (pin & BSP_IO_PRV_8BIT_MASK)));
+    }
 }
 
 /*******************************************************************************************************************//**
@@ -374,11 +506,23 @@ __STATIC_INLINE void R_BSP_PinClear (bsp_io_region_t region, bsp_io_port_pin_t p
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_PinToggle (bsp_io_region_t region, bsp_io_port_pin_t pin)
 {
-    /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
-     * the right side. */
-    ((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->P[pin >>
-                                                           BSP_IO_PRV_PORT_OFFSET] ^=
-        (uint8_t) (1UL << (pin & BSP_IO_PRV_8BIT_MASK));
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (region == BSP_IO_REGION_NOT_SAFE_DEDICATED)
+    {
+        /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+         * the right side. */
+        R_PORT_NSR->P[pin >> 8] ^=
+            (uint8_t) (1UL << (pin & BSP_IO_PRV_8BIT_MASK));
+    }
+    else
+#endif
+    {
+        /* Casting to a uint8_t type is valid because only the lower 8 bits of pin(uint16_t) are extracted by masking on
+         * the right side. */
+        ((R_PORT_COMMON_Type *) (BSP_FEATURE_BSP_IO_SELECTABLE_NON_SAFETY_BASE + region))->P[pin >>
+                                                                                             BSP_IO_PRV_PORT_OFFSET] ^=
+            (uint8_t) (1UL << (pin & BSP_IO_PRV_8BIT_MASK));
+    }
 }
 
 /*******************************************************************************************************************//**
@@ -391,7 +535,17 @@ __STATIC_INLINE void R_BSP_PinToggle (bsp_io_region_t region, bsp_io_port_pin_t 
  **********************************************************************************************************************/
 __STATIC_INLINE uint32_t R_BSP_FastPinRead (bsp_io_region_t region, bsp_io_port_pin_t pin)
 {
-    return (uint32_t) ((((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->PIN[pin >> BSP_IO_PRV_PORT_OFFSET]) >>
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (region == BSP_IO_REGION_NOT_SAFE_DEDICATED)
+    {
+        return (uint32_t) ((R_PORT_NSR->PIN[pin >> 8]) >>
+                           (pin & BSP_IO_PRV_8BIT_MASK)) & 0x00000001UL;
+    }
+#endif
+
+    return (uint32_t) ((((R_PORT_COMMON_Type *) (BSP_FEATURE_BSP_IO_SELECTABLE_NON_SAFETY_BASE + region))->PIN[pin >>
+                                                                                                               BSP_IO_PRV_PORT_OFFSET
+                        ]) >>
                        (pin & BSP_IO_PRV_8BIT_MASK)) & 0x00000001UL;
 }
 
@@ -405,7 +559,18 @@ __STATIC_INLINE uint32_t R_BSP_FastPinRead (bsp_io_region_t region, bsp_io_port_
  **********************************************************************************************************************/
 __STATIC_INLINE void R_BSP_PortWrite (bsp_io_region_t region, bsp_io_port_t port, uint8_t set_value)
 {
-    ((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->P[port >> BSP_IO_PRV_PORT_OFFSET] = set_value;
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (region == BSP_IO_REGION_NOT_SAFE_DEDICATED)
+    {
+        R_PORT_NSR->P[port >> 8] = set_value;
+    }
+    else
+#endif
+    {
+        ((R_PORT_COMMON_Type *) (BSP_FEATURE_BSP_IO_SELECTABLE_NON_SAFETY_BASE + region))->P[port >>
+                                                                                             BSP_IO_PRV_PORT_OFFSET] =
+            set_value;
+    }
 }
 
 /*******************************************************************************************************************//**
@@ -419,7 +584,16 @@ __STATIC_INLINE void R_BSP_PortWrite (bsp_io_region_t region, bsp_io_port_t port
  **********************************************************************************************************************/
 __STATIC_INLINE uint32_t R_BSP_PortRead (bsp_io_region_t region, bsp_io_port_t port)
 {
-    return (uint32_t) (((R_PORT_COMMON_Type *) (R_PORT_NSR_BASE + region))->PIN[port >> BSP_IO_PRV_PORT_OFFSET]);
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (region == BSP_IO_REGION_NOT_SAFE_DEDICATED)
+    {
+        return (uint32_t) (R_PORT_NSR->PIN[port >> 8]);
+    }
+#endif
+
+    return (uint32_t) (((R_PORT_COMMON_Type *) (BSP_FEATURE_BSP_IO_SELECTABLE_NON_SAFETY_BASE + region))->PIN[port >>
+                                                                                                              BSP_IO_PRV_PORT_OFFSET
+                       ]);
 }
 
 /*******************************************************************************************************************//**
@@ -493,8 +667,9 @@ __STATIC_INLINE void R_BSP_PinAccessDisable (void)
  *
  * @param[in]  pin                   The pin
  *
- * @retval BSP_IO_REGION_SAFE        IO region of the pin is safety
- * @retval BSP_IO_REGION_NOT_SAFE    IO region of the pin is non-safety
+ * @retval BSP_IO_REGION_SAFE                   IO region of the pin is safety
+ * @retval BSP_IO_REGION_NOT_SAFE               IO region of the pin is non-safety
+ * @retval BSP_IO_REGION_NOT_SAFE_DEDICATED     IO region of the pin is non-safety (dedicated)
  *
  * This function can be given as an argument to pin/port access functions described below. When used in a function
  * starting with R_BSP_Port, any one pin in the port should be given as an argument to this function.
@@ -507,18 +682,37 @@ __STATIC_INLINE void R_BSP_PinAccessDisable (void)
  **********************************************************************************************************************/
 __STATIC_INLINE bsp_io_region_t R_BSP_IoRegionGet (bsp_io_port_pin_t pin)
 {
+    uint32_t aselp = 0;
+
     /* Casting to a uint32_t type is valid because the range of values represented by uint32_t is not over in the
      * calculation process of the right-hand side. */
-    uint32_t aselp =
+#if BSP_FEATURE_IOPORT_HAS_NONSAFETY_DEDICATED_PORT
+    if (BSP_FEATURE_BSP_IO_SELECTABLE_NON_SAFETY_PORT > (uint32_t) (pin >> BSP_IO_PRV_PORT_OFFSET))
+    {
+        aselp =
+            ((uint32_t) ((R_PORT_SRS->RSELP[pin >> BSP_IO_PRV_PORT_OFFSET]) >> (pin & BSP_IO_PRV_8BIT_MASK)) &
+             0x00000001UL);
+    }
+    else
+    {
+        aselp = (uint32_t) BSP_IO_REGION_NOT_SAFE_DEDICATED;
+    }
+#else
+    aselp =
         ((uint32_t) ((R_PTADR->RSELP[pin >> BSP_IO_PRV_PORT_OFFSET]) >> (pin & BSP_IO_PRV_8BIT_MASK)) & 0x00000001UL);
+#endif
 
     if (0U == aselp)
     {
         return BSP_IO_REGION_SAFE;
     }
-    else
+    else if (1U == aselp)
     {
         return BSP_IO_REGION_NOT_SAFE;
+    }
+    else
+    {
+        return BSP_IO_REGION_NOT_SAFE_DEDICATED;
     }
 }
 

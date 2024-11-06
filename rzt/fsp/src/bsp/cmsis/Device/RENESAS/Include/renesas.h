@@ -25,6 +25,8 @@
 extern "C" {
  #endif
 
+ #include "../../../../mcu/all/bsp_compiler_support.h"
+
 /* Define compiler macros for CPU architecture, used in CMSIS 5. */
  #if defined(__ICCARM__)
   #if __ARM_ARCH_6M__ || __ARM_ARCH_7M__ || __ARM_ARCH_7EM__ || __ARM_ARCH_8M_BASE__ || __ARM_ARCH_8M_MAIN__
@@ -65,6 +67,8 @@ extern "C" {
     #define __ARM_ARCH_8M_MAIN__    1
    #elif defined(__ARM8R__) && (__CORE__ == __ARM8R__)
     #define __ARM_ARCH_8R__         1
+   #elif defined(__ARM8A__) && (__CORE__ == __ARM8A__)
+    #define __ARM_ARCH_8A__         1
    #else
     #error "Unknown target."
    #endif
@@ -96,6 +100,8 @@ extern "C" {
   #define RENESAS_CORTEX_M33
  #elif __ARM_ARCH_8R__
   #define RENESAS_CORTEX_R52
+ #elif __ARM_ARCH_8A__ || __ARM_ARCH_8A
+  #define RENESAS_CORTEX_A55
  #else
   #warning Unsupported Architecture
  #endif
@@ -106,6 +112,8 @@ extern "C" {
   #include "R9A07G074.h"
  #elif BSP_MCU_GROUP_RZT2ME
   #include "R9A07G075M29.h"
+ #elif BSP_MCU_GROUP_RZT2H
+  #include "R9A09G077.h"
  #else
   #warning Unsupported MCU
  #endif

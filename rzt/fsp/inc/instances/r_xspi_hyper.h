@@ -99,6 +99,13 @@ typedef enum e_xspi_hyper_prefetch_function
     XSPI_HYPER_PREFETCH_FUNCTION_ENABLE  = 0x01, ///< Prefetch function enable
 } xspi_hyper_prefetch_function_t;
 
+/* IO voltage settings */
+typedef enum e_xspi_hyper_io_voltage
+{
+    XSPI_HYPER_IO_VOLTAGE_1_8V = 0x00, ///< IO voltage 1.8V
+    XSPI_HYPER_IO_VOLTAGE_3_3V = 0x01, ///< IO voltage 3.3V
+} xspi_hyper_io_voltage_t;
+
 /* Memory mapped timing */
 typedef struct st_hyper_cs_timing_setting
 {
@@ -126,6 +133,7 @@ typedef struct st_xspi_hyper_extended_cfg
     xspi_hyper_memory_size_t       memory_size;                  ///< Size of memory device
     xspi_hyper_device_type_t       memory_type;                  ///< Type of memory device
     xspi_hyper_prefetch_function_t prefetch_en;                  ///< Prefetch function settings
+    xspi_hyper_io_voltage_t        io_voltage;                   ///< Voltage setting of xSPI IO domains
     uint32_t  data_latching_delay_clock;                         ///< Specify delay between DQ and RWDS. Set to 0 to auto-callibrate.
     uint8_t * p_autocalibration_preamble_pattern_addr;           ///< HyperBus memory address holding the preamble pattern
     xspi_hyper_cs_timing_setting_t const * p_cs_timing_settings; ///< Chip select bus timing settings

@@ -15,25 +15,7 @@
  *********************************************************************************************************************/
 
 /* "ICUI" in ASCII, used to determine if channel is open. */
-#define ICU_INTER_CPU_IRQ_OPEN                   (0x49435549U)
-
-#define ICU_INTER_CPU_IRQ_PRV_INTCPU0_CHANNEL    (0U)
-#define ICU_INTER_CPU_IRQ_PRV_INTCPU1_CHANNEL    (1U)
-#define ICU_INTER_CPU_IRQ_PRV_INTCPU2_CHANNEL    (2U)
-#define ICU_INTER_CPU_IRQ_PRV_INTCPU3_CHANNEL    (3U)
-#define ICU_INTER_CPU_IRQ_PRV_INTCPU4_CHANNEL    (4U)
-#define ICU_INTER_CPU_IRQ_PRV_INTCPU5_CHANNEL    (5U)
-#define ICU_INTER_CPU_IRQ_PRV_INTCPU6_CHANNEL    (6U)
-#define ICU_INTER_CPU_IRQ_PRV_INTCPU7_CHANNEL    (7U)
-
-#define ICU_INTER_CPU_IRQ_INTCPU0_MASK           (0x01U)
-#define ICU_INTER_CPU_IRQ_INTCPU1_MASK           (0x02U)
-#define ICU_INTER_CPU_IRQ_INTCPU2_MASK           (0x04U)
-#define ICU_INTER_CPU_IRQ_INTCPU3_MASK           (0x08U)
-#define ICU_INTER_CPU_IRQ_INTCPU4_MASK           (0x10U)
-#define ICU_INTER_CPU_IRQ_INTCPU5_MASK           (0x20U)
-#define ICU_INTER_CPU_IRQ_INTCPU6_MASK           (0x01U)
-#define ICU_INTER_CPU_IRQ_INTCPU7_MASK           (0x02U)
+#define ICU_INTER_CPU_IRQ_OPEN    (0x49435549U)
 
 /**********************************************************************************************************************
  * Typedef definitions
@@ -95,7 +77,6 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Open (icu_inter_cpu_irq_ctrl_t * const      p_ctrl
 #if ICU_INTER_CPU_IRQ_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl != NULL);
     FSP_ASSERT(p_cfg != NULL);
-    FSP_ASSERT(p_cfg->p_callback != NULL);
     FSP_ERROR_RETURN(0 != ((1U << p_cfg->channel) & BSP_FEATURE_ICU_INTER_CPU_IRQ_CHANNELS_MASK),
                      FSP_ERR_IP_CHANNEL_NOT_PRESENT);
 
@@ -150,7 +131,11 @@ fsp_err_t R_ICU_INTER_CPU_IRQ_Generate (icu_inter_cpu_irq_ctrl_t * const p_ctrl)
     }
     else if (BSP_FEATURE_ICU_INTER_CPU_IRQ_S_SWINT_MASK & swint)
     {
+#if (1U == BSP_FEATURE_ICU_INTER_CPU_IRQ_CHANNEL)
         R_ICU->S_SWINT = swint >> BSP_FEATURE_ICU_INTER_CPU_IRQ_S_SWINT_SHIFT;
+#elif (2U == BSP_FEATURE_ICU_INTER_CPU_IRQ_CHANNEL)
+        R_ICU_S->S_SWINT = swint >> BSP_FEATURE_ICU_INTER_CPU_IRQ_S_SWINT_SHIFT;
+#endif
     }
     else
     {

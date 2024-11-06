@@ -45,7 +45,11 @@
 #include "NetworkBufferManagement.h"
 
 /* Renesas includes. */
-#include "r_gmac.h"
+#if 1U == BSP_FEATURE_GMAC_B_SUPPORTED
+ #include "r_gmac_b.h"
+#else
+ #include "r_gmac.h"
+#endif
 
 /***********************************************************************************************************************
  * Macro definitions

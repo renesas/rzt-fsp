@@ -45,12 +45,14 @@ typedef struct st_bsp_leds
  * found in the bsp_leds_t structure. */
 typedef enum e_bsp_led
 {
+#if defined(BSP_CFG_CORE_CR52)
     BSP_LED_RLED0 = 0,                 ///< Green
     BSP_LED_RLED1 = 1,                 ///< Yellow
     BSP_LED_RLED2 = 2,                 ///< Red
     BSP_LED_RLED3 = 3,                 ///< Red
     BSP_LED_RLED4 = 4,                 ///< Green
     BSP_LED_RLED5 = 5,                 ///< Green
+#endif
 } bsp_led_t;
 
 /***********************************************************************************************************************

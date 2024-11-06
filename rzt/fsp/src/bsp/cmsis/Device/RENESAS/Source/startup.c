@@ -28,7 +28,10 @@
 extern void bsp_master_mpu_init(void);
 extern void bsp_global_system_counter_init(void);
 
- #if BSP_FEATURE_TFU_SUPPORTED
+#endif
+
+#if defined(BSP_CFG_CORE_CR52)
+ #if (BSP_FEATURE_TFU_SUPPORTED & BSP_CFG_USE_TFU_MATHLIB)
 extern void bsp_tfu_init(void);
 
  #endif
@@ -43,11 +46,8 @@ extern void bsp_static_constructor_init(void);
 
 #if !(BSP_CFG_RAM_EXECUTION)
 extern void bsp_application_bss_init(void);
-
- #if (1 == _RZT_ORDINAL)
 extern void bsp_copy_to_ram(void);
 
- #endif
 #endif
 
 #if !BSP_CFG_PORT_PROTECT
@@ -107,6 +107,22 @@ void SystemInit (void)
     bsp_loader_bss_init();
 #endif
 
+#if BSP_FEATURE_ADDRESS_EXPANDER_SUPPORTED
+ #if (1 == _RZT_ORDINAL)
+
+    /* Initialize the Address Expander settings. */
+    bsp_address_expander_init();
+ #endif
+#endif
+
+#if BSP_FEATURE_TZC400_SUPPORTED
+ #if (1 == _RZT_ORDINAL)
+
+    /* Initialize the TZC-400 settings. */
+    bsp_tzc_400_cfg();
+ #endif
+#endif
+
     /* Initialize SystemCoreClock variable. */
     SystemCoreClockUpdate();
 
@@ -118,13 +134,10 @@ void SystemInit (void)
     /* Clear bss section in internal RAM. */
     bsp_application_bss_init();
 
- #if (1 == _RZT_ORDINAL)
-
     /* Copy the application program from external Flash to internal RAM.
      * In the case of multi-core operation, copies each section (vector, loader(program/data), user(program/data)) of
      * the secondary core (or later). */
     bsp_copy_to_ram();
- #endif
 #endif
 
 #if BSP_CFG_C_RUNTIME_INIT
@@ -163,8 +176,8 @@ void SystemInit (void)
     /* Initialize GIC interrupts. */
     bsp_irq_cfg();
 
-#if (1 == _RZT_ORDINAL)
- #if BSP_FEATURE_TFU_SUPPORTED
+#if defined(BSP_CFG_CORE_CR52)
+ #if (BSP_FEATURE_TFU_SUPPORTED & BSP_CFG_USE_TFU_MATHLIB)
 
     /* Initialize the TFU settings. */
     bsp_tfu_init();

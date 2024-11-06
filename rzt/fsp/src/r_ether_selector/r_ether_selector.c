@@ -44,14 +44,20 @@
 #define ETHER_SELECTOR_CONV_BIT_REF_CLK_OUT        (0x10) /* RE_CLK  output */
 #define ETHER_SELECTOR_CONV_BIT_REF_CLK_MASK       (0x10) /* Mask of Converter REF_CLK */
 
-#if defined(BSP_MCU_GROUP_RZT2L)
+#if defined(BSP_MCU_GROUP_RZT2H) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2ME)
+ #define ETHER_SELECTOR_MODCTRL_BIT_SWMODE_MASK    (0x07) /* Mask of SW_MODE[2:0] */
+#else /* RZT2L */
  #define ETHER_SELECTOR_MODCTRL_BIT_SWMODE_MASK    (0x01) /* Mask of SW_MODE[0] */
-#else
- #define ETHER_SELECTOR_MODCTRL_BIT_SWMODE_MASK    (0x03) /* Mask of SW_MODE[1:0] */
 #endif
+
 #define ETHER_SELECTOR_PHYLNK_BIT_SWLINK_MASK      (0x07) /* Mask of SWLINK[2:0] */
 #define ETHER_SELECTOR_PHYLNK_BIT_CATLNK_MASK      (0x07) /* Mask of CATLNK[2:0] */
-#define ETHER_SELECTOR_CONVRST_BIT_PHYIR_MASK      (0x07) /* Mask of PHYIR[2:0] */
+
+#if defined(BSP_MCU_GROUP_RZT2H)
+ #define ETHER_SELECTOR_CONVRST_BIT_PHYIR_MASK     (0x0F) /* Mask of PHYIR[3:0] */
+#else /* RZT2L, RZT2M */
+ #define ETHER_SELECTOR_CONVRST_BIT_PHYIR_MASK     (0x07) /* Mask of PHYIR[2:0] */
+#endif
 
 /* Key code for PRCMD register */
 #define ETHER_SELECTOR_PRCMD_UNLOCK1               (0x000000A5U)
@@ -118,11 +124,14 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     uint32_t            convrst;
     uint8_t             port;
 
-    port = p_cfg->channel;
-
 #if ETHER_SELECTOR_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_cfg);
+#endif
+
+    port = p_cfg->channel;
+
+#if ETHER_SELECTOR_CFG_PARAM_CHECKING_ENABLE
     FSP_ERROR_RETURN((BSP_FEATURE_ETHSS_MAX_PORTS > port), FSP_ERR_INVALID_CHANNEL);
     if (ETHER_SELECTOR_SPEED_1000_MBPS == p_instance_ctrl->p_cfg->speed)
     {
@@ -176,6 +185,14 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
             p_reg_convctrl = (uint32_t *) &p_reg_ethss->CONVCTRL[2];
             break;
         }
+
+#if defined(BSP_MCU_GROUP_RZT2H)
+        case 3:
+        {
+            p_reg_convctrl = (uint32_t *) &p_reg_ethss->CONVCTRL[3];
+            break;
+        }
+#endif
     }
 
     convctrl  = *p_reg_convctrl;
@@ -324,6 +341,14 @@ fsp_err_t R_ETHER_SELECTOR_ConverterSet (ether_selector_ctrl_t * const p_ctrl,
             p_reg_convctrl = (uint32_t *) &p_reg_ethss->CONVCTRL[2];
             break;
         }
+
+#if defined(BSP_MCU_GROUP_RZT2H)
+        case 3:
+        {
+            p_reg_convctrl = (uint32_t *) &p_reg_ethss->CONVCTRL[3];
+            break;
+        }
+#endif
     }
 
     convctrl  = *p_reg_convctrl;

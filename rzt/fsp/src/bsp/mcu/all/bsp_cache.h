@@ -13,6 +13,8 @@
 
 #if defined(BSP_CFG_CORE_CR52)
  #include "cr/bsp_cache_core.h"
+#elif defined(BSP_CFG_CORE_CA55)
+ #include "ca/bsp_cache_core.h"
 #endif
 
 /** Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */

@@ -15,8 +15,70 @@
  **********************************************************************************************************************/
 
 /* "CGC" in ASCII, used to determine if the module is open. */
-#define CGC_OPEN              (0x00434743U)
-#define CGC_PRV_NUM_CLOCKS    ((uint8_t) CGC_CLOCK_PLL1 + 1U)
+#define CGC_OPEN                                       (0x00434743U)
+
+#if 2 == BSP_FEATURE_CGC_SCKCR_TYPE
+ #define CGC_PRV_SCKCR3_SPIASYNCSEL_VALUE_MASK         (0x03U)
+ #define CGC_PRV_SCKCR3_SCIASYNCSEL_VALUE_MASK         (0x03U)
+ #define CGC_PRV_SCKCR3_LCDCDIVSEL_VALUE_MASK          (0x0fU)
+ #define CGC_PRV_SCKCR4_SCIEASYNCSEL_VALUE_MASK        (0x03U)
+ #define CGC_PRV_SCKCR4_ENCOUTCLK_VALUE_MASK           (0x01U)
+#endif
+
+#if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED || BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+ #define CGC_PRV_MFR_MIN                               (0x0)
+ #define CGC_PRV_MRR_MIN                               (0x1)
+ #define CGC_PRV_MFR_MMR_MIN                           (0x0)
+ #define CGC_PRV_MODULATION_FREQUENCY_MIN_HZ           (30000)
+ #define CGC_PRV_MODULATION_RATE_MIN_PERCENTAGE        (0)
+
+ #define CGC_PRV_MFR_MAX                               (0xFF)
+ #define CGC_PRV_MRR_MAX                               (0x3F)
+ #define CGC_PRV_MFR_MMR_MAX                           (0x200)
+ #define CGC_PRV_MODULATION_FREQUENCY_MAX_HZ           (150000)
+ #define CGC_PRV_MODULATION_RATE_MAX_PERCENTAGE        (5)
+
+ #define CGC_PRV_MAIN_CLOCK_OSC_FREQUENCY_HZ           (25000000)
+ #define CGC_PRV_SSC_MODULATION_FREQUENCY_DIV_VALUE    (32)
+
+/* The divide number in the Modulation rate formula of PLL0 is obtained by 96 * 2^6. */
+ #define CGC_PRV_SSC_MODULATION_RATE_PLL0_DIV_VALUE    (6144)
+
+/* The divide number in the Modulation rate formula of PLL0 is obtained by 64 * 2^6. */
+ #define CGC_PRV_SSC_MODULATION_RATE_PLL2_DIV_VALUE    (4096)
+ #define CGC_PRV_PERCENTAGE_TRANSLATION                (100)
+#endif
+
+#if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+ #define CGC_PRV_P_DIVIDER_MIN                         (0x1)
+ #define CGC_PRV_M_DIVIDER_MIN                         (0x040)
+ #define CGC_PRV_S_DIVIDER_MIN                         (0x0)
+ #define CGC_PRV_K_DIVIDER_MIN                         (0x0000)
+ #define CGC_PRV_REFERENCE_FREQUENCY_MIN_MHZ           (6)
+ #define CGC_PRV_VCO_FREQUENCY_MIN_MHZ                 (1600)
+ #define CGC_PRV_PLL_OUTPUT_FREQUENCY_MIN_MHZ          (25)
+
+ #define CGC_PRV_P_DIVIDER_MAX                         (0x3F)
+ #define CGC_PRV_M_DIVIDER_MAX                         (0x3FF)
+ #define CGC_PRV_S_DIVIDER_MAX                         (0x6)
+ #define CGC_PRV_K_DIVIDER_MAX                         (0x7FFF)
+ #define CGC_PRV_REFERENCE_FREQUENCY_MAX_MHZ           (25)
+ #define CGC_PRV_VCO_FREQUENCY_MAX_MHZ                 (3200)
+ #define CGC_PRV_PLL_OUTPUT_FREQUENCY_MAX_MHZ          (430)
+
+ #define CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ              (48)
+ #define CGC_PRV_K_DIVIDER_DIV_VALUE                   (65536)
+#endif
+
+#if 2 == BSP_FEATURE_CGC_PLL_START_PROCESS_TYPE
+ #define CGC_PRV_PMSEL_REGISTER_ADDRESS                (0x81280010)
+ #define CGC_PRV_PMSEL_PMSEL0MON_SHIFT                 (9)
+ #define CGC_PRV_PMSEL_PMSEL1MON_SHIFT                 (10)
+ #define CGC_PRV_PMSEL_PMSEL2MON_SHIFT                 (11)
+ #define CGC_PRV_PMSEL_PMSEL3MON_SHIFT                 (12)
+ #define CGC_PRV_PMSEL_PMSEL4MON_SHIFT                 (13)
+ #define CGC_PRV_PMSEL_PMSELMON_MASK                   (0x01)
+#endif
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -32,40 +94,77 @@ typedef enum e_cgc_prv_clock_state
 /***********************************************************************************************************************
  * Private function prototypes
  **********************************************************************************************************************/
-static fsp_err_t             r_cgc_clock_check(cgc_clock_t const clock_source);
-static bool                  r_cgc_stabilization_check(cgc_clock_t clock, cgc_prv_clock_state_t status);
-static void                  r_cgc_clock_change(cgc_clock_t clock, cgc_clock_change_t state);
+static fsp_err_t r_cgc_clock_check(cgc_clock_t const clock_source);
+static bool      r_cgc_stabilization_check(cgc_clock_t clock, cgc_prv_clock_state_t status);
+
+#if 2 == BSP_FEATURE_CGC_PLL_START_PROCESS_TYPE
+static bool r_cgc_pll_domain_clock_source_check(cgc_clock_t clock);
+
+#endif
+static void r_cgc_clock_change(cgc_clock_t clock, cgc_clock_change_t state);
+
+#if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED || BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+static void r_cgc_pll_ssc_cfg(cgc_clock_t clock, cgc_pll_ssc_cfg_t const * p_pll_ssc_cfg);
+
+#endif
+#if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+static void r_cgc_pll_vco_cfg(cgc_clock_t clock, cgc_pll_vco_cfg_t const * pll_vco_cfg);
+
+#endif
 static cgc_prv_clock_state_t r_cgc_clock_run_state_get(cgc_clock_t clock);
 
 #if CGC_CFG_PARAM_CHECKING_ENABLE
 static fsp_err_t r_cgc_common_parameter_checking(cgc_instance_ctrl_t * p_instance_ctrl);
 
+ #if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED || BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+static fsp_err_t r_cgc_pll_ssc_parameter_checking(cgc_pll_ssc_cfg_t const * p_pll_ssc_setting, cgc_clock_t clock);
+
+ #endif
+ #if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+static fsp_err_t r_cgc_pll3_vco_parameter_checking(cgc_pll_vco_cfg_t const * p_pll_vco_setting);
+
+ #endif
 #endif
 
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
 
-static uint32_t volatile * const gp_cgc_clock_stp_registers[CGC_PRV_NUM_CLOCKS] =
+static uint32_t volatile * const gp_cgc_clock_stp_registers[BSP_FEATURE_CGC_CLOCK_SOURCE_NUM] =
 {
     [CGC_CLOCK_LOCO] = (uint32_t *) BSP_FEATURE_CGC_LOCO_CONTROL_ADDRESS,
-    [CGC_CLOCK_PLL0] = NULL,           // PLL0 is always running
+    [CGC_CLOCK_PLL0] = (uint32_t *) BSP_FEATURE_CGC_PLL0_CONTROL_ADDRESS,
     [CGC_CLOCK_PLL1] = (uint32_t *) BSP_FEATURE_CGC_PLL1_CONTROL_ADDRESS,
+#if 3U < BSP_FEATURE_CGC_CLOCK_SOURCE_NUM
+    [CGC_CLOCK_PLL2] = (uint32_t *) BSP_FEATURE_CGC_PLL2_CONTROL_ADDRESS,
+    [CGC_CLOCK_PLL3] = (uint32_t *) BSP_FEATURE_CGC_PLL3_CONTROL_ADDRESS,
+    [CGC_CLOCK_PLL4] = NULL,           // PLL0 is always running
+#endif
 };
 
 /* How long of a software delay is required after starting each clock before activating it as the system clock. */
-static const uint32_t g_cgc_software_wait_us[CGC_PRV_NUM_CLOCKS] =
+static const uint32_t g_cgc_software_wait_us[BSP_FEATURE_CGC_CLOCK_SOURCE_NUM] =
 {
     [CGC_CLOCK_LOCO] = BSP_FEATURE_CGC_LOCO_STABILIZATION_MAX_US,
     [CGC_CLOCK_PLL0] = 0U,             // PLL0 has a stabilization wait flag
     [CGC_CLOCK_PLL1] = 0U,             // PLL1 has a stabilization wait flag
+#if 3U < BSP_FEATURE_CGC_CLOCK_SOURCE_NUM
+    [CGC_CLOCK_PLL2] = 0U,             // PLL2 has a stabilization wait flag
+    [CGC_CLOCK_PLL3] = 0U,             // PLL3 has a stabilization wait flag
+    [CGC_CLOCK_PLL4] = 0U,             // PLL4 has a stabilization wait flag
+#endif
 };
 
-static const bsp_reg_protect_t g_cgc_register_protect_settings[CGC_PRV_NUM_CLOCKS] =
+static const bsp_reg_protect_t g_cgc_register_protect_settings[BSP_FEATURE_CGC_CLOCK_SOURCE_NUM] =
 {
     [CGC_CLOCK_LOCO] = BSP_REG_PROTECT_CGC,
-    [CGC_CLOCK_PLL0] = (bsp_reg_protect_t) NULL, // PLL0 is always running
-    [CGC_CLOCK_PLL1] = BSP_REG_PROTECT_LPC_RESET,
+    [CGC_CLOCK_PLL0] = (bsp_reg_protect_t) BSP_FEATURE_CGC_PLL0_PROTECT,
+    [CGC_CLOCK_PLL1] = (bsp_reg_protect_t) BSP_FEATURE_CGC_PLL1_PROTECT,
+#if 3U < BSP_FEATURE_CGC_CLOCK_SOURCE_NUM
+    [CGC_CLOCK_PLL2] = (bsp_reg_protect_t) BSP_FEATURE_CGC_PLL2_PROTECT,
+    [CGC_CLOCK_PLL3] = (bsp_reg_protect_t) BSP_FEATURE_CGC_PLL3_PROTECT,
+    [CGC_CLOCK_PLL4] = (bsp_reg_protect_t) NULL, // PLL4 is always running
+#endif
 };
 
 /***********************************************************************************************************************
@@ -154,10 +253,25 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
     FSP_ASSERT(NULL != p_clock_cfg);
 
+ #if 1U == BSP_FEATURE_CGC_SCKCR_TYPE
+
     /* ATCM wait should be 1-wait when CPU0CLK is over 400MHz */
     FSP_ERROR_RETURN(!((0 == R_TCMAW->CPU0WAIT_b.CPU0WAIT) &&
                        (CGC_CPU_CLOCK_DIV_1 == p_clock_cfg->divider_cfg.sckcr2_b.fsel0cr52)),
                      FSP_ERR_INVALID_ARGUMENT);
+ #else
+
+    /* ATCM wait should be 1-wait when CPU0CLK is over 500MHz */
+    FSP_ERROR_RETURN(!((0 == R_TCMAW->CPU0WAIT_b.CPU0WAIT) &&
+                       (CGC_CPU_CLOCK_DIV_1 == p_clock_cfg->divider_cfg.sckcr2_b.cr52cpu0)),
+                     FSP_ERR_INVALID_ARGUMENT);
+
+    /* ATCM wait should be 1-wait when CPU1CLK is over 500MHz */
+    FSP_ERROR_RETURN(!((0 == R_TCMAW->CPU1WAIT_b.CPU1WAIT) &&
+                       (CGC_CPU_CLOCK_DIV_1 == p_clock_cfg->divider_cfg.sckcr2_b.cr52cpu1)),
+                     FSP_ERR_INVALID_ARGUMENT);
+ #endif
+ #if BSP_FEATURE_CGC_PLL1_STANDBY_STATE_SUPPORTED
 
     /* Make sure the oscillator is stable. */
     FSP_ERROR_RETURN(!((0 == R_SYSC_S->PLL1MON_b.PLL1MON) &&
@@ -176,7 +290,28 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
                            (CGC_PHY_CLOCK_PLL1 == p_clock_cfg->divider_cfg.sckcr_b.phy_sel)),
                          FSP_ERR_INVALID_ARGUMENT);
     }
+ #endif
+ #if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED
 
+    /* Set values should be within constraints. See RZ microprocessor User's Manual section "PLL0 and PLL2 SSC setting and constraints" */
+
+    err = r_cgc_pll_ssc_parameter_checking(&(p_clock_cfg->pll0_ssc_cfg), CGC_CLOCK_PLL0);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+ #endif
+ #if BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+
+    /* Set values should be within constraints. See RZ microprocessor User's Manual section "PLL0 and PLL2 SSC setting and constraints" */
+
+    err = r_cgc_pll_ssc_parameter_checking(&(p_clock_cfg->pll2_ssc_cfg), CGC_CLOCK_PLL2);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+ #endif
+ #if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+
+    /* Set values should be within constraints. See RZ microprocessor User's Manual section "PLL3 setting and constraints" */
+
+    err = r_cgc_pll3_vco_parameter_checking(&(p_clock_cfg->pll3_vco_cfg));
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+ #endif
 #else
     FSP_PARAMETER_NOT_USED(p_instance_ctrl);
     FSP_PARAMETER_NOT_USED(err);       // unused in some build configurations
@@ -185,14 +320,47 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
     cgc_divider_cfg_t clock_cfg;
     clock_cfg.sckcr_w  = p_clock_cfg->divider_cfg.sckcr_w;
     clock_cfg.sckcr2_w = p_clock_cfg->divider_cfg.sckcr2_w;
+#if 2U == BSP_FEATURE_CGC_SCKCR_TYPE
+    clock_cfg.sckcr3_w = p_clock_cfg->divider_cfg.sckcr3_w;
+    clock_cfg.sckcr4_w = p_clock_cfg->divider_cfg.sckcr4_w;
+#else
+    uint32_t sckcr3 = 0;               // dummy
+    uint32_t sckcr4 = 0;               // dummy
+#endif
 
-    cgc_clock_change_t options[CGC_PRV_NUM_CLOCKS];
+    cgc_clock_change_t options[BSP_FEATURE_CGC_CLOCK_SOURCE_NUM];
     options[CGC_CLOCK_LOCO] = p_clock_cfg->loco_state;
-    options[CGC_CLOCK_PLL0] = CGC_CLOCK_CHANGE_NONE;
-    options[CGC_CLOCK_PLL1] = p_clock_cfg->pll1_state;
+
+    options[CGC_CLOCK_PLL0] =
+#if BSP_FEATURE_CGC_PLL0_STANDBY_STATE_SUPPORTED & !defined(BSP_CFG_CORE_CA55)
+        p_clock_cfg->pll0_state;
+#else
+        CGC_CLOCK_CHANGE_NONE;
+#endif
+    options[CGC_CLOCK_PLL1] =
+#if BSP_FEATURE_CGC_PLL1_STANDBY_STATE_SUPPORTED
+        p_clock_cfg->pll1_state;
+#else
+        CGC_CLOCK_CHANGE_NONE;
+#endif
+#if 3U < BSP_FEATURE_CGC_CLOCK_SOURCE_NUM
+    options[CGC_CLOCK_PLL2] =
+ #if BSP_FEATURE_CGC_PLL2_STANDBY_STATE_SUPPORTED
+        p_clock_cfg->pll2_state;
+ #else
+        CGC_CLOCK_CHANGE_NONE;
+ #endif
+    options[CGC_CLOCK_PLL3] =
+ #if BSP_FEATURE_CGC_PLL3_STANDBY_STATE_SUPPORTED
+        p_clock_cfg->pll3_state;
+ #else
+        CGC_CLOCK_CHANGE_NONE;
+ #endif
+    options[CGC_CLOCK_PLL4] = CGC_CLOCK_CHANGE_NONE;
+#endif
 
     /* Start or stop clocks based on the input configuration. */
-    for (int32_t i = (CGC_PRV_NUM_CLOCKS - 1); i >= 0; i--)
+    for (int32_t i = (BSP_FEATURE_CGC_CLOCK_SOURCE_NUM - 1); i >= 0; i--)
     {
         cgc_clock_change_t clock_state     = options[i];
         cgc_clock_t        clock_to_change = (cgc_clock_t) i;
@@ -206,6 +374,30 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
         else if (CGC_CLOCK_CHANGE_START == clock_state)
         {
             R_BSP_RegisterProtectDisable(g_cgc_register_protect_settings[clock_to_change]);
+#if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED
+
+            /* Configure SSC before releasing PLL. */
+            if ((clock_to_change == CGC_CLOCK_PLL0) && (R_SYSC_S->PLL0EN == 0))
+            {
+                r_cgc_pll_ssc_cfg(clock_to_change, &(p_clock_cfg->pll0_ssc_cfg));
+            }
+#endif
+#if BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+
+            /* Configure SSC before releasing PLL. */
+            if ((clock_to_change == CGC_CLOCK_PLL2) && (R_SYSC_S->PLL2EN == 0))
+            {
+                r_cgc_pll_ssc_cfg(clock_to_change, &(p_clock_cfg->pll2_ssc_cfg));
+            }
+#endif
+#if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+
+            /* Configure VCO settings before releasing PLL. */
+            if ((clock_to_change == CGC_CLOCK_PLL3) && (R_SYSC_S->PLL3EN == 0))
+            {
+                r_cgc_pll_vco_cfg(clock_to_change, &(p_clock_cfg->pll3_vco_cfg));
+            }
+#endif
             r_cgc_clock_change(clock_to_change, CGC_CLOCK_CHANGE_START);
             R_BSP_RegisterProtectEnable(g_cgc_register_protect_settings[clock_to_change]);
         }
@@ -229,7 +421,11 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
     clock_cfg.sckcr_w |= (uint32_t) (R_SYSC_NS->SCKCR_b.CLMASEL << R_SYSC_NS_SCKCR_CLMASEL_Pos);
 
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_CGC);
-    bsp_prv_clock_set(clock_cfg.sckcr_w, clock_cfg.sckcr2_w);
+#if 2U == BSP_FEATURE_CGC_SCKCR_TYPE
+    bsp_prv_clock_set(clock_cfg.sckcr_w, clock_cfg.sckcr2_w, clock_cfg.sckcr3_w, clock_cfg.sckcr4_w);
+#else
+    bsp_prv_clock_set(clock_cfg.sckcr_w, clock_cfg.sckcr2_w, sckcr3, sckcr4);
+#endif
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_CGC);
 
     return FSP_SUCCESS;
@@ -251,15 +447,76 @@ fsp_err_t R_CGC_ClockStart (cgc_ctrl_t * const p_ctrl, cgc_clock_t clock_source,
 #if CGC_CFG_PARAM_CHECKING_ENABLE
     err = r_cgc_common_parameter_checking(p_instance_ctrl);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+
+ #if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED
+    if (CGC_CLOCK_PLL0 == clock_source)
+    {
+        FSP_ASSERT(NULL != p_pll_cfg);
+
+        /* Set values should be within constraints. See RZ microprocessor User's Manual section "PLL0 and PLL2 SSC setting and constraints" */
+        err = r_cgc_pll_ssc_parameter_checking(&(p_pll_cfg->pll0_ssc_cfg), CGC_CLOCK_PLL0);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+    }
+ #endif
+
+ #if BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+    if (CGC_CLOCK_PLL2 == clock_source)
+    {
+        FSP_ASSERT(NULL != p_pll_cfg);
+
+        /* Set values should be within constraints. See RZ microprocessor User's Manual section "PLL0 and PLL2 SSC setting and constraints" */
+        err = r_cgc_pll_ssc_parameter_checking(&(p_pll_cfg->pll2_ssc_cfg), CGC_CLOCK_PLL2);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+    }
+ #endif
+
+ #if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+    if (CGC_CLOCK_PLL3 == clock_source)
+    {
+        FSP_ASSERT(NULL != p_pll_cfg);
+
+        /* Set values should be within constraints. See RZ microprocessor User's Manual section "PLL3 setting and constraints" */
+        err = r_cgc_pll3_vco_parameter_checking(&(p_pll_cfg->pll3_vco_cfg));
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+    }
+ #endif
 #else
     FSP_PARAMETER_NOT_USED(p_instance_ctrl);
     FSP_PARAMETER_NOT_USED(err);
 #endif
 
-    FSP_PARAMETER_NOT_USED(p_pll_cfg);
-
     /* Start the clock. */
     R_BSP_RegisterProtectDisable(g_cgc_register_protect_settings[clock_source]);
+
+#if !(BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED || BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED || \
+      BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED)
+    FSP_PARAMETER_NOT_USED(p_pll_cfg);
+#endif
+
+#if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED
+
+    /* Configure SSC before releasing PLL. */
+    if ((clock_source == CGC_CLOCK_PLL0) && (R_SYSC_S->PLL0EN == 0))
+    {
+        r_cgc_pll_ssc_cfg(clock_source, &p_pll_cfg->pll0_ssc_cfg);
+    }
+#endif
+#if BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+
+    /* Configure SSC before releasing PLL. */
+    if ((clock_source == CGC_CLOCK_PLL2) && (R_SYSC_S->PLL2EN == 0))
+    {
+        r_cgc_pll_ssc_cfg(clock_source, &p_pll_cfg->pll2_ssc_cfg);
+    }
+#endif
+#if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+
+    /* Configure VCO settings before releasing PLL. */
+    if ((clock_source == CGC_CLOCK_PLL3) && (R_SYSC_S->PLL3EN == 0))
+    {
+        r_cgc_pll_vco_cfg(clock_source, &p_pll_cfg->pll3_vco_cfg);
+    }
+#endif
     r_cgc_clock_change(clock_source, CGC_CLOCK_CHANGE_START);
     R_BSP_RegisterProtectEnable(g_cgc_register_protect_settings[clock_source]);
 
@@ -285,12 +542,21 @@ fsp_err_t R_CGC_ClockStop (cgc_ctrl_t * const p_ctrl, cgc_clock_t clock_source)
     fsp_err_t err = r_cgc_common_parameter_checking(p_instance_ctrl);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
+ #if defined(BSP_CFG_CORE_CA55)
+
+    /* CA55 core uses PLL0 as clock source. */
+    FSP_ERROR_RETURN(clock_source != CGC_CLOCK_PLL0, FSP_ERR_ASSERTION);
+ #endif
+
     /* Make sure the oscillator is stable. */
     FSP_ERROR_RETURN(r_cgc_stabilization_check(clock_source, r_cgc_clock_run_state_get(clock_source)),
                      FSP_ERR_NOT_STABILIZED);
 
+ #if BSP_FEATURE_CGC_PLL1_STANDBY_STATE_SUPPORTED
+
     /* If clock source is in use, return error */
     FSP_ERROR_RETURN(!((clock_source == CGC_CLOCK_PLL1) && (R_SYSC_NS->SCKCR_b.PHYSEL == 0)), FSP_ERR_IN_USE);
+ #endif
 #else
     FSP_PARAMETER_NOT_USED(p_instance_ctrl);
 #endif
@@ -340,12 +606,23 @@ fsp_err_t R_CGC_SystemClockSet (cgc_ctrl_t * const              p_ctrl,
     cgc_divider_cfg_t clock_cfg;
     clock_cfg.sckcr_w  = p_divider_cfg->sckcr_w;
     clock_cfg.sckcr2_w = p_divider_cfg->sckcr2_w;
+#if 2 == BSP_FEATURE_CGC_SCKCR_TYPE
+    clock_cfg.sckcr3_w = p_divider_cfg->sckcr3_w;
+    clock_cfg.sckcr4_w = p_divider_cfg->sckcr4_w;
+#else
+    uint32_t sckcr3 = 0;               // dummy
+    uint32_t sckcr4 = 0;               // dummy
+#endif
 
     /* CLMA settings are unsupported for CGC, so do not overwrite CLMA setting values. */
     clock_cfg.sckcr_w |= (uint32_t) (R_SYSC_NS->SCKCR_b.CLMASEL << R_SYSC_NS_SCKCR_CLMASEL_Pos);
 
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_CGC);
-    bsp_prv_clock_set(clock_cfg.sckcr_w, clock_cfg.sckcr2_w);
+#if 2 == BSP_FEATURE_CGC_SCKCR_TYPE
+    bsp_prv_clock_set(clock_cfg.sckcr_w, clock_cfg.sckcr2_w, clock_cfg.sckcr3_w, clock_cfg.sckcr4_w);
+#else
+    bsp_prv_clock_set(clock_cfg.sckcr_w, clock_cfg.sckcr2_w, sckcr3, sckcr4);
+#endif
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_CGC);
 
     return FSP_SUCCESS;
@@ -376,15 +653,26 @@ fsp_err_t R_CGC_SystemClockGet (cgc_ctrl_t * const        p_ctrl,
     /* Get the system clock source */
     if (NULL != p_clock_source)
     {
-        /* System clock source is always PLL0. */
+#if 2U == BSP_FEATURE_CGC_SCKCR_TYPE
+
+        /* Always return PLL1 as system clock source. */
+        *p_clock_source = CGC_CLOCK_PLL1;
+#else
+
+        /* Always return PLL0 as system clock source. */
         *p_clock_source = CGC_CLOCK_PLL0;
+#endif
     }
 
     /* Get current dividers. */
     if (NULL != p_divider_cfg)
     {
-        p_divider_cfg->sckcr_w  = R_SYSC_NS->SCKCR & (~(R_SYSC_NS_SCKCR_CLMASEL_Msk));
+        p_divider_cfg->sckcr_w  = R_SYSC_NS->SCKCR & (uint32_t) (~(R_SYSC_NS_SCKCR_CLMASEL_Msk));
         p_divider_cfg->sckcr2_w = R_SYSC_S->SCKCR2;
+#if 2 == BSP_FEATURE_CGC_SCKCR_TYPE
+        p_divider_cfg->sckcr3_w = R_SYSC_NS->SCKCR3;
+        p_divider_cfg->sckcr4_w = R_SYSC_NS->SCKCR4;
+#endif
     }
 
     return FSP_SUCCESS;
@@ -529,6 +817,117 @@ static fsp_err_t r_cgc_common_parameter_checking (cgc_instance_ctrl_t * p_instan
     return FSP_SUCCESS;
 }
 
+ #if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED || BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+
+/*******************************************************************************************************************//**
+ * Verifies the SSC setting structure values are within constraints.
+ * See RZ microprocessor User's Manual section "PLL0 and PLL2 SSC setting and constraints"
+ *
+ * @param[in]  p_pll_ssc_setting        Pointer to SSC setting structure.
+ * @param[in]  clock                    Clock to be verified.
+ *
+ * @retval FSP_SUCCESS                  No error detected.
+ * @retval FSP_ERR_ASSERTION            Invalid input argument.
+ **********************************************************************************************************************/
+static fsp_err_t r_cgc_pll_ssc_parameter_checking (cgc_pll_ssc_cfg_t const * p_pll_ssc_setting, cgc_clock_t clock)
+{
+    if (1 == p_pll_ssc_setting->pll_ssc_enable)
+    {
+        uint32_t mfr = p_pll_ssc_setting->pll_ssc_modulation_freq_ctrl;
+        uint32_t mrr = p_pll_ssc_setting->pll_ssc_modulation_rate_ctrl;
+
+        FSP_ASSERT(CGC_PRV_MFR_MAX >= mfr);
+        FSP_ASSERT(CGC_PRV_MRR_MIN <= mrr && CGC_PRV_MRR_MAX >= mrr);
+
+        uint32_t mfr_mrr = mfr * mrr;
+
+        /* MMF integer value for parameter checking of max constraint. (Round up the result of division.) */
+        uint32_t mmf_max =
+            (CGC_PRV_MAIN_CLOCK_OSC_FREQUENCY_HZ + (mfr * CGC_PRV_SSC_MODULATION_FREQUENCY_DIV_VALUE) - 1U) /
+            (mfr * CGC_PRV_SSC_MODULATION_FREQUENCY_DIV_VALUE);
+
+        /* MMF integer value for parameter checking of min constraint.(Round down the result of division.) */
+        uint32_t mmf_min = CGC_PRV_MAIN_CLOCK_OSC_FREQUENCY_HZ / (mfr * CGC_PRV_SSC_MODULATION_FREQUENCY_DIV_VALUE);
+
+        /* MMR integer value for parameter checking of max constraint. (Round up the result of division.) */
+        uint32_t mmr_max =
+            (clock ==
+             CGC_CLOCK_PLL0) ? (mfr_mrr * CGC_PRV_PERCENTAGE_TRANSLATION + CGC_PRV_SSC_MODULATION_RATE_PLL0_DIV_VALUE -
+                                1U) /
+            CGC_PRV_SSC_MODULATION_RATE_PLL0_DIV_VALUE :
+            (mfr_mrr * CGC_PRV_PERCENTAGE_TRANSLATION + CGC_PRV_SSC_MODULATION_RATE_PLL2_DIV_VALUE -
+             1U) / CGC_PRV_SSC_MODULATION_RATE_PLL2_DIV_VALUE;
+
+        FSP_ASSERT(CGC_PRV_MFR_MMR_MAX >= mfr_mrr);
+        FSP_ASSERT(CGC_PRV_MODULATION_FREQUENCY_MIN_HZ <= mmf_min && CGC_PRV_MODULATION_FREQUENCY_MAX_HZ >= mmf_max);
+        FSP_ASSERT(CGC_PRV_MODULATION_RATE_MAX_PERCENTAGE >= mmr_max);
+    }
+
+    return FSP_SUCCESS;
+}
+
+ #endif
+
+ #if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+
+/*******************************************************************************************************************//**
+ * Verifies the VCO setting structure values are within constraints.
+ * See RZ microprocessor User's Manual section "PLL3 setting and constraints"
+ *
+ * @param[in]  p_pll_vco_setting        Pointer to VCO setting structure.
+ *
+ * @retval FSP_SUCCESS                  No error detected.
+ * @retval FSP_ERR_ASSERTION            Invalid input argument.
+ **********************************************************************************************************************/
+static fsp_err_t r_cgc_pll3_vco_parameter_checking (cgc_pll_vco_cfg_t const * p_pll_vco_setting)
+{
+    uint32_t p_divider = p_pll_vco_setting->pll_divider_p;
+    uint32_t m_divider = p_pll_vco_setting->pll_divider_m;
+    uint32_t s_divider = p_pll_vco_setting->pll_divider_s;
+    uint32_t k_divider = p_pll_vco_setting->pll_divider_delta_sigma_modulator;
+
+    FSP_ASSERT(CGC_PRV_P_DIVIDER_MIN <= p_divider && CGC_PRV_P_DIVIDER_MAX >= p_divider);
+    FSP_ASSERT(CGC_PRV_M_DIVIDER_MIN <= m_divider && CGC_PRV_M_DIVIDER_MAX >= m_divider);
+    FSP_ASSERT(CGC_PRV_S_DIVIDER_MAX >= s_divider);
+    FSP_ASSERT(CGC_PRV_K_DIVIDER_MAX >= k_divider);
+
+    /* FFREF integer value for parameter checking of max constraint. (Round up the result of division.) */
+    uint32_t ffref_max = (CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ + p_divider - 1U) / p_divider;
+
+    /* FFREF integer value for parameter checking of min constraint. (Round down the result of division.) */
+    uint32_t ffref_min = CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ / p_divider;
+
+    /* FFVCO integer value for parameter checking of max constraint. (Round up the result of division.) */
+    uint32_t ffvco_max = (m_divider * CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ * CGC_PRV_K_DIVIDER_DIV_VALUE +
+                          k_divider * CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ +
+                          CGC_PRV_K_DIVIDER_DIV_VALUE * p_divider - 1) /
+                         (CGC_PRV_K_DIVIDER_DIV_VALUE * p_divider);
+
+    /* FFVCO integer value for parameter checking of min constraint. (Round down the result of division.) */
+    uint32_t ffvco_min = (m_divider * CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ * CGC_PRV_K_DIVIDER_DIV_VALUE +
+                          k_divider * CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ) /
+                         (CGC_PRV_K_DIVIDER_DIV_VALUE * p_divider);
+
+    /* FFOUT integer value for parameter checking of max constraint. (Round up the result of division.) */
+    uint32_t ffout_max = (m_divider * CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ * CGC_PRV_K_DIVIDER_DIV_VALUE +
+                          k_divider * CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ +
+                          CGC_PRV_K_DIVIDER_DIV_VALUE * p_divider * (1U << s_divider) - 1) /
+                         (CGC_PRV_K_DIVIDER_DIV_VALUE * p_divider * (1U << s_divider));
+
+    /* FFOUT integer value for parameter checking of min constraint. (Round down the result of division.) */
+    uint32_t ffout_min = (m_divider * CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ * CGC_PRV_K_DIVIDER_DIV_VALUE +
+                          k_divider * CGC_PRV_PLL3_INPUT_FREQUENCY_MHZ) /
+                         (CGC_PRV_K_DIVIDER_DIV_VALUE * p_divider * (1U << s_divider));
+
+    FSP_ASSERT(CGC_PRV_REFERENCE_FREQUENCY_MIN_MHZ <= ffref_min && CGC_PRV_REFERENCE_FREQUENCY_MAX_MHZ >= ffref_max);
+    FSP_ASSERT(CGC_PRV_VCO_FREQUENCY_MIN_MHZ <= ffvco_min && CGC_PRV_VCO_FREQUENCY_MAX_MHZ >= ffvco_max);
+    FSP_ASSERT(CGC_PRV_PLL_OUTPUT_FREQUENCY_MIN_MHZ <= ffout_min && CGC_PRV_PLL_OUTPUT_FREQUENCY_MAX_MHZ >= ffout_max);
+
+    return FSP_SUCCESS;
+}
+
+ #endif
+
 #endif
 
 /*******************************************************************************************************************//**
@@ -546,6 +945,12 @@ static fsp_err_t r_cgc_clock_check (cgc_clock_t const clock_source)
 
     /* Ensure the clock is stable if the clock has a stabilization flag. */
     FSP_ERROR_RETURN(r_cgc_stabilization_check(clock_source, running), FSP_ERR_NOT_STABILIZED);
+
+#if 2 == BSP_FEATURE_CGC_PLL_START_PROCESS_TYPE
+
+    /* Ensure clock source of the PLL clock domain is the PLL. */
+    FSP_ERROR_RETURN(r_cgc_pll_domain_clock_source_check(clock_source), FSP_ERR_NOT_STABILIZED);
+#endif
 
     /* Ensure the clock is running. */
     FSP_ERROR_RETURN(running, FSP_ERR_CLOCK_INACTIVE);
@@ -572,7 +977,7 @@ static cgc_prv_clock_state_t r_cgc_clock_run_state_get (cgc_clock_t clock)
     }
     else
     {
-        /* PLL0 have no control register and is always running. */
+        /* Selected PLL have no control register and is always running. */
         ret = CGC_PRV_CLOCK_STATE_RUNNING;
     }
 
@@ -589,22 +994,120 @@ static cgc_prv_clock_state_t r_cgc_clock_run_state_get (cgc_clock_t clock)
  **********************************************************************************************************************/
 static bool r_cgc_stabilization_check (cgc_clock_t clock, cgc_prv_clock_state_t status)
 {
-    uint32_t mon_bit = R_SYSC_S->PLL1MON_b.PLL1MON;
-
     /* LOCO have no stabilization flags, so return true if the clock is any of these. */
     bool ret = true;
 
-    if (CGC_CLOCK_PLL1 == clock)
+    switch (clock)
     {
-        ret = (mon_bit == (uint32_t) status);
-    }
-    else
-    {
-        /* Do nothing. */
+        case CGC_CLOCK_PLL0:
+        {
+            ret = (R_SYSC_S->PLL0MON_b.PLL0MON == (uint32_t) status);
+            break;
+        }
+
+        case CGC_CLOCK_PLL1:
+        {
+            ret = (R_SYSC_S->PLL1MON_b.PLL1MON == (uint32_t) status);
+            break;
+        }
+
+#if BSP_FEATURE_CGC_HAS_PLL2
+        case CGC_CLOCK_PLL2:
+        {
+            ret = (R_SYSC_S->PLL2MON_b.PLL2MON == (uint32_t) status);
+            break;
+        }
+#endif
+#if BSP_FEATURE_CGC_HAS_PLL3
+        case CGC_CLOCK_PLL3:
+        {
+            ret = (R_SYSC_S->PLL3MON_b.PLL3MON == (uint32_t) status);
+            break;
+        }
+#endif
+#if BSP_FEATURE_CGC_HAS_PLL4
+        case CGC_CLOCK_PLL4:
+        {
+            ret = (R_SYSC_S->PLL4MON_b.PLL4MON == (uint32_t) status);
+            break;
+        }
+#endif
+        default:
+        {
+            break;
+        }
     }
 
     return ret;
 }
+
+#if 2 == BSP_FEATURE_CGC_PLL_START_PROCESS_TYPE
+
+/*******************************************************************************************************************//**
+ * This function checks the clock source for the domain of the selected PLL is PLL output clock.
+ *
+ * @param[in]  clock   PLL to check
+ *
+ * @return true if the clock source for the domain of the selected PLL is PLL output clock, false if not.
+ **********************************************************************************************************************/
+static bool r_cgc_pll_domain_clock_source_check (cgc_clock_t clock)
+{
+    bool ret = true;
+    switch (clock)
+    {
+        case CGC_CLOCK_PLL0:
+        {
+            ret =
+                (((*((uint32_t *) CGC_PRV_PMSEL_REGISTER_ADDRESS) >> CGC_PRV_PMSEL_PMSEL0MON_SHIFT) &
+                  CGC_PRV_PMSEL_PMSELMON_MASK) == 1);
+            break;
+        }
+
+        case CGC_CLOCK_PLL1:
+        {
+            ret =
+                (((*((uint32_t *) CGC_PRV_PMSEL_REGISTER_ADDRESS) >> CGC_PRV_PMSEL_PMSEL1MON_SHIFT) &
+                  CGC_PRV_PMSEL_PMSELMON_MASK) == 1);
+            break;
+        }
+
+ #if BSP_FEATURE_CGC_HAS_PLL2
+        case CGC_CLOCK_PLL2:
+        {
+            ret =
+                (((*((uint32_t *) CGC_PRV_PMSEL_REGISTER_ADDRESS) >> CGC_PRV_PMSEL_PMSEL2MON_SHIFT) &
+                  CGC_PRV_PMSEL_PMSELMON_MASK) == 1);
+            break;
+        }
+ #endif
+ #if BSP_FEATURE_CGC_HAS_PLL3
+        case CGC_CLOCK_PLL3:
+        {
+            ret =
+                (((*((uint32_t *) CGC_PRV_PMSEL_REGISTER_ADDRESS) >> CGC_PRV_PMSEL_PMSEL3MON_SHIFT) &
+                  CGC_PRV_PMSEL_PMSELMON_MASK) == 1);
+            break;
+        }
+ #endif
+ #if BSP_FEATURE_CGC_HAS_PLL4
+        case CGC_CLOCK_PLL4:
+        {
+            ret =
+                (((*((uint32_t *) CGC_PRV_PMSEL_REGISTER_ADDRESS) >> CGC_PRV_PMSEL_PMSEL4MON_SHIFT) &
+                  CGC_PRV_PMSEL_PMSELMON_MASK) == 1);
+            break;
+        }
+ #endif
+        default:
+        {
+            break;
+        }
+    }
+
+    return ret;
+}
+
+#endif
 
 /*******************************************************************************************************************//**
  * This function starts or stops the selected clock.
@@ -618,8 +1121,69 @@ static void r_cgc_clock_change (cgc_clock_t clock, cgc_clock_change_t state)
     /* Convert api defined value to register setting value. */
     uint32_t state_set_value = ((uint32_t) (~state) & 0x00000001U);
 
-    *gp_cgc_clock_stp_registers[clock] = state_set_value;
+    if (gp_cgc_clock_stp_registers[clock] != NULL)
+    {
+        *gp_cgc_clock_stp_registers[clock] = state_set_value;
 
-    /* Wait setting to be reflected in hardware registers. */
-    FSP_HARDWARE_REGISTER_WAIT(*gp_cgc_clock_stp_registers[clock], state_set_value);
+        /* Wait setting to be reflected in hardware registers. */
+        FSP_HARDWARE_REGISTER_WAIT(*gp_cgc_clock_stp_registers[clock], state_set_value);
+    }
+    else
+    {
+        /* Selected PLL have no control register. */
+    }
 }
+
+#if BSP_FEATURE_CGC_PLL0_SSC_SUPPORTED || BSP_FEATURE_CGC_PLL2_SSC_SUPPORTED
+
+/*******************************************************************************************************************//**
+ * This function sets the SSC setting register for PLL.
+ *
+ * @param[in]  clock          PLL to set SSC.
+ * @param[in]  p_pll_ssc_cfg  Configuration values for SSC.
+ **********************************************************************************************************************/
+static void r_cgc_pll_ssc_cfg (cgc_clock_t clock, cgc_pll_ssc_cfg_t const * p_pll_ssc_cfg)
+{
+    if (clock == CGC_CLOCK_PLL0)
+    {
+        R_SYSC_S->PLL0_SSC_CTR = (uint32_t) p_pll_ssc_cfg->pll_ssc_modulation_freq_ctrl <<
+                                 R_SYSC_S_PLL0_SSC_CTR_PLL0MFR_Pos |
+                                 (uint32_t) p_pll_ssc_cfg->pll_ssc_modulation_rate_ctrl <<
+                                 R_SYSC_S_PLL0_SSC_CTR_PLL0MRR_Pos |
+                                 (uint32_t) p_pll_ssc_cfg->pll_ssc_enable << R_SYSC_S_PLL0_SSC_CTR_PLL0SSCEN_Pos;
+    }
+
+    if (clock == CGC_CLOCK_PLL2)
+    {
+        R_SYSC_S->PLL2_SSC_CTR = (uint32_t) p_pll_ssc_cfg->pll_ssc_modulation_freq_ctrl <<
+                                 R_SYSC_S_PLL2_SSC_CTR_PLL2MFR_Pos |
+                                 (uint32_t) p_pll_ssc_cfg->pll_ssc_modulation_rate_ctrl <<
+                                 R_SYSC_S_PLL2_SSC_CTR_PLL2MRR_Pos |
+                                 (uint32_t) p_pll_ssc_cfg->pll_ssc_enable << R_SYSC_S_PLL2_SSC_CTR_PLL2SSCEN_Pos;
+    }
+}
+
+#endif
+
+#if BSP_FEATURE_CGC_PLL3_VCO_SETTING_SUPPORTED
+
+/*******************************************************************************************************************//**
+ * This function sets the PLL setting.
+ *
+ * @param[in]  clock          PLL you want to set the configuration.
+ * @param[in]  p_pll_vco_cfg  Configuration values for the PLL.
+ **********************************************************************************************************************/
+static void r_cgc_pll_vco_cfg (cgc_clock_t clock, cgc_pll_vco_cfg_t const * p_pll_vco_cfg)
+{
+    if (clock == CGC_CLOCK_PLL3)
+    {
+        R_SYSC_S->PLL3_VCO_CTR0 = (uint32_t) p_pll_vco_cfg->pll_divider_p << R_SYSC_S_PLL3_VCO_CTR0_PLL3P_Pos |
+                                  (uint32_t) p_pll_vco_cfg->pll_divider_m << R_SYSC_S_PLL3_VCO_CTR0_PLL3M_Pos;
+
+        R_SYSC_S->PLL3_VCO_CTR1 = (uint32_t) p_pll_vco_cfg->pll_divider_delta_sigma_modulator <<
+                                  R_SYSC_S_PLL3_VCO_CTR1_PLL3K_Pos |
+                                  (uint32_t) p_pll_vco_cfg->pll_divider_s << R_SYSC_S_PLL3_VCO_CTR1_PLL3S_Pos;
+    }
+}
+
+#endif

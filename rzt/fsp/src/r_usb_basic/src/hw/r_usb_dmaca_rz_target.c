@@ -60,7 +60,7 @@ void r_usb_dmaca_intDMAC1I_isr(void);
 void r_usb_dmaca_intDMAC0I_isr (void)
 {
  #if USB_CFG_DMA == USB_CFG_ENABLE
-    if (((uint32_t) NULL != (uint32_t) p_USB_DMACI_Handlers[USB_DMACA_CH0]))
+    if ((NULL != p_USB_DMACI_Handlers[USB_DMACA_CH0]))
     {
         ((DMACI_Callback) p_USB_DMACI_Handlers[USB_DMACA_CH0])();
     }
@@ -84,7 +84,7 @@ void r_usb_dmaca_intDMAC0I_isr (void)
 void r_usb_dmaca_intDMAC1I_isr (void)
 {
  #if USB_CFG_DMA == USB_CFG_ENABLE
-    if (((uint32_t) NULL != (uint32_t) p_USB_DMACI_Handlers[USB_DMACA_CH1]))
+    if ((NULL != p_USB_DMACI_Handlers[USB_DMACA_CH1]))
     {
         ((DMACI_Callback) p_USB_DMACI_Handlers[USB_DMACA_CH1])();
     }

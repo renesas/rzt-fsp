@@ -47,7 +47,7 @@
 
 #define MTU3_CLK_TPSC_NUM                   (15U) /* TPSC and TPSC2 setting range */
 
-/* Noise fileter offset address */
+/* Noise filter offset address */
 #define MTU0_NOISEFILTER_OFFSET_ADDRESS     (0x0000U)
 #define MTU1_NOISEFILTER_OFFSET_ADDRESS     (0x0001U)
 #define MTU2_NOISEFILTER_OFFSET_ADDRESS     (0x0002U)
@@ -201,6 +201,17 @@
 #define MTU5_V_OFFSET_ADDRESS               (0x10U)
 #define MTU5_W_OFFSET_ADDRESS               (0x20U)
 
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
+/* GPT_SEL interrupt */
+ #define GPT_INT4                           (4)
+ #define GPT_COMBINE_TABLE                  (3U)
+ #define GPT_SELECTED_TABLE                 (3U)
+ #define MTU3_IRQ                           (3)
+ #define MTU3_IRQ_SELECT                    (3)
+ #define MTU3_IRQ_FUNCTION                  (3)
+#endif
+
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
@@ -238,6 +249,91 @@ typedef enum e_mtu3_channel
 #define MTU3_PHASE_COUNTING_MODE_PCB_1    (0x1U << 3)
 #define MTU3_PHASE_COUNTING_MODE_PCB_2    (0x2U << 3)
 
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
+/* Table for MTU3 GPT_SEL */
+static const bsp_irq_gpt_selected_event_t gpt_selected_event[BSP_FEATURE_MTU3_MAX_CHANNELS][GPT_SELECTED_TABLE] =
+{
+    {                                  /* MTU3 ch0 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIA0,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIB0,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV0
+    },
+    {                                  /* MTU3 ch1 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIA1,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIB1,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV1
+    },
+    {                                  /* MTU3 ch2 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIA2,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIB2,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV2
+    },
+    {                                  /* MTU3 ch3 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIA3,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIB3,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV3
+    },
+    {                                  /* MTU3 ch4 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIA4,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIB4,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV4
+    },
+    {                                  /* MTU3 ch5 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIU5,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV5,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIW5
+    },
+    {                                  /* MTU3 ch6 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIA6,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIB6,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV6
+    },
+    {                                  /* MTU3 ch7 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIA7,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIB7,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV7
+    },
+
+    {                                  /* MTU3 ch8 */
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIA8,
+        BSP_IRQ_GPT_SELECTED_EVENT_TGIB8,
+        BSP_IRQ_GPT_SELECTED_EVENT_TCIV8
+    },
+};
+
+/* Table for MTU3 GPT_COMBINE */
+static const bsp_irq_gpt_combined_event_t gpt_combined[BSP_FEATURE_MTU3_MAX_CHANNELS][GPT_COMBINE_TABLE] =
+{
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_0, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_1, /* MTU3 ch0 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_4},
+
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_2,                                    /* MTU3 ch1 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_3, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_4},
+
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_1, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_2, /* MTU3 ch2 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_3},
+
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_0, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_1, /* MTU3 ch3 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_4},
+
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_0, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_1, /* MTU3 ch4 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_4},
+
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_0, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_1, /* MTU3 ch5 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_2},
+
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_0, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_1, /* MTU3 ch6 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_4},
+
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_0, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_1, /* MTU3 ch7 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_4},
+
+    {BSP_IRQ_GPT_COMBINED_EVENT_MTU3_0, BSP_IRQ_GPT_COMBINED_EVENT_MTU3_1, /* MTU3 ch8 */
+     BSP_IRQ_GPT_COMBINED_EVENT_MTU3_4},
+};
+#endif
+
 /***********************************************************************************************************************
  * Private function prototypes
  **********************************************************************************************************************/
@@ -259,6 +355,17 @@ static void mtu3_count_mode_set(mtu3_instance_ctrl_t * const p_instance_ctrl, mt
 static void mtu3_count_mode_hardware_initialize(mtu3_instance_ctrl_t * const p_instance_ctrl,
                                                 timer_cfg_t const * const    p_cfg);
 
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+static void mtu3_gpt_INT0_4_interrupt_enable(mtu3_instance_ctrl_t * const p_instance_ctrl);
+static void mtu3_gpt_INT0_4_interrupt_disable(mtu3_instance_ctrl_t * const p_instance_ctrl);
+
+ #if MTU3_PRV_UVW_FEATURES_ENABLED == MTU3_CFG_UVW_SUPPORT_ENABLE
+static void mtu3_gpt_channel_5_interrupt_enable(mtu3_instance_ctrl_t * const p_instance_ctrl);
+static void mtu3_gpt_channel_5_interrupt_disable(mtu3_instance_ctrl_t * const p_instance_ctrl);
+
+ #endif
+#endif
+
 /***********************************************************************************************************************
  * ISR prototypes
  **********************************************************************************************************************/
@@ -269,6 +376,11 @@ void mtu3_capture_b_isr(void);
 void mtu3_capture_u_isr(void);
 void mtu3_capture_v_isr(void);
 void mtu3_capture_w_isr(void);
+
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+void mtu3_int_isr(void);
+
+#endif
 
 /***********************************************************************************************************************
  * Private global variables
@@ -323,7 +435,7 @@ static const uint32_t volatile * p_mtu3_base_address[BSP_FEATURE_MTU3_MAX_CHANNE
     (uint32_t *) R_MTU8,               /* 0x90001600UL */
 };
 
-/* Noise fileter offset address */
+/* Noise filter offset address */
 static const uint32_t nfcr_ofs_addr[BSP_FEATURE_MTU3_MAX_CHANNELS] =
 {
     MTU0_NOISEFILTER_OFFSET_ADDRESS,
@@ -1078,11 +1190,11 @@ static void mtu3_common_open (mtu3_instance_ctrl_t * const p_instance_ctrl, time
     /* Initialize control structure.  */
     p_instance_ctrl->p_cfg = p_cfg;
 
-    /* If callback is not nullt, make sure the IRQ is enabled and store callback in the control block. */
+    /* If callback is not null, make sure the IRQ is enabled and store callback in the control block. */
 
     /* Save register base address. */
-    uint32_t base_address;
-    base_address = (uint32_t) (p_mtu3_base_address[p_cfg->channel]);
+    uintptr_t base_address;
+    base_address = (uintptr_t) (p_mtu3_base_address[p_cfg->channel]);
 
     p_instance_ctrl->p_reg_com = R_MTU;
     p_instance_ctrl->p_reg_nf  = (void *) R_MTU_NF;
@@ -1380,19 +1492,19 @@ static void mtu3_event_operation_config (mtu3_instance_ctrl_t * const p_instance
 
     if (MTU3_CHANNEL_0 == p_instance_ctrl->p_cfg->channel)
     {
-        elopa &= ~R_ELO_ELOPA_MTU0MD_Msk;
+        elopa &= (uint32_t) ~R_ELO_ELOPA_MTU0MD_Msk;
         elopa |= (uint32_t) ((p_extend->mtu3_elc_event_operation.mtu0_elc_operation) << R_ELO_ELOPA_MTU0MD_Pos);
     }
 
     if (MTU3_CHANNEL_3 == p_instance_ctrl->p_cfg->channel)
     {
-        elopa &= ~R_ELO_ELOPA_MTU3MD_Msk;
+        elopa &= (uint32_t) ~R_ELO_ELOPA_MTU3MD_Msk;
         elopa |= (uint32_t) ((p_extend->mtu3_elc_event_operation.mtu3_elc_operation) << R_ELO_ELOPA_MTU3MD_Pos);
     }
 
     if (MTU3_CHANNEL_4 == p_instance_ctrl->p_cfg->channel)
     {
-        elopb &= ~R_ELO_ELOPB_MTU4MD_Msk;
+        elopb &= (uint32_t) ~R_ELO_ELOPB_MTU4MD_Msk;
         elopb |= (uint32_t) ((p_extend->mtu3_elc_event_operation.mtu4_elc_operation) << R_ELO_ELOPB_MTU4MD_Pos);
     }
 
@@ -1695,6 +1807,9 @@ static void mtu3_disable_interrupt (mtu3_instance_ctrl_t * const p_instance_ctrl
 #if MTU3_PRV_UVW_FEATURES_ENABLED == MTU3_CFG_UVW_SUPPORT_ENABLE
     if (MTU3_CHANNEL_5 == p_instance_ctrl->p_cfg->channel)
     {
+ #if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+        mtu3_gpt_channel_5_interrupt_disable(p_instance_ctrl);
+ #endif
         mtu3_extended_uvw_cfg_t const * p_uvw_cfg = p_extend->p_uvw_cfg;
         *((uint8_t *) p_instance_ctrl->p_reg +
           tier_ofs_addr[p_instance_ctrl->p_cfg->channel]) &= (uint8_t) ~R_MTU5_TIER_TGIE5U_Msk;
@@ -1710,6 +1825,9 @@ static void mtu3_disable_interrupt (mtu3_instance_ctrl_t * const p_instance_ctrl
     else
 #endif
     {
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+        mtu3_gpt_INT0_4_interrupt_disable(p_instance_ctrl);
+#endif
         *((uint8_t *) p_instance_ctrl->p_reg +
           tier_ofs_addr[p_instance_ctrl->p_cfg->channel]) &= (uint8_t) ~R_MTU0_TIER_TCIEV_Msk;
         *((uint8_t *) p_instance_ctrl->p_reg +
@@ -1739,6 +1857,9 @@ static void mtu3_enable_interrupt (mtu3_instance_ctrl_t * const p_instance_ctrl)
 #if MTU3_PRV_UVW_FEATURES_ENABLED == MTU3_CFG_UVW_SUPPORT_ENABLE
     if (MTU3_CHANNEL_5 == p_instance_ctrl->p_cfg->channel)
     {
+ #if  (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+        mtu3_gpt_channel_5_interrupt_enable(p_instance_ctrl);
+ #endif
         mtu3_extended_uvw_cfg_t const * p_uvw_cfg = p_extend->p_uvw_cfg;
         *((uint8_t *) p_instance_ctrl->p_reg +
           tier_ofs_addr[p_instance_ctrl->p_cfg->channel]) |= R_MTU5_TIER_TGIE5U_Msk;
@@ -1754,6 +1875,10 @@ static void mtu3_enable_interrupt (mtu3_instance_ctrl_t * const p_instance_ctrl)
     else
 #endif
     {
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+        mtu3_gpt_INT0_4_interrupt_enable(p_instance_ctrl);
+#endif
+
         /* Enable CPU interrupts if callback is not null. */
         *((uint8_t *) p_instance_ctrl->p_reg +
           tier_ofs_addr[p_instance_ctrl->p_cfg->channel]) |= R_MTU0_TIER_TCIEV_Msk;
@@ -1876,8 +2001,11 @@ static void r_mtu3_capture_common_isr (mtu3_prv_capture_event_t event)
 {
     MTU3_CFG_MULTIPLEX_INTERRUPT_ENABLE
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Save context if RTOS is used */
     FSP_CONTEXT_SAVE
+#endif
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
@@ -1962,10 +2090,12 @@ static void r_mtu3_capture_common_isr (mtu3_prv_capture_event_t event)
                              counter);
     }
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE
-
-        MTU3_CFG_MULTIPLEX_INTERRUPT_DISABLE
+#endif
+    MTU3_CFG_MULTIPLEX_INTERRUPT_DISABLE
 }
 
 /*******************************************************************************************************************//**
@@ -1975,9 +2105,11 @@ void mtu3_counter_overflow_isr (void)
 {
     MTU3_CFG_MULTIPLEX_INTERRUPT_ENABLE
 
-    /* Save context if RTOS is used */
-        FSP_CONTEXT_SAVE;
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
 
+    /* Save context if RTOS is used */
+    FSP_CONTEXT_SAVE;
+#endif
     IRQn_Type irq = R_FSP_CurrentIrqGet();
 
     /* Recover ISR context saved in open. */
@@ -1988,8 +2120,11 @@ void mtu3_counter_overflow_isr (void)
         r_mtu3_call_callback(p_instance_ctrl, TIMER_EVENT_CYCLE_END, 0);
     }
 
+#if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
+#endif
 
     MTU3_CFG_MULTIPLEX_INTERRUPT_DISABLE
 }
@@ -2146,3 +2281,260 @@ static void mtu3_count_mode_set (mtu3_instance_ctrl_t * const p_instance_ctrl, m
         }
     }
 }
+
+#if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
+
+/* Processing for MTU3_GPT_Interrupt */
+
+/*******************************************************************************************************************//**
+ * Enable  GPT/MTU3 Interrupt Select Register.
+ *
+ * @param[in]  p_instance_ctrl        Instance control block.
+ **********************************************************************************************************************/
+static void mtu3_gpt_INT0_4_interrupt_enable (mtu3_instance_ctrl_t * const p_instance_ctrl)
+{
+    /* Save pointer to extended configuration structure. */
+    mtu3_extended_cfg_t * p_extend = (mtu3_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+
+    /* Table IRQ for mtu3 */
+    IRQn_Type mtu3_irq[MTU3_IRQ] =
+    {
+        p_extend->capture_a_irq,
+        p_extend->capture_b_irq,
+        p_instance_ctrl->p_cfg->cycle_end_irq
+    };
+
+    uint8_t mtu3_irq_select[MTU3_IRQ_SELECT] =
+    {
+        p_extend->capture_a_source_select,
+        p_extend->capture_b_source_select,
+        p_extend->cycle_end_source_select
+    };
+
+    /* Table interrupt function in mtu3 */
+    void (* irq_mtu3[MTU3_IRQ_FUNCTION])(void) =
+    {
+        mtu3_capture_a_isr,
+        mtu3_capture_b_isr,
+        mtu3_counter_overflow_isr
+    };
+
+    for (int gpt_int_num = 0; gpt_int_num < 3; gpt_int_num++)
+    {
+        if (mtu3_irq[gpt_int_num] > FSP_INVALID_VECTOR)
+        {
+            if (GPT_INT4 != mtu3_irq_select[gpt_int_num])
+            {
+                R_BSP_IrqGptSelectedSet(mtu3_irq[gpt_int_num],
+                                        gpt_selected_event[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+            }
+            else
+            {
+                R_BSP_IrqGptCombinedTableSet(mtu3_irq[gpt_int_num],
+                                             gpt_combined[p_instance_ctrl->p_cfg->channel][gpt_int_num],
+                                             p_instance_ctrl,
+                                             irq_mtu3[gpt_int_num]);
+                R_BSP_IrqGptCombinedMaskClear(mtu3_irq[gpt_int_num],
+                                              gpt_combined[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+            }
+        }
+    }
+}
+
+/*******************************************************************************************************************//**
+ * Disable  GPT/MTU3 Interrupt Select Register.
+ *
+ * @param[in]  p_instance_ctrl        Instance control block.
+ **********************************************************************************************************************/
+static void mtu3_gpt_INT0_4_interrupt_disable (mtu3_instance_ctrl_t * const p_instance_ctrl)
+{
+    /* Save pointer to extended configuration structure. */
+    mtu3_extended_cfg_t * p_extend = (mtu3_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+
+    /* Table IRQ for mtu3 */
+    IRQn_Type mtu3_irq[MTU3_IRQ] =
+    {
+        p_extend->capture_a_irq,
+        p_extend->capture_b_irq,
+        p_instance_ctrl->p_cfg->cycle_end_irq
+    };
+
+    uint8_t mtu3_irq_select[MTU3_IRQ_SELECT] =
+    {
+        p_extend->capture_a_source_select,
+        p_extend->capture_b_source_select,
+        p_extend->cycle_end_source_select
+    };
+
+    for (int gpt_int_num = 0; gpt_int_num < 3; gpt_int_num++)
+    {
+        if (mtu3_irq[gpt_int_num] > FSP_INVALID_VECTOR)
+        {
+            if ((uint8_t) GPT_INT4 != mtu3_irq_select[gpt_int_num])
+            {
+                R_BSP_IrqGptSelectedClear(mtu3_irq[gpt_int_num]);
+            }
+            else
+            {
+                R_BSP_IrqGptCombinedMaskSet(mtu3_irq[gpt_int_num],
+                                            gpt_combined[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+                R_BSP_IrqGptCombinedTableClear(mtu3_irq[gpt_int_num],
+                                               gpt_combined[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+            }
+        }
+    }
+}
+
+/* Processing for MTU3_Channel_5_GPT_Interrupt */
+ #if MTU3_PRV_UVW_FEATURES_ENABLED == MTU3_CFG_UVW_SUPPORT_ENABLE
+
+/*******************************************************************************************************************//**
+ * Enable  GPT/MTU3 Interrupt Select Register.
+ *
+ * @param[in]  p_instance_ctrl        Instance control block.
+ **********************************************************************************************************************/
+static void mtu3_gpt_channel_5_interrupt_enable (mtu3_instance_ctrl_t * const p_instance_ctrl)
+{
+    /* Save pointer to extended configuration structure. */
+    mtu3_extended_cfg_t           * p_extend  = (mtu3_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+    mtu3_extended_uvw_cfg_t const * p_uvw_cfg = p_extend->p_uvw_cfg;
+
+    /* Table IRQ for mtu3 */
+    IRQn_Type mtu3_irq[MTU3_IRQ] =
+    {
+        p_uvw_cfg->capture_u_irq,
+        p_uvw_cfg->capture_v_irq,
+        p_uvw_cfg->capture_w_irq
+    };
+
+    /* Table interrupt function in mtu3 */
+    void (* irq_mtu3[MTU3_IRQ_FUNCTION])(void) =
+    {
+        mtu3_capture_u_isr,
+        mtu3_capture_v_isr,
+        mtu3_capture_w_isr
+    };
+
+    for (int gpt_int_num = 0; gpt_int_num < 3; gpt_int_num++)
+    {
+        if (mtu3_irq[gpt_int_num] > FSP_INVALID_VECTOR)
+        {
+            if ((MTU3_CHANNEL_5 == p_instance_ctrl->p_cfg->channel) && (GPT_INT4 != mtu3_irq[gpt_int_num]))
+            {
+                R_BSP_IrqGptSelectedSet(mtu3_irq[gpt_int_num],
+                                        gpt_selected_event[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+            }
+            else
+            {
+                R_BSP_IrqGptCombinedTableSet(mtu3_irq[gpt_int_num],
+                                             gpt_combined[p_instance_ctrl->p_cfg->channel][gpt_int_num],
+                                             p_instance_ctrl,
+                                             irq_mtu3[gpt_int_num]);
+                R_BSP_IrqGptCombinedMaskClear(mtu3_irq[gpt_int_num],
+                                              gpt_combined[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+            }
+        }
+    }
+}
+
+/*******************************************************************************************************************//**
+ * Disable  GPT/MTU3 Interrupt Select Register.
+ *
+ * @param[in]  p_instance_ctrl        Instance control block.
+ **********************************************************************************************************************/
+static void mtu3_gpt_channel_5_interrupt_disable (mtu3_instance_ctrl_t * const p_instance_ctrl)
+{
+    /* Save pointer to extended configuration structure. */
+    mtu3_extended_cfg_t           * p_extend  = (mtu3_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+    mtu3_extended_uvw_cfg_t const * p_uvw_cfg = p_extend->p_uvw_cfg;
+
+    /* Table IRQ channel 5 for mtu3 */
+    IRQn_Type mtu3_irq[MTU3_IRQ] =
+    {
+        p_uvw_cfg->capture_u_irq,
+        p_uvw_cfg->capture_v_irq,
+        p_uvw_cfg->capture_w_irq
+    };
+
+    for (int gpt_int_num = 0; gpt_int_num < 3; gpt_int_num++)
+    {
+        if (mtu3_irq[gpt_int_num] > FSP_INVALID_VECTOR)
+        {
+            {
+                if ((MTU3_CHANNEL_5 == p_instance_ctrl->p_cfg->channel) && (GPT_INT4 != mtu3_irq[gpt_int_num]))
+                {
+                    R_BSP_IrqGptSelectedClear(mtu3_irq[gpt_int_num]);
+                }
+                else
+                {
+                    R_BSP_IrqGptCombinedMaskSet(mtu3_irq[gpt_int_num],
+                                                gpt_combined[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+                    R_BSP_IrqGptCombinedTableClear(mtu3_irq[gpt_int_num],
+                                                   gpt_combined[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+                }
+            }
+        }
+    }
+}
+
+ #endif                                /* #endif (MTU3_PRV_UVW_FEATURES_ENABLED == MTU3_CFG_UVW_SUPPORT_ENABLE) */
+
+/*******************************************************************************************************************//**
+ * Interrupt triggered by GPT_INT_SEL.
+ *
+ * Executes each interrupt process according to the cause of the interrupt.
+ **********************************************************************************************************************/
+void mtu3_int_isr (void)
+{
+    /* Save context if RTOS is used */
+    FSP_CONTEXT_SAVE;
+
+    IRQn_Type irq = R_FSP_CurrentIrqGet();
+
+    /* Recover ISR context saved in open. */
+    mtu3_instance_ctrl_t * p_instance_ctrl = (mtu3_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
+
+    /* Save pointer to extended configuration structure. */
+    mtu3_extended_cfg_t * p_extend = (mtu3_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+ #if MTU3_PRV_UVW_FEATURES_ENABLED == MTU3_CFG_UVW_SUPPORT_ENABLE
+    mtu3_extended_uvw_cfg_t const * p_uvw_cfg = p_extend->p_uvw_cfg;
+ #endif
+
+    if (irq == p_extend->capture_a_irq)
+    {
+        mtu3_capture_a_isr();
+    }
+    else if (irq == p_extend->capture_b_irq)
+    {
+        mtu3_capture_b_isr();
+    }
+
+ #if MTU3_PRV_UVW_FEATURES_ENABLED == MTU3_CFG_UVW_SUPPORT_ENABLE
+    else if (irq == p_uvw_cfg->capture_u_irq)
+    {
+        mtu3_capture_u_isr();
+    }
+    else if (irq == p_uvw_cfg->capture_v_irq)
+    {
+        mtu3_capture_v_isr();
+    }
+    else if (irq == p_uvw_cfg->capture_w_irq)
+    {
+        mtu3_capture_w_isr();
+    }
+ #endif
+    else if (irq == p_instance_ctrl->p_cfg->cycle_end_irq)
+    {
+        mtu3_counter_overflow_isr();
+    }
+    else
+    {
+        /* Do Nothing */
+        ;
+    }
+
+    /* Restore context if RTOS is used */
+    FSP_CONTEXT_RESTORE;
+}
+
+#endif                                 /* #endif (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED) */

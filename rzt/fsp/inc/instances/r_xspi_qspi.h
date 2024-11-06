@@ -105,6 +105,13 @@ typedef enum e_xspi_qspi_prefetch_function
     XSPI_QSPI_PREFETCH_FUNCTION_ENABLE  = 0x01, ///< Prefetch function enable
 } xspi_qspi_prefetch_function_t;
 
+/* IO voltage settings */
+typedef enum e_xspi_qspi_io_voltage
+{
+    XSPI_QSPI_IO_VOLTAGE_1_8V = 0x00,  ///< IO voltage 1.8V
+    XSPI_QSPI_IO_VOLTAGE_3_3V = 0x01,  ///< IO voltage 3.3V
+} xspi_qspi_io_voltage_t;
+
 /* Address space settings */
 typedef struct st_qspi_address_space
 {
@@ -141,6 +148,7 @@ typedef struct st_xspi_qspi_extended_cfg
     xspi_qspi_memory_size_t            memory_size;       ///< Size of memory device
     xspi_qspi_timing_setting_t const * p_timing_settings; ///< Memory mapped timing settings
     xspi_qspi_prefetch_function_t      prefetch_en;       ///< Prefetch function settings
+    xspi_qspi_io_voltage_t             io_voltage;        ///< Voltage setting of xSPI IO domain
     xspi_qspi_address_space_t const  * p_address_space;   ///< Address space settings when custom address space enabled
 
 #if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE

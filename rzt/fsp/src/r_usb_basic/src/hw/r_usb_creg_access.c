@@ -43,9 +43,9 @@ uint16_t hw_usb_read_syscfg (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         ret_code = USB_M0->SYSCFG0;
-  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP0 == ptr->ip)
         {
             ret_code = USB_M0->SYSCFG0;
@@ -54,13 +54,13 @@ uint16_t hw_usb_read_syscfg (usb_utr_t * ptr)
         {
             ret_code = USB_M1->SYSCFG;
         }
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
     {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)
+  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)&& (BSP_MCU_GROUP_RZT2H != 1)
         ret_code = ptr->ipp->SYSCFG;
   #endif                               /* BSP_MCU_GROUP_RZT2M != 1 */
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
@@ -94,7 +94,7 @@ void hw_usb_write_syscfg (usb_utr_t * ptr, uint16_t data)
   #endif                               /* USB_IP_EHCI_OHCI == 0 */
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
 
 /******************************************************************************
@@ -105,16 +105,16 @@ void hw_usb_write_syscfg (usb_utr_t * ptr, uint16_t data)
  ******************************************************************************/
 void hw_usb_set_cnen (uint8_t usb_ip)
 {
-   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     FSP_PARAMETER_NOT_USED(usb_ip);
     USB_M0->SYSCFG0 |= USB_CNEN;
-   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
     /* Only USBA module */
     if (USB_CFG_IP1 == usb_ip)
     {
         USB_M1->SYSCFG |= USB_CNEN;
     }
-   #endif                              /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #endif                              /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 }
 
 /******************************************************************************
@@ -133,14 +133,14 @@ void hw_usb_clear_cnen (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         USB_M0->SYSCFG0 = (uint16_t) (USB_M0->SYSCFG0 & (~USB_CNEN));
-   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP1 == ptr->ip)
         {
             USB_M1->SYSCFG = (uint16_t) (USB_M1->SYSCFG & (~USB_CNEN));
         }
-   #endif                              /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #endif                              /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
   #endif                               /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
@@ -166,14 +166,14 @@ void hw_usb_set_hse (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         USB_M0->SYSCFG0 |= USB_HSE;
-   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP1 == ptr->ip)
         {
             USB_M1->SYSCFG |= USB_HSE;
         }
-   #endif                              /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #endif                              /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
   #endif                               /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
@@ -202,14 +202,14 @@ void hw_usb_clear_hse (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         USB_M0->SYSCFG0 = (uint16_t) (USB_M0->SYSCFG0 & (~USB_HSE));
-   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP1 == ptr->ip)
         {
             USB_M1->SYSCFG = (uint16_t) (USB_M1->SYSCFG & (~USB_HSE));
         }
-   #endif                              /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #endif                              /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
   #endif                               /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
@@ -239,10 +239,10 @@ void hw_usb_clear_hse (usb_utr_t * ptr)
  ******************************************************************************/
 void hw_usb_set_dcfm (usb_utr_t * p_utr)
 {
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     FSP_PARAMETER_NOT_USED(p_utr);
     USB_M0->SYSCFG0 |= USB_DCFM;
-  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
     if (USB_CFG_IP0 == p_utr->ip)
     {
         USB_M0->SYSCFG |= USB_DCFM;
@@ -251,7 +251,7 @@ void hw_usb_set_dcfm (usb_utr_t * p_utr)
     {
         USB_M1->SYSCFG |= USB_DCFM;
     }
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 }
 
 /******************************************************************************
@@ -271,9 +271,9 @@ void hw_usb_clear_dcfm (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         USB_M0->SYSCFG0 = (uint16_t) (USB_M0->SYSCFG0 & (~USB_DCFM));
-  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP0 == ptr->ip)
         {
             USB_M0->SYSCFG = (uint16_t) (USB_M0->SYSCFG & (~USB_DCFM));
@@ -282,13 +282,13 @@ void hw_usb_clear_dcfm (usb_utr_t * ptr)
         {
             USB_M1->SYSCFG = (uint16_t) (USB_M1->SYSCFG & (~USB_DCFM));
         }
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
     {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)
+  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)&& (BSP_MCU_GROUP_RZT2H != 1)
         ptr->ipp->SYSCFG = (uint16_t) (ptr->ipp->SYSCFG & (~USB_DCFM));
   #endif                               /* BSP_MCU_GROUP_RZT2M != 1 */
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
@@ -300,7 +300,7 @@ void hw_usb_clear_dcfm (usb_utr_t * ptr)
  ******************************************************************************/
 
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)
+  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)&& (BSP_MCU_GROUP_RZT2H != 1)
 
 /******************************************************************************
  * Function Name   : hw_usb_clear_drpd
@@ -331,9 +331,9 @@ void hw_usb_set_usbe (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         USB_M0->SYSCFG0 |= USB_USBE;
-  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP0 == ptr->ip)
         {
             USB_M0->SYSCFG |= USB_USBE;
@@ -342,13 +342,13 @@ void hw_usb_set_usbe (usb_utr_t * ptr)
         {
             USB_M1->SYSCFG |= USB_USBE;
         }
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
     {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)
+  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)&& (BSP_MCU_GROUP_RZT2H != 1)
         ptr->ipp->SYSCFG |= USB_USBE;
   #endif                               /* BSP_MCU_GROUP_RZT2M != 1 */
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
@@ -370,9 +370,9 @@ void hw_usb_clear_usbe (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         USB_M0->SYSCFG0 = (uint16_t) (USB_M0->SYSCFG0 & (~USB_USBE));
-  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP0 == ptr->ip)
         {
             USB_M0->SYSCFG = (uint16_t) (USB_M0->SYSCFG & (~USB_USBE));
@@ -381,13 +381,13 @@ void hw_usb_clear_usbe (usb_utr_t * ptr)
         {
             USB_M1->SYSCFG = (uint16_t) (USB_M1->SYSCFG & (~USB_USBE));
         }
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
     {
  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)
+  #if (BSP_MCU_GROUP_RZT2M != 1) && (BSP_MCU_GROUP_RZT2L != 1) && (BSP_MCU_GROUP_RZT2ME != 1)&& (BSP_MCU_GROUP_RZT2H != 1)
         ptr->ipp->SYSCFG = (uint16_t) (ptr->ipp->SYSCFG & (~USB_USBE));
   #endif                               /* BSP_MCU_GROUP_RZT2M != 1 */
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
@@ -501,9 +501,9 @@ uint16_t hw_usb_read_syssts (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         result = USB_M0->SYSSTS0;
-  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP0 == ptr->ip)
         {
             result = USB_M0->SYSSTS0;
@@ -512,7 +512,7 @@ uint16_t hw_usb_read_syssts (usb_utr_t * ptr)
         {
             result = USB_M1->SYSSTS0;
         }
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
@@ -542,9 +542,9 @@ uint16_t hw_usb_read_dvstctr (usb_utr_t * ptr)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         result = USB_M0->DVSTCTR0;
-  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         if (USB_CFG_IP0 == ptr->ip)
         {
             result = USB_M0->DVSTCTR0;
@@ -553,7 +553,7 @@ uint16_t hw_usb_read_dvstctr (usb_utr_t * ptr)
         {
             result = USB_M1->DVSTCTR0;
         }
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
@@ -669,7 +669,7 @@ void hw_usb_clear_vbout (usb_utr_t * ptr)
 
  #endif                                /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
 
 /******************************************************************************
  * Function Name   : hw_usb_set_utst
@@ -683,7 +683,7 @@ void hw_usb_set_utst (usb_utr_t * ptr, uint16_t data)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         USB_M0->TESTMODE = data;
    #else                               /*defined(BSP_MCU_GROUP_RZT2M)*/
         if (USB_CFG_IP0 == ptr->ip)
@@ -708,9 +708,9 @@ void hw_usb_set_utst (usb_utr_t * ptr, uint16_t data)
 /******************************************************************************
  * End of function hw_usb_set_utst
  ******************************************************************************/
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
 
 /******************************************************************************
  * Function Name   : hw_usb_read_fifo32
@@ -737,11 +737,11 @@ uint32_t hw_usb_read_fifo32 (usb_utr_t * ptr, uint16_t pipemode)
                 }
                 else
                 {
-   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                     data = USB_M0->CFIFO;
-   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     USB_DEBUG_HOOK(USB_DEBUG_HOOK_STD | USB_DEBUG_HOOK_CODE2);
-   #endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                 }
 
                 break;
@@ -814,7 +814,7 @@ void hw_usb_write_fifo32 (usb_utr_t * ptr, uint16_t pipemode, uint32_t data)
             {
                 if (USB_CFG_IP1 == ptr->ip)
                 {
-   #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+   #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
                     R_USB_HS0->CFIFO = data;
    #else                               /* BSP_MCU_GROUP_RZT2M */
                     USB_M0->CFIFO = data;
@@ -822,12 +822,12 @@ void hw_usb_write_fifo32 (usb_utr_t * ptr, uint16_t pipemode, uint32_t data)
                 }
                 else
                 {
-   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+   #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                     USB_M0->CFIFO = data;
-   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #else                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     FSP_PARAMETER_NOT_USED(data);
                     USB_DEBUG_HOOK(USB_DEBUG_HOOK_STD | USB_DEBUG_HOOK_CODE2);
-   #endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+   #endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                 }
 
                 break;
@@ -959,9 +959,9 @@ uint16_t hw_usb_read_fifo16 (usb_utr_t * ptr, uint16_t pipemode)
    #if USB_CFG_ENDIAN == USB_CFG_LITTLE
                 case USB_CUSE:
                 {
-    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                     data = ptr->ipp1->CFIFOH;
-    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     data = (uint16_t) ptr->ipp1->CFIFO;
     #endif /* defined(BSP_MCU_GROUP_RA6M3) */
                     break;
@@ -969,9 +969,9 @@ uint16_t hw_usb_read_fifo16 (usb_utr_t * ptr, uint16_t pipemode)
 
                 case USB_D0USE:
                 {
-    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                     data = ptr->ipp1->D0FIFOH;
-    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     data = (uint16_t) ptr->ipp1->D0FIFO;
     #endif /* defined(BSP_MCU_GROUP_RA6M3) */
                     break;
@@ -979,9 +979,9 @@ uint16_t hw_usb_read_fifo16 (usb_utr_t * ptr, uint16_t pipemode)
 
                 case USB_D1USE:
                 {
-    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                     data = ptr->ipp1->D1FIFOH;
-    #else                              /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+    #else                              /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     data = (uint16_t) ptr->ipp1->D1FIFO;
     #endif /* defined(BSP_MCU_GROUP_RA6M3) */
                     break;
@@ -989,9 +989,9 @@ uint16_t hw_usb_read_fifo16 (usb_utr_t * ptr, uint16_t pipemode)
    #else                               /* USB_CFG_ENDIAN == USB_CFG_LITTLE */
                 case USB_CUSE:
                 {
-    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                     data = ptr->ipp1->CFIFOL;
-    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     data = (uint16_t) ptr->ipp1->CFIFO;
     #endif                             /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M)*/
                     break;
@@ -999,21 +999,21 @@ uint16_t hw_usb_read_fifo16 (usb_utr_t * ptr, uint16_t pipemode)
 
                 case USB_D0USE:
                 {
-    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                     data = ptr->ipp1->D0FIFOL;
-    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     data = (uint16_t) ptr->ipp1->D0FIFO;
-    #endif                             /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+    #endif                             /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     break;
                 }
 
                 case USB_D1USE:
                 {
-    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+    #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
                     data = ptr->ipp1->D1FIFOL;
-    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+    #else                              /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     data = (uint16_t) ptr->ipp1->D1FIFO;
-    #endif                             /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+    #endif                             /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
                     break;
                 }
    #endif /* USB_CFG_ENDIAN == USB_CFG_LITTLE */
@@ -1263,7 +1263,7 @@ static void * hw_usb_get_fifosel_adr (usb_utr_t * ptr, uint16_t pipemode)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
         switch (pipemode)
         {
             case USB_CUSE:
@@ -1290,7 +1290,7 @@ static void * hw_usb_get_fifosel_adr (usb_utr_t * ptr, uint16_t pipemode)
                 break;
             }
         }
-  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #else                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
         switch (pipemode)
         {
             case USB_CUSE:
@@ -1341,7 +1341,7 @@ static void * hw_usb_get_fifosel_adr (usb_utr_t * ptr, uint16_t pipemode)
                 break;
             }
         }
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
  #endif                                /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_REPI */
     }
     else
@@ -2134,7 +2134,7 @@ void hw_usb_set_bempenb (usb_utr_t * ptr, uint16_t pipeno)
         }
         else
         {
-  #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+  #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
             g_usb_cstd_bemp_skip[USB_IP1][pipeno] = USB_OFF;
             USB_M1->BEMPENB = (uint16_t) (USB_M1->BEMPENB | (1 << pipeno));
   #endif                               /* !defined(BSP_MCU_GROUP_RZT2M) */
@@ -2900,7 +2900,7 @@ void hw_usb_write_pipecfg (usb_utr_t * ptr, uint16_t data)
  * End of function hw_usb_write_pipecfg
  ******************************************************************************/
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
 
 /******************************************************************************
  * Function Name   : hw_usb_write_pipebuf
@@ -2915,7 +2915,7 @@ void hw_usb_write_pipebuf (usb_utr_t * ptr, uint16_t data)
     if (g_usb_usbmode[ptr->ip] == USB_MODE_PERI)
     {
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-   #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+   #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
         if (USB_CFG_IP1 == ptr->ip)
         {
             USB_M1->PIPEBUF = data;
@@ -2955,7 +2955,7 @@ uint16_t hw_usb_read_pipebuf (usb_utr_t * ptr)
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
         if (USB_CFG_IP0 == ptr->ip)
         {
-   #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
+   #if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
             result = 0;
    #else                               /* BSP_MCU_GROUP_RZT2M */
             result = USB_M0->PIPEBUF;
@@ -3868,9 +3868,9 @@ void hw_usb_set_suspendm (uint8_t usb_ip)
   #endif                               /* defined(BSP_MCU_GROUP_RA6M3) */
     }
 
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     USB_M0->LPSTS = (uint16_t) (USB_M0->LPSTS | (USB_SUSPENDM));
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 }
 
 /******************************************************************************
@@ -3892,9 +3892,9 @@ void hw_usb_clear_suspm (uint8_t usb_ip)
   #endif                               /* defined(BSP_MCU_GROUP_RA6M3) */
     }
 
-  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+  #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     USB_M0->LPSTS = (uint16_t) (USB_M0->LPSTS & (~USB_SUSPENDM));
-  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+  #endif                               /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 }
 
 /******************************************************************************

@@ -32,7 +32,11 @@ extern ethercat_ssc_port_instance_t const * gp_ethercat_ssc_port;
 #define ETHERCAT_SSC_PORT_EEPROM_ERROR_I2CBUS      (0x2800) /* rising edge-triggerd */
 
 /* ESC_RESETOUT# PFC setting */
-#define ETHERCAT_SSC_PORT_PFC_ESC_RESETOUT         (0x01U << IOPORT_PFC_OFFSET)
+#if (BSP_FEATURE_IOPORT_PIN_PFC_TYPE == 3)
+ #define ETHERCAT_SSC_PORT_PFC_ESC_RESETOUT        (0x12U << IOPORT_PFC_OFFSET)
+#else
+ #define ETHERCAT_SSC_PORT_PFC_ESC_RESETOUT        (0x01U << IOPORT_PFC_OFFSET)
+#endif
 
 /* Key code for PRCMD register */
 #define ETHERCAT_SSC_PORT_PRCMD_UNLOCK1            (0x000000A5U)
@@ -51,8 +55,10 @@ extern ethercat_ssc_port_instance_t const * gp_ethercat_ssc_port;
 #endif
 
 /* Set to 1 to support ETHSW MDIO */
-#ifndef ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT
- #define ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT      (0U)
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
+ #ifndef ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT
+  #define ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT    (0U)
+ #endif
 #endif
 
 /***********************************************************************************************************************
@@ -185,11 +191,13 @@ fsp_err_t RM_ETHERCAT_SSC_PORT_Open (ethercat_ssc_port_ctrl_t * const      p_ctr
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_GMAC0_PCLKM);
 #endif
 
-#if (ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT == 1)
+#if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
+ #if (ETHERCAT_SSC_PORT_ETHSW_MDIO_SUPPORT == 1)
 
     /* Power on ETHSW for MDIO */
     R_BSP_MODULE_START(FSP_IP_ETHSW, 0);
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_ETHSW);
+ #endif
 #endif
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 

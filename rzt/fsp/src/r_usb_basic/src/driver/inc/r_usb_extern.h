@@ -49,7 +49,11 @@ extern usb_hcdreg_t      g_usb_hstd_device_drv[][USB_MAXDEVADDR + 1U];  /* Devic
 extern volatile uint16_t g_usb_hstd_device_info[][USB_MAXDEVADDR + 1U][8U];
 extern usb_ctrl_trans_t  g_usb_ctrl_request[USB_NUM_USBIP][USB_MAXDEVADDR + 1];
  #if USB_IP_EHCI_OHCI == 1
+#if 1 == BSP_LP64_SUPPORT
+extern uintptr_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+#else
 extern uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+#endif
  #endif                                                         /* USB_IP_EHCI_OHCI == 1 */
 extern uint8_t g_data_read_flag;
  #if (BSP_CFG_RTOS == 2)
@@ -137,7 +141,7 @@ extern usb_hdl_t           g_usb_cur_task_hdl[];
 #else                                  /* #if (BSP_CFG_RTOS == 2) */
 extern usb_event_t g_usb_cstd_event;
 #endif                                 /*#if (BSP_CFG_RTOS == 2)*/
-#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+#if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
   #if USB_CFG_DMA == USB_CFG_ENABLE
 uint8_t usb_cstd_dma_ref_ch_no(uint8_t ip_no, uint16_t use_port);
@@ -146,11 +150,13 @@ void    usb_dma_set_ch_no(uint16_t ip_no, uint16_t use_port, uint8_t dma_ch_no);
 extern usb_dma_int_t gs_usb_cstd_dma_int;
 
 extern uint8_t g_usb_cstd_dma_ch[USB_NUM_USBIP][USB_FIFO_ACCESS_NUM_MAX];       /* DMA ch no. table */
-
+#if 1 ==  BSP_LP64_SUPPORT
+extern uintptr_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
+#else
 extern uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
-
+#endif
 extern uint8_t  g_usb_cstd_dma_fraction_size[][USB_DMA_USE_CH_MAX];             /* fraction size(1-3) */
-extern uint32_t g_usb_cstd_dma_fraction_adr[USB_NUM_USBIP][USB_DMA_USE_CH_MAX]; /* fraction data address */
+extern uintptr_t g_usb_cstd_dma_fraction_adr[USB_NUM_USBIP][USB_DMA_USE_CH_MAX];                       /* fraction data address */
 
 /* DMACA DMAC0I */
 void r_usb_dmaca_intDMAC0I_isr(void);
@@ -160,7 +166,7 @@ void r_usb_dmaca_intDMAC1I_isr(void);
 
   #endif                               /* USB_CFG_DMA == USB_CFG_ENABLE */
  #endif  /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
-#endif                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+#endif                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 
 extern usb_pipe_table_t g_usb_pipe_table[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1];
 extern uint16_t         g_usb_cstd_bemp_skip[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
@@ -238,10 +244,10 @@ void     usb_pstd_change_device_state(uint16_t state, uint16_t keyword, usb_cb_t
 void     usb_pstd_driver_registration(usb_pcdreg_t * registinfo);
 void     usb_pstd_driver_release(void);
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
 uint16_t usb_pstd_get_pipe_buf_value(uint16_t pipe_no);
 
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+ #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 
 #endif                                 /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
 
@@ -269,7 +275,7 @@ uint8_t usb_hstd_make_pipe_reg_info(uint16_t               ip_no,
                                     uint8_t              * descriptor,
                                     usb_pipe_table_reg_t * pipe_table_work);
 
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME)
+ #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
 uint16_t usb_hstd_get_pipe_buf_value(uint16_t pipe_no);
 
  #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) */
@@ -768,6 +774,10 @@ void usb_cstd_pipe_msg_forward(usb_utr_t * ptr, uint16_t pipe_no);
 void usb_cstd_pipe0_msg_forward(usb_utr_t * ptr, uint16_t dev_addr);
 
 #endif                                 /* #if (BSP_CFG_RTOS == 2) */
+#if 1 == BSP_LP64_SUPPORT
+extern uint64_t r_usb_pa_to_va(uint64_t paddr);
+extern uint64_t r_usb_va_to_pa(uint64_t vaddr);
+#endif
 
 uint8_t  R_USB_HstdConvertEndpointNum(uint8_t pipe);
 uint16_t R_USB_HstdGetPipeID(uint16_t devaddr, uint8_t epnum);

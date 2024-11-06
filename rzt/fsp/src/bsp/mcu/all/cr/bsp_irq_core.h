@@ -32,7 +32,14 @@ FSP_HEADER
 #endif
 
 #define BSP_EVENT_SGI_PPI_ARRAY_NUM             (2U)
-#define BSP_NON_SELECTABLE_ICFGR_MAX            (BSP_VECTOR_TABLE_MAX_ENTRIES / BSP_INTERRUPT_TYPE_OFFSET)
+#define BSP_NON_SELECTABLE_ICFGR_MAX            (BSP_FEATURE_BSP_NON_SELECTABLE_INTERRUPT_EVENT_NUM / \
+                                                 BSP_INTERRUPT_TYPE_OFFSET)
+
+#define BSP_ICFGR_MAX                           ((BSP_FEATURE_BSP_SELECTABLE_INTERRUPT_START +      \
+                                                  BSP_FEATURE_BSP_SELECTABLE_INTERRUPT_EVENT_NUM) / \
+                                                 BSP_INTERRUPT_TYPE_OFFSET)
+#define BSP_EVENT_ARRAY_NUM                     (BSP_FEATURE_BSP_EVENT_NUM_MAX / \
+                                                 BSP_INTERRUPT_TYPE_OFFSET + 1U)
 
 #define BSP_PRV_IRQ_CONFIG_MASK                 (0x000000FFU)
 #define BSP_PRV_GICD_ICFGR_INT_CONFIG_MASK      (1UL << 1UL)

@@ -54,7 +54,9 @@ void                       usb_hstd_ohci_insert_head_list(st_usb_ohci_list_entry
                                                           st_usb_ohci_list_entry_p_t link);
 void usb_hstd_ohci_insert_tail_list(st_usb_ohci_list_entry_p_t list_head,
                                     st_usb_ohci_list_entry_p_t link);
-uint32_t usb_hstd_ohci_physical_address_of(void * data);
+#if 1 == BSP_LP64_SUPPORT
+uint64_t usb_hstd_ohci_physical_address_of (void * p_data);
+#endif
 void     usb_hstd_ohci_pause_ed(usb_utr_t * ptr, st_usb_ohci_hcd_endpoint_p_t endpoint);
 void     usb_hstd_ohci_unschedule_isochronous_or_interrupt_endpoint(
     st_usb_ohci_hcd_endpoint_p_t endpoint,

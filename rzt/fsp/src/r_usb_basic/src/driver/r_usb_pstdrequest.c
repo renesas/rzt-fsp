@@ -584,9 +584,9 @@ static void usb_pstd_get_descriptor1 (usb_utr_t * p_utr)
                         p_table = g_usb_pstd_driver.p_configtbl;
                     }
 
-                    len = (uint16_t) (*(uint8_t *) ((uint32_t) p_table + (uint32_t) 3));
+                    len = (uint16_t) (*(uint8_t *) ((uintptr_t) p_table + (uint32_t) 3));
                     len = (uint16_t) (len << 8);
-                    len = (uint16_t) (len + (uint16_t) (*(uint8_t *) ((uint32_t) p_table + (uint32_t) 2)));
+                    len = (uint16_t) (len + (uint16_t) (*(uint8_t *) ((uintptr_t) p_table + (uint32_t) 2)));
 
                     /* Descriptor > wLength */
                     if (g_usb_pstd_req_length < len)
@@ -615,7 +615,7 @@ static void usb_pstd_get_descriptor1 (usb_utr_t * p_utr)
                 if (idx < g_usb_pstd_driver.num_string)
                 {
                     p_table = g_usb_pstd_driver.p_stringtbl[idx];
-                    len     = (uint16_t) (*(uint8_t *) ((uint32_t) p_table + (uint32_t) 0));
+                    len     = (uint16_t) (*(uint8_t *) ((uintptr_t) p_table + (uint32_t) 0));
                     if (g_usb_pstd_req_length < len)
                     {
                         /* Control read start */
@@ -692,9 +692,9 @@ static void usb_pstd_get_descriptor1 (usb_utr_t * p_utr)
                         p_table = g_usb_pstd_driver.p_othertbl;
                     }
 
-                    len = (uint16_t) (*(uint8_t *) ((uint32_t) p_table + (uint32_t) 3));
+                    len = (uint16_t) (*(uint8_t *) ((uintptr_t) p_table + (uint32_t) 3));
                     len = (uint16_t) (len << 8);
-                    len = (uint16_t) (len + (uint16_t) (*(uint8_t *) ((uint32_t) p_table + (uint32_t) 2)));
+                    len = (uint16_t) (len + (uint16_t) (*(uint8_t *) ((uintptr_t) p_table + (uint32_t) 2)));
 
                     /* Descriptor > wLength */
                     if (g_usb_pstd_req_length < len)
@@ -738,7 +738,7 @@ static void usb_pstd_get_descriptor1 (usb_utr_t * p_utr)
         g_usb_pstd_req_reg.request_value  = g_usb_pstd_req_value;
         g_usb_pstd_req_reg.request_index  = g_usb_pstd_req_index;
         g_usb_pstd_req_reg.request_length = g_usb_pstd_req_length;
-        if (USB_NULL != g_usb_pstd_driver.ctrltrans)
+        if (NULL != g_usb_pstd_driver.ctrltrans)
         {
             (*g_usb_pstd_driver.ctrltrans)(&g_usb_pstd_req_reg, (uint16_t) USB_NO_ARG, p_utr);
         }
@@ -1258,7 +1258,7 @@ static void usb_pstd_set_configuration0 (usb_utr_t * p_utr)
 
     if (g_usb_pstd_req_value != config_num)
     {
-        if (USB_NULL != g_usb_pstd_driver.devconfig)
+        if (NULL != g_usb_pstd_driver.devconfig)
         {
             /* Registration open function call */
             (*g_usb_pstd_driver.devconfig)(p_utr, g_usb_pstd_config_num, USB_NULL);
@@ -1345,7 +1345,7 @@ static void usb_pstd_set_configuration3 (usb_utr_t * p_utr)
  ******************************************************************************/
 static void usb_pstd_set_interface0 (usb_utr_t * p_utr)
 {
-    if (USB_NULL != g_usb_pstd_driver.interface)
+    if (NULL != g_usb_pstd_driver.interface)
     {
         /* Interfaced change function call */
         (*g_usb_pstd_driver.interface)(p_utr, g_usb_pstd_alt_num[g_usb_pstd_req_index], USB_NULL);

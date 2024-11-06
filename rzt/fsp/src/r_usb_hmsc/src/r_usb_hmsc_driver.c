@@ -18,7 +18,7 @@
 #if (BSP_CFG_RTOS == 2)
  #include "../../r_usb_basic/src/driver/inc/r_usb_cstd_rtos.h"
 #endif
-
+#include "r_usb_hhci.h"
 
 #include "r_usb_hmsc.h"
 #include "r_usb_hmsc_api.h"
@@ -39,6 +39,8 @@
  #define USB_VALUE_FE21H        (0xFE21)
  #define USB_ALL_PAGES          (0x3F)
  #define USB_VALUE_ALL_PAGES    (44)
+ #define USB_HMSC_MAX_DEVICE    (4)
+ #define USB_DATA_DIR_IN        (0x80U)
 
 /******************************************************************************
  * Private global variables and functions
@@ -86,11 +88,13 @@ void usb_hmsc_clr_pipe_table (uint16_t side, uint16_t dir);
 static usb_utr_t       usb_hmsc_trans_data[USB_NUM_USBIP][USB_MAXSTRAGE] USB_BUFFER_PLACE_IN_SECTION;   /* Send data transfer message */
 static usb_utr_t       usb_hmsc_receive_data[USB_NUM_USBIP][USB_MAXSTRAGE] USB_BUFFER_PLACE_IN_SECTION; /* Receive data transfer message */
 static uint32_t        usb_hmsc_trans_size[USB_NUM_USBIP];
-#if BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1 || BSP_MCU_GROUP_RZT2ME == 1
+#if USB_IP_EHCI_OHCI == 1
 uint16_t g_usb_hmsc_num_endpoint[USB_NUM_USBIP][USB_MAXDEVADDR + 1]; /* Num Endpoints */
 #endif /*BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1 || BSP_MCU_GROUP_RZT2ME == 1 */
 static uint8_t const * pusb_hmsc_buff[USB_NUM_USBIP] USB_BUFFER_PLACE_IN_SECTION;
 static uint16_t        usb_shmsc_process[USB_NUM_USBIP] USB_BUFFER_PLACE_IN_SECTION;
+uint8_t  g_data_format_buf[USB_VAL_1024 + 4]  USB_BUFFER_PLACE_IN_SECTION;
+uint8_t  g_format_flag = 0;
  #if (BSP_CFG_RTOS == 0)
 static uint16_t usb_shmsc_data_seq[USB_NUM_USBIP];
 static uint16_t usb_shmsc_stall_err_seq[USB_NUM_USBIP];
@@ -1302,11 +1306,26 @@ static void usb_hmsc_specified_path (usb_utr_t * mess)
  ******************************************************************************/
 static void usb_hmsc_check_result (usb_utr_t * mess, uint16_t data1, uint16_t data2)
 {
-    (void) data1;
-    (void) data2;
+	(void) data1;
+	(void) data2;
+  #if 1 == BSP_LP64_SUPPORT
+    uint8_t * va_buf;
+    void    * pa_baf;
+  #endif                               /* #if defined(BSP_MCU_GROUP_RZA3UL) */
 #if USB_IP_EHCI_OHCI == 1
     mess->result = mess->status;
 #endif
+  #if 1 == BSP_LP64_SUPPORT
+    va_buf = (uint8_t *) r_usb_pa_to_va((uint64_t) mess->p_tranadr);
+    if (mess->p_tranadr != va_buf)
+    {
+        if ((mess->keyword != USB_PIPE0) && (g_usb_hstd_pipe[mess->keyword].direction == USB_DATA_DIR_IN))
+        {
+            pa_baf = (void *) mess->p_tranadr;
+            memcpy(pa_baf, va_buf, mess->tranlen);
+        }
+    }
+  #endif                               /* #if defined(BSP_MCU_GROUP_RZA3UL) */
     usb_hmsc_specified_path(mess);
 }
 
@@ -1884,7 +1903,15 @@ static uint16_t usb_hmsc_send_data (usb_utr_t * ptr, uint16_t side, uint8_t * bu
     usb_hmsc_trans_data[ptr->ip][side].keyword = pipe;
 
     /* Transfer data address */
+    if(0 == g_format_flag)
+    {
     usb_hmsc_trans_data[ptr->ip][side].p_tranadr = (void *) buff;
+    }
+    else
+    {
+        memcpy(g_data_format_buf, buff, size);
+        usb_hmsc_trans_data[ptr->ip][side].p_tranadr = (void *) g_data_format_buf;
+    }
 
     /* Transfer data length */
     usb_hmsc_trans_data[ptr->ip][side].tranlen = size;
@@ -3110,10 +3137,25 @@ void usb_hmsc_trans_result (usb_utr_t * mess, uint16_t data1, uint16_t data2)
     usb_er_t err;
     (void) data1;
     (void) data2;
+  #if 1 == BSP_LP64_SUPPORT
+    uint8_t * va_buf;
+    void    * pa_baf;
+  #endif
 
   #if BSP_CFG_RTOS == 2
     gs_usb_hmsc_tran_result_msg = *mess;
 
+   #if 1 == BSP_LP64_SUPPORT
+    va_buf = (uint8_t *) r_usb_pa_to_va((uint64_t) mess->p_tranadr);
+    if (mess->p_tranadr != va_buf)
+    {
+        if ((mess->keyword != USB_PIPE0) && (g_usb_hstd_pipe[mess->keyword].direction == USB_DATA_DIR_IN))
+        {
+            pa_baf = (void *) mess->p_tranadr;
+            memcpy(pa_baf, va_buf, mess->tranlen);
+        }
+    }
+   #endif                              /* #if defined(BSP_MCU_GROUP_RZA3UL) */
     /* Send a message to HMSC mailbox */
     err = USB_SND_MSG(USB_HMSC_MBX, (usb_msg_t *) &gs_usb_hmsc_tran_result_msg);
   #else                                /* BSP_CFG_RTOS == 2 */
@@ -3250,12 +3292,12 @@ void usb_hmsc_class_check (usb_utr_t * ptr, uint16_t ** table)
     g_usb_hmsc_devaddr[ptr->ip]           = *table[7];
     *table[3] = USB_OK;
 
-#if  BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1 || BSP_MCU_GROUP_RZT2ME == 1
+#if USB_IP_EHCI_OHCI == 1
     g_usb_hmsc_num_endpoint[ptr->ip][g_usb_hmsc_devaddr[ptr->ip]] =
         g_p_usb_hmsc_interface_table[ptr->ip][USB_IF_B_NUMENDPOINTS]; /* Num Endpoints */
 
     R_USB_HstdSetPipe(table);
-#endif /* BSP_MCU_GROUP_RZT2M == 1 || BSP_MCU_GROUP_RZT2L == 1 || BSP_MCU_GROUP_RZT2ME == 1 */
+#endif /* USB_IP_EHCI_OHCI == 0 */
 
  #if (BSP_CFG_RTOS == 2)
 

@@ -137,14 +137,37 @@
 /* Illegal PHY register read value  */
 #define ETHER_PHY_REGISTER_READ_ERROR                  (0xffff)
 
+#if defined(BSP_MCU_GROUP_RZT2H)
+
+/* Bit definen of MDIO Address Register */
+ #define ETHER_PHY_MDIO_ADDRESS_PA_SHIFT               (21) /**< Physical Layer Address */
+ #define ETHER_PHY_MDIO_ADDRESS_PA_MASK                (0x1f << ETHER_PHY_MDIO_ADDRESS_PA_SHIFT)
+ #define ETHER_PHY_MDIO_ADDRESS_RDA_SHIFT              (16) /**< GMII Register */
+ #define ETHER_PHY_MDIO_ADDRESS_RDA_MASK               (0x1f << ETHER_PHY_MDIO_ADDRESS_RDA_SHIFT)
+ #define ETHER_PHY_MDIO_ADDRESS_CR_SHIFT               (8)  /**< CSR Clock Range */
+ #define ETHER_PHY_MDIO_ADDRESS_CR_MASK                (0x0f << ETHER_PHY_MDIO_ADDRESS_CR_SHIFT)
+ #define ETHER_PHY_MDIO_ADDRESS_GOC1                   (1 << 3)
+ #define ETHER_PHY_MDIO_ADDRESS_GOC0                   (1 << 2)
+ #define ETHER_PHY_MDIO_ADDRESS_C45E                   (1 << 1)
+ #define ETHER_PHY_MDIO_ADDRESS_GB                     (1 << 0) /**< MDIO Busy */
+
+ #define ETHER_PHY_MDIO_ADDRESS_READ                   (ETHER_PHY_MDIO_ADDRESS_GOC1 | ETHER_PHY_MDIO_ADDRESS_GOC0)
+ #define ETHER_PHY_MDIO_ADDRESS_WRITE                  (ETHER_PHY_MDIO_ADDRESS_GOC0)
+
+ #define ETHER_PHY_MDIO_ADDRESS_CR                     4 /* CSR clock/102 */
+
+#else // !BSP_MCU_GROUP_RZT2H
+
 /* Bit definen of GMII_Address Register */
-#define ETHER_PHY_GMII_ADDRESS_PA_SHIFT                (11)     /**< Physical Layer Address */
-#define ETHER_PHY_GMII_ADDRESS_PA_MASK                 (0x1f << ETHER_PHY_GMII_ADDRESS_PA_SHIFT)
-#define ETHER_PHY_GMII_ADDRESS_GR_SHIFT                (6)      /**< GMII Register */
-#define ETHER_PHY_GMII_ADDRESS_GR_MASK                 (0x1f << ETHER_PHY_GMII_ADDRESS_GR_SHIFT)
-#define ETHER_PHY_GMII_ADDRESS_CR                      (4 << 2) /**< CSR Clock Range */
-#define ETHER_PHY_GMII_ADDRESS_GW                      (1 << 1) /**< GMII Write */
-#define ETHER_PHY_GMII_ADDRESS_GB                      (1 << 0) /**< GMII Busy */
+ #define ETHER_PHY_GMII_ADDRESS_PA_SHIFT               (11)     /**< Physical Layer Address */
+ #define ETHER_PHY_GMII_ADDRESS_PA_MASK                (0x1f << ETHER_PHY_GMII_ADDRESS_PA_SHIFT)
+ #define ETHER_PHY_GMII_ADDRESS_GR_SHIFT               (6)      /**< GMII Register */
+ #define ETHER_PHY_GMII_ADDRESS_GR_MASK                (0x1f << ETHER_PHY_GMII_ADDRESS_GR_SHIFT)
+ #define ETHER_PHY_GMII_ADDRESS_CR                     (4 << 2) /**< CSR Clock Range */
+ #define ETHER_PHY_GMII_ADDRESS_GW                     (1 << 1) /**< GMII Write */
+ #define ETHER_PHY_GMII_ADDRESS_GB                     (1 << 0) /**< GMII Busy */
+
+#endif // !BSP_MCU_GROUP_RZT2H
 
 #define ETHER_PHY_ADDRESS_SIZE                         (0x1fU)
 #define ETHER_PHY_REGISTER_DATA_SIZE                   (0xffffU)
@@ -291,12 +314,34 @@ fsp_err_t R_ETHER_PHY_Open (ether_phy_ctrl_t * const p_ctrl, ether_phy_cfg_t con
 
     switch (p_extend->mdio_type)
     {
+#if defined(BSP_MCU_GROUP_RZT2H)
+        case ETHER_PHY_MDIO_GMAC:
+        default:
+        {
+            p_instance_ctrl->p_reg_etherc = (uint32_t *) R_GMAC0_BASE;
+            break;
+        }
+
+        case ETHER_PHY_MDIO_GMAC1:
+        {
+            p_instance_ctrl->p_reg_etherc = (uint32_t *) R_GMAC1_BASE;
+            break;
+        }
+
+        case ETHER_PHY_MDIO_GMAC2:
+        {
+            p_instance_ctrl->p_reg_etherc = (uint32_t *) R_GMAC2_BASE;
+            break;
+        }
+
+#else                                  // !BSP_MCU_GROUP_RZT2H
         case ETHER_PHY_MDIO_GMAC:
         default:
         {
             p_instance_ctrl->p_reg_etherc = (uint32_t *) R_GMAC_BASE;
             break;
         }
+#endif                                 // !BSP_MCU_GROUP_RZT2H
 
 #if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
         case ETHER_PHY_MDIO_ETHSW:
@@ -561,10 +606,14 @@ fsp_err_t R_ETHER_PHY_Read (ether_phy_ctrl_t * const p_ctrl, uint32_t reg_addr, 
     switch (p_extend->mdio_type)
     {
         case ETHER_PHY_MDIO_GMAC:
-        {
-            ether_phy_read_gmac(p_instance_ctrl, reg_addr, p_data);
-            break;
-        }
+#if defined(BSP_MCU_GROUP_RZT2H)
+        case ETHER_PHY_MDIO_GMAC1:
+        case ETHER_PHY_MDIO_GMAC2:
+#endif
+            {
+                ether_phy_read_gmac(p_instance_ctrl, reg_addr, p_data);
+                break;
+            }
 
 #if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
         case ETHER_PHY_MDIO_ETHSW:
@@ -612,10 +661,14 @@ fsp_err_t R_ETHER_PHY_Write (ether_phy_ctrl_t * const p_ctrl, uint32_t reg_addr,
     switch (p_extend->mdio_type)
     {
         case ETHER_PHY_MDIO_GMAC:
-        {
-            ether_phy_write_gmac(p_instance_ctrl, reg_addr, data);
-            break;
-        }
+#if defined(BSP_MCU_GROUP_RZT2H)
+        case ETHER_PHY_MDIO_GMAC1:
+        case ETHER_PHY_MDIO_GMAC2:
+#endif
+            {
+                ether_phy_write_gmac(p_instance_ctrl, reg_addr, data);
+                break;
+            }
 
 #if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
         case ETHER_PHY_MDIO_ETHSW:
@@ -680,6 +733,10 @@ static fsp_err_t ether_phy_open_param_check (ether_phy_instance_ctrl_t   * p_ins
     ETHER_PHY_ERROR_RETURN(((ETHER_PHY_MDIO_GMAC == p_extend->mdio_type) ||
  #if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
                             (ETHER_PHY_MDIO_ETHSW == p_extend->mdio_type) ||
+ #endif
+ #if defined(BSP_MCU_GROUP_RZT2H)
+                            (ETHER_PHY_MDIO_GMAC1 == p_extend->mdio_type) ||
+                            (ETHER_PHY_MDIO_GMAC2 == p_extend->mdio_type) ||
  #endif
                             (ETHER_PHY_MDIO_ESC == p_extend->mdio_type)),
                            FSP_ERR_INVALID_ARGUMENT);
@@ -1308,6 +1365,48 @@ void ether_phy_convert_speed_duplex (uint32_t                  line_speed_duple,
  *
  * @retval      read value
  **********************************************************************************************************************/
+#if defined(BSP_MCU_GROUP_RZT2H)
+void ether_phy_read_gmac (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr, uint32_t * const p_data)
+{
+    volatile R_GMAC_Type * p_reg_etherc = (R_GMAC_Type *) p_instance_ctrl->p_reg_etherc;
+    uint32_t               timeout;
+    uint32_t               val_tmp;
+
+    val_tmp =
+        ((p_instance_ctrl->p_ether_phy_cfg->phy_lsi_address << ETHER_PHY_MDIO_ADDRESS_PA_SHIFT) &
+         ETHER_PHY_MDIO_ADDRESS_PA_MASK) |
+        ((reg_addr << ETHER_PHY_MDIO_ADDRESS_RDA_SHIFT) & ETHER_PHY_MDIO_ADDRESS_RDA_MASK) |                /* phy reg address */
+        ((ETHER_PHY_MDIO_ADDRESS_CR << ETHER_PHY_MDIO_ADDRESS_CR_SHIFT) & ETHER_PHY_MDIO_ADDRESS_CR_MASK) | /* clock range */
+        ETHER_PHY_MDIO_ADDRESS_READ |                                                                       /* mode read */
+        ETHER_PHY_MDIO_ADDRESS_GB;                                                                          /* busy */
+
+    p_reg_etherc->MAC_MDIO_Address = val_tmp;
+
+    /* calculate timeout based on current timestamp */
+    timeout = ETHER_PHY_TIMEOUT_COUNT;
+
+    while (1)
+    {
+        /* Wait read complete */
+        if (!(p_reg_etherc->MAC_MDIO_Address_b.GB))
+        {
+            *p_data = p_reg_etherc->MAC_MDIO_Data_b.GD;
+            break;
+        }
+
+        if (0 == timeout)
+        {
+            /* Timeout */
+            *p_data = ETHER_PHY_REGISTER_READ_ERROR;
+            break;
+        }
+
+        timeout--;
+    }
+}                                      /* End of function ether_phy_read_gmac() */
+
+#else                                  // !BSP_MCU_GROUP_RZT2H
+
 void ether_phy_read_gmac (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr, uint32_t * const p_data)
 {
     volatile R_GMAC_Type * p_reg_etherc = (R_GMAC_Type *) p_instance_ctrl->p_reg_etherc;
@@ -1345,6 +1444,8 @@ void ether_phy_read_gmac (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t 
         timeout--;
     }
 }                                      /* End of function ether_phy_read_gmac() */
+
+#endif                                 // !BSP_MCU_GROUP_RZT2H
 
 #if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
 
@@ -1513,6 +1614,49 @@ void ether_phy_read_esc (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t r
  *
  * @retval      none
  **********************************************************************************************************************/
+#if defined(BSP_MCU_GROUP_RZT2H)
+
+void ether_phy_write_gmac (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr, uint32_t data)
+{
+    volatile R_GMAC_Type * p_reg_etherc = (R_GMAC_Type *) p_instance_ctrl->p_reg_etherc;
+    uint32_t               timeout;
+    uint32_t               val_tmp;
+
+    val_tmp =
+        ((p_instance_ctrl->p_ether_phy_cfg->phy_lsi_address << ETHER_PHY_MDIO_ADDRESS_PA_SHIFT) &
+         ETHER_PHY_MDIO_ADDRESS_PA_MASK) |
+        ((reg_addr << ETHER_PHY_MDIO_ADDRESS_RDA_SHIFT) & ETHER_PHY_MDIO_ADDRESS_RDA_MASK) |                /* phy reg address */
+        ((ETHER_PHY_MDIO_ADDRESS_CR << ETHER_PHY_MDIO_ADDRESS_CR_SHIFT) & ETHER_PHY_MDIO_ADDRESS_CR_MASK) | /* clock range */
+        ETHER_PHY_MDIO_ADDRESS_WRITE |                                                                      /* mode write */
+        ETHER_PHY_MDIO_ADDRESS_GB;                                                                          /* busy */
+
+    p_reg_etherc->MAC_MDIO_Data_b.GD = (uint16_t) data;
+    p_reg_etherc->MAC_MDIO_Address   = val_tmp;
+
+    /* calculate timeout based on current timestamp */
+    timeout = ETHER_PHY_TIMEOUT_COUNT;
+
+    while (1)
+    {
+        /* wait write complete */
+        if (!(p_reg_etherc->MAC_MDIO_Address_b.GB))
+        {
+            /* Sucess */
+            break;
+        }
+
+        if (0 == timeout)
+        {
+            /* Timeout */
+            break;
+        }
+
+        timeout--;
+    }
+}                                      /* End of function ether_phy_write_gmac() */
+
+#else // !BSP_MCU_GROUP_RZT2H
+
 void ether_phy_write_gmac (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t reg_addr, uint32_t data)
 {
     volatile R_GMAC_Type * p_reg_etherc = (R_GMAC_Type *) p_instance_ctrl->p_reg_etherc;
@@ -1551,6 +1695,8 @@ void ether_phy_write_gmac (ether_phy_instance_ctrl_t * p_instance_ctrl, uint32_t
         timeout--;
     }
 }                                      /* End of function ether_phy_write_gmac() */
+
+#endif // !BSP_MCU_GROUP_RZT2H
 
 #if (BSP_FEATURE_ETHSW_SUPPORTED == 1)
 
@@ -1746,6 +1892,7 @@ void ether_phy_targets_initialize (ether_phy_instance_ctrl_t * p_instance_ctrl)
 
         /* User custom */
 #if (ETHER_PHY_CFG_USE_CUSTOM_PHY_LSI_ENABLE)
+        case ETHER_PHY_LSI_TYPE_CUSTOM:
         {
             if (NULL != p_instance_ctrl->p_ether_phy_cfg->p_extend)
             {

@@ -994,7 +994,7 @@ typedef struct st_ethsw_time_offset_correction
 typedef struct st_ethsw_time_rate_correction
 {
     uint8_t time_num;                  ///< timer number (0 or 1)
-    int16_t rate;                      ///< Correction rate
+    int32_t rate;                      ///< Correction rate
 } ethsw_time_rate_correction_t;
 
 /* Domain parameter */
@@ -1238,6 +1238,9 @@ fsp_err_t R_ETHSW_TimeEnableSet(ether_switch_ctrl_t * const p_ctrl, ethsw_time_e
 fsp_err_t R_ETHSW_TimeTransmitTimestampSet(ether_switch_ctrl_t * const p_ctrl, ethsw_time_transmit_t * p_time_transmit);
 fsp_err_t R_ETHSW_TimeValueSet(ether_switch_ctrl_t * const p_ctrl, ethsw_timestamp_t * p_timestamp);
 fsp_err_t R_ETHSW_TimeValueGet(ether_switch_ctrl_t * const p_ctrl, ethsw_timestamp_t * p_timestamp);
+fsp_err_t R_ETHSW_TimeValueGetAll(ether_switch_ctrl_t * const p_ctrl,
+                                  ethsw_timestamp_t         * p_timer0,
+                                  ethsw_timestamp_t         * p_timer1);
 fsp_err_t R_ETHSW_TimePeerDelaySet(ether_switch_ctrl_t * const p_ctrl,
                                    uint32_t                    port,
                                    ethsw_time_peerdelay_t    * p_peerdelay);
