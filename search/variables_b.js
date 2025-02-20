@@ -1,10 +1,17 @@
 var searchData=
 [
   ['last_5fpfrm_5fadj',['last_pfrm_adj',['../group___e_t_h_e_r___s_w_i_t_c_h.html#aaa4db04a532edbd56eb21c1ef529e5aa',1,'ethsw_preempt_status_t']]],
+  ['layer',['layer',['../group___d_i_s_p_l_a_y___a_p_i.html#a0d527f8a7654fc8b2cf49d350247d0db',1,'display_cfg_t::layer()'],['../group___d_i_s_p_l_a_y___a_p_i.html#abd363f5bea0685cb767a6002c3d5afe3',1,'display_runtime_cfg_t::layer()']]],
+  ['layerchange',['layerChange',['../group___d_i_s_p_l_a_y___a_p_i.html#ac012f204038e500efa90632c7c8ce5a8',1,'display_api_t']]],
   ['learning',['learning',['../group___e_t_h_e_r___s_w_i_t_c_h.html#acdf333d90cde95b0badb81d4b19c0e77',1,'ethsw_mac_table_config_t']]],
   ['learning_5fdis',['learning_dis',['../group___e_t_h_e_r___s_w_i_t_c_h.html#af982702bb245c58b8000ffa36b153c28',1,'ethsw_rx_pattern_ctrl_t']]],
   ['length',['length',['../group___a_d_c___a_p_i.html#a3f8dd9f7ffefcbc0180fc7252c0482c9',1,'adc_info_t::length()'],['../group___t_r_a_n_s_f_e_r___a_p_i.html#a5aba602d71a6ba4e6be056a90b5ed9e8',1,'transfer_info_t::length()'],['../group___e_t_h_e_r___s_w_i_t_c_h.html#a7bdd07b5091fe708ecd0b9e61b261c3c',1,'ethsw_yellow_length_t::length()'],['../group___t_r_a_n_s_f_e_r___a_p_i.html#a5aba602d71a6ba4e6be056a90b5ed9e8',1,'transfer_info_t::length()']]],
   ['level',['level',['../group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#a6faa16c6934adeb12747de12f259998f',1,'mtu3_three_phase_extended_cfg_t']]],
+  ['line_5fdescending_5fenable',['line_descending_enable',['../group___d_i_s_p_l_a_y___a_p_i.html#a6453cf8d257082bcbb7ba3e04798ac0e',1,'display_input_cfg_t']]],
+  ['line_5fdetect_5fipl',['line_detect_ipl',['../group___d_i_s_p_l_a_y___a_p_i.html#ad5ecd65704e06873bbc9be0d305c9c17',1,'display_cfg_t']]],
+  ['line_5fdetect_5firq',['line_detect_irq',['../group___d_i_s_p_l_a_y___a_p_i.html#a335946e69d18bab7d1d19f80f1d18906',1,'display_cfg_t']]],
+  ['lines_5frepeat_5fenable',['lines_repeat_enable',['../group___d_i_s_p_l_a_y___a_p_i.html#a94dcd0b4ce2d2a4788a8ebef01bec268',1,'display_input_cfg_t']]],
+  ['lines_5frepeat_5ftimes',['lines_repeat_times',['../group___d_i_s_p_l_a_y___a_p_i.html#a62b381257f9a385f9abcbc84c1fd036e',1,'display_input_cfg_t']]],
   ['link',['link',['../group___e_l_c___a_p_i.html#ad58380dc39c1d257fc9128dda007865d',1,'elc_cfg_t']]],
   ['link_5fequalization_5frequest_5fipl',['link_equalization_request_ipl',['../group___p_c_i_e___r_c.html#ae3e2db007a01a2ae963eda6a83ce5216',1,'pcie_rc_extended_cfg_t']]],
   ['link_5fequalization_5frequest_5firq',['link_equalization_request_irq',['../group___p_c_i_e___r_c.html#ac91d99e00ebff8922cbb35613b4e57a4',1,'pcie_rc_extended_cfg_t']]],

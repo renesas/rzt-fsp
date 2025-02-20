@@ -1,7 +1,6 @@
 var group___r_s_i_p___p_r_o_t_e_c_t_e_d =
 [
     [ "rsip_wufpk_t", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#structrsip__wufpk__t", null ],
-    [ "rsip_verified_cert_info_t", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#structrsip__verified__cert__info__t", null ],
     [ "rsip_root_cert_mac_t", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#structrsip__root__cert__mac__t", null ],
     [ "rsip_instance_ctrl_t", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#structrsip__instance__ctrl__t", null ],
     [ "FSP_ERR_SB_INTERNAL_FAIL", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga5a3ff940a6dd4274adb2bb743f89cb74", null ],
@@ -21,11 +20,6 @@ var group___r_s_i_p___p_r_o_t_e_c_t_e_d =
     [ "FSP_ERR_SB_CRYPTO_UNSUPPORTED_ALGORITHM", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga41100687f112b08951d71d4f11ca9170", null ],
     [ "FSP_ERR_SB_CRYPTO_RESOURCE_CONFLICT", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#gaa8e64530bfed122a6d72f9740836da9e", null ],
     [ "FSP_ERR_SB_CRYPTO_PARAM_ERR", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#gacad0d7d833bedc26c8594ce335700038", null ],
-    [ "rsip_initial_vector_type_t", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#gae61f4d26c0ba8bb71e87d9d7e1a049cd", [
-      [ "RSIP_INITIAL_VECTOR_TYPE_AES_16_BYTE", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ggae61f4d26c0ba8bb71e87d9d7e1a049cda17e1e222c3312be0948ba9303854bfd9", null ],
-      [ "RSIP_INITIAL_VECTOR_TYPE_AES_TLS12_CBC", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ggae61f4d26c0ba8bb71e87d9d7e1a049cda944636fd5ba8f96d962ad5158d5960c7", null ],
-      [ "RSIP_INITIAL_VECTOR_TYPE_AES_TLS12_AEAD", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ggae61f4d26c0ba8bb71e87d9d7e1a049cda38ee40b6a53daed78a7661189ac33d5a", null ]
-    ] ],
     [ "rsip_tls12_prf_label_t", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#gaa6c6674e4b2859c0458ffc2f4f3d2004", [
       [ "RSIP_TLS12_PRF_LABEL_CLIENT_FINISHED", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ggaa6c6674e4b2859c0458ffc2f4f3d2004a70df6d75819785cd86d155559343a7be", null ],
       [ "RSIP_TLS12_PRF_LABEL_SERVER_FINISHED", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ggaa6c6674e4b2859c0458ffc2f4f3d2004a636ec13e29ee363eb877c7eaeff0208d", null ]
@@ -41,6 +35,8 @@ var group___r_s_i_p___p_r_o_t_e_c_t_e_d =
     [ "R_RSIP_KeyGenerate", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga2dc3a8de5422978d001750fa120df176", null ],
     [ "R_RSIP_KeyPairGenerate", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#gacbc429a31f21d4a409d40ef7c8704c96", null ],
     [ "R_RSIP_EncryptedKeyWrap", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#gadaf179f32de394bfccd5c7c86d4a4873", null ],
+    [ "R_RSIP_RFC3394_KeyWrap", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga52d0d19ec65a616dfc97c880bc594720", null ],
+    [ "R_RSIP_RFC3394_KeyUnwrap", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga4cc0ba672bcefdc198b687b95941dbeb", null ],
     [ "R_RSIP_InjectedKeyImport", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#gaecd1b85d92a82f754a286f708423b2cd", null ],
     [ "R_RSIP_PublicKeyExport", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga6f35d3199e43ee7f2f89ec17c80b9c44", null ],
     [ "R_RSIP_AES_Cipher_Init", "group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga6d1e1bf59e74091501ab2fb9966bd9bd", null ],

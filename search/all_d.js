@@ -26,6 +26,7 @@ var searchData=
   ['nor_5fflash_5fdata_5fbus_5fwidth_5ft',['nor_flash_data_bus_width_t',['../group___n_o_r___f_l_a_s_h___a_p_i.html#ga5495f257bcbe304186ebba4af463b440',1,'r_nor_flash_api.h']]],
   ['nor_5fflash_5fstatus_5ft',['nor_flash_status_t',['../group___n_o_r___f_l_a_s_h___a_p_i.html#structnor__flash__status__t',1,'']]],
   ['num_5fblocks',['num_blocks',['../group___t_r_a_n_s_f_e_r___a_p_i.html#a9781e58bb7cb2ee40de446936d523814',1,'transfer_info_t']]],
+  ['num_5fbytes',['num_bytes',['../group___c_r_c___a_p_i.html#aaed97c9ce40d9d7209348114b819bf02',1,'crc_input_t']]],
   ['num_5frx_5fdescriptors',['num_rx_descriptors',['../group___e_t_h_e_r___a_p_i.html#ae672b5a15f85774b5b136a6e50073f68',1,'ether_cfg_t']]],
   ['num_5fsectors',['num_sectors',['../group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#a9c19435e9c8a2e1a32c9e0869ef10663',1,'rm_block_media_info_t']]],
   ['num_5fstates',['num_states',['../group___a_d_c.html#aedbb76489ecc68110ccf3ede6f02fce9',1,'adc_sample_state_t']]],

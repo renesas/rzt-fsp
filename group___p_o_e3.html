@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -190,7 +190,7 @@ Overview</h1>
 <h2><a class="anchor" id="r-poe3-features"></a>
 Features</h2>
 <p>The POE3 module has the following features:</p><ul>
-<li>Supports disabling the target pins when POE0#, POE4#, POE8# pins are the falling-edge or low-level sampling.<a class="anchor" id="um_poe3_stop_request"></a></li>
+<li>Supports disabling the target pins when POE0#, POE4#, POE8#, POE10#, POE11# pins are the falling-edge or low-level sampling.<a class="anchor" id="um_poe3_stop_request"></a></li>
 <li>Supports disabling the target pins when main oscillator stop is detected.<a class="anchor" id="um_poe3_oscillation_stop_disable"></a></li>
 <li>Supports disabling MTU3 output pins by software API.<a class="anchor" id="um_poe3_software_disable"></a></li>
 <li>Supports notifying the application when target pin are disabled by POE3.</li>
@@ -640,15 +640,12 @@ Clock Configuration</h2>
 <p>The POE3 clock is based on the PCLKH frequency.</p>
 <h2><a class="anchor" id="r-poe3-pin-configuration"></a>
 Pin Configuration</h2>
-<p><a class="anchor" id="um_poe3_open_close"></a> This module can use POE0#, POE4# or POE8# as an input signal to disable MTU3 output pins.</p>
+<p><a class="anchor" id="um_poe3_open_close"></a> This module can use POE0#, POE4#, POE8#, POE10# or POE11# as an input signal to disable MTU3 output pins.</p>
 <h1><a class="anchor" id="r-poe3-usage_notes"></a>
 Usage Notes</h1>
 <h2>POE3 MTIOC Pin and Channel</h2>
-<p>POE0# controls the output of MTU3 and MTU4. POE4# controls the output of MTU6 and MTU7. POE8# controls the output of MTU0.</p>
+<p>POE0# as default or POE4#, POE8#, POE10#, POE11# as additional controls the output of MTU3 and MTU4. POE4# as default or POE0#, POE8#, POE10#, POE11# as additional controls the output of MTU6 and MTU7. POE8# as default or POE0#, POE4#, POE10#, POE11# as additional controls the output of MTU0.</p>
 <h2>Limitations</h2>
-<p>The user should be aware of the following limitations when using POE3:</p><ul>
-<li>POE10# and POE11# are not supported.</li>
-</ul>
 <h2>NOTE</h2>
 <p>The POE3 interrupt type is a level interrupt. Please do the following: When clearing the interrupt status in interrupt processing, Check the interrupt status is cleared before terminating interrupt processing.</p>
 <h1><a class="anchor" id="r-poe3-examples"></a>
@@ -964,7 +961,7 @@ High-impedance output enable for POE8, POE10, POE11. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

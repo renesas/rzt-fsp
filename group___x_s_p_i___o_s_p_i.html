@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -217,11 +217,14 @@ Features</h2>
 <li>3 byte addressing for 1S-1S-1S(SPI)<a class="anchor" id="um_ospi_3byte_address"></a></li>
 <li>4 byte addressing for 1S-1S-1S(SPI) and 8D-8D-8D(OPI)<a class="anchor" id="um_ospi_4byte_address"></a></li>
 <li>Auto-calibration for 8D-8D-8D(OPI) mode<a class="anchor" id="um_ospi_autocalibration"></a></li>
-<li>Configurable byte order in 8D-8D-8D(OPI) mode except for memory mapping read<a class="anchor" id="um_ospi_byte_order"></a> <dl class="section note"><dt>Note</dt><dd>1. The available chip select lines may differ between devices. A full list of selectable chip select lines is available in the User's Manual for your device. </dd>
-<dd>
-2. When using serial flash memory without a hardware reset pin, if this LSI is reset after the serial flash protocol setting has been changed from 1S-1S-1S protocol to another protocol mode by the user program, the protocol mode of the boot program does not coincide with the protocol mode of the serial flash memory, which causes a boot error.</dd></dl>
-</li>
+<li>Configurable byte order in 8D-8D-8D(OPI) mode except for memory mapping read<a class="anchor" id="um_ospi_byte_order"></a></li>
+<li>Optional DMAC support for data transmission when used with xSPI_OSPI.</li>
 </ul>
+<dl class="section note"><dt>Note</dt><dd>1. The available chip select lines may differ between devices. A full list of selectable chip select lines is available in the User's Manual for your device. </dd>
+<dd>
+2. When using serial flash memory without a hardware reset pin, if this LSI is reset after the serial flash protocol setting has been changed from 1S-1S-1S protocol to another protocol mode by the user program, the protocol mode of the boot program does not coincide with the protocol mode of the serial flash memory, which causes a boot error. </dd>
+<dd>
+3. If DMAC support is enabled, this driver uses 64 bytes of .noncache_buffer space.</dd></dl>
 <h1><a class="anchor" id="r-xspi-ospi-configuration"></a>
 Configuration</h1>
 <p><h2>Build Time Configurations for r_xspi_ospi</h2>
@@ -277,6 +280,14 @@ Disable</li>
 <td>Unit 0 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit0. </td></tr>
 <tr>
 <td>Unit 1 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit1. </td></tr>
+<tr>
+<td>DMAC Support</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enable</li>
+<li>
+Disable</li>
+</ul>
+</td><td>Disable </td><td>Enable DMAC support for the OSPI module. </td></tr>
 </table>
  <h2>Configurations for Storage &gt; OSPI (r_xspi_ospi)</h2>
 This module can be added to the Stacks tab via New Stack &gt; Storage &gt; OSPI (r_xspi_ospi).<br />
@@ -799,10 +810,11 @@ Enumerations</h2></td></tr>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_instance_ctrl is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>If another chip select of the same unit is used by other drivers, the other chip select operation will also stop when this function is executed. </dd></dl>
 
 </div>
 </div>
@@ -1035,7 +1047,7 @@ Enumerations</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>In this API, the number of bytes that can be written at one time depends on the MCU : any byte within 64bytes for RZ/T2M and RZ/T2L, 8byte for RZ/T2ME and RZ/T2H. </dd>
+<dl class="section note"><dt>Note</dt><dd>In this API, data can be written up to 64 bytes at a time if DMAC support is enabled. Otherwise, the number of bytes that can be written at one time depends on the MCU : 64 bytes for RZ/T2M and RZ/T2L, 8 bytes for RZ/T2ME and RZ/T2H. </dd>
 <dd>
 This API performs page program operations to the device. Writing across pages is not supported. Please set the write address and write size according to the page size of your device. </dd>
 <dd>
@@ -1238,7 +1250,7 @@ In 8D-8D-8D(OPI) mode, written data must be even bytes in size. </dd></dl>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

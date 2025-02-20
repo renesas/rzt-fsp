@@ -9,6 +9,7 @@ var group___b_s_p___m_c_u =
     [ "FSP_ERROR_LOG", "group___b_s_p___m_c_u.html#ga960f46c44b67ba8ad5377cfc8e4e6a75", null ],
     [ "FSP_ASSERT", "group___b_s_p___m_c_u.html#gaa4fa8ae9390afa996af2dabee6552732", null ],
     [ "FSP_ERROR_RETURN", "group___b_s_p___m_c_u.html#ga577e9b015e1b0794934fa4f2b229e52f", null ],
+    [ "FSP_ERROR_NOT_RETURN_VALUE", "group___b_s_p___m_c_u.html#gaf27c26290892ca3dcf9b1bd0b26eae44", null ],
     [ "FSP_CRITICAL_SECTION_ENTER", "group___b_s_p___m_c_u.html#gaddc2260c1ce320f3aa1f1cb05b9a5620", null ],
     [ "FSP_CRITICAL_SECTION_EXIT", "group___b_s_p___m_c_u.html#ga23338e06b1e1537017ef4f3f94cda354", null ],
     [ "FSP_INVALID_VECTOR", "group___b_s_p___m_c_u.html#ga4e36b09bee515ff1b813e7ba0412e60d", null ],
@@ -58,7 +59,17 @@ var group___b_s_p___m_c_u =
       [ "FSP_IP_AFMT", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950a9e2334f0df6a80e1642a2d60d27d8825", null ],
       [ "FSP_IP_HDSL", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950ab49158475d737c3bfb98a10a8b9bda82", null ],
       [ "FSP_IP_BISS", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950ac2cda9b53d0b2a6f519f6f417d4b38a2", null ],
-      [ "FSP_IP_ENDAT", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950aad978d75940b95803a58e92775882603", null ]
+      [ "FSP_IP_ENDAT", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950aad978d75940b95803a58e92775882603", null ],
+      [ "FSP_IP_SCIE", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950a8bc397b50a939a9df55e937734b8e002", null ],
+      [ "FSP_IP_TRACECLOCK", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950a3291ef826d15d3d54656b40804eb392d", null ],
+      [ "FSP_IP_ENCOUT", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950adf0fddf4daf4b360019063e68080a266", null ],
+      [ "FSP_IP_DDRSS", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950abdab5c1f5f54c1d91ea6976d33b8be55", null ],
+      [ "FSP_IP_LCDC", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950a262b8cb7bfbecd9ce7220c80b3fb7b3f", null ],
+      [ "FSP_IP_PCIE", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950a015c1bac7558efe3bdbcc7c6247ebd8d", null ],
+      [ "FSP_IP_SDHI", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950afd3bcaf69cb14356e5fbcac52a2eb48a", null ],
+      [ "FSP_IP_CPU1", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950a05f5c55e531069cef7bad0ff9b9c8c27", null ],
+      [ "FSP_IP_CR52", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950a52aa3c12d6b922449e8d906dbbe4dca6", null ],
+      [ "FSP_IP_CA55", "group___b_s_p___m_c_u.html#gga7880302f0edd7cc4290c037809975950acdade886276a65a3ff02f6f0f687a4df", null ]
     ] ],
     [ "fsp_signal_t", "group___b_s_p___m_c_u.html#ga0f8db6472715cfd8203eb499b26904e8", [
       [ "FSP_SIGNAL_INTCPU0", "group___b_s_p___m_c_u.html#gga0f8db6472715cfd8203eb499b26904e8ad6c4a95b44bc37821e8521707dbfca36", null ],

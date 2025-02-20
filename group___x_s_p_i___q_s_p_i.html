@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -213,6 +213,7 @@ Features</h2>
 <li>Supports combination function during write access of memory-mapping mode<a class="anchor" id="um_qspi_combination_function"></a></li>
 <li>Configurable prefetch function during read transaction in memory-mapping mode<a class="anchor" id="um_qspi_prefetch_function"></a></li>
 <li>On-The-Fly Decryption (OTFD)</li>
+<li>Optional DMAC support for data transmission when used with xSPI_QSPI.</li>
 </ul>
 <dl class="section note"><dt>Note</dt><dd>1. The available chip select lines may differ between devices. A full list of selectable chip select lines is available in the User's Manual for your device. </dd>
 <dd>
@@ -227,7 +228,7 @@ The following build time configurations are defined in driver/r_xspi_qspi_cfg.h:
 <tr>
 <td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; Start Address</td><td>MCU Specific Options</td><td></td><td>Start address of xSPI Unit0 CS0 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x600FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
+<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x600FFFFF </td><td>End address of xSPI Unit0 CS0 in memory mapping mode. </td></tr>
 <tr>
 <td>Custom Address Space &gt; Unit0 &gt; CS1 &gt; Start Address</td><td>Address should be within xspi unit0 external address space</td><td>0x64000000 </td><td>Start address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
 <tr>
@@ -273,6 +274,14 @@ Disable</li>
 <tr>
 <td>Unit 1 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit1. </td></tr>
 <tr>
+<td>DMAC Support</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Enable</li>
+<li>
+Disable</li>
+</ul>
+</td><td>Disable </td><td>Enable DMAC support for the QSPI module. </td></tr>
+<tr>
 <td>OTFD Support</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
 Enabled</li>
@@ -315,7 +324,7 @@ Chip Select 1</li>
 <li>
 64MB</li>
 </ul>
-</td><td>1MB </td><td>Specify the SerialFlash size. </td></tr>
+</td><td>64MB </td><td>Specify the SerialFlash size. </td></tr>
 <tr>
 <td>General &gt; SPI Protocol</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -471,7 +480,14 @@ xSPI_QSPI Memory Mapped Access</h2>
 <td>0x68000000 to 0x6FFFFFFF </td><td>unit 1 CS0 + unit 1 CS1 </td></tr>
 </table>
 <p>The address map for the external address space xSPI in RZ/T2H is as follows:</p>
-<p>| Address | Space | | 0x40000000 to 0x4FFFFFFF | unit 0 CS0 + unit 0 CS1 | | 0x50000000 to 0x5FFFFFFF | unit 1 CS0 + unit 1 CS1 |</p>
+<table class="doxtable">
+<tr>
+<th>Address </th><th>Space  </th></tr>
+<tr>
+<td>0x40000000 to 0x4FFFFFFF </td><td>unit 0 CS0 + unit 0 CS1 </td></tr>
+<tr>
+<td>0x50000000 to 0x5FFFFFFF </td><td>unit 1 CS0 + unit 1 CS1 </td></tr>
+</table>
 <dl class="section note"><dt>Note</dt><dd>When Custom Address Space Enable configuration setting for RZ/T2ME and RZ/T2H is Enable, start address of CS1 space depends on the CS1 start address set in Custom Address Space configuration. When Disable, the start address of CS1 space is set so that each CS uses half of the address space.</dd></dl>
 <h2><a class="anchor" id="r-xspi-qspi-limitations"></a>
 Limitations</h2>
@@ -771,10 +787,11 @@ Enumerations</h2></td></tr>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_instance_ctrl is NULL. </td></tr>
-    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>If another chip select of the same unit is used by other drivers, the other chip select operation will also stop when this function is executed. </dd></dl>
 
 </div>
 </div>
@@ -1012,7 +1029,7 @@ Enumerations</h2></td></tr>
   </table>
   </dd>
 </dl>
-<dl class="section note"><dt>Note</dt><dd>In this API, the number of bytes that can be written at one time depends on the MCU : any byte within 64bytes for RZ/T2M and RZ/T2L, 8bytes for RZ/T2ME and RZ/T2H. </dd>
+<dl class="section note"><dt>Note</dt><dd>In this API, data can be written up to 64 bytes at a time if DMAC support is enabled. Otherwise, the number of bytes that can be written at one time depends on the MCU : 64bytes for RZ/T2M and RZ/T2L, 8bytes for RZ/T2ME and RZ/T2H. </dd>
 <dd>
 This API performs page program operations to the device. Writing across pages is not supported. Please set the write address and write size according to the page size of your device. </dd></dl>
 
@@ -1216,7 +1233,7 @@ This API performs page program operations to the device. Writing across pages is
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

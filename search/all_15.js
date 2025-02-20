@@ -8,5 +8,7 @@ var searchData=
   ['version_5fid_5fb_5fs',['version_id_b_s',['../group___r_e_n_e_s_a_s___c_o_m_m_o_n.html#structfsp__pack__version__t_1_1version__id__b__s',1,'fsp_pack_version_t']]],
   ['vlan_5fenable',['vlan_enable',['../group___e_t_h_e_r___s_w_i_t_c_h.html#a2e1ec9ccad7992f14206dc616afa7f5b',1,'ethsw_qos_mode_t']]],
   ['vlan_5fid',['vlan_id',['../group___e_t_h_e_r___s_w_i_t_c_h.html#a890ac474e110a6427811b16a1c47a070',1,'ethsw_mac_table_entry_addr_t']]],
-  ['vlan_5fskip',['vlan_skip',['../group___e_t_h_e_r___s_w_i_t_c_h.html#ab53ff692c63ece9ca572d69fa2ad34d6',1,'ethsw_rx_pattern_ctrl_t']]]
+  ['vlan_5fskip',['vlan_skip',['../group___e_t_h_e_r___s_w_i_t_c_h.html#ab53ff692c63ece9ca572d69fa2ad34d6',1,'ethsw_rx_pattern_ctrl_t']]],
+  ['vsize',['vsize',['../group___d_i_s_p_l_a_y___a_p_i.html#a495b88e9ec5e91a1cdc862905e9a3642',1,'display_input_cfg_t']]],
+  ['vtiming',['vtiming',['../group___d_i_s_p_l_a_y___a_p_i.html#a47644dc992d3c7870e8ae1f3b6ba8124',1,'display_output_cfg_t']]]
 ];

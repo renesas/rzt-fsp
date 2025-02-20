@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -207,7 +207,7 @@ Features</h2>
 <li>RTC time and date alarm get and set.</li>
 <li>RTC alarm and periodic event notification.</li>
 </ul>
-<p><a class="anchor" id="um_rtc_set_the_calendar_time"></a><a class="anchor" id="um_rtc_get_the_calendar_time"></a><a class="anchor" id="um_rtc_set_the_calendar_alarm"></a><a class="anchor" id="um_rtc_get_the_calendar_alarm"></a><a class="anchor" id="um_rtc_date_and_time_value_standard"></a><a class="anchor" id="um_rtc_get_rtc_information"></a><a class="anchor" id="um_rtc_set_the_periodic_rate"></a> The RTC HAL module supports two different interrupt types:</p>
+<p><a class="anchor" id="um_rtc_set_the_calendar_time"></a><a class="anchor" id="um_rtc_get_the_calendar_time"></a><a class="anchor" id="um_rtc_set_the_calendar_alarm"></a><a class="anchor" id="um_rtc_get_the_calendar_alarm"></a><a class="anchor" id="um_rtc_date_and_time_value_standard"></a><a class="anchor" id="um_rtc_get_rtc_information"></a><a class="anchor" id="um_rtc_set_the_periodic_rate"></a><a class="anchor" id="um_rtc_get_time_capture"></a>The RTC HAL module supports two different interrupt types:</p>
 <ul>
 <li>An alarm interrupt generated on a match of combination of day of the week, hour and minute</li>
 <li>A periodic interrupt generated every 1 month, 1 day, 1 hour, 1 minute, 1 second, 1/2 second, or 1/4 second</li>
@@ -215,6 +215,7 @@ Features</h2>
 <p>A user-defined callback function can be registered (in the <a class="el" href="group___r_t_c___a_p_i.html#aafcde8ffb1e01cccbfa0eb9d0506674a">rtc_api_t::open</a> API call) and will be called from the interrupt service routine (ISR) for alarm and periodic interrupt. When called, it is passed a pointer to a structure (<a class="el" href="group___r_t_c___a_p_i.html#structrtc__callback__args__t">rtc_callback_args_t</a>) that holds a user-defined context pointer and an indication of which type of interrupt was fired.</p>
 <h2>Date and Time validation</h2>
 <p>"Parameter Checking" needs to be enabled if date and time validation is required for calendarTimeSet and calendarAlarmSet APIs. If "Parameter Checking" is enabled when using the calendarTimeSet API, the 'day of the week' field is automatically calculated and updated by the driver for the provided date.</p>
+<p><a class="anchor" id="um_rtc_set_time_error_adjustment"></a> </p>
 <h1><a class="anchor" id="r-rtc-configuration"></a>
 Configuration</h1>
 <p><h2>Build Time Configurations for r_rtc</h2>
@@ -821,7 +822,7 @@ const <a class="el" href="group___r_t_c___a_p_i.html#structrtc__cfg__t">rtc_cfg_
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

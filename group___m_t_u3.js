@@ -65,7 +65,10 @@ var group___m_t_u3 =
       [ "capture_w_ipl", "group___m_t_u3.html#ad2b716a35bd0eac3f2e14267a7bdfa61", null ],
       [ "capture_u_irq", "group___m_t_u3.html#ae86dd7cf9c623349f6f9dcb4065dee1b", null ],
       [ "capture_v_irq", "group___m_t_u3.html#acdf41253bb97541faa4af12ef0e3ad18", null ],
-      [ "capture_w_irq", "group___m_t_u3.html#ac328ce48d0726314b4415522dc17d863", null ]
+      [ "capture_w_irq", "group___m_t_u3.html#ac328ce48d0726314b4415522dc17d863", null ],
+      [ "capture_u_select_event", "group___m_t_u3.html#afe2c68f98f6c9b01d1a832dae58028bb", null ],
+      [ "capture_v_select_event", "group___m_t_u3.html#abbe4d39193921f0718c3f60864d8af23", null ],
+      [ "capture_w_select_event", "group___m_t_u3.html#a13a691341ab0fe74536ce9eca8845eb6", null ]
     ] ],
     [ "mtu3_extended_cfg_t", "group___m_t_u3.html#structmtu3__extended__cfg__t", [
       [ "tgra_val", "group___m_t_u3.html#af508e14be5476f219620a30f14531871", null ],
@@ -89,7 +92,10 @@ var group___m_t_u3 =
       [ "external_clock", "group___m_t_u3.html#a306e03c33213a61c25ae2c5da82a02ea", null ],
       [ "capture_a_source_select", "group___m_t_u3.html#a0b578dbb32b10bfaa53821fed8fd1000", null ],
       [ "capture_b_source_select", "group___m_t_u3.html#a967fa20e3bae5bcf8bfd6fa84078c285", null ],
-      [ "cycle_end_source_select", "group___m_t_u3.html#a5d9c6c871e974bdfcb93655a73912439", null ]
+      [ "cycle_end_source_select", "group___m_t_u3.html#a5d9c6c871e974bdfcb93655a73912439", null ],
+      [ "capture_a_select_event", "group___m_t_u3.html#a898ac23eb83d774c0ff9d50e4954add2", null ],
+      [ "capture_b_select_event", "group___m_t_u3.html#a5cb73e26dbd90f32df196a0c6446a1a7", null ],
+      [ "cycle_end_select_event", "group___m_t_u3.html#a3c6ffc748060f49d47f5f2b90c8f1009", null ]
     ] ],
     [ "mtu3_io_pin_level_t", "group___m_t_u3.html#ga4a8786cd182fb52e974c1214c2de627a", [
       [ "MTU3_IO_PIN_LEVEL_NO_OUTPUT", "group___m_t_u3.html#gga4a8786cd182fb52e974c1214c2de627aa61e5eccf44d43e36ee349a9ef52ab2fe", null ],

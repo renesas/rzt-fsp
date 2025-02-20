@@ -13,6 +13,8 @@ var group___r_e_n_e_s_a_s___c_o_n_n_e_c_t_i_v_i_t_y___m_o_d_u_l_e_s =
     [ "USB Host Communications Device Class Driver (r_usb_hcdc)", "group___u_s_b___h_c_d_c.html", null ],
     [ "USB Host Human Interface Device Class Driver (r_usb_hhid)", "group___u_s_b___h_h_i_d.html", "group___u_s_b___h_h_i_d" ],
     [ "USB Host Mass Storage Class Driver (r_usb_hmsc)", "group___u_s_b___h_m_s_c.html", "group___u_s_b___h_m_s_c" ],
+    [ "USB Host Vendor class (r_usb_hvnd)", "group___u_s_b___h_v_n_d.html", null ],
     [ "USB Peripheral Communications Device Class (r_usb_pcdc)", "group___u_s_b___p_c_d_c.html", null ],
-    [ "USB Peripheral Mass Storage Class (r_usb_pmsc)", "group___u_s_b___p_m_s_c.html", null ]
+    [ "USB Peripheral Mass Storage Class (r_usb_pmsc)", "group___u_s_b___p_m_s_c.html", null ],
+    [ "USB Peripheral Vendor class (r_usb_pvnd)", "group___u_s_b___p_v_n_d.html", null ]
 ];

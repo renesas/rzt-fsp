@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -222,7 +222,7 @@ This module can be added to the Stacks tab via New Stack &gt; System &gt; Shared
 <tr>
 <td>Shared Memory Address</td><td>Value must be an integer</td><td></td><td>Specify the start address of the shared memory. </td></tr>
 <tr>
-<td>Shared Memory Size</td><td>Value must be greater than 0</td><td></td><td>Size of the shared memory (bytes). </td></tr>
+<td>Shared Memory Size</td><td>Value must be an integer, greater than 0 and less than 0x20000</td><td></td><td>Size of the shared memory (bytes). </td></tr>
 <tr>
 <td>Semaphore</td><td>Value must be an integer between 0 and 7</td><td>0 </td><td>Select a semaphore registor (SYTSEMFn). </td></tr>
 <tr>
@@ -553,6 +553,7 @@ Basic Example</h2>
     <tr><td class="paramname">FSP_SUCCESS</td><td>Module closed successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Module is not open. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_IN_USE</td><td>Another transfer was in progress. </td></tr>
   </table>
   </dd>
 </dl>
@@ -565,7 +566,7 @@ Basic Example</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

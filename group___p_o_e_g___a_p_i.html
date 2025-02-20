@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -636,6 +636,10 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a1f07ec79529092ff47798e894f315adf"></a>POEG_STATE_PIN_DISABLE_REQUEST_ACTIVE&#160;</td><td class="fielddoc"><p>GPT output disable request active from the GTETRG pin. If a filter is used, this flag represents the state of the filtered input. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a3021281ec0a11bc3cb00afe9b62ffd54"></a>POEG_STATE_DSMIF0_1_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF0 error 1. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a13e9dfc5287d814e5821ec5ee5065a4a"></a>POEG_STATE_DSMIF1_1_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF1 error 1. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a001aaf1661ba4f60fd7a4b25da4981ea"></a>POEG_STATE_DSMIF0_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF0 error 0. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="ga6964e3b0b8b2d32d2428d86b32dfeef2a6105b986374b38fd9705292d375901cc"></a>POEG_STATE_DSMIF1_DISABLE_REQUEST&#160;</td><td class="fielddoc"><p>GPT output disabled due to DSMIF1 error 0. </p>
@@ -790,8 +794,12 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9aa4d56aee202d76e9efdf3bcfc181a12d"></a>POEG_TRIGGER_ACMPHS5&#160;</td><td class="fielddoc"><p>Disable GPT output based on ACMPHS5 comparator result. </p>
 </td></tr>
-<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a62f1b599e083ddf6d165a9552f2e794d"></a>POEG_TRIGGER_DERR0E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF0 error detection. </p>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9ac2cd8ebd43c913c41d58083786eba3c8"></a>POEG_TRIGGER_DERR0E_1&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF0 error 1 detection. </p>
 <p>The GPT output pins can be disabled when DSMIF error occurs (LLPP only). </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a08230610a7f9b245c379eec860b3bf5c"></a>POEG_TRIGGER_DERR1E_1&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF1 error 1 detection. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a62f1b599e083ddf6d165a9552f2e794d"></a>POEG_TRIGGER_DERR0E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF0 error detection. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="gad3a55ae7d23b90cc2621a83116d2e7d9a7e964b6dbe80d05d0ada65421d6a96d6"></a>POEG_TRIGGER_DERR1E&#160;</td><td class="fielddoc"><p>Permit output disabled by DSMIF1 error detection. </p>
 </td></tr>
@@ -903,7 +911,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

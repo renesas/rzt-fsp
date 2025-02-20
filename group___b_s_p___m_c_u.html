@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -413,6 +413,10 @@ Functions</h2></td></tr>
 <li>
 <a href="#software-reset">Software Reset</a> </li>
 <li>
+<a href="#system-error-interrupt">System Error Interrupt (SEI,NMI)</a> </li>
+<li>
+<a href="#ddr">LPDDR4 SDRAM Subsystem</a> </li>
+<li>
 <a href="#bsp-configuration">Configuration</a> </li>
 <li>
 <a href="#core-comparison">Core Comparison</a> </li>
@@ -600,7 +604,76 @@ Module Reset</h3>
 <dl class="section note"><dt>Note</dt><dd>Dummy reads are performed several times in the R_BSP_ModuleResetDisable function according to the RZ microprocessor manual. However, depending on the device used, the number of dummy reads for RTC and LCDC may not be met. In that case, please perform additional dummy read processing after API execution. For example, in the case of the RZT2H, the RTC requires 300 dummy reads and the LCDC requires 100 dummy reads.</dd></dl>
 <h3><a class="anchor" id="software-reset"></a>
 Software Reset</h3>
-<dl class="section note"><dt>Note</dt><dd>If the core that called the software reset function is different from the core you want to reset, you must execute the WFI instruction manually.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>If the core that called the software reset function is different from the core you want to reset, you must execute the WFI instruction manually.</dd>
+<dd>
+In Cortex-A55, the bit in Reset Status Register 0 (RSTSR0) is not set when a software reset occurs. If you want to determine if a software reset has occurred, use g_bsp_software_reset_occurred, which is defined in rzt/fsp/src/bsp/cmsis/Device/RENESAS/Source/ca/startup_core.c.</dd></dl>
+<h3><a class="anchor" id="system-error-interrupt"></a>
+System Error Interrupt (SEI,NMI)</h3>
+<p>When a request signal is input to the SEI pin (or NMI pin), a System Error Interrupt occurs. The sequence to detect a System Error Interrupt is different for each core.</p>
+<dl class="section note"><dt>Note</dt><dd>Note that the initial devices of the RZ/T2 series refer to SEI as NMI. Since the subsequent documentation uniformly describe it as SEI, if you are using an initial device, please replace SEI with NMI.</dd></dl>
+<p><b>Cortex-R52</b></p>
+<p>The SEI pin is connected to SEI and VSEI in Cortex-R52 CPU0 and CPU1, and an asynchronous external abort occurs when a request signal is input.</p>
+<p>The implementation method is described below.</p>
+<ol type="1">
+<li>Implement the SEI pin detection setting.<ul>
+<li>Enable the noise filter.</li>
+<li>Set the noise filter sampling frequency divider ratio.</li>
+<li>Set the detection mode.</li>
+</ul>
+</li>
+<li>Implement the Abort_Handler function.<ul>
+<li>Determine if the value of DFSR.status [5:0] is 0b10001 (Asynchronous external abort).</li>
+</ul>
+</li>
+<li>Register the SEI pin from the Pins tab in the FSP Configuration editor.<ul>
+<li>Pins tab &gt; Pin Selection &gt; Peripherals &gt; Interrupt:IRQ &gt; SEI</li>
+<li>Change the Operation mode from "Disabled" to "Custom".</li>
+<li>Assign any pin</li>
+</ul>
+</li>
+</ol>
+<p>Here is how the implementation example works.</p>
+<ol type="1">
+<li>Build and run this program.</li>
+<li>Press the SEI pin on the board.</li>
+<li>The program branches to the Abort_Handler function, and since the judgment of asynchronous external abort is true, it enters an infinite loop.</li>
+</ol>
+<dl class="section note"><dt>Note</dt><dd>It is not possible to distinguish whether an asynchronous external abort occurred due to an error during a data write access to memory.</dd></dl>
+<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor"> #define SEI_NOISE_FILTER_ENABLE             (0x1UL)  </span><span class="comment">/* Noise filter enable */</span><span class="preprocessor"></span></div><div class="line"><span class="preprocessor"> #define SEI_NOISE_FILTER_SAMPLING_FREQ      (0x3UL)  </span><span class="comment">/* Noise filter sampling frequency: Divided by 64 */</span><span class="preprocessor"></span></div><div class="line"><span class="preprocessor"> #define SEI_EDGE_DETECTION_MODE             (0x1UL)  </span><span class="comment">/* Detection mode: Falling edge */</span><span class="preprocessor"></span></div><div class="line"></div><div class="line"><span class="preprocessor"> #define DSFR_STATUS_MASK                    (0x3FUL) </span><span class="comment">/* Mask DSFR.STATUS bits[5:0] */</span><span class="preprocessor"></span></div><div class="line"><span class="preprocessor"> #define DSFR_ASYNCHRONOUS_EXTERNAL_ABORT    (0x11UL) </span><span class="comment">/* Fault status is Asynchronous external abort */</span><span class="preprocessor"></span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> bsp_sei_example_cr52 (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Set SEI pin detection. */</span></div><div class="line"><span class="preprocessor"> #if (1 == BSP_FEATURE_ICU_SAFETY_REGISTER_TYPE)</span></div><div class="line">    R_ICU-&gt;S_PORTNF_FLTSEL_b.FLTNMI   = SEI_NOISE_FILTER_ENABLE;</div><div class="line">    R_ICU-&gt;S_PORTNF_CLKSEL_b.CKSELNMI = SEI_NOISE_FILTER_SAMPLING_FREQ;</div><div class="line">    R_ICU-&gt;S_PORTNF_MD_b.MDNMI        = SEI_EDGE_DETECTION_MODE;</div><div class="line"><span class="preprocessor"> #else</span></div><div class="line">    R_ICU_S-&gt;S_PORTNF_FLTSEL_b.FLTSEI    = SEI_NOISE_FILTER_ENABLE;</div><div class="line">    R_ICU_S-&gt;S_PORTNF_CLKSEL_b.CLKSELSEI = SEI_NOISE_FILTER_SAMPLING_FREQ;</div><div class="line">    R_ICU_S-&gt;S_PORTNF_MD_b.MDSEI         = SEI_EDGE_DETECTION_MODE;</div><div class="line"><span class="preprocessor"> #endif</span></div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Do Nothing */</span></div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> Abort_Handler (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* SEI causes a transition to Asynchronous external abort. */</span></div><div class="line">    uint32_t dsfr_status = __get_DFSR() &amp; DSFR_STATUS_MASK;</div><div class="line"></div><div class="line">    <span class="keywordflow">if</span> (DSFR_ASYNCHRONOUS_EXTERNAL_ABORT == dsfr_status)</div><div class="line">    {</div><div class="line">        <span class="keywordflow">while</span> (1)</div><div class="line">        {</div><div class="line">            <span class="comment">/* SEI(SEI) interrupt occurred. */</span></div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><p> <b>Cortex-A55</b></p>
+<p>The SEI pin is connected to Shared Peripheral Interrupt(SPI), and a SPI occurs when a request signal is input. It is possible to detect SEI by interrupt generation due to the event number of SPI.</p>
+<p>The implementation method is described below.</p>
+<ol type="1">
+<li>Implement the SEI pin detection setting.<ul>
+<li>The settings are the same as for Cortex-R52.</li>
+</ul>
+</li>
+<li>Implement SEI interrupt enable setting.</li>
+<li>Implement the SEI interrupt handler (sei_isr).</li>
+<li>Register the SEI interrupt handler from Interrupts tab in the FSP Configuration editor.<ul>
+<li>Interrupts tab &gt; New User Event &gt; ICU &gt; SEI (System Error Interrupt)</li>
+<li>Enter the SEI interrupt handler name "sei_isr".</li>
+</ul>
+</li>
+<li>Register the SEI pin from the Pins tab in the FSP Configuration editor.<ul>
+<li>The settings are the same as for Cortex-R52.</li>
+</ul>
+</li>
+</ol>
+<p>Here is how the implementation example works.</p>
+<ol type="1">
+<li>Build and run this program.</li>
+<li>Press the SEI pin on the board.</li>
+<li>The program branches to the SEI interrupt handler and enters an infinite loop.</li>
+</ol>
+<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor"> #define VECTOR_NUMBER_SEI                 ((IRQn_Type) 406) </span><span class="comment">/* SEI (System error interrupt) */</span><span class="preprocessor"></span></div><div class="line"></div><div class="line"><span class="preprocessor"> #define SEI_NOISE_FILTER_ENABLE           (0x1UL)           </span><span class="comment">/* Noise filter enable */</span><span class="preprocessor"></span></div><div class="line"><span class="preprocessor"> #define SEI_NOISE_FILTER_SAMPLING_FREQ    (0x3UL)           </span><span class="comment">/* Noise filter sampling frequency: Divided by 64 */</span><span class="preprocessor"></span></div><div class="line"><span class="preprocessor"> #define SEI_EDGE_DETECTION_MODE           (0x1UL)           </span><span class="comment">/* Detection mode: Falling edge */</span><span class="preprocessor"></span></div><div class="line"></div><div class="line"><span class="preprocessor"> #define SENSE_EDGE                        (1UL)             </span><span class="comment">/* Detection type: Edge */</span><span class="preprocessor"></span></div><div class="line"><span class="preprocessor"> #define SEI_IPL                           (0UL)             </span><span class="comment">/* Interrupt priority level: 0 */</span><span class="preprocessor"></span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> bsp_sei_example_ca55 (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Set SEI pin detection. */</span></div><div class="line">    R_ICU_S-&gt;S_PORTNF_FLTSEL_b.FLTSEI    = SEI_NOISE_FILTER_ENABLE;</div><div class="line">    R_ICU_S-&gt;S_PORTNF_CLKSEL_b.CLKSELSEI = SEI_NOISE_FILTER_SAMPLING_FREQ;</div><div class="line">    R_ICU_S-&gt;S_PORTNF_MD_b.MDSEI         = SEI_EDGE_DETECTION_MODE;</div><div class="line"></div><div class="line">    <span class="comment">/* For the CA55, SEI(SEI) interrupts are treated as normal interrupt events. */</span></div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#ga2a594f6593b5b072a0f35908e3bbb544">R_BSP_IrqDetectTypeSet</a>(VECTOR_NUMBER_SEI, SENSE_EDGE);</div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#ga6ccf3aab32add894e75732d9de1f8471">R_BSP_IrqCfg</a>(VECTOR_NUMBER_SEI, SEI_IPL, NULL);</div><div class="line"></div><div class="line">    <span class="comment">/* Clear the interrupt status and pending bits, before the interrupt is enabled. */</span></div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#gab0d17b02ff55fa9f7984750ea7f0c923">R_BSP_IrqEnable</a>(VECTOR_NUMBER_SEI);</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Do Nothing */</span></div><div class="line">    }</div><div class="line">}</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> sei_isr (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        <span class="comment">/* SEI(SEI) interrupt occurred. */</span></div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h3><a class="anchor" id="ddr"></a>
+LPDDR4 SDRAM Subsystem</h3>
+<p><a class="anchor" id="um_bsp_ddr_init"></a> The FSP applies the DDR parameter file generated by the DDR parameter generation tool (hereinafter referred to as "gen_tool"). The procedure for modifying the DDR parameter file is as follows.</p>
+<p>Let's assume the file name of the file generated by gen_tool is "param_ddrinit_ref_lpddr4_r02p03.h".</p>
+<ol type="1">
+<li>Rename "param_ddrinit_ref_lpddr4_r02p03.h" to "board_ddr_param.h".</li>
+<li>Replace the existing "board_ddr_param.h" file located in the "rzt/board/rzt2h_evb" folder with the new one.</li>
+</ol>
+<dl class="section note"><dt>Note</dt><dd>The folder path may vary depending on the board or device being used. For example, for a custom board, the path would be "rzt/board/custom".</dd></dl>
 <h1><a class="anchor" id="bsp-configuration"></a>
 Configuration</h1>
 <p>The BSP is heavily data driven with most features and functionality being configured based on the content from configuration files. Configuration files represent the settings specified by the user and are generated when the project is built and/or when the Generate Project Content button is clicked in the FSP Configuration editor.</p>
@@ -736,6 +809,8 @@ L3 cache </td><td>- </td><td>CA55-specific BSP API cannot be used.<br />
 - R_BSP_GICC_xxxx() </td></tr>
 <tr>
 <td>Trigonometric Function Unit (TFU) </td><td>FSP supported </td><td>FSP not supported </td><td>Unable to use TFU-related BSP API. </td><td>- </td></tr>
+<tr>
+<td>System Error Interrupt (SEI,NMI) </td><td>Asynchronous external abort </td><td>SPI </td><td>Please refer to the implementation guide in the System Error Interrupt (SEI,NMI) section. </td><td>Refer to the left </td></tr>
 </table>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="groups"></a>
@@ -761,6 +836,8 @@ Macros</h2></td></tr>
 <tr class="separator:gaa4fa8ae9390afa996af2dabee6552732"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga577e9b015e1b0794934fa4f2b229e52f"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#ga577e9b015e1b0794934fa4f2b229e52f">FSP_ERROR_RETURN</a>(a,  err)</td></tr>
 <tr class="separator:ga577e9b015e1b0794934fa4f2b229e52f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf27c26290892ca3dcf9b1bd0b26eae44"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#gaf27c26290892ca3dcf9b1bd0b26eae44">FSP_ERROR_NOT_RETURN_VALUE</a>(a,  err)</td></tr>
+<tr class="separator:gaf27c26290892ca3dcf9b1bd0b26eae44"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaddc2260c1ce320f3aa1f1cb05b9a5620"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#gaddc2260c1ce320f3aa1f1cb05b9a5620">FSP_CRITICAL_SECTION_ENTER</a></td></tr>
 <tr class="separator:gaddc2260c1ce320f3aa1f1cb05b9a5620"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga23338e06b1e1537017ef4f3f94cda354"><td class="memItemLeft" align="right" valign="top">#define&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#ga23338e06b1e1537017ef4f3f94cda354">FSP_CRITICAL_SECTION_EXIT</a></td></tr>
@@ -907,6 +984,35 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>All FSP error codes are returned using this macro. Calls <a class="el" href="group___b_s_p___m_c_u.html#ga960f46c44b67ba8ad5377cfc8e4e6a75">FSP_ERROR_LOG</a> function if condition "a" is false. Used to identify runtime errors in FSP functions. </p>
+
+</div>
+</div>
+<a id="gaf27c26290892ca3dcf9b1bd0b26eae44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf27c26290892ca3dcf9b1bd0b26eae44">&#9670;&nbsp;</a></span>FSP_ERROR_NOT_RETURN_VALUE</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">#define FSP_ERROR_NOT_RETURN_VALUE</td>
+          <td>(</td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">a, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">&#160;</td>
+          <td class="paramname">err&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This function performs the same operation as <a class="el" href="group___b_s_p___m_c_u.html#ga577e9b015e1b0794934fa4f2b229e52f">FSP_ERROR_RETURN</a>, but can be applied to functions that do not return an error code. </p>
 
 </div>
 </div>
@@ -1171,6 +1277,26 @@ Variables</h2></td></tr>
 <tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950ac2cda9b53d0b2a6f519f6f417d4b38a2"></a>FSP_IP_BISS&#160;</td><td class="fielddoc"><p>BiSS-C. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950aad978d75940b95803a58e92775882603"></a>FSP_IP_ENDAT&#160;</td><td class="fielddoc"><p>EnDat 2.2. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950a8bc397b50a939a9df55e937734b8e002"></a>FSP_IP_SCIE&#160;</td><td class="fielddoc"><p>Serial Communications Interface for encoder interface. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950a3291ef826d15d3d54656b40804eb392d"></a>FSP_IP_TRACECLOCK&#160;</td><td class="fielddoc"><p>Trace Clock. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950adf0fddf4daf4b360019063e68080a266"></a>FSP_IP_ENCOUT&#160;</td><td class="fielddoc"><p>Encoder Divided-Output. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950abdab5c1f5f54c1d91ea6976d33b8be55"></a>FSP_IP_DDRSS&#160;</td><td class="fielddoc"><p>LPDDR4 SDRAM Subsystem. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950a262b8cb7bfbecd9ce7220c80b3fb7b3f"></a>FSP_IP_LCDC&#160;</td><td class="fielddoc"><p>LCD Controller. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950a015c1bac7558efe3bdbcc7c6247ebd8d"></a>FSP_IP_PCIE&#160;</td><td class="fielddoc"><p>PCI Express 3.0 Interface. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950afd3bcaf69cb14356e5fbcac52a2eb48a"></a>FSP_IP_SDHI&#160;</td><td class="fielddoc"><p>SDMMC Host Interface. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950a05f5c55e531069cef7bad0ff9b9c8c27"></a>FSP_IP_CPU1&#160;</td><td class="fielddoc"><p>CPU1 Module Stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950a52aa3c12d6b922449e8d906dbbe4dca6"></a>FSP_IP_CR52&#160;</td><td class="fielddoc"><p>Cortex-R52 CPUn Module Stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga7880302f0edd7cc4290c037809975950acdade886276a65a3ff02f6f0f687a4df"></a>FSP_IP_CA55&#160;</td><td class="fielddoc"><p>Cortex-A55 CPUn Module Stop. </p>
 </td></tr>
 </table>
 
@@ -5381,7 +5507,7 @@ Delays may be longer than expected when compiler optimization is turned off. </d
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

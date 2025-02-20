@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -554,7 +554,7 @@ Enumerations</h2></td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="a198c0b8c43b09c517a90ddc364e5a73a"></a>union <a class="el" href="group___d_m_a_c.html#uniondmac__link__cfg__t_8____unnamed____">dmac_link_cfg_t</a></td>
+<a id="a5ef65f8c720fad9adf9f00410909c522"></a>union <a class="el" href="group___d_m_a_c.html#uniondmac__link__cfg__t_8____unnamed____">dmac_link_cfg_t</a></td>
 <td class="fieldname">
 __unnamed__</td>
 <td class="fielddoc">
@@ -1026,9 +1026,11 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
     <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>The configured channel is invalid. </td></tr>
     <tr><td class="paramname">FSP_ERR_IRQ_BSP_DISABLED</td><td>The IRQ associated with the activation source is not enabled in the BSP. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>The control structure is already opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ADDRESS</td><td>Transfer source address is invalid. Transfer destination address is invalid. Descriptor address is invalid.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>When operating on the Cortex-A55, if you set 0x0 (NULL) as the source or destination address, FSP_ERR_INVALID_ADDRESS is not returned, even if the address is invalid. </dd></dl>
 
 </div>
 </div>
@@ -1065,9 +1067,11 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
     <tr><td class="paramname">FSP_ERR_NOT_ENABLED</td><td>DMAC is not enabled. The current configuration must not be valid. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_MODE</td><td>DMA mode is link mode. This function can only be used when the DMA mode is register mode. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_DMAC_Open to initialize the control block. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ADDRESS</td><td>Transfer source address is invalid. Transfer destination address is invalid.</td></tr>
   </table>
   </dd>
 </dl>
+<dl class="section note"><dt>Note</dt><dd>When operating on the Cortex-A55, if you set 0x0 (NULL) as the source or destination address, FSP_ERR_INVALID_ADDRESS is not returned, even if the address is invalid. </dd></dl>
 
 </div>
 </div>
@@ -1343,6 +1347,7 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_DMAC_Open to initialize the control block. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_MODE</td><td>This API cannot be called during link mode operation or setting not to use the Next1 register. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_CALL</td><td>Invalid call. The series of transfer processing has finished. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ADDRESS</td><td>Transfer source address is invalid. Transfer destination address is invalid. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1431,6 +1436,7 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
     <tr><td class="paramname">FSP_ERR_NOT_ENABLED</td><td>DMAC is not enabled. The current configuration must not be valid. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_MODE</td><td>DMA mode is register mode. This function can only be used when the DMA mode is link mode. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_DMAC_Open to initialize the control block. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ADDRESS</td><td>Descriptor address is invalid. </td></tr>
   </table>
   </dd>
 </dl>
@@ -1443,7 +1449,7 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

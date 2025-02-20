@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.2.0</span>
+   &#160;<span id="projectnumber">Release v2.3.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -205,7 +205,7 @@ Overview</h1>
 <h2><a class="anchor" id="r-mtu3-features"></a>
 Features</h2>
 <p>The MTU3 module has the following features:</p><ul>
-<li>Supports periodic mode and PWM mode.</li>
+<li>Supports periodic mode, and PWM mode.</li>
 <li>Supports phase counting mode.<a class="anchor" id="um_mtu3_phase_counting"></a></li>
 <li>Supports count source of ELC events.<a class="anchor" id="um_mtu_event_count_elc"></a><a class="anchor" id="um_mtu_event_count_restart_elc"></a><a class="anchor" id="um_mtu_event_input_capture_elc"></a></li>
 <li>Supports debounce filter on MTIOC pins.</li>
@@ -240,7 +240,7 @@ Selecting a Timer</h2>
 </table>
 <h1><a class="anchor" id="r-mtu3-configuration"></a>
 Configuration</h1>
-<p><a class="anchor" id="um_mtu3_open_close"></a><a class="anchor" id="um_mtu3_start_stop"></a><a class="anchor" id="um_mtu3_phase_count_open_close"></a><a class="anchor" id="um_mtu3_phase_count_start_stop"></a><a class="anchor" id="um_mtu3_phase_count_callbackset"></a> <h2>Build Time Configurations for r_mtu3</h2>
+<p><a class="anchor" id="um_mtu3_open_close"></a><a class="anchor" id="um_mtu3_start_stop"></a><a class="anchor" id="um_timer_multiple_channels"></a><a class="anchor" id="um_mtu3_phase_count_open_close"></a><a class="anchor" id="um_mtu3_phase_count_start_stop"></a><a class="anchor" id="um_mtu3_phase_count_callbackset"></a> <h2>Build Time Configurations for r_mtu3</h2>
 The following build time configurations are defined in fsp_cfg/r_mtu3_cfg.h:<br />
 </p><table class="doxtable">
 <tr>
@@ -1240,6 +1240,24 @@ Capture/Compare match V interrupt. </td></tr>
 capture_w_irq</td>
 <td class="fielddoc">
 Capture/Compare match W interrupt. </td></tr>
+<tr><td class="fieldtype">
+<a id="afe2c68f98f6c9b01d1a832dae58028bb"></a>bsp_irq_gpt_selected_event_t</td>
+<td class="fieldname">
+capture_u_select_event</td>
+<td class="fielddoc">
+Selected capture u event. </td></tr>
+<tr><td class="fieldtype">
+<a id="abbe4d39193921f0718c3f60864d8af23"></a>bsp_irq_gpt_selected_event_t</td>
+<td class="fieldname">
+capture_v_select_event</td>
+<td class="fielddoc">
+Selected capture v event. </td></tr>
+<tr><td class="fieldtype">
+<a id="a13a691341ab0fe74536ce9eca8845eb6"></a>bsp_irq_gpt_selected_event_t</td>
+<td class="fieldname">
+capture_w_select_event</td>
+<td class="fielddoc">
+Selected capture w event. </td></tr>
 </table>
 
 </div>
@@ -1414,6 +1432,24 @@ Identify the GPT_INT for capture b. </td></tr>
 cycle_end_source_select</td>
 <td class="fielddoc">
 Identify the GPT_INT for capture overflow/underflow. </td></tr>
+<tr><td class="fieldtype">
+<a id="a898ac23eb83d774c0ff9d50e4954add2"></a>bsp_irq_gpt_selected_event_t</td>
+<td class="fieldname">
+capture_a_select_event</td>
+<td class="fielddoc">
+Selected capture a event. </td></tr>
+<tr><td class="fieldtype">
+<a id="a5cb73e26dbd90f32df196a0c6446a1a7"></a>bsp_irq_gpt_selected_event_t</td>
+<td class="fieldname">
+capture_b_select_event</td>
+<td class="fielddoc">
+Selected capture b event. </td></tr>
+<tr><td class="fieldtype">
+<a id="a3c6ffc748060f49d47f5f2b90c8f1009"></a>bsp_irq_gpt_selected_event_t</td>
+<td class="fieldname">
+cycle_end_select_event</td>
+<td class="fielddoc">
+Selected cycle end event. </td></tr>
 </table>
 
 </div>
@@ -2458,7 +2494,7 @@ Identify the GPT_INT for capture overflow/underflow. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.2.0 User's Manual Copyright © (2024) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>
