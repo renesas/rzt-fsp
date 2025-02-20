@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -76,8 +76,7 @@ uint8_t r_rsip_otp_power_on (void)
     }
 
     /* Set the PWR and ACCL bits of the OTP Power Control Register. */
-    R_OTP->OTPPWR_b.PWR  = 1U;
-    R_OTP->OTPPWR_b.ACCL = 1U;
+    R_OTP->OTPPWR = R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk;
 
     return 0U;
 }
@@ -88,8 +87,7 @@ uint8_t r_rsip_otp_power_on (void)
 void r_rsip_otp_power_off (void)
 {
     /* Set the PWR and ACCL bits to 0, and wait until CMD_RDY bit is set to 0. */
-    R_OTP->OTPPWR_b.PWR  = 0U;
-    R_OTP->OTPPWR_b.ACCL = 0U;
+    R_OTP->OTPPWR = ~(uint32_t) (R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk);
 
     while (1)
     {
@@ -217,8 +215,7 @@ static uint8_t otp_data_read (uint16_t otp_addr, void * p_data)
     }
 
     /* Set the PWR and ACCL bits of the OTP Power Control Register. */
-    R_OTP->OTPPWR_b.PWR  = 1U;
-    R_OTP->OTPPWR_b.ACCL = 1U;
+    R_OTP->OTPPWR = R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk;
 
     /* Set the read address to the OTP Read Address Register. */
     R_OTP->OTPADRRD = otp_addr;
@@ -232,7 +229,7 @@ static uint8_t otp_data_read (uint16_t otp_addr, void * p_data)
  #error Unknown definition.
 #endif
 
-    /* Poll the CMD_RDY bit untill changing to 1 in order to detect the completion of the write command. */
+    /* Poll the CMD_RDY bit until changing to 1 in order to detect the completion of the write command. */
     while (1)
     {
         if (1U == R_OTP->OTPSTR_b.CMD_RDY)

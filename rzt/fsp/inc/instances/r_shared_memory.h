@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -31,7 +31,6 @@ FSP_HEADER
 /* Extended configuration */
 typedef struct st_shared_memory_extended_cfg
 {
-    /* For RZ/T2M */
     icu_inter_cpu_irq_instance_t const * p_software_int_tx; ///< Pointer to icu_inter_cpu_irq_instance_t to transmit
     icu_inter_cpu_irq_instance_t const * p_software_int_rx; ///< Pointer to icu_inter_cpu_irq_instance_t to receive
 } shared_memory_extended_cfg_t;

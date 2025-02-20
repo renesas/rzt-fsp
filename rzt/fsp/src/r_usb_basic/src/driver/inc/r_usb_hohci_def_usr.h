@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -27,10 +27,10 @@
  **********************************************************************************************************************/
 
 /* The maximum number of Endpoint memory */
-#define USB_OHCI_NUM_ENDPOINT            ((USB_HCI_DEVICE_NUM) *(USB_OHCI_DEVICE_ENDPOINT_MAX) +4)
+#define USB_OHCI_NUM_ENDPOINT            ((USB_HCI_DEVICE_NUM) *(USB_OHCI_DEVICE_ENDPOINT_MAX) +5)
 
 /* The maximum number of Endpoint Descriptor memory */
-#define USB_OHCI_NUM_ED                  (USB_OHCI_ED_INTERRUPT_32ms + USB_OHCI_NUM_ENDPOINT)
+#define USB_OHCI_NUM_ED                  (USB_OHCI_ED_INTERRUPT_32ms + USB_OHCI_NUM_ENDPOINT + 1)
 
 /* The maximum number of Transfer Descriptor memory */
 #define USB_OHCI_NUM_TD                  (64) // (0x100000 / USB_OHCI_MAXTDSIZE)

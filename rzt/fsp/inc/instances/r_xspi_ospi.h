@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -19,6 +19,10 @@
 #include <string.h>
 #include "r_xspi_ospi_cfg.h"
 #include "r_spi_flash_api.h"
+
+#if XSPI_OSPI_CFG_DMAC_SUPPORT_ENABLE
+ #include "r_transfer_api.h"
+#endif
 
 /* Common macro for FSP header files. There is also a corresponding FSP_FOOTER macro at the end of this file. */
 FSP_HEADER
@@ -150,6 +154,9 @@ typedef struct st_xspi_ospi_extended_cfg
     xspi_ospi_io_voltage_t              io_voltage;                              ///< Voltage setting of xSPI IO domain
     xspi_ospi_byte_order_t              byte_order;                              ///< Byte order on external bus. Only applicable in 8D-8D-8D(OPI) mode.
     xspi_ospi_address_space_t const   * p_address_space;                         ///< Address space settings when custom address space enabled
+#if XSPI_OSPI_CFG_DMAC_SUPPORT_ENABLE
+    transfer_instance_t const * p_lower_lvl_transfer;                            ///< DMAC Transfer instance used for data transmission
+#endif
 } xspi_ospi_extended_cfg_t;
 
 /** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref spi_flash_api_t::open is called */

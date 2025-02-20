@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -22,12 +22,14 @@
  * Macro definitions
  ******************************************************************************/
 
- #define USB_PET_VID       (0x1a0a)    /* USB-PET Vendor ID  */
- #define USB_PET_PID       (0x0200)    /* USB-PET Product ID (Use Embedded Host Test) */
- #define USB_VALUE_FFH     (0xFF)
- #define USB_VALUE_40H     (0x40)
- #define USB_VALUE_100     (100)
- #define USB_VALUE_3000    (3000)
+ #define USB_PET_VID         (0x1a0a)    /* USB-PET Vendor ID  */
+ #define USB_PET_PID         (0x0200)    /* USB-PET Product ID (Use Embedded Host Test) */
+ #define USB_VALUE_FFH       (0xFF)
+ #define USB_VALUE_40H       (0x40)
+ #define USB_VALUE_100       (100)
+ #define USB_VALUE_3000      (3000)
+ #define USB_TEST_VALUE_x0101 (0x0101)
+ #define USB_TEST_VALUE_x0108 (0x0108)
 
 /******************************************************************************
  * Private global variables and functions
@@ -91,10 +93,10 @@ void (* g_usb_hstd_enumaration_process[8])(usb_utr_t *, uint16_t, uint16_t) =
     usb_hstd_enum_set_configuration, usb_hstd_enum_dummy_request,
 };
 
- #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+ #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
 uint16_t         g_usb_disp_param_set[USB_NUM_USBIP];
 usb_compliance_t g_usb_disp_param[USB_NUM_USBIP];
- #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
 /******************************************************************************
  * Function Name   : usb_hstd_mgr_rel_mpl
@@ -146,10 +148,10 @@ static void usb_hstd_mgr_chgdevst_cb (usb_utr_t * ptr)
  ******************************************************************************/
 static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
 {
- #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+ #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
     uint16_t vendor_id;
     uint16_t product_id;
- #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
     uint16_t       md;
     uint16_t       flg = 0;
@@ -222,7 +224,7 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
 
                 case 4:                /* Receive Configuration Descriptor(xx) */
                 {
-  #ifdef USB_HOST_COMPLIANCE_MODE
+#if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
 
 // p_descriptor_table = (uint8_t *) gs_usb_hstd_device_descriptor;
                     p_descriptor_table = (uint8_t *) g_usb_hstd_device_descriptor[ptr->ip];
@@ -236,20 +238,20 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
                     vendor_id = (uint16_t) (p_descriptor_table[USB_DEV_ID_VENDOR_L] +
                                             ((uint16_t) p_descriptor_table[USB_DEV_ID_VENDOR_H] << 8));
 
-                    if (0x1A0A == vendor_id)
+                    if (USB_PET_VID == vendor_id)
                     {
                         product_id = (uint16_t) (p_descriptor_table[USB_DEV_ID_PRODUCT_L] +
                                                  ((uint16_t) p_descriptor_table[USB_DEV_ID_PRODUCT_H] << 8));
 
-                        if ((product_id >= 0x0101) && (product_id <= 0x0108))
+                        if ((product_id >= USB_TEST_VALUE_x0101) && (product_id <= USB_TEST_VALUE_x0108))
                         {
                             g_usb_hstd_enum_seq[ptr->ip] = 6; /* Enumeration End */
-                            usb_hstd_electrical_test_mode(product_id, rootport);
+                            usb_hstd_electrical_test_mode(ptr, product_id, rootport);
                             enume_mode = USB_NOTTPL;
                             break;
                         }
 
-                        if (0x0200 == product_id)
+                        if (USB_PET_PID == product_id)
                         {
                             g_usb_hstd_enum_seq[ptr->ip] = 5; /* Skip EnumSeq 5 */
 
@@ -262,7 +264,7 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
                             break;
                         }
                     }
-  #endif                               /* USB_HOST_COMPLIANCE_MODE */
+  #endif                               /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
                     /* Device descriptor and Config descriptor information is copied. */
                     p_dev_info = r_usb_hstd_hci_get_device_infomation(g_usb_hstd_device_addr[ptr->ip]);
@@ -299,15 +301,15 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
 
                     if (USB_ERROR == retval)
                     {
-  #ifdef USB_HOST_COMPLIANCE_MODE
+  #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                         g_usb_hstd_enum_seq[ptr->ip] = 6; /* Enumeration End */
                         enume_mode = USB_NOTTPL;
-  #else /* USB_HOST_COMPLIANCE_MODE */
+  #else /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
                         g_usb_hstd_enum_seq[ptr->ip] = 5; /* Skip EnumSeq 5 */
                         p_descriptor_table           = (uint8_t *) g_usb_hstd_config_descriptor[ptr->ip];
                         usb_hstd_enum_set_configuration(ptr, g_usb_hstd_device_addr[ptr->ip],
                                                         (uint16_t) (p_descriptor_table[USB_CON_B_CONFIGURATION_VALUE]));
-  #endif /* USB_HOST_COMPLIANCE_MODE */
+  #endif /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
                     }
 
                     break;
@@ -453,7 +455,7 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
                 /* Receive Configuration Descriptor(xx) */
                 case 4:
                 {
-  #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+  #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                     descriptor_table = (uint8_t *) g_usb_hstd_device_descriptor[ptr->ip];
 
                     /* If 'vendor_id' and 'product_id' value is defined by PET, */
@@ -471,14 +473,12 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
                                                  ((uint16_t) descriptor_table[USB_DEV_ID_PRODUCT_H] << 8));
 
                         descriptor_table = (uint8_t *) g_usb_hstd_config_descriptor[ptr->ip];
-   #if USB_CFG_ELECTRICAL == USB_CFG_ENABLE
                         if ((0x0100 < product_id) && (product_id < 0x0109))
                         {
-                            usb_hstd_electrical_test_mode(ptr, product_id);
+                            usb_hstd_electrical_test_mode(ptr, product_id, rootport);
                             enume_mode = USB_NOTTPL;
                             break;
                         }
-   #endif                              /* USB_CFG_ELECTRICAL == USB_CFG_ENABLE */
 
                         if (0x0200 == product_id)
                         {
@@ -486,12 +486,12 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
                             break;
                         }
                     }
-  #endif                               /* USB_CFG_ELECTRICAL == USB_CFG_ENABLE */
+  #endif                               /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
                     /* Driver open */
-  #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+  #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                     g_usb_disp_param_set[ptr->ip] = USB_OFF;
-  #endif                               /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+  #endif                               /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
                     flg = 0U;
 
@@ -525,12 +525,12 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
                         }
                     }
 
-  #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+  #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                     if (USB_ON == g_usb_disp_param_set[ptr->ip])
                     {
                         usb_compliance_disp((void *) &g_usb_disp_param[ptr->ip]);
                     }
-  #endif                               /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+  #endif                               /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
   #if (BSP_CFG_RTOS == 0)
                     if (1 != flg)
@@ -539,11 +539,11 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
                         ctrl.module_number  = ptr->ip;                                   /* Module number setting */
                         usb_set_event(USB_STATUS_NOT_SUPPORT, &ctrl);                    /* Set Event()  */
 
-   #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+   #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                         g_usb_hstd_enum_seq[ptr->ip] = g_usb_hstd_enum_seq[ptr->ip] + 2;
-   #else /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+   #else /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
                         g_usb_hstd_enum_seq[ptr->ip]++;
-   #endif                              /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+   #endif                              /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
                     }
   #endif                               /* (BSP_CFG_RTOS == 0) */
                     break;
@@ -653,13 +653,13 @@ static uint16_t usb_hstd_enumeration (usb_utr_t * ptr)
                         break;
                     }
 
-  #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+  #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                     case 7:
                     {
                         enume_mode = USB_NOTTPL;
                         break;
                     }
-  #endif                               /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+  #endif                               /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
                     default:
                     {
                         (*g_usb_hstd_enumaration_process[g_usb_hstd_enum_seq[ptr->ip]])(ptr,
@@ -856,12 +856,12 @@ static uint16_t usb_hstd_chk_device_class (usb_utr_t * ptr, usb_hcdreg_t * drive
                 if ((USB_NOPRODUCT == driver->p_tpl[(i * 2) + 3]) || (driver->p_tpl[(i * 2) + 3] == product_id))
                 {
                     id_check = USB_OK;
- #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+ #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                     g_usb_disp_param[ptr->ip].status = USB_COMPLIANCETEST_TPL;
                     g_usb_disp_param[ptr->ip].pid    = product_id;
                     g_usb_disp_param[ptr->ip].vid    = vendor_id;
                     g_usb_disp_param_set[ptr->ip]    = USB_ON;
- #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
                 }
             }
         }
@@ -875,7 +875,7 @@ static uint16_t usb_hstd_chk_device_class (usb_utr_t * ptr, usb_hcdreg_t * drive
     if (USB_ERROR == id_check)
     {
         USB_PRINTF0("### Not support device\n");
- #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+ #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
         if (USB_IFCLS_HUB == descriptor_table[4])
         {
             g_usb_disp_param[ptr->ip].status = USB_COMPLIANCETEST_HUB;
@@ -890,7 +890,7 @@ static uint16_t usb_hstd_chk_device_class (usb_utr_t * ptr, usb_hcdreg_t * drive
             g_usb_disp_param[ptr->ip].vid    = vendor_id;
             g_usb_disp_param_set[ptr->ip]    = USB_ON;
         }
- #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
         return USB_ERROR;
     }
@@ -1193,10 +1193,6 @@ void usb_hstd_enum_get_descriptor (usb_utr_t * ptr, uint16_t addr, uint16_t cnt_
 
     usb_shstd_std_req_msg[ptr->ip].ipp           = ptr->ipp;
     usb_shstd_std_req_msg[ptr->ip].ip            = ptr->ip;
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME)
-    usb_shstd_std_req_msg[ptr->ip].p_transfer_rx = ptr->p_transfer_rx;
-    usb_shstd_std_req_msg[ptr->ip].p_transfer_tx = ptr->p_transfer_tx;
-#endif
 
  #if USB_IP_EHCI_OHCI == 1
     usb_hstd_transfer_start(&usb_shstd_std_req_msg[ptr->ip]);
@@ -2062,7 +2058,7 @@ uint16_t usb_hstd_get_string_desc (usb_utr_t * ptr, uint16_t addr, uint16_t stri
  * End of function usb_hstd_get_string_desc
  ******************************************************************************/
 
- #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+ #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
   #if USB_CFG_ELECTRICAL == USB_CFG_ENABLE
    #if  USB_IP_EHCI_OHCI == 0
 
@@ -2199,7 +2195,7 @@ void usb_hstd_electrical_test_mode (usb_utr_t * ptr, uint16_t product_id)
  ******************************************************************************/
    #endif                              /* USB_IP_EHCI_OHCI == 0*/
   #endif                               /* USB_CFG_ELECTRICAL == USB_CFG_ENABLE */
- #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
 /******************************************************************************
  * Function Name   : usb_hstd_mgr_task
@@ -2226,9 +2222,9 @@ void usb_hstd_mgr_task (void * stacd)
  #if (BSP_CFG_RTOS == 0)
     uint16_t devsel;
  #endif                                /* (BSP_CFG_RTOS == 0) */
- #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+ #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
     usb_compliance_t disp_param;
- #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
     (void) stacd;
 
@@ -2531,14 +2527,12 @@ void usb_hstd_mgr_task (void * stacd)
                 {
                     case USB_DETACH:
                     {
- #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+ #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                         disp_param.status = USB_COMPLIANCETEST_DETACH;
                         disp_param.pid    = USB_NULL;
                         disp_param.vid    = USB_NULL;
-  #if USB_IP_EHCI_OHCI == 0
-                        usb_compliance_disp((void *) &disp_param);
-  #endif                               /* USB_IP_EHCI_OHCI == 0 */
- #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+                        FSP_PARAMETER_NOT_USED(disp_param);
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
                         g_usb_hstd_mgr_mode[ptr->ip]     = USB_DETACHED;
                         g_usb_hstd_device_speed[ptr->ip] = USB_NOCONNECT;
 
@@ -2595,14 +2589,12 @@ void usb_hstd_mgr_task (void * stacd)
                     /* continue */
                     case USB_ATTACHF:
                     {
- #if USB_CFG_COMPLIANCE == USB_CFG_ENABLE
+ #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
                         disp_param.status = USB_COMPLIANCETEST_ATTACH;
                         disp_param.pid    = USB_NULL;
                         disp_param.vid    = USB_NULL;
-  #if USB_IP_EHCI_OHCI == 0
-                        usb_compliance_disp((void *) &disp_param);
-  #endif                               /* USB_IP_EHCI_OHCI == 0 */
- #endif                                /* USB_CFG_COMPLIANCE == USB_CFG_ENABLE */
+                        FSP_PARAMETER_NOT_USED(disp_param);
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
                         if (USB_DETACHED == g_usb_hstd_mgr_mode[ptr->ip])
                         {

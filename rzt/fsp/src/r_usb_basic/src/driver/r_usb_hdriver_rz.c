@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -37,7 +37,7 @@
 /***********************************************************************************************************************
  * Private global variables and functions
  ***********************************************************************************************************************/
-#if 0 == BSP_LP64_SUPPORT
+#if !defined(BSP_CFG_CORE_CA55)
 void usb_memcpy(uint32_t addr1, uint32_t addr2, uint32_t size);
 #endif
 st_usb_pipe_t g_usb_hstd_pipe[USB_MAXPIPE + 1U];          /* pipe information */
@@ -428,7 +428,7 @@ void usb_hstd_transfer_end_cb (usb_utr_t * ptr, void * p_utr, uint32_t actual_si
     {
         if ((p_mess->keyword != USB_PIPE0) && (g_usb_hstd_pipe[p_mess->keyword].direction == USB_DATA_DIR_IN))      /* API USB_Read */
         {
-#if 0 == BSP_LP64_SUPPORT
+#if !defined(BSP_CFG_CORE_CA55)
             usb_memcpy(g_data_buf_addr[p_mess->ip][devadr], (uint32_t) p_mess->p_tranadr, p_mess->tranlen);
 #else
             memcpy((void *) g_data_buf_addr[p_mess->ip][devadr], (void *) p_mess->p_tranadr, p_mess->tranlen);
@@ -438,7 +438,7 @@ void usb_hstd_transfer_end_cb (usb_utr_t * ptr, void * p_utr, uint32_t actual_si
         {
             if (0 != g_data_buf_addr[p_mess->ip][p_mess->keyword])
             {
-#if 0 == BSP_LP64_SUPPORT
+#if !defined(BSP_CFG_CORE_CA55)
                 usb_memcpy(g_data_buf_addr[p_mess->ip][p_mess->keyword], (uint32_t) p_mess->p_tranadr, p_mess->tranlen);
 #else
                 memcpy((void *) g_data_buf_addr[p_mess->ip][p_mess->keyword], (void *) p_mess->p_tranadr, p_mess->tranlen);
@@ -464,7 +464,7 @@ void usb_hstd_transfer_end_cb (usb_utr_t * ptr, void * p_utr, uint32_t actual_si
     p_mess->complete(p_mess, devadr, data2);
 }                                      /* End of function usb_hstd_transfer_end_cb() */
 
-#if 0 == BSP_LP64_SUPPORT
+#if !defined(BSP_CFG_CORE_CA55)
 void usb_memcpy (uint32_t addr1, uint32_t addr2, uint32_t size)
 {
     memcpy((void *) addr1, (void *) addr2, size);

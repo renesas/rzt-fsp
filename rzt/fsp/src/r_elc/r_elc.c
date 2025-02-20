@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -117,6 +117,7 @@ fsp_err_t R_ELC_Open (elc_ctrl_t * const p_ctrl, elc_cfg_t const * const p_cfg)
     uint32_t i_shift = 1;
 #if (1 == ELC_CFG_EXTEND_SUPPORTED)
     elc_extended_cfg_t const * p_cfg_extend     = (elc_extended_cfg_t const *) p_cfg->p_extend;
+    __IOM uint32_t           * p_elc_gpt_intsel = &R_ICU_NS->ELC_GPT_INTSEL[0];
     __IOM uint32_t           * p_elc_gpt_intmsk = &R_ICU_NS->ELC_GPT_INTMSK[0];
 #endif
 
@@ -166,6 +167,13 @@ fsp_err_t R_ELC_Open (elc_ctrl_t * const p_ctrl, elc_cfg_t const * const p_cfg)
 #if (1 == ELC_CFG_EXTEND_SUPPORTED)
     if (NULL != p_cfg_extend)
     {
+        for (uint32_t elc_gpt_intsel_num = 0;
+             elc_gpt_intsel_num < BSP_FEATURE_ELC_GPT_EVENT_SOURCE_NUM;
+             elc_gpt_intsel_num++)
+        {
+            p_elc_gpt_intsel[elc_gpt_intsel_num] = p_cfg_extend->elc_gpt_event_source[elc_gpt_intsel_num];
+        }
+
         for (uint32_t elc_gpt_intmsk_num = 0;
              elc_gpt_intmsk_num < BSP_FEATURE_ELC_GPT_EVENT_MASK_NUM;
              elc_gpt_intmsk_num++)

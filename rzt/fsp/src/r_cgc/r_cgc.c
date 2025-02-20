@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -261,12 +261,12 @@ fsp_err_t R_CGC_ClocksCfg (cgc_ctrl_t * const p_ctrl, cgc_clocks_cfg_t const * c
                      FSP_ERR_INVALID_ARGUMENT);
  #else
 
-    /* ATCM wait should be 1-wait when CPU0CLK is over 500MHz */
+    /* ATCM wait should be 1-wait when CR52C0CLK is over 500MHz */
     FSP_ERROR_RETURN(!((0 == R_TCMAW->CPU0WAIT_b.CPU0WAIT) &&
                        (CGC_CPU_CLOCK_DIV_1 == p_clock_cfg->divider_cfg.sckcr2_b.cr52cpu0)),
                      FSP_ERR_INVALID_ARGUMENT);
 
-    /* ATCM wait should be 1-wait when CPU1CLK is over 500MHz */
+    /* ATCM wait should be 1-wait when CR52C1CLK is over 500MHz */
     FSP_ERROR_RETURN(!((0 == R_TCMAW->CPU1WAIT_b.CPU1WAIT) &&
                        (CGC_CPU_CLOCK_DIV_1 == p_clock_cfg->divider_cfg.sckcr2_b.cr52cpu1)),
                      FSP_ERR_INVALID_ARGUMENT);

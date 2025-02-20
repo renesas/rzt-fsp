@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -32,11 +32,9 @@
 
 /* defined: Host COMPLIANCE mode, undefined: Host NORMAL mode */
 
-// #define USB_HOST_COMPLIANCE_MODE
-
-#ifdef USB_HOST_COMPLIANCE_MODE
+#if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
  #define USB_COMPLIANCE_DISP(data1, data2)
-#endif                                 /* USB_HOST_COMPLIANCE_MODE */
+#endif                                 /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
 #define USB_OVERCURRENT(rootport)
 

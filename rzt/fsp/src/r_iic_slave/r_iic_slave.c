@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -480,10 +480,6 @@ static fsp_err_t iic_slave_read_write (i2c_slave_ctrl_t * const p_ctrl,
     p_instance_ctrl->p_reg->ICMR3_b.ACKBT = 0; /* Write */
     p_instance_ctrl->p_reg->ICMR3_b.ACKWP = 0;
 
-    /* Enable timeouts. Timeouts are disabled at the end of a IIC Slave transaction. */
-    /* Allow timeouts to be generated on the low value of SCL using long count mode */
-    p_instance_ctrl->p_reg->ICMR2 = IIC_SLAVE_BUS_MODE_REGISTER_2_MASK;
-
     /* Timeouts are enabled by the driver code at the end of an IIC Slave callback.
      * Do not enable them here to prevent time restricting the application code.
      */
@@ -845,12 +841,12 @@ static void iic_rxi_slave (iic_slave_instance_ctrl_t * p_instance_ctrl)
 
         /* The below code enables/services 0 byte writes from Master.*/
 
-        /* Since address match detected, enable STOP detection in case of Master Read Slave Write Operation;
-         * and enable STOP and START (RESTART) detection in case of Master Write Slave Read Operation.
-         * This is done so that RESTART handling is not missed if the user callback takes long and the Master
-         * issues the restart on the bus.
+        /* For 7-bit address: slave addr | R/W + data
+         * For 10-bit address:
+         * read:  slave high addr | W + slave low addr + data + stop
+         * write: slave high addr | W + slave low addr + restart + slave high addr | R + data + stop
          */
-        if (address_and_intent & 1U)
+        if ((I2C_SLAVE_ADDR_MODE_7BIT == p_instance_ctrl->p_cfg->addr_mode) && (address_and_intent & 1U))
         {
             p_instance_ctrl->p_reg->ICSR2 &= (uint8_t) ~(ICSR2_STOP_BIT);
         }

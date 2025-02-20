@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -19,8 +19,11 @@
  * Macro definitions
  **********************************************************************************************************************/
 
+#define SCI_SPI_PRV_CLK_MAX_N              (0xFFU)
+#define SCI_SPI_PRV_CLK_MAX_n              (3U)
 #define SCI_SPI_PRV_CLK_MIN_DIV            (4U)
-#define SCI_SPI_PRV_CLK_MAX_DIV            ((UINT16_MAX + 1U) * 2U)
+#define SCI_SPI_PRV_CLK_MAX_DIV            ((SCI_SPI_PRV_CLK_MAX_N + 1) * 8 * \
+                                            (1 << (2 * SCI_SPI_PRV_CLK_MAX_n - 1)))
 #define SCI_SPI_PRV_CHR_RST_VALUE          (0x0200U)
 #define SCI_SPI_PRV_DATA_REG_MASK          (0xFFFFFF00)
 #define SCI_SPI_PRV_RDAT_MASK              (0xFFU)

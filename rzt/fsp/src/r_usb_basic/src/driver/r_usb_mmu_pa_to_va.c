@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -19,8 +19,7 @@
  ***********************************************************************************************************************/
 #include "stdint.h"
 #include "bsp_api.h"
- #if 1 == BSP_LP64_SUPPORT
-//#include "r_mmu.h"
+ #if defined(BSP_CFG_CORE_CA55)
 
 /***********************************************************************************************************************
  * Constant macro definitions
@@ -43,21 +42,19 @@ uint64_t r_usb_readtbl(uint64_t address);
  ******************************************************************************/
 uint64_t r_usb_pa_to_va (uint64_t paddr)
 {
-    uint64_t vaddr;
+    uint64_t vaddr = 0;
 
-#if 1// (BSP_FEATURE_BSP_HAS_MMU_SUPPORT)
-    if((0 != paddr) && ((paddr < USB_MMU_VA_BOTTOM) || (paddr > USB_MMU_VA_TOP)))
+#if defined(BSP_CFG_CORE_CA55)
+
+    /* Converts a physical address to a virtual address.  */
+    if (FSP_SUCCESS != R_BSP_MmuPatoVa(paddr, &vaddr, BSP_MMU_CONVERSION_NON_CACHE))
     {
-    R_BSP_MmuPatoVa(paddr, &vaddr, BSP_MMU_CONVERSION_NON_CACHE);
-    }
-    else
-    {
+        /* On error, returns the physical address without conversion. */
         vaddr = paddr;
     }
-
-#else                                  /* #if (BSP_FEATURE_BSP_HAS_MMU_SUPPORT) */
+#else /* #if defined(BSP_CFG_CORE_CA55) */
     vaddr = paddr;
-#endif /* #if (BSP_FEATURE_BSP_HAS_MMU_SUPPORT) */
+#endif /* #if defined(BSP_CFG_CORE_CA55) */
 
     return vaddr;
 }                                      /* End of function r_usb_pa_to_va() */
@@ -76,20 +73,19 @@ uint64_t r_usb_pa_to_va (uint64_t paddr)
  ******************************************************************************/
 uint64_t r_usb_va_to_pa (uint64_t vaddr)
 {
-    uint64_t paddr;
+    uint64_t paddr = 0;
 
-#if 1 //(BSP_FEATURE_BSP_HAS_MMU_SUPPORT)
-    if((0 != vaddr) && (USB_MMU_VA_BOTTOM <= vaddr) && (vaddr <= USB_MMU_VA_TOP))
+#if defined(BSP_CFG_CORE_CA55)
+
+    /* Converts a virtual address to a physical address.  */
+    if (FSP_SUCCESS != R_BSP_MmuVatoPa(vaddr, &paddr))
     {
-    R_BSP_MmuVatoPa(vaddr, &paddr);
-    }
-    else
-    {
+        /* On error, returns the virtual address without conversion. */
         paddr = vaddr;
     }
-#else                                  /* #if (BSP_FEATURE_BSP_HAS_MMU_SUPPORT) */
+#else /* #if defined(BSP_CFG_CORE_CA55) */
     paddr = vaddr;
-#endif /* #if (BSP_FEATURE_BSP_HAS_MMU_SUPPORT) */
+#endif /* #if defined(BSP_CFG_CORE_CA55) */
 
     return paddr;
 }
@@ -97,7 +93,7 @@ uint64_t r_usb_va_to_pa (uint64_t vaddr)
 /******************************************************************************
  * End of function R_MMU_VAtoPA
  ******************************************************************************/
-#endif /* 1 == BSP_LP64_SUPPORT */
+#endif /* defined(BSP_CFG_CORE_CA55) */
 /***********************************************************************************************************************
  * End  Of File
  ***********************************************************************************************************************/

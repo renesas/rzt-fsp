@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -214,24 +214,25 @@
 
 /* Calculate the value to write to PLL3_VCO_CTR */
 #if BSP_FEATURE_CGC_PLL3_STANDBY_STATE_SUPPORTED
- #define BSP_PRV_STARTUP_PLL3_VCO_CTR0      ((BSP_CFG_PLL3P << 16) | \
-                                             (BSP_CFG_PLL3M << 0))
+ #define BSP_PRV_STARTUP_PLL3_VCO_CTR0         ((BSP_CFG_PLL3P << 16) | \
+                                                (BSP_CFG_PLL3M << 0))
 
- #define BSP_PRV_STARTUP_PLL3_VCO_CTR1      ((BSP_CFG_PLL3K << 16) | \
-                                             (BSP_CFG_PLL3S << 0))
+ #define BSP_PRV_STARTUP_PLL3_VCO_CTR1         ((BSP_CFG_PLL3K << 16) | \
+                                                (BSP_CFG_PLL3S << 0))
 #endif
 
 /* Frequencies of clocks. */
-#define BSP_PRV_CPU_FREQ_1000_MHZ           (1000000000U) // CPU frequency is 1000 MHz
-#define BSP_PRV_CPU_FREQ_800_MHZ            (800000000U)  // CPU frequency is 800 MHz
-#define BSP_PRV_CPU_FREQ_600_MHZ            (600000000U)  // CPU frequency is 600 MHz
-#define BSP_PRV_CPU_FREQ_500_MHZ            (500000000U)  // CPU frequency is 500 MHz
+#define BSP_PRV_CPU_FREQ_1000_MHZ              (1000000000U) // CPU frequency is 1000 MHz
+#define BSP_PRV_CPU_FREQ_800_MHZ               (800000000U)  // CPU frequency is 800 MHz
+#define BSP_PRV_CPU_FREQ_600_MHZ               (600000000U)  // CPU frequency is 600 MHz
+#define BSP_PRV_CPU_FREQ_500_MHZ               (500000000U)  // CPU frequency is 500 MHz
 
 /* Command sequence for enabling CLMA. */
-#define BSP_PRV_CTL0_ENABLE_TARGET_CMD      (0x01)
-#define BSP_PRV_CTL0_ENABLE_REVERSED_CMD    (0xFE)
+#define BSP_PRV_CTL0_ENABLE_TARGET_CMD         (0x01)
+#define BSP_PRV_CTL0_ENABLE_REVERSED_CMD       (0xFE)
+#define BSP_PRV_CTL0_ENABLE_SETTING_TIMEOUT    (10U)
 
-#define BSP_PRV_LOCO_STABILIZATION_COUNT    (40000)
+#define BSP_PRV_LOCO_STABILIZATION_COUNT       (40000)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -614,8 +615,13 @@ void bsp_clock_init (void)
     R_CLMA0->CMPH = BSP_CFG_CLMA0_CMPH;
 
     /* Enabling CLMA0 operation. */
+    volatile uint32_t timeout_clma0 = BSP_PRV_CTL0_ENABLE_SETTING_TIMEOUT;
+
     do
     {
+        /* If the setting that enables CLMA0 times out, the assertion will fail. */
+        FSP_ASSERT_NOT_RETURN_VALUE(0 != timeout_clma0);
+
         R_CLMA0->PCMD = BSP_PRV_PCMD_KEY;
 
         R_CLMA0->CTL0 = BSP_PRV_CTL0_ENABLE_TARGET_CMD;
@@ -627,6 +633,8 @@ void bsp_clock_init (void)
             /* Check the value of PROTSR register. */
             dummy = R_CLMA0->PROTSR;
         }
+
+        timeout_clma0--;
     } while (1 == R_CLMA0->PROTSR_b.PRERR);
 #endif
 
@@ -637,8 +645,13 @@ void bsp_clock_init (void)
     R_CLMA1->CMPH = BSP_CFG_CLMA1_CMPH;
 
     /* Enabling CLMA1 operation. */
+    volatile uint32_t timeout_clma1 = BSP_PRV_CTL0_ENABLE_SETTING_TIMEOUT;
+
     do
     {
+        /* If the setting that enables CLMA1 times out, the assertion will fail. */
+        FSP_ASSERT_NOT_RETURN_VALUE(0 != timeout_clma1);
+
         R_CLMA1->PCMD = BSP_PRV_PCMD_KEY;
 
         R_CLMA1->CTL0 = BSP_PRV_CTL0_ENABLE_TARGET_CMD;
@@ -650,6 +663,8 @@ void bsp_clock_init (void)
             /* Check the value of PROTSR register. */
             dummy = R_CLMA1->PROTSR;
         }
+
+        timeout_clma1--;
     } while (1 == R_CLMA1->PROTSR_b.PRERR);
 #endif
 
@@ -660,8 +675,13 @@ void bsp_clock_init (void)
     R_CLMA2->CMPH = BSP_CFG_CLMA2_CMPH;
 
     /* Enabling CLMA2 operation. */
+    volatile uint32_t timeout_clma2 = BSP_PRV_CTL0_ENABLE_SETTING_TIMEOUT;
+
     do
     {
+        /* If the setting that enables CLMA2 times out, the assertion will fail. */
+        FSP_ASSERT_NOT_RETURN_VALUE(0 != timeout_clma2);
+
         R_CLMA2->PCMD = BSP_PRV_PCMD_KEY;
 
         R_CLMA2->CTL0 = BSP_PRV_CTL0_ENABLE_TARGET_CMD;
@@ -673,6 +693,8 @@ void bsp_clock_init (void)
             /* Check the value of PROTSR register. */
             dummy = R_CLMA2->PROTSR;
         }
+
+        timeout_clma2--;
     } while (1 == R_CLMA2->PROTSR_b.PRERR);
 #endif
 
@@ -683,8 +705,13 @@ void bsp_clock_init (void)
     R_CLMA3->CMPH = BSP_CFG_CLMA3_CMPH;
 
     /* Enabling CLMA3 operation. */
+    volatile uint32_t timeout_clma3 = BSP_PRV_CTL0_ENABLE_SETTING_TIMEOUT;
+
     do
     {
+        /* If the setting that enables CLMA3 times out, the assertion will fail. */
+        FSP_ASSERT_NOT_RETURN_VALUE(0 != timeout_clma3);
+
         R_CLMA3->PCMD = BSP_PRV_PCMD_KEY;
 
         R_CLMA3->CTL0 = BSP_PRV_CTL0_ENABLE_TARGET_CMD;
@@ -696,6 +723,8 @@ void bsp_clock_init (void)
             /* Check the value of PROTSR register. */
             dummy = R_CLMA3->PROTSR;
         }
+
+        timeout_clma3--;
     } while (1 == R_CLMA3->PROTSR_b.PRERR);
 #endif
 
@@ -706,8 +735,13 @@ void bsp_clock_init (void)
     R_CLMA4->CMPH = BSP_CFG_CLMA4_CMPH;
 
     /* Enabling CLMA4 operation. */
+    volatile uint32_t timeout_clma4 = BSP_PRV_CTL0_ENABLE_SETTING_TIMEOUT;
+
     do
     {
+        /* If the setting that enables CLMA4 times out, the assertion will fail. */
+        FSP_ASSERT_NOT_RETURN_VALUE(0 != timeout_clma4);
+
         R_CLMA4->PCMD = BSP_PRV_PCMD_KEY;
 
         R_CLMA4->CTL0 = BSP_PRV_CTL0_ENABLE_TARGET_CMD;
@@ -719,6 +753,8 @@ void bsp_clock_init (void)
             /* Check the value of PROTSR register. */
             dummy = R_CLMA4->PROTSR;
         }
+
+        timeout_clma4--;
     } while (1 == R_CLMA4->PROTSR_b.PRERR);
 #endif
 
@@ -729,8 +765,13 @@ void bsp_clock_init (void)
     R_CLMA5->CMPH = BSP_CFG_CLMA5_CMPH;
 
     /* Enabling CLMA5 operation. */
+    volatile uint32_t timeout_clma5 = BSP_PRV_CTL0_ENABLE_SETTING_TIMEOUT;
+
     do
     {
+        /* If the setting that enables CLMA5 times out, the assertion will fail. */
+        FSP_ASSERT_NOT_RETURN_VALUE(0 != timeout_clma5);
+
         R_CLMA5->PCMD = BSP_PRV_PCMD_KEY;
 
         R_CLMA5->CTL0 = BSP_PRV_CTL0_ENABLE_TARGET_CMD;
@@ -742,6 +783,8 @@ void bsp_clock_init (void)
             /* Check the value of PROTSR register. */
             dummy = R_CLMA5->PROTSR;
         }
+
+        timeout_clma5--;
     } while (1 == R_CLMA5->PROTSR_b.PRERR);
 #endif
 
@@ -752,8 +795,13 @@ void bsp_clock_init (void)
     R_CLMA6->CMPH = BSP_CFG_CLMA6_CMPH;
 
     /* Enabling CLMA6 operation. */
+    volatile uint32_t timeout_clma6 = BSP_PRV_CTL0_ENABLE_SETTING_TIMEOUT;
+
     do
     {
+        /* If the setting that enables CLMA6 times out, the assertion will fail. */
+        FSP_ASSERT_NOT_RETURN_VALUE(0 != timeout_clma6);
+
         R_CLMA6->PCMD = BSP_PRV_PCMD_KEY;
 
         R_CLMA6->CTL0 = BSP_PRV_CTL0_ENABLE_TARGET_CMD;
@@ -765,6 +813,8 @@ void bsp_clock_init (void)
             /* Check the value of PROTSR register. */
             dummy = R_CLMA6->PROTSR;
         }
+
+        timeout_clma6--;
     } while (1 == R_CLMA6->PROTSR_b.PRERR);
 #endif
 

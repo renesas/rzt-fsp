@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -239,7 +239,7 @@ typedef struct st_usb_dmaca_transfer_data_cfg
     usb_dmaca_chcfg_tc_msk_t        dmatc_msk;    /* Channel Configuration Register .b25:TCM bit set */
     usb_dmaca_ch_interval_t         ch_interval;  /* Channel Interval Register set */
     usb_dmaca_dctrl_priority_t      trx_priority; /* DMA Control Register .b00:PR bit set */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t p_src_addr;                          /* Start Address of Source */
     uint32_t p_des_addr;                          /* Start Address of Destination */
 #else

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -88,10 +88,7 @@ void R_USB_isr (void)
     if (USB00_AHB_INT == (int_state & USB00_AHB_INT))
     {
         USB00->INTSTATUS |= USB00_AHB_INT;
-        while (1)
-        {
-            ;
-        }
+        FSP_ERROR_LOG(FSP_ERR_USB_FAILED);
     }
     else if ((USB00_USBH_INTA == (int_state & USB00_USBH_INTA)) || (USB00_USBH_INTB == (int_state & USB00_USBH_INTB))) /* EHCI or OHCI interrupt */
     {

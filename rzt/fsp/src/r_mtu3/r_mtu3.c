@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -191,6 +191,7 @@
 #define MTU_TIOR_INPUT_BOTH_EDGE            (0x0AU)   /* Input capture at both edge */
 
 #define MTU_TGR_INITIAL_VAL                 (0xFFFFU) /* TGR initial value */
+#define MTU_TGRA_INITIAL_VAL                (0U)      /* TGRA initial value */
 
 #define MTU0_TGRA_16BIT_MODE_INITIAL_VAL    (40000)   /* 0.2ms(200MHz) */
 #define MTU0_TGRC_16BIT_MODE_INITIAL_VAL    (50000)   /* 0.25ms(200MHz) */
@@ -206,10 +207,10 @@
 /* GPT_SEL interrupt */
  #define GPT_INT4                           (4)
  #define GPT_COMBINE_TABLE                  (3U)
- #define GPT_SELECTED_TABLE                 (3U)
  #define MTU3_IRQ                           (3)
  #define MTU3_IRQ_SELECT                    (3)
  #define MTU3_IRQ_FUNCTION                  (3)
+ #define GPT_EVENT_SELECT                   (3)
 #endif
 
 /***********************************************************************************************************************
@@ -250,57 +251,6 @@ typedef enum e_mtu3_channel
 #define MTU3_PHASE_COUNTING_MODE_PCB_2    (0x2U << 3)
 
 #if (1 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
-
-/* Table for MTU3 GPT_SEL */
-static const bsp_irq_gpt_selected_event_t gpt_selected_event[BSP_FEATURE_MTU3_MAX_CHANNELS][GPT_SELECTED_TABLE] =
-{
-    {                                  /* MTU3 ch0 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIA0,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIB0,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV0
-    },
-    {                                  /* MTU3 ch1 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIA1,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIB1,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV1
-    },
-    {                                  /* MTU3 ch2 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIA2,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIB2,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV2
-    },
-    {                                  /* MTU3 ch3 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIA3,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIB3,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV3
-    },
-    {                                  /* MTU3 ch4 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIA4,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIB4,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV4
-    },
-    {                                  /* MTU3 ch5 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIU5,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV5,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIW5
-    },
-    {                                  /* MTU3 ch6 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIA6,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIB6,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV6
-    },
-    {                                  /* MTU3 ch7 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIA7,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIB7,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV7
-    },
-
-    {                                  /* MTU3 ch8 */
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIA8,
-        BSP_IRQ_GPT_SELECTED_EVENT_TGIB8,
-        BSP_IRQ_GPT_SELECTED_EVENT_TCIV8
-    },
-};
 
 /* Table for MTU3 GPT_COMBINE */
 static const bsp_irq_gpt_combined_event_t gpt_combined[BSP_FEATURE_MTU3_MAX_CHANNELS][GPT_COMBINE_TABLE] =
@@ -1999,12 +1949,12 @@ static void r_mtu3_call_callback (mtu3_instance_ctrl_t * p_ctrl, timer_event_t e
  **********************************************************************************************************************/
 static void r_mtu3_capture_common_isr (mtu3_prv_capture_event_t event)
 {
-    MTU3_CFG_MULTIPLEX_INTERRUPT_ENABLE
+    MTU3_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 
 #if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
 
     /* Save context if RTOS is used */
-    FSP_CONTEXT_SAVE
+    FSP_CONTEXT_SAVE;
 #endif
 
     IRQn_Type irq = R_FSP_CurrentIrqGet();
@@ -2093,9 +2043,9 @@ static void r_mtu3_capture_common_isr (mtu3_prv_capture_event_t event)
 #if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
 
     /* Restore context if RTOS is used */
-    FSP_CONTEXT_RESTORE
+    FSP_CONTEXT_RESTORE;
 #endif
-    MTU3_CFG_MULTIPLEX_INTERRUPT_DISABLE
+    MTU3_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 /*******************************************************************************************************************//**
@@ -2103,7 +2053,7 @@ static void r_mtu3_capture_common_isr (mtu3_prv_capture_event_t event)
  **********************************************************************************************************************/
 void mtu3_counter_overflow_isr (void)
 {
-    MTU3_CFG_MULTIPLEX_INTERRUPT_ENABLE
+    MTU3_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 
 #if (0 == BSP_FEATURE_BSP_IRQ_GPT_SEL_SUPPORTED)
 
@@ -2126,7 +2076,7 @@ void mtu3_counter_overflow_isr (void)
     FSP_CONTEXT_RESTORE;
 #endif
 
-    MTU3_CFG_MULTIPLEX_INTERRUPT_DISABLE
+    MTU3_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
 
 /*******************************************************************************************************************//**
@@ -2311,6 +2261,13 @@ static void mtu3_gpt_INT0_4_interrupt_enable (mtu3_instance_ctrl_t * const p_ins
         p_extend->cycle_end_source_select
     };
 
+    bsp_irq_gpt_selected_event_t gpt_selected_event[GPT_EVENT_SELECT] =
+    {
+        p_extend->capture_a_select_event,
+        p_extend->capture_b_select_event,
+        p_extend->cycle_end_select_event
+    };
+
     /* Table interrupt function in mtu3 */
     void (* irq_mtu3[MTU3_IRQ_FUNCTION])(void) =
     {
@@ -2325,8 +2282,7 @@ static void mtu3_gpt_INT0_4_interrupt_enable (mtu3_instance_ctrl_t * const p_ins
         {
             if (GPT_INT4 != mtu3_irq_select[gpt_int_num])
             {
-                R_BSP_IrqGptSelectedSet(mtu3_irq[gpt_int_num],
-                                        gpt_selected_event[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+                R_BSP_IrqGptSelectedSet(mtu3_irq[gpt_int_num], gpt_selected_event[gpt_int_num]);
             }
             else
             {
@@ -2415,14 +2371,20 @@ static void mtu3_gpt_channel_5_interrupt_enable (mtu3_instance_ctrl_t * const p_
         mtu3_capture_w_isr
     };
 
+    bsp_irq_gpt_selected_event_t gpt_selected_event[GPT_EVENT_SELECT] =
+    {
+        p_uvw_cfg->capture_u_select_event,
+        p_uvw_cfg->capture_v_select_event,
+        p_uvw_cfg->capture_w_select_event,
+    };
+
     for (int gpt_int_num = 0; gpt_int_num < 3; gpt_int_num++)
     {
         if (mtu3_irq[gpt_int_num] > FSP_INVALID_VECTOR)
         {
             if ((MTU3_CHANNEL_5 == p_instance_ctrl->p_cfg->channel) && (GPT_INT4 != mtu3_irq[gpt_int_num]))
             {
-                R_BSP_IrqGptSelectedSet(mtu3_irq[gpt_int_num],
-                                        gpt_selected_event[p_instance_ctrl->p_cfg->channel][gpt_int_num]);
+                R_BSP_IrqGptSelectedSet(mtu3_irq[gpt_int_num], gpt_selected_event[gpt_int_num]);
             }
             else
             {

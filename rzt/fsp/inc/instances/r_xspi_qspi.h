@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -19,6 +19,10 @@
 #include <string.h>
 #include "r_xspi_qspi_cfg.h"
 #include "r_spi_flash_api.h"
+
+#if XSPI_QSPI_CFG_DMAC_SUPPORT_ENABLE
+ #include "r_transfer_api.h"
+#endif
 
 #if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
  #include "r_rsip_api.h"
@@ -150,6 +154,10 @@ typedef struct st_xspi_qspi_extended_cfg
     xspi_qspi_prefetch_function_t      prefetch_en;       ///< Prefetch function settings
     xspi_qspi_io_voltage_t             io_voltage;        ///< Voltage setting of xSPI IO domain
     xspi_qspi_address_space_t const  * p_address_space;   ///< Address space settings when custom address space enabled
+
+#if XSPI_QSPI_CFG_DMAC_SUPPORT_ENABLE
+    transfer_instance_t const * p_lower_lvl_transfer;     ///< DMAC Transfer instance used for data transmission
+#endif
 
 #if XSPI_QSPI_CFG_OTFD_SUPPORT_ENABLE
     xspi_qspi_otfd_cfg_t const * p_otfd_cfg;              ///< OTFD Configuration. Set to NULL if unused.

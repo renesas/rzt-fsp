@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -299,11 +299,11 @@ typedef struct st_adc_channel_cfg
 /** ADC instance control block. DO NOT INITIALIZE.  Initialized in @ref adc_api_t::open(). */
 typedef struct
 {
-#if 1 == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     R_ADC121_Type * p_reg;                      // Base register for this unit
-#elif 2 == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     R_ADC120_Type * p_reg;                      // Base register for this unit
-#elif 3 == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+#elif 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
     R_ADC122_Type * p_reg;                      // Base register for this unit
 #endif
 

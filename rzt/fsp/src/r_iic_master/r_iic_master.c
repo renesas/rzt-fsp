@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -204,6 +204,12 @@ fsp_err_t R_IIC_MASTER_Open (i2c_master_ctrl_t * const p_ctrl, i2c_master_cfg_t 
     FSP_ERROR_RETURN(IIC_MASTER_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 
     FSP_ERROR_RETURN(BSP_FEATURE_IIC_VALID_CHANNEL_MASK & (1 << p_cfg->channel), FSP_ERR_IP_CHANNEL_NOT_PRESENT);
+
+    /* If rate is configured as Fast mode plus, check whether the channel supports it */
+    if (I2C_MASTER_RATE_FASTPLUS == p_cfg->rate)
+    {
+        FSP_ASSERT((BSP_FEATURE_IIC_FAST_MODE_PLUS & (1U << p_cfg->channel)));
+    }
 
  #if IIC_MASTER_CFG_DMAC_ENABLE
     if ((NULL != p_cfg->p_transfer_rx) || (NULL != p_cfg->p_transfer_tx))
@@ -902,6 +908,11 @@ static fsp_err_t iic_master_run_hw_master (iic_master_instance_ctrl_t * const p_
                                                            p_extend)->
                                                           timeout_scl_low << R_IIC0_ICMR2_TMOL_Pos));
 
+    /* Set the response as ACK */
+    p_instance_ctrl->p_reg->ICMR3_b.ACKWP = 1; /* Write Enable */
+    p_instance_ctrl->p_reg->ICMR3_b.ACKBT = 0; /* Write */
+    p_instance_ctrl->p_reg->ICMR3_b.ACKWP = 0;
+
     /* Enable timeout function */
     p_instance_ctrl->p_reg->ICFER_b.TMOE = 1U;
 
@@ -974,7 +985,7 @@ static void iic_master_rxi_master (iic_master_instance_ctrl_t * p_instance_ctrl)
     if (false == p_instance_ctrl->dummy_read_completed)
     {
         /* Enable WAIT for 1 or 2 byte read */
-        if (2U <= p_instance_ctrl->total)
+        if (2U >= p_instance_ctrl->total)
         {
             p_instance_ctrl->p_reg->ICMR3_b.WAIT = 1;
         }
@@ -987,6 +998,7 @@ static void iic_master_rxi_master (iic_master_instance_ctrl_t * p_instance_ctrl)
              */
             p_instance_ctrl->p_reg->ICMR3_b.ACKWP = 1; /* Write enable ACKBT */
             p_instance_ctrl->p_reg->ICMR3_b.ACKBT = 1;
+            p_instance_ctrl->p_reg->ICMR3_b.ACKWP = 0;
         }
 
 #if IIC_MASTER_CFG_DMAC_ENABLE
@@ -1192,7 +1204,7 @@ static void iic_master_err_master (iic_master_instance_ctrl_t * p_instance_ctrl)
 {
     /* Clear all the event flags except the receive data full, transmit end and transmit data empty flags*/
     uint8_t errs_events = IIC_MASTER_STATUS_REGISTER_2_ERR_MASK & p_instance_ctrl->p_reg->ICSR2;
-    p_instance_ctrl->p_reg->ICSR2 = (uint8_t) ~IIC_MASTER_STATUS_REGISTER_2_ERR_MASK;
+    p_instance_ctrl->p_reg->ICSR2 &= (uint8_t) ~IIC_MASTER_STATUS_REGISTER_2_ERR_MASK;
 
     /* Wait for the value to reflect at the peripheral.
      * See 'Note' under Table "Interrupt sources" of the RZ microprocessor manual */
@@ -1238,13 +1250,6 @@ static void iic_master_err_master (iic_master_instance_ctrl_t * p_instance_ctrl)
          * See item '[4]' under 'Figure Example master transmission flow' of the RZ microprocessor manual. */
 
         /* Request IIC to issue the stop condition */
-        p_instance_ctrl->p_reg->ICSR2 &= (uint8_t) ~(IIC_MASTER_ICSR2_STOP_BIT);
-
-        /* Wait for the value to reflect at the peripheral.
-         * See 'Note' under Table "Interrupt sources" of the RZ microprocessor manual. */
-        timeout_count = IIC_MASTER_PERIPHERAL_REG_MAX_WAIT;
-        IIC_MASTER_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->ICSR2_b.STOP, 0U, timeout_count);
-
         p_instance_ctrl->p_reg->ICCR2 = (uint8_t) IIC_MASTER_ICCR2_SP_BIT_MASK; /* It is safe to write 0's to other bits. */
         /* Allow timeouts to be generated on the low value of SCL using either long or short mode */
         p_instance_ctrl->p_reg->ICMR2 = (uint8_t) 0x02U |
@@ -1321,6 +1326,7 @@ static void iic_master_rxi_read_data (iic_master_instance_ctrl_t * const p_insta
          */
         p_instance_ctrl->p_reg->ICMR3_b.ACKWP = 1; /* Write enable ACKBT */
         p_instance_ctrl->p_reg->ICMR3_b.ACKBT = 1;
+        p_instance_ctrl->p_reg->ICMR3_b.ACKWP = 0;
     }
     /* If next data = final byte, send STOP or RESTART */
     else if (1U == p_instance_ctrl->remain)
@@ -1339,6 +1345,7 @@ static void iic_master_rxi_read_data (iic_master_instance_ctrl_t * const p_insta
              * For restart condition, clear bit by software.
              */
             p_instance_ctrl->p_reg->ICMR3_b.ACKBT = 0;
+            p_instance_ctrl->p_reg->ICMR3_b.ACKWP = 0;
 
             /* Request IIC to issue the restart condition */
             p_instance_ctrl->p_reg->ICCR2 = (uint8_t) IIC_MASTER_ICCR2_RS_BIT_MASK;

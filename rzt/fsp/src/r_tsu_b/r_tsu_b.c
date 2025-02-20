@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -108,8 +108,7 @@ fsp_err_t R_TSU_B_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
     FSP_CRITICAL_SECTION_ENTER;
 
     /* OTP power on setting. */
-    R_OTP->OTPPWR_b.PWR  = 1;
-    R_OTP->OTPPWR_b.ACCL = 1;
+    R_OTP->OTPPWR = R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk;
     FSP_HARDWARE_REGISTER_WAIT(R_OTP->OTPSTR_b.CMD_RDY, 1);
 
     /* Set the low temperature calibration data address to the OTPADRRD register. */
@@ -129,8 +128,7 @@ fsp_err_t R_TSU_B_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
         FSP_ERR_INVALID_HW_CONDITION);
 
     /* OTP power off setting. */
-    R_OTP->OTPPWR_b.PWR  = 0;
-    R_OTP->OTPPWR_b.ACCL = 0;
+    R_OTP->OTPPWR &= (uint32_t) ~(R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk);
     FSP_HARDWARE_REGISTER_WAIT(R_OTP->OTPSTR_b.CMD_RDY, 0);
 
     FSP_CRITICAL_SECTION_EXIT;
@@ -310,8 +308,7 @@ fsp_err_t R_TSU_B_InfoGet (adc_ctrl_t * p_ctrl, adc_info_t * p_adc_info)
     FSP_CRITICAL_SECTION_ENTER;
 
     /* OTP power on setting. */
-    R_OTP->OTPPWR_b.PWR  = 1;
-    R_OTP->OTPPWR_b.ACCL = 1;
+    R_OTP->OTPPWR = R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk;
     FSP_HARDWARE_REGISTER_WAIT(R_OTP->OTPSTR_b.CMD_RDY, 1);
 
     /* Set the low temperature calibration data address to the OTPADRRD register. */
@@ -327,8 +324,7 @@ fsp_err_t R_TSU_B_InfoGet (adc_ctrl_t * p_ctrl, adc_info_t * p_adc_info)
     p_adc_info->calibration_data2 = R_OTP->OTPDATARD;
 
     /* OTP power off setting. */
-    R_OTP->OTPPWR_b.PWR  = 0;
-    R_OTP->OTPPWR_b.ACCL = 0;
+    R_OTP->OTPPWR &= (uint32_t) ~(R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk);
     FSP_HARDWARE_REGISTER_WAIT(R_OTP->OTPSTR_b.CMD_RDY, 0);
 
     FSP_CRITICAL_SECTION_EXIT;
@@ -406,9 +402,7 @@ fsp_err_t R_TSU_B_CalculateTemperature (adc_ctrl_t * p_ctrl, uint16_t temperatur
     FSP_CRITICAL_SECTION_ENTER;
 
     /* OTP power on setting. */
-    R_OTP->OTPPWR_b.ACCL = 1;
-    R_OTP->OTPPWR_b.PWR  = 1;
-
+    R_OTP->OTPPWR = R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk;
     FSP_HARDWARE_REGISTER_WAIT(R_OTP->OTPSTR_b.CMD_RDY, 1);
 
     /* Set the low temperature calibration data address to the OTPADRRD register. */
@@ -424,8 +418,7 @@ fsp_err_t R_TSU_B_CalculateTemperature (adc_ctrl_t * p_ctrl, uint16_t temperatur
     volatile uint32_t calibration_data2 = R_OTP->OTPDATARD;
 
     /* OTP power off setting. */
-    R_OTP->OTPPWR_b.PWR  = 0;
-    R_OTP->OTPPWR_b.ACCL = 0;
+    R_OTP->OTPPWR &= (uint32_t) ~(R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk);
     FSP_HARDWARE_REGISTER_WAIT(R_OTP->OTPSTR_b.CMD_RDY, 0);
 
     FSP_CRITICAL_SECTION_EXIT;
@@ -666,8 +659,7 @@ static uint32_t r_tsu_b_calculate_comparison_value (tsu_b_instance_ctrl_t * cons
     FSP_CRITICAL_SECTION_ENTER;
 
     /* OTP power on setting. */
-    R_OTP->OTPPWR_b.ACCL = 1;
-    R_OTP->OTPPWR_b.PWR  = 1;
+    R_OTP->OTPPWR = R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk;
     FSP_HARDWARE_REGISTER_WAIT(R_OTP->OTPSTR_b.CMD_RDY, 1);
 
     /* Set the low temperature calibration data address to the OTPADRRD register. */
@@ -683,8 +675,7 @@ static uint32_t r_tsu_b_calculate_comparison_value (tsu_b_instance_ctrl_t * cons
     volatile uint32_t calibration_data2 = R_OTP->OTPDATARD;
 
     /* OTP power off setting. */
-    R_OTP->OTPPWR_b.PWR  = 0;
-    R_OTP->OTPPWR_b.ACCL = 0;
+    R_OTP->OTPPWR &= (uint32_t) ~(R_OTP_OTPPWR_PWR_Msk | R_OTP_OTPPWR_ACCL_Msk);
     FSP_HARDWARE_REGISTER_WAIT(R_OTP->OTPSTR_b.CMD_RDY, 0);
 
     FSP_CRITICAL_SECTION_EXIT;

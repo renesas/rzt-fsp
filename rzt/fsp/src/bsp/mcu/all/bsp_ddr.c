@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -25,6 +25,7 @@
  * Typedef definitions
  **********************************************************************************************************************/
   #define ARRAY_SIZE(a)    (sizeof(a) / sizeof(a[0]))
+  #define BSP_PRV_DDR_PHYINIT_TIMEOUT    (500000U)
 
 /***********************************************************************************************************************
  * Exported global variables (to be accessed by other files)
@@ -76,8 +77,6 @@ static void bsp_prv_ddr_reg_init (void)
 {
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
 
-    R_BSP_MODULE_START(FSP_IP_DDRSS, 0);
-
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_DDRSS_RST_N);
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_DDRSS_RST_PWROKLN);
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_DDRSS_RESET);
@@ -88,6 +87,8 @@ static void bsp_prv_ddr_reg_init (void)
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_DDRSS_AXI4_ARESETN);
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_DDRSS_MC_PRESETN);
     R_BSP_ModuleResetDisable(BSP_MODULE_RESET_DDRSS_PHY_PRESETN);
+
+    R_BSP_MODULE_START(FSP_IP_DDRSS, 0);
 
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 }
@@ -386,9 +387,12 @@ void bsp_prv_dwc_ddrphy_phyinit_userCustom_G_waitDone (uint8_t sel_train)
     volatile uint32_t train_done = 0;
     volatile uint32_t mail       = 0;
     volatile uint32_t data       = 0;
+    volatile uint32_t timeout    = BSP_PRV_DDR_PHYINIT_TIMEOUT;
 
     while (train_done == 0)
     {
+        FSP_ASSERT_NOT_RETURN_VALUE(0 != timeout);
+
         data = bsp_dwc_ddrphy_apb_rd(0x0d0004);
 
         if ((data & 0x1) == 0)
@@ -399,6 +403,8 @@ void bsp_prv_dwc_ddrphy_phyinit_userCustom_G_waitDone (uint8_t sel_train)
                 train_done = 1;
             }
         }
+
+        timeout--;
     }
 
     FSP_PARAMETER_NOT_USED(sel_train);
@@ -415,10 +421,7 @@ uint32_t bsp_get_mail (uint8_t mode_32bits)
 {
     uint32_t mail = 0;
 
-    while ((bsp_dwc_ddrphy_apb_rd(0x0d0004) & 0x1) != 0)
-    {
-        ;
-    }
+    FSP_HARDWARE_REGISTER_WAIT((bsp_dwc_ddrphy_apb_rd(0x0d0004) & 0x1), 0);
 
     mail = bsp_dwc_ddrphy_apb_rd(0x0d0032);
 
@@ -429,10 +432,7 @@ uint32_t bsp_get_mail (uint8_t mode_32bits)
 
     bsp_dwc_ddrphy_apb_wr(0x0d0031, 0x0000);
 
-    while ((bsp_dwc_ddrphy_apb_rd(0x0d0004) & 0x1) == 0)
-    {
-        ;
-    }
+    FSP_HARDWARE_REGISTER_WAIT((bsp_dwc_ddrphy_apb_rd(0x0d0004) & 0x1), 1);
 
     bsp_dwc_ddrphy_apb_wr(0x0d0031, 0x0001);
 

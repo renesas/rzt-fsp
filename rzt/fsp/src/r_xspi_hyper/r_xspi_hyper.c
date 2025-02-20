@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -99,6 +99,7 @@
 
 #define XSPI_HYPER_PRV_1MB_MEMORY_SPACE                      (0xFFFFF)
 #define XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT                     (20U)
+#define XSPI_HYPER_UNIT_FLAG_MASK                            (3U)
 
 #if BSP_FEATURE_XSPI_OTFD_SUPPORTED
  #define XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET                (16U)
@@ -119,6 +120,9 @@
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
+
+/* Bit-flags specifying which channels are open so the module can be stopped when all are closed. */
+static uint32_t g_xspi_hyper_channels_open_flags = 0;
 
 /*******************************************************************************************************************//**
  * @addtogroup XSPI_HYPER
@@ -154,7 +158,8 @@ const hyperbus_api_t g_hyperbus_on_xspi_hyper =
  * @retval FSP_ERR_ASSERTION        The parameter p_ctrl or p_cfg is NULL.
  * @retval FSP_ERR_ALREADY_OPEN     Driver has already been opened with the same p_ctrl.
  **********************************************************************************************************************/
-fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * const p_cfg) {
+fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * const p_cfg)
+{
     xspi_hyper_instance_ctrl_t * p_instance_ctrl = (xspi_hyper_instance_ctrl_t *) p_ctrl;
 
 #if XSPI_HYPER_CFG_PARAM_CHECKING_ENABLE
@@ -165,6 +170,12 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
 #endif
 
     xspi_hyper_extended_cfg_t * p_cfg_extend = (xspi_hyper_extended_cfg_t *) p_cfg->p_extend;
+
+#if XSPI_HYPER_CFG_PARAM_CHECKING_ENABLE
+    FSP_ERROR_RETURN((g_xspi_hyper_channels_open_flags &
+                      (1U << ((p_cfg_extend->unit << 1U) + p_cfg_extend->chip_select))) == 0,
+                     FSP_ERR_ALREADY_OPEN);
+#endif
 
     /* Enable clock to the HYPER block */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
@@ -393,7 +404,8 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
                                     ((p_cfg_extend->prefetch_en & XSPI_HYPER_PRV_BMCFG_PREEN_VALUE_MASK) <<
                                      XSPI_HYPER_PRV_BMCFG_PREEN_OFFSET);
 
-    p_instance_ctrl->open = XSPI_HYPER_PRV_OPEN;
+    p_instance_ctrl->open             = XSPI_HYPER_PRV_OPEN;
+    g_xspi_hyper_channels_open_flags |= (1U << ((p_cfg_extend->unit << 1U) + p_cfg_extend->chip_select));
 
     return FSP_SUCCESS;
 }
@@ -534,8 +546,12 @@ fsp_err_t R_XSPI_HYPER_AutoCalibrate (hyperbus_ctrl_t * p_ctrl)
  * @retval FSP_SUCCESS             Configuration was successful.
  * @retval FSP_ERR_ASSERTION       p_instance_ctrl is NULL.
  * @retval FSP_ERR_NOT_OPEN        Driver is not opened.
+ *
+ * @note If another chip select of the same unit is used by other drivers,
+ * the other chip select operation will also stop when this function is executed.
  **********************************************************************************************************************/
-fsp_err_t R_XSPI_HYPER_Close (hyperbus_ctrl_t * p_ctrl) {
+fsp_err_t R_XSPI_HYPER_Close (hyperbus_ctrl_t * p_ctrl)
+{
     xspi_hyper_instance_ctrl_t * p_instance_ctrl = (xspi_hyper_instance_ctrl_t *) p_ctrl;
 #if XSPI_HYPER_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
@@ -544,57 +560,61 @@ fsp_err_t R_XSPI_HYPER_Close (hyperbus_ctrl_t * p_ctrl) {
     hyperbus_cfg_t            * p_cfg        = (hyperbus_cfg_t *) p_instance_ctrl->p_cfg;
     xspi_hyper_extended_cfg_t * p_cfg_extend = (xspi_hyper_extended_cfg_t *) p_cfg->p_extend;
 
-    p_instance_ctrl->open = 0U;
+    p_instance_ctrl->open             = 0U;
+    g_xspi_hyper_channels_open_flags &= ~(1U << ((p_cfg_extend->unit << 1U) + p_cfg_extend->chip_select));
 
-    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
+    if ((g_xspi_hyper_channels_open_flags & (XSPI_HYPER_UNIT_FLAG_MASK << (p_cfg_extend->unit << 1U))) == 0)
+    {
+        R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
 
 #if BSP_FEATURE_XSPI_OTFD_SUPPORTED
 
-    /* Module stop request */
-    R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_MASK <<
-                                    (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
-    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
-                                 (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
-                                XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK),
-                               XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK);
+        /* Module stop request */
+        R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_MASK <<
+                                        (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
+        FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                     (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                    XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK),
+                                   XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_ACK_MASK);
 
-    /* Bus stop request */
-    R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_MASK <<
-                                    (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
-    FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
-                                 (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
-                                XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK),
-                               XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK);
+        /* Bus stop request */
+        R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_MASK <<
+                                        (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit);
+        FSP_HARDWARE_REGISTER_WAIT(((R_XSPI_MISC2->MSTP_CTRL_XSPI >>
+                                     (XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET * p_cfg_extend->unit)) &
+                                    XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK),
+                                   XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK);
 #endif
 
 #if BSP_FEATURE_BSP_SLAVE_STOP_SUPPORTED
 
-    /* Slave stop request */
-    if (0U == p_cfg_extend->unit)
-    {
-        R_BSP_SlaveStop(BSP_BUS_SLAVE_XSPI0);
-    }
-    else
-    {
-        R_BSP_SlaveStop(BSP_BUS_SLAVE_XSPI1);
-    }
+        /* Slave stop request */
+        if (0U == p_cfg_extend->unit)
+        {
+            R_BSP_SlaveStop(BSP_BUS_SLAVE_XSPI0);
+        }
+        else
+        {
+            R_BSP_SlaveStop(BSP_BUS_SLAVE_XSPI1);
+        }
 #endif
 
-    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
+        R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 
-    /* Disable clock to the Hyper block */
-    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
-    if (0U == p_cfg_extend->unit)
-    {
-        R_BSP_ModuleResetEnable(BSP_MODULE_RESET_XSPI0);
-    }
-    else
-    {
-        R_BSP_ModuleResetEnable(BSP_MODULE_RESET_XSPI1);
-    }
+        /* Disable clock to the Hyper block */
+        R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
+        if (0U == p_cfg_extend->unit)
+        {
+            R_BSP_ModuleResetEnable(BSP_MODULE_RESET_XSPI0);
+        }
+        else
+        {
+            R_BSP_ModuleResetEnable(BSP_MODULE_RESET_XSPI1);
+        }
 
-    R_BSP_MODULE_STOP(FSP_IP_XSPI, p_cfg_extend->unit);
-    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
+        R_BSP_MODULE_STOP(FSP_IP_XSPI, p_cfg_extend->unit);
+        R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
+    }
 
     return FSP_SUCCESS;
 }

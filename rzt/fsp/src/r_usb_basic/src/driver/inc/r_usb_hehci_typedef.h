@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -65,7 +65,7 @@ typedef union usb_ehci_flep_tag
         uint32_t         : 2;
         uint32_t pointer : 27;
     } bit;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
 #else
     union usb_ehci_flep_tag * pointer;
 #endif
@@ -140,7 +140,7 @@ typedef struct usb_ehci_qh_tag
             uint32_t         : 5;
             uint32_t pointer : 27;
         } bit;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
 #else
         struct usb_ehci_qtd_tag * pointer;
 #endif
@@ -155,7 +155,7 @@ typedef struct usb_ehci_qh_tag
             uint32_t         : 4;
             uint32_t pointer : 27;
         } bit;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
 #else
         struct usb_ehci_qtd_tag * pointer;
 #endif
@@ -170,7 +170,7 @@ typedef struct usb_ehci_qh_tag
             uint32_t nakcnt  : 4;
             uint32_t pointer : 27;
         } bit;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
 #else
         struct usb_ehci_qtd_tag * pointer;
 #endif
@@ -213,7 +213,7 @@ typedef struct usb_ehci_qh_tag
         uint32_t tr_req_flag     : 1;   /* Transfer Request flag */
         uint32_t enable          : 1;   /* QH enable flag */
     } info;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t qtd_head; /* QTD head pointer */
     uint32_t qtd_end;  /* QTD end pointer */
 #else
@@ -234,7 +234,7 @@ typedef struct usb_ehci_qtd_tag
             uint32_t         : 4;
             uint32_t pointer : 27;
         } bit;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
 #else
         struct usb_ehci_qtd_tag * pointer;
 #endif
@@ -250,7 +250,7 @@ typedef struct usb_ehci_qtd_tag
             uint32_t         : 4;
             uint32_t pointer : 27;
         } bit;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
 #else
         struct usb_ehci_qtd_tag * pointer;
 #endif

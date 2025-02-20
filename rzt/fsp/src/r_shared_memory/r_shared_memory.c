@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -79,6 +79,7 @@ fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_ctrl, shared_memo
     shared_memory_instance_ctrl_t * p_instance_ctrl = (shared_memory_instance_ctrl_t *) p_ctrl;
     fsp_err_t         err;
     volatile uint32_t resource_status = 0;
+    uint32_t          memory_size;
 
 #if SHARED_MEMORY_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl != NULL);
@@ -93,21 +94,14 @@ fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_ctrl, shared_memo
     FSP_ERROR_RETURN(SHARED_MEMORY_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 #endif
 
-    /* Check the initialization status of the shared memory. */
-    FSP_ERROR_RETURN(((SHARED_MEMORY_MEMORY_INIT == p_cfg->p_memory[0]) ||
-                      (SHARED_MEMORY_MEMORY_OPEN == p_cfg->p_memory[0])),
-                     FSP_ERR_ALREADY_OPEN);
-
-#if 1U == BSP_FEATURE_SHARED_MEMORY_SETTING_TYPE
-    R_SEM->SYTSEMFEN_b.SEMFEN = 1;                       // Enable Read clear function
-#elif 2U == BSP_FEATURE_SHARED_MEMORY_SETTING_TYPE
-    R_MBXSEM->SEMRCENAR |= (1U << p_cfg->semaphore_reg); // Enable Read clear function
-#endif
-
-    r_shared_memory_release_resource(p_cfg->semaphore_reg);
-
     /* Record the configuration for using it later */
     p_instance_ctrl->p_cfg = p_cfg;
+    memory_size            = p_instance_ctrl->p_cfg->memory_size;
+
+    /* Check the initialization status of the shared memory. */
+    FSP_ERROR_RETURN(((SHARED_MEMORY_MEMORY_INIT == p_cfg->p_memory[memory_size]) ||
+                      (SHARED_MEMORY_MEMORY_OPEN == p_cfg->p_memory[memory_size])),
+                     FSP_ERR_ALREADY_OPEN);
 
     /* Set callback and context pointers, if configured */
     p_instance_ctrl->p_callback        = p_cfg->p_callback;
@@ -141,16 +135,16 @@ fsp_err_t R_SHARED_MEMORY_Open (shared_memory_ctrl_t * const p_ctrl, shared_memo
         return FSP_ERR_IN_USE;
     }
 
-    if (SHARED_MEMORY_MEMORY_INIT == p_instance_ctrl->p_cfg->p_memory[0])
+    if (SHARED_MEMORY_MEMORY_INIT == p_instance_ctrl->p_cfg->p_memory[memory_size])
     {
-        p_instance_ctrl->p_cfg->p_memory[0] = SHARED_MEMORY_MEMORY_OPEN;
+        p_instance_ctrl->p_cfg->p_memory[memory_size] = SHARED_MEMORY_MEMORY_OPEN;
         __asm("dmb sy");               /* Ensuring data-changing */
         p_instance_ctrl->state = SHARED_MEMORY_STATE_NOT_READY;
     }
     else
     {
-        p_instance_ctrl->p_cfg->p_memory[0] =
-            (uint8_t) (p_instance_ctrl->p_cfg->p_memory[0] + SHARED_MEMORY_MEMORY_OPEN);
+        p_instance_ctrl->p_cfg->p_memory[memory_size] =
+            (uint8_t) (p_instance_ctrl->p_cfg->p_memory[memory_size] + SHARED_MEMORY_MEMORY_OPEN);
         __asm("dmb sy");               /* Ensuring data-changing */
 
         err = p_software_int_tx->p_api->generate(p_software_int_tx->p_ctrl);
@@ -195,7 +189,8 @@ fsp_err_t R_SHARED_MEMORY_Read (shared_memory_ctrl_t * const p_ctrl,
     FSP_ERROR_RETURN(SHARED_MEMORY_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    if ((p_instance_ctrl->p_cfg->memory_size < (offset + bytes)) || (p_instance_ctrl->p_cfg->memory_size < offset) ||
+    if ((p_instance_ctrl->p_cfg->memory_size < (offset + bytes)) ||
+        (p_instance_ctrl->p_cfg->memory_size <= offset) ||
         (p_instance_ctrl->p_cfg->memory_size < bytes))
     {
         return FSP_ERR_INVALID_ARGUMENT;
@@ -248,7 +243,8 @@ fsp_err_t R_SHARED_MEMORY_Write (shared_memory_ctrl_t * const p_ctrl,
         (icu_inter_cpu_irq_instance_t *) ((shared_memory_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend)->
         p_software_int_tx;
 
-    if ((p_instance_ctrl->p_cfg->memory_size < (offset + bytes)) || (p_instance_ctrl->p_cfg->memory_size < offset) ||
+    if ((p_instance_ctrl->p_cfg->memory_size < (offset + bytes)) ||
+        (p_instance_ctrl->p_cfg->memory_size <= offset) ||
         (p_instance_ctrl->p_cfg->memory_size < bytes))
     {
         return FSP_ERR_INVALID_ARGUMENT;
@@ -330,10 +326,12 @@ fsp_err_t R_SHARED_MEMORY_CallbackSet (shared_memory_ctrl_t * const p_ctrl,
  * @retval  FSP_SUCCESS         Module closed successfully.
  * @retval  FSP_ERR_NOT_OPEN    Module is not open.
  * @retval  FSP_ERR_ASSERTION   p_ctrl is NULL.
+ * @retval  FSP_ERR_IN_USE     Another transfer was in progress.
  *********************************************************************************************************************/
 fsp_err_t R_SHARED_MEMORY_Close (shared_memory_ctrl_t * const p_ctrl)
 {
     shared_memory_instance_ctrl_t * p_instance_ctrl = (shared_memory_instance_ctrl_t *) p_ctrl;
+    volatile uint32_t               resource_status = 0;
 
 #if SHARED_MEMORY_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl != NULL);
@@ -341,6 +339,7 @@ fsp_err_t R_SHARED_MEMORY_Close (shared_memory_ctrl_t * const p_ctrl)
     /* Return an error if this module have already been opened */
     FSP_ERROR_RETURN(SHARED_MEMORY_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
+    uint32_t memory_size = p_instance_ctrl->p_cfg->memory_size;
 
     icu_inter_cpu_irq_instance_t * p_software_int_tx =
         (icu_inter_cpu_irq_instance_t *) ((shared_memory_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend)->
@@ -349,10 +348,29 @@ fsp_err_t R_SHARED_MEMORY_Close (shared_memory_ctrl_t * const p_ctrl)
         (icu_inter_cpu_irq_instance_t *) ((shared_memory_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend)->
         p_software_int_rx;
 
-    r_shared_memory_release_resource(p_instance_ctrl->p_cfg->semaphore_reg); // Shared memory becomes available
-
     p_software_int_tx->p_api->close(p_software_int_tx->p_ctrl);
     p_software_int_rx->p_api->close(p_software_int_rx->p_ctrl);
+
+    resource_status = r_shared_memory_read_resource_status(p_instance_ctrl->p_cfg->semaphore_reg);
+    if (0x00000000 == resource_status) // wait Shared memory available
+    {
+        return FSP_ERR_IN_USE;
+    }
+
+    if ((SHARED_MEMORY_MEMORY_OPEN == p_instance_ctrl->p_cfg->p_memory[memory_size]) ||
+        ((SHARED_MEMORY_MEMORY_OPEN + SHARED_MEMORY_MEMORY_OPEN) == p_instance_ctrl->p_cfg->p_memory[memory_size]))
+    {
+        p_instance_ctrl->p_cfg->p_memory[memory_size] =
+            (uint8_t) (p_instance_ctrl->p_cfg->p_memory[memory_size] - SHARED_MEMORY_MEMORY_OPEN);
+        __asm("dmb sy");               /* Ensuring data-changing */
+        p_instance_ctrl->state = SHARED_MEMORY_STATE_NOT_READY;
+    }
+    else
+    {
+        // Do nothing
+    }
+
+    r_shared_memory_release_resource(p_instance_ctrl->p_cfg->semaphore_reg); // Shared memory becomes available
 
     /* This module is considered closed */
     p_instance_ctrl->open = 0U;

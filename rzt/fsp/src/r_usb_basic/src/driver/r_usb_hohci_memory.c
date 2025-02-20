@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -345,7 +345,7 @@ st_usb_ohci_iso_info_p_t usb_hstd_ohci_alloc_endpoint_iso (void)
             memset(iso_info, 0, sizeof(st_usb_ohci_iso_info_t));
             for (i = 0; i < USB_OHCI_ISO_MAX_FRAME; i++)
             {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
                 iso_info->transfer_info[i].buffer = (uint32_t) usb_hstd_ohci_physical_address_of(
                     &gs_usb_hstd_ohci_iso_buffer[n][i][0]);
 #else
@@ -399,7 +399,7 @@ void usb_hstd_ohci_free_transfer_descriptor (st_usb_ohci_hcd_transfer_descriptor
     }
 
     usb_hstd_hci_lock_resouce();
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     tmp_usb_drequest    = (st_usb_ohci_request_p_t) (uintptr_t) (r_usb_pa_to_va((uint64_t) td->usb_drequest));
     if(tmp_usb_drequest != NULL)
     {
@@ -445,7 +445,7 @@ void usb_hstd_ohci_free_transfer_descriptor (st_usb_ohci_hcd_transfer_descriptor
 
 
     /* clear */
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
     td = (st_usb_ohci_hcd_transfer_descriptor_p_t) (r_usb_pa_to_va((uint64_t) td));
  #endif
 
@@ -468,18 +468,18 @@ void usb_hstd_ohci_free_transfer_descriptor (st_usb_ohci_hcd_transfer_descriptor
  ***********************************************************************************************************************/
 void usb_hstd_ohci_free_endpoint (st_usb_ohci_hcd_endpoint_p_t endpoint)
 {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     st_usb_ohci_iso_info_p_t temp;
- #endif /* #if 1 == BSP_LP64_SUPPORT */
+ #endif /* #if defined(BSP_CFG_CORE_CA55) */
  #if 1
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     if ((NULL != endpoint) && (USB_NULL != endpoint->hcd_head_p) && (endpoint->hcd_tail_p == endpoint->hcd_head_p))
 #else
     if ((NULL != endpoint) && (NULL != endpoint->hcd_head_p) && (endpoint->hcd_tail_p == endpoint->hcd_head_p))
 #endif
     {
         /* Remove NullTD (if remained) */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
         usb_hstd_ohci_free_transfer_descriptor((st_usb_ohci_hcd_transfer_descriptor_p_t)(uintptr_t)endpoint->hcd_head_p);
 #else
         usb_hstd_ohci_free_transfer_descriptor(endpoint->hcd_head_p);
@@ -516,13 +516,13 @@ void usb_hstd_ohci_free_endpoint (st_usb_ohci_hcd_endpoint_p_t endpoint)
  #endif
 
     usb_hstd_hci_lock_resouce();
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     if ((NULL != endpoint) && (USB_NULL != endpoint->iso_info))
 #else
     if ((NULL != endpoint) && (NULL != endpoint->iso_info))
 #endif
     {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
         temp = (st_usb_ohci_iso_info_p_t)(uintptr_t)endpoint->iso_info;
         temp->using_flag = FALSE;
 #else
@@ -550,7 +550,7 @@ void usb_hstd_ohci_free_endpoint (st_usb_ohci_hcd_endpoint_p_t endpoint)
  ***********************************************************************************************************************/
 void usb_hstd_ohci_free_endpoint_descriptor (st_usb_ohci_hcd_endpoint_descriptor_p_t ed)
 {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     usb_hstd_ohci_free_endpoint((st_usb_ohci_hcd_endpoint_p_t) (r_usb_pa_to_va((uint64_t) ed->endpoint)));
 #else
     usb_hstd_ohci_free_endpoint(ed->endpoint);

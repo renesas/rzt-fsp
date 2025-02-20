@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -56,7 +56,7 @@
 #define USB_OTG_HNP                      (0x02U) /* HNP support */
 #define USB_OTG_SRP                      (0x01U) /* SRP support */
 
-#ifdef USB_HOST_COMPLIANCE_MODE
+#if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
  #define USB_COMP_ATTACH                 (0x00U)
  #define USB_COMP_DETACH                 (0x01U)
  #define USB_COMP_TPL                    (0x02U)
@@ -67,7 +67,7 @@
  #define USB_COMP_VID                    (0x07U)
  #define USB_COMP_PID                    (0x08U)
  #define USB_COMP_ERR                    (0x09U)
-#endif                                 /* USB_HOST_COMPLIANCE_MODE */
+#endif                                 /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
 /***********************************************************************************************************************
  * Typedef definitions

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -155,18 +155,7 @@ void usb_pstd_ctrl_end (uint16_t status, usb_utr_t * p_utr)
     /* NRDY0 disable */
     hw_usb_clear_nrdyenb(p_utr, (uint16_t) USB_PIPE0);
 
- #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     hw_usb_set_mbw(p_utr, USB_CUSE, USB_MBW_32);
- #else                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
-    if (USB_CFG_IP1 == p_utr->ip)
-    {
-        hw_usb_set_mbw(p_utr, USB_CUSE, USB1_CFIFO_MBW);
-    }
-    else                               /* if (USB_CFG_IP1 == p_utr->ip) */
-    {
-        hw_usb_set_mbw(p_utr, USB_CUSE, USB0_CFIFO_MBW);
-    }
- #endif /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)*/
 
     if ((USB_DATA_ERR == status) || (USB_DATA_OVR == status))
     {

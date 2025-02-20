@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -114,7 +114,7 @@ typedef enum e_ethsw_link_speed
 typedef struct  st_ethsw_port_mask
 {
     uint32_t mask : 4;                 ///< [3.. 0] Port Mask: bit0=Port0, bit1=Port1, bit2=Port2, bit3=Port3(Management Port)
-    uint32_t      : 29;                ///< [4..31]
+    uint32_t      : 28;                ///< [4..31]
 } ethsw_port_mask_t;
 
 /** MAC address */

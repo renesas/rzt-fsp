@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -40,6 +40,8 @@
  #define BSP_IMP_BTCMREGIONR_ENABLEEL_L     (0x0003) /* Set base address and enable EL2, EL1, EL0 access(L) */
  #define BSP_IMP_BTCMREGIONR_ENABLEEL_H     (0x0010) /* Set base address and enable EL2, EL1, EL0 access(H) */
 
+/* Cortex-A55 Core0 access permission control. */
+ #define BSP_CA550_CTRL_ENABLE              (0x00000100)
 #endif
 
 /***********************************************************************************************************************
@@ -275,6 +277,14 @@ BSP_TARGET_ARM void fpu_slavetcm_init (void)
 
     /* Enable SLAVEPCTLR TCM access lvl slaves */
     bsp_slavetcm_enable();
+#endif
+
+#if defined(BSP_MCU_GROUP_RZT2H)
+ #if (0 == BSP_CFG_CORE_CR52)
+
+    /* Permit access to the Master-MPU related registers of Cortex-A55 Core0. */
+    R_MPU_AC->CPU_CTRL |= BSP_CA550_CTRL_ENABLE;
+ #endif
 #endif
 
     BSP_SYSTEMINIT_B_INSTRUCTION

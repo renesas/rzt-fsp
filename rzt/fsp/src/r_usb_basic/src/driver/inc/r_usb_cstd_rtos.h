@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -24,11 +24,7 @@
   #define QUEUE_SIZE         (10)
 
 /** USB task's priority **/
-  #if USB_IP_EHCI_OHCI == 0
-   #define HCD_TSK_PRI       (configMAX_PRIORITIES - 1)
-  #else
-   #define HCI_TSK_PRI       (configMAX_PRIORITIES - 1)
-  #endif
+  #define HCI_TSK_PRI        (configMAX_PRIORITIES - 1)
   #define HUB_TSK_PRI        (configMAX_PRIORITIES - 3)
   #define MGR_TSK_PRI        (configMAX_PRIORITIES - 2)
   #define PCD_TSK_PRI        (configMAX_PRIORITIES - 1)
@@ -36,11 +32,7 @@
   #define HHID_TSK_PRI       (configMAX_PRIORITIES - 3)
 
 /** USB task stack size in words **/
-  #if USB_IP_EHCI_OHCI == 0
-   #define HCD_STACK_SIZE    (512)
-  #else
-   #define HCI_STACK_SIZE    (1536)
-  #endif
+  #define HCI_STACK_SIZE     (1536)
   #define HUB_STACK_SIZE     (1536)
   #define MGR_STACK_SIZE     (1536)
   #define PCD_STACK_SIZE     (1536)

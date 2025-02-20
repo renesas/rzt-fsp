@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -110,7 +110,7 @@ fsp_err_t R_BSP_MmuPatoVa (uint64_t paddress, uint64_t * p_vaddress, bsp_mmu_con
     fsp_err_t err = FSP_SUCCESS;
     uint32_t  cfg_index;
 
-    /* Search for the gegion number of the address to be converted */
+    /* Search for the region number of the address to be converted */
     for (cfg_index = 0; cfg_index < BSP_PRV_MMU_TABLE_TOTAL_REGION; cfg_index++)
     {
         r_mmu_pgtbl_cfg_t section_info;

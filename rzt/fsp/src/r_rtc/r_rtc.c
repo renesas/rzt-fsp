@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -17,13 +17,13 @@
 
 #define RTC_FIRST_DAY_OF_A_MONTH                     (1)
 
-/* Month : valid range between 0 to 11.*/
+/* Month : valid range between 0 to 11. */
 #define RTC_MONTHS_IN_A_YEAR                         (11)
 #define RTC_LAST_DAY_OF_LEAP_FEB_MONTH               (29)
 #define RTC_YEAR_VALUE_MIN                           (100)
 #define RTC_YEAR_VALUE_MAX                           (199)
 
-/* Seconds : valid range between 0 to 59.*/
+/* Seconds : valid range between 0 to 59. */
 #define RTC_SECONDS_IN_A_MINUTE                      (59)
 
 /* Minute : valid range between 0 to 59. */
@@ -41,14 +41,14 @@
 
 #define RTC_TIME_H_MONTH_OFFSET                      (1)
 
-/*The RTC has a 100 year calendar to match the starting year 2000, year offset(1900) is added like 117 + 1900 = 2017 */
+/* The RTC has a 100 year calendar to match the starting year 2000, year offset(1900) is added like 117 + 1900 = 2017 */
 #define RTC_TIME_H_YEAR_OFFSET                       (1900)
 
 /** "RTC" in ASCII, used to determine if device is open. */
 #define RTC_OPEN                                     (0x00525443ULL)
 
 /* As per HW manual, value of Year is between 0 to 99, the RTC has a 100 year calendar from 2000 to 2099.
- * But as per C standards, tm_year is years since 1900.*/
+ * But as per C standards, tm_year is years since 1900. */
 #define RTC_C_TIME_OFFSET                            (100)
 
 #define RTC_RTCA0ALM_DISABLE_VALUE                   (0x7FU)
@@ -57,6 +57,12 @@
 
 #define RTC_RTCA0CTRL1_RTCA0CT_ADJUSTMENT_VALUE_0    (11)
 #define RTC_RTCA0CTRL1_RTCA0CT_ADJUSTMENT_VALUE_1    (12)
+
+#if 1U == BSP_FEATURE_RTC_MODULE_START_TYPE
+ #define RTC_DERAY_US_FOR_MODULE_START               (20U)
+#elif 2U == BSP_FEATURE_RTC_MODULE_START_TYPE
+ #define RTC_DUMMY_READ_FOR_MODULE_START             (300U)
+#endif
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -77,7 +83,7 @@ void           rtc_alarm_periodic_isr(void);
  * Global Variables
  **********************************************************************************************************************/
 
-/** RTC Implementation of Real Time Clock  */
+/** RTC Implementation of Real Time Clock */
 const rtc_api_t g_rtc_on_rtc =
 {
     .open               = R_RTC_Open,
@@ -139,9 +145,9 @@ static fsp_err_t r_rtc_periodic_irq_rate_validate(rtc_periodic_irq_select_t cons
  * Opens and configures the RTC driver module. Implements @ref rtc_api_t::open.
  * Configuration includes clock source, and interrupt callback function.
  *
- * @retval FSP_SUCCESS          Initialization was successful and RTC has started.
- * @retval FSP_ERR_ASSERTION    Invalid p_ctrl or p_cfg pointer.
- * @retval FSP_ERR_ALREADY_OPEN Module is already open.
+ * @retval FSP_SUCCESS              Initialization was successful and RTC has started.
+ * @retval FSP_ERR_ASSERTION        Invalid p_ctrl or p_cfg pointer.
+ * @retval FSP_ERR_ALREADY_OPEN     Module is already open.
  * @retval FSP_ERR_INVALID_ARGUMENT Invalid parameter.
  **********************************************************************************************************************/
 fsp_err_t R_RTC_Open (rtc_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg)
@@ -156,7 +162,7 @@ fsp_err_t R_RTC_Open (rtc_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg)
     FSP_ERROR_RETURN(RTC_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 #endif
 
-    /* Save the configuration  */
+    /* Save the configuration */
     p_instance_ctrl->p_cfg = p_cfg;
 
     p_instance_ctrl->p_callback        = p_cfg->p_callback;
@@ -249,14 +255,14 @@ fsp_err_t R_RTC_CalendarTimeSet (rtc_ctrl_t * const p_ctrl, rtc_time_t * const p
     FSP_ASSERT(p_time);
     FSP_ERROR_RETURN(RTC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 
-    /* Verify the seconds, minutes, hours, year ,day of the week, day of the month, month and year are valid values */
+    /* Verify the seconds, minutes, hours, year, day of the week, day of the month, month and year are valid values */
     FSP_ERROR_RETURN(FSP_SUCCESS == r_rtc_time_and_date_validate(p_time), FSP_ERR_INVALID_ARGUMENT);
 #else
     FSP_PARAMETER_NOT_USED(p_instance_ctrl);
 #endif
 
     /* See section "Writing to Counters While Clock Counter Operation is Enabled" and "Initial Setting" of
-     *  the RZ microprocessor manual */
+     * the RZ microprocessor manual */
 
     if (1U == R_RTC->RTCA0CTL0_b.RTCA0CE)
     {
@@ -372,7 +378,7 @@ fsp_err_t R_RTC_CalendarAlarmSet (rtc_ctrl_t * const p_ctrl, rtc_alarm_time_t * 
     FSP_ERROR_RETURN(RTC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     FSP_ERROR_RETURN(p_instance_ctrl->p_cfg->alarm_irq >= 0, FSP_ERR_IRQ_BSP_DISABLED);
 
-    /* Verify the seconds, minutes, hours, year ,day of the week, day of the month and month are valid values */
+    /* Verify the seconds, minutes, hours, year, day of the week, day of the month and month are valid values */
     FSP_ERROR_RETURN(FSP_SUCCESS == r_rtc_alarm_time_and_date_validate(p_alarm), FSP_ERR_INVALID_ARGUMENT);
 #endif
 
@@ -648,6 +654,19 @@ static void r_rtc_set_clock_source (rtc_cfg_t const * const p_cfg)
     R_BSP_MODULE_START(FSP_IP_RTC, 0);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
+    /* After release of module stop, processing is required for each model.
+     * (See section "Module-Stop Function" of the RZ microprocessor manual) */
+#if 1U == BSP_FEATURE_RTC_MODULE_START_TYPE
+    R_BSP_SoftwareDelay(RTC_DERAY_US_FOR_MODULE_START, BSP_DELAY_UNITS_MICROSECONDS);
+#elif 2U == BSP_FEATURE_RTC_MODULE_START_TYPE
+    volatile uint32_t dummy;
+    for (uint32_t i = 0; i < RTC_DUMMY_READ_FOR_MODULE_START; i++)
+    {
+        dummy = R_RTC->RTCA0CTL0;
+        FSP_PARAMETER_NOT_USED(dummy);
+    }
+#endif
+
     /* Force RTC to 24 hour mode. Set RTCA0AMPM bit in the RTCA0CTL0 register */
     R_RTC->RTCA0CTL0_b.RTCA0AMPM = 1U;
 
@@ -792,22 +811,22 @@ static fsp_err_t r_rtc_date_validate (rtc_time_t * const p_time)
     temp_month     = (uint32_t) (p_time->tm_mon + RTC_TIME_H_MONTH_OFFSET);
 
     /* The valid value of year is between 100 to 199, The RTC has a 100 year calendar from 2000 to 2099
-     * to match the starting year 2000, a sample year offset(1900) is added like 117 + 1900 = 2017*/
+     * to match the starting year 2000, a sample year offset(1900) is added like 117 + 1900 = 2017 */
     temp_year = (uint32_t) (p_time->tm_year + RTC_TIME_H_YEAR_OFFSET);
 
     /* Checking the error condition for year and months values, here valid value of year is between 100 to 199
-     * and for month 0 to 11*/
+     * and for month 0 to 11 */
     if ((p_time->tm_year < RTC_YEAR_VALUE_MIN) || (p_time->tm_year > RTC_YEAR_VALUE_MAX) ||
         (p_time->tm_mon < 0) || (p_time->tm_mon > RTC_MONTHS_IN_A_YEAR))
     {
         return FSP_ERR_INVALID_ARGUMENT;
     }
 
-    /*For particular valid month, number of days in a month is updated */
+    /* For particular valid month, number of days in a month is updated */
     num_days_month = days_in_months[p_time->tm_mon];
 
     /* Checking for February month and Conditions for Leap year : Every fourth year is a leap year,
-     * The RTC has a 100 year calendar from 2000 to 2099  */
+     * The RTC has a 100 year calendar from 2000 to 2099 */
     if ((RTC_FEBRUARY_MONTH == temp_month) && ((temp_year % 4U) == 0))
     {
         num_days_month = RTC_LAST_DAY_OF_LEAP_FEB_MONTH;
@@ -821,11 +840,11 @@ static fsp_err_t r_rtc_date_validate (rtc_time_t * const p_time)
         {
             temp_month = (temp_month + 12U);
 
-            /* Adjust year if January or February*/
+            /* Adjust year if January or February */
             --temp_year;
         }
 
-        /*For the Gregorian calendar, Zeller's congruence formulas is
+        /* For the Gregorian calendar, Zeller's congruence formulas is
          * h = ( q + [13(m+1)/5] + Y + [Y/4] - [Y/100] + [Y/400])mod 7 (mod : modulo)
          * h is the day of the week , q is the day of the month,
          * m is the month (3 = March, 4 = April,..., 14 = February)

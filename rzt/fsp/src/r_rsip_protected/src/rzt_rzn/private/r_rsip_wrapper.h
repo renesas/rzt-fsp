@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -25,6 +25,8 @@
 
 #define RSIP_PRV_FUNC_NAME_KEY_GENERATE_AES_128                         r_rsip_p07
 #define RSIP_PRV_FUNC_NAME_ENC_KEY_WRAP_AES_128                         r_rsip_p19
+#define RSIP_PRV_FUNC_NAME_RFC3394_AES_128_KEY_WRAP                     r_rsip_wrapper_p8f_aes128
+#define RSIP_PRV_FUNC_NAME_RFC3394_AES_128_KEY_UNWRAP                   r_rsip_wrapper_p90_aes128
 
 #define RSIP_PRV_FUNC_NAME_AES_CIPHER_INIT_ECB_ENC_128                  r_rsip_wrapper_p48i_ecb_enc
 #define RSIP_PRV_FUNC_NAME_AES_CIPHER_INIT_ECB_DEC_128                  r_rsip_wrapper_p48i_ecb_dec
@@ -59,6 +61,8 @@
 
 #define RSIP_PRV_FUNC_NAME_KEY_GENERATE_AES_256                         r_rsip_p08
 #define RSIP_PRV_FUNC_NAME_ENC_KEY_WRAP_AES_256                         r_rsip_p1c
+#define RSIP_PRV_FUNC_NAME_RFC3394_AES_256_KEY_WRAP                     r_rsip_wrapper_p8f_aes256
+#define RSIP_PRV_FUNC_NAME_RFC3394_AES_256_KEY_UNWRAP                   r_rsip_wrapper_p90_aes256
 
 #define RSIP_PRV_FUNC_NAME_AES_CIPHER_INIT_ECB_ENC_256                  r_rsip_wrapper_p50i_ecb_enc
 #define RSIP_PRV_FUNC_NAME_AES_CIPHER_INIT_ECB_DEC_256                  r_rsip_wrapper_p50i_ecb_dec
@@ -184,6 +188,7 @@
 #define RSIP_PRV_FUNC_NAME_KDF_DERIVED_KEY_IMPORT_SHA256_HMAC_SHA256    r_rsip_wrapper_pe7_sha256_hmac_sha256
 #define RSIP_PRV_FUNC_NAME_KDF_DERIVED_IV_WRAP_SHA256_AES               r_rsip_wrapper_pe7_sha256_iv_aes
 #define RSIP_PRV_FUNC_NAME_KDF_DERIVED_IV_WRAP_SHA256_TLS12             r_rsip_wrapper_pe7_sha256_iv_tls12
+#define RSIP_PRV_FUNC_NAME_KDF_DERIVED_IV_WRAP_SHA256_TLS13             r_rsip_wrapper_pe7_sha256_iv_tls13
 #define RSIP_PRV_FUNC_NAME_KDF_TLS12_PRF_VERIFY_DATA_CLIENT_SHA256      r_rsip_wrapper_pe9_sha256_client
 #define RSIP_PRV_FUNC_NAME_KDF_TLS12_PRF_VERIFY_DATA_SERVER_SHA256      r_rsip_wrapper_pe9_sha256_server
 
@@ -233,6 +238,35 @@ rsip_ret_t r_rsip_wrapper_p0f_hmac_sha224(const uint32_t InData_IV[],
 rsip_ret_t r_rsip_wrapper_p0f_hmac_sha256(const uint32_t InData_IV[],
                                           const uint32_t InData_InstData[],
                                           uint32_t       OutData_KeyIndex[]);
+
+/* RFC3394 AES key wrap */
+rsip_ret_t r_rsip_wrapper_p8f_aes128(const uint32_t InData_KeyIndex[],
+                                     const uint32_t InData_WrappedKeyType[],
+                                     const uint32_t InData_WrappedKeyIndex[],
+                                     uint32_t       OutData_Text[],
+                                     uint32_t       KEY_INDEX_SIZE,
+                                     uint32_t       WRAPPED_KEY_SIZE);
+
+rsip_ret_t r_rsip_wrapper_p8f_aes256(const uint32_t InData_KeyIndex[],
+                                     const uint32_t InData_WrappedKeyType[],
+                                     const uint32_t InData_WrappedKeyIndex[],
+                                     uint32_t       OutData_Text[],
+                                     uint32_t       KEY_INDEX_SIZE,
+                                     uint32_t       WRAPPED_KEY_SIZE);
+
+rsip_ret_t r_rsip_wrapper_p90_aes128(const uint32_t InData_KeyIndex[],
+                                     const uint32_t InData_WrappedKeyType[],
+                                     const uint32_t InData_Text[],
+                                     uint32_t       OutData_KeyIndex[],
+                                     uint32_t       WRAPPED_KEY_SIZE,
+                                     uint32_t       KEY_INDEX_SIZE);
+
+rsip_ret_t r_rsip_wrapper_p90_aes256(const uint32_t InData_KeyIndex[],
+                                     const uint32_t InData_WrappedKeyType[],
+                                     const uint32_t InData_Text[],
+                                     uint32_t       OutData_KeyIndex[],
+                                     uint32_t       WRAPPED_KEY_SIZE,
+                                     uint32_t       KEY_INDEX_SIZE);
 
 /* AES-ECB/CBC/CTR */
 rsip_ret_t r_rsip_wrapper_p48i_ecb_enc(const uint32_t InData_KeyIndex[], const uint32_t InData_IV[]);
@@ -392,6 +426,11 @@ rsip_ret_t r_rsip_wrapper_pe7_sha256_iv_aes(const uint32_t InData_KDFInfo[],
                                             const uint32_t InData_SeqNum[],
                                             uint32_t       OutData_EncIV[]);
 rsip_ret_t r_rsip_wrapper_pe7_sha256_iv_tls12(const uint32_t InData_KDFInfo[],
+                                              const uint32_t InData_KDFInfo_Count[],
+                                              const uint32_t InData_OutDataLocation[],
+                                              const uint32_t InData_SeqNum[],
+                                              uint32_t       OutData_EncIV[]);
+rsip_ret_t r_rsip_wrapper_pe7_sha256_iv_tls13(const uint32_t InData_KDFInfo[],
                                               const uint32_t InData_KDFInfo_Count[],
                                               const uint32_t InData_OutDataLocation[],
                                               const uint32_t InData_SeqNum[],

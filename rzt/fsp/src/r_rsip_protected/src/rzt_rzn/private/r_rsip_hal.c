@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -12,6 +12,7 @@
 #include "r_rsip_util.h"
 #include "r_rsip_reg.h"
 #include "r_rsip_otp.h"
+#include "r_rsip_cfg.h"
 
 /***********************************************************************************************************************
  * Macro definitions
@@ -146,6 +147,42 @@ rsip_ret_t r_rsip_close (void)
 void r_rsip_kuk_set (const uint8_t * p_key_update_key_value)
 {
     S_INST2 = (uint32_t *) p_key_update_key_value;
+}
+
+fsp_err_t get_rfc3394_key_wrap_param (rsip_key_type_t key_type,
+                                      uint32_t      * wrapped_key_type,
+                                      uint32_t      * key_index_size,
+                                      uint32_t      * wrapped_key_size)
+{
+    fsp_err_t err = FSP_ERR_INVALID_ARGUMENT;
+
+    switch (key_type)
+    {
+        case RSIP_KEY_TYPE_AES_128:
+        {
+            wrapped_key_type[0] = BSWAP_32BIG_C(0U);
+            *key_index_size     = RSIP_CFG_BYTE_SIZE_WRAPPED_KEY_VALUE_AES_128 >> 2;
+            *wrapped_key_size   = *key_index_size - 6;
+            err                 = FSP_SUCCESS;
+            break;
+        }
+
+        case RSIP_KEY_TYPE_AES_256:
+        {
+            wrapped_key_type[0] = BSWAP_32BIG_C(2U);
+            *key_index_size     = RSIP_CFG_BYTE_SIZE_WRAPPED_KEY_VALUE_AES_256 >> 2;
+            *wrapped_key_size   = *key_index_size - 6;
+            err                 = FSP_SUCCESS;
+            break;
+        }
+
+        default:
+        {
+            /* Do nothing */
+        }
+    }
+
+    return err;
 }
 
 rsip_ret_t r_rsip_sha1sha2_init_update (rsip_hash_type_t hash_type,

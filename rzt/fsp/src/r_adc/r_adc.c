@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -47,6 +47,8 @@
 #endif
 #define ADC_PRV_ADCSR_CLEAR_ADST_TRGE           (~ADC_PRV_ADCSR_ADST_TRGE_MASK)
 
+#define ADC_ADCALCTL_SET_CAL                    (1U)
+
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
@@ -65,7 +67,7 @@ static fsp_err_t r_adc_scan_cfg_check_window_compare(adc_window_cfg_t const * co
 
 #endif
 
-static void r_adc_open_sub(adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg_t const * const p_cfg);
+static fsp_err_t r_adc_open_sub(adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg_t const * const p_cfg);
 
 #if ADC_CFG_PARAM_CHECKING_ENABLE
 
@@ -145,6 +147,8 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
 {
     adc_instance_ctrl_t * p_instance_ctrl = (adc_instance_ctrl_t *) p_ctrl;
 
+    fsp_err_t err;
+
     /*  Perform parameter checking */
 #if ADC_CFG_PARAM_CHECKING_ENABLE
 
@@ -152,7 +156,7 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
     FSP_ASSERT(NULL != p_instance_ctrl);
 
     /* Verify the configuration parameters are valid   */
-    fsp_err_t err = r_adc_open_cfg_check(p_cfg);
+    err = r_adc_open_cfg_check(p_cfg);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
     /* Check for valid argument values for options that are unique to the IP */
@@ -212,7 +216,8 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
 #endif
 
     /* Initialize the hardware based on the configuration. */
-    r_adc_open_sub(p_instance_ctrl, p_cfg);
+    err = r_adc_open_sub(p_instance_ctrl, p_cfg);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
     /* Set the interrupt priorities. */
     if (p_instance_ctrl->p_cfg->scan_end_irq >= 0)
@@ -573,8 +578,9 @@ fsp_err_t R_ADC_InfoGet (adc_ctrl_t * p_ctrl, adc_info_t * p_adc_info)
 
     p_adc_info->transfer_size = TRANSFER_SIZE_2_BYTE;
 
-    /* Specify the peripheral name in the ELC list */
 #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+
+    /* Specify the peripheral name in the ELC list */
     p_adc_info->elc_event =
         (elc_event_t) ((uint32_t) ELC_EVENT_ADC0_ADI +
                        (p_instance_ctrl->p_cfg->unit *
@@ -898,8 +904,11 @@ static fsp_err_t r_adc_scan_cfg_check_window_compare (adc_window_cfg_t const * c
  *
  * @param[in]  p_instance_ctrl         Pointer to instance control block
  * @param[in]  p_cfg                   Pointer to configuration structure
+ *
+ * @retval FSP_SUCCESS                 No configuration errors detected
+ * @retval FSP_ERR_INVALID_HW_CONDITION    ADCCALCTL.CAL_ERR bit must be 0
  **********************************************************************************************************************/
-static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg_t const * const p_cfg)
+static fsp_err_t r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg_t const * const p_cfg)
 {
     adc_extended_cfg_t const * p_cfg_extend = (adc_extended_cfg_t const *) p_cfg->p_extend;
 
@@ -988,6 +997,27 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
     R_BSP_MODULE_START(FSP_IP_ADC12, p_cfg->unit);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
+#if BSP_FEATURE_ADC_CALIBRATION_REG_AVAILABLE
+
+    /* Enable calibrate. */
+    R_BSP_SoftwareDelay(1, BSP_DELAY_UNITS_MICROSECONDS);
+
+    /* Write ADCALCTL.CAL bit to 1 to start calibration. */
+    p_instance_ctrl->p_reg->ADCALCTL_b.CAL = ADC_ADCALCTL_SET_CAL;
+
+    /* Poll ADCALCTL.CAL_RDY bit until it is changed to 1. */
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->ADCALCTL_b.CAL_RDY, 1U);
+
+    /* confirm ADCALCTL.CAL_ERR bit is 0.*/
+    FSP_ERROR_RETURN(p_instance_ctrl->p_reg->ADCALCTL_b.CAL_ERR == 0U, FSP_ERR_INVALID_HW_CONDITION);
+
+    /* Write ADCALCTL.CAL bit to 0 */
+    p_instance_ctrl->p_reg->ADCALCTL_b.CAL = 0U;
+
+    /* Poll ADCALCTL.CAL_RDY bit until it is changed to 1. */
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->ADCALCTL_b.CAL_RDY, 1U);
+#endif
+
     /* Set the predetermined values for ADCSR, ADSTRGR, ADGCTRGR, ADCER, and ADADC without setting ADCSR.ADST or ADCSR.TRGE.
      * ADCSR.ADST or ADCSR.TRGE are set as configured in R_ADC_ScanStart. */
     p_instance_ctrl->p_reg->ADCSR = (uint16_t) (adcsr & ADC_PRV_ADCSR_CLEAR_ADST_TRGE);
@@ -1016,6 +1046,8 @@ static void r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg
                                   R_ADC120_ADGCTRGR_GRCE_Msk));
 #endif
     }
+
+    return FSP_SUCCESS;
 }
 
 #if ADC_CFG_PARAM_CHECKING_ENABLE

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -28,6 +28,8 @@
 #define BSP_PRV_ICFGR_FIELD_WIDTH_BITS           (2U)
 
 #define BSP_PRV_CR52_INTSEL_INIT                 (0x03FF03FFUL)
+
+#define R_BSP_GIC_INTID_1023                     (1023)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -226,6 +228,8 @@ void bsp_common_interrupt_handler (uint32_t id)
 
     irq = (IRQn_Type) (gic_intid - BSP_CORTEX_VECTOR_TABLE_ENTRIES);
 
+    FSP_ASSERT_NOT_RETURN_VALUE(R_BSP_GIC_INTID_1023 != gic_intid);
+
     /* Remain the interrupt number */
     g_current_interrupt_num[g_current_interrupt_pointer++] = irq;
     __asm volatile ("dmb");
@@ -246,8 +250,8 @@ void bsp_common_interrupt_handler (uint32_t id)
         g_sgi_ppi_vector_table[gic_intid]();
     }
 
-    g_current_interrupt_pointer--;
-
     BSP_CFG_MULTIPLEX_INTERRUPT_DISABLE;
     BSP_CFG_TFU_RESTORE_ENABLE;
+
+    g_current_interrupt_pointer--;
 }

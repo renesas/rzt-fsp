@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -33,7 +33,7 @@
 
 #define USB_OHCI_NUM_DEVICEDATA                (1U)                            /* The maximum number of Dvice Data (Num of IP : HCCA address etc... )*/
 
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
 #define USB_OHCI_MAXROOTPORTS                  (5U)                            /* The maximum number of OHCI Rootport */
 #else
 #define USB_OHCI_MAXROOTPORTS                  (1U)                            /* The maximum number of OHCI Rootport */
@@ -124,11 +124,7 @@
 #define USB_OHCI_ED_CONTROL                    (63U)                           /* For Control */
 #define USB_OHCI_ED_BULK                       (64U)                           /* For Bulk */
 #define USB_OHCI_ED_ISOCHRONOUS                (0U)                            /* For Isochronous( same as 1ms interrupt queue ) */
-#if 1 == BSP_LP64_SUPPORT
-#define USB_OHCI_NO_ED_LISTS                   (64U)                           /* No ED Lists */
-#else
 #define USB_OHCI_NO_ED_LISTS                   (65U)                           /* No ED Lists */
-#endif
 #define USB_OHCI_ED_EOF                        (0xffU)                         /* ED EOF */
 
 #define USB_OHCI_HCED_HEADP_HALT               (0x00000001U)                   /* hardware stopped bit */
@@ -147,7 +143,7 @@
 /* Doubly linked list */
 typedef struct usb_ohci_list_entry
 {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t f_link;
     uint32_t b_link;
 #else
@@ -213,7 +209,7 @@ typedef struct usb_ohci_hc_transfer_descriptor
 /* OHCI USBD Transfer Request */
 typedef struct usb_ohci_request
 {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t                 buffer;            /* Pointer to data to be transferred */
 #else
     uint8_t                * buffer;         /* Pointer to data to be transferred */
@@ -223,14 +219,14 @@ typedef struct usb_ohci_request
     uint8_t                  max_int_delay;  /* Maximum allowable delay from completion to completion notification to USBD */
     uint8_t                  shortxferok;    /* Transfer of less than BufferLength is to be treated as an error unless this is TRUE */
     uint8_t                  using_flag;     /* Using Flag */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t                 setup;          /* Data for setup packet (control endpoints only) */
 #else
     uint8_t                * setup;          /* Data for setup packet (control endpoints only) */
 #endif
     uint32_t                 status;         /* Completion status from HCD to USBD */
     st_usb_ohci_list_entry_t hcd_list;       /* List of all HCD_TRANSFER_DESCRIPTORs in use for this request */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t                 driver_request;    /* Driver Request Infomation pointer */
 #else
     uint32_t               * driver_request; /* Driver Request Infomation pointer */
@@ -242,7 +238,7 @@ typedef struct usb_ohci_request
 typedef struct usb_ohci_hcd_ed_list
 {
     st_usb_ohci_list_entry_t head;          /* Head of an HCD_ENDPOINT_DESCRIPTOR list */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t                 physical_head;     /* Address of location to put the physical head pointer when it changes */
 #else
     uint32_t               * physical_head; /* Address of location to put the physical head pointer when it changes */
@@ -265,7 +261,7 @@ typedef struct usb_ohci_hcca_block
 /* HCD Device Data (Refer to Section 5.2.6 Host Controller Driver Internal Definitions) */
 typedef struct usb_ohci_hcd_device_data
 {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t    hcca;
 #else
     st_usb_ohci_hcca_block_p_t hcca;
@@ -298,7 +294,7 @@ typedef struct usb_ohci_iso_transfer_info
     uint16_t  size;                    /* Transfer Size */
     uint8_t   control_cc;              /* Control CC */
     uint8_t   psw_cc;                  /* PSW CC */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t         buffer;            /* Data Buffer pointer */
 #else
     uint8_t * buffer;                  /* Data Buffer pointer */
@@ -316,7 +312,7 @@ typedef struct usb_ohci_iso_info
     uint8_t                         start_p;                               /* Transfer start infomaition pointer (for in/out) */
     uint8_t                         end_p;                                 /* Transfer end infomaition pointer (for in/out) */
     uint8_t                         complete_p;                            /* Transfer complete information pointer (for in/out) */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t                        usb_drequest;     /* USBD Transfer Request pointer */
 #else
     st_usb_ohci_request_p_t         usb_drequest;                          /* USBD Transfer Request pointer */
@@ -330,13 +326,13 @@ typedef struct usb_ohci_hcd_endpoint
     uint8_t list_index;
     uint8_t using_flag;
     uint8_t reserved[1];
-#if	1 == BSP_LP64_SUPPORT
+#if	defined(BSP_CFG_CORE_CA55)
     uint32_t           device_data;
-#else /* 1 == BSP_LP64_SUPPORT */
+#else /* defined(BSP_CFG_CORE_CA55) */
     st_usb_ohci_hcd_device_data_p_t           device_data;
-#endif /* #if	1 == BSP_LP64_SUPPORT */
+#endif /* #if	defined(BSP_CFG_CORE_CA55) */
     st_usb_ohci_hc_endpoint_control_t         control;
-#if	1 == BSP_LP64_SUPPORT
+#if	defined(BSP_CFG_CORE_CA55)
     uint32_t   hcd_ed;
     uint32_t   hcd_head_p;
     uint32_t   hcd_tail_p;
@@ -349,7 +345,7 @@ typedef struct usb_ohci_hcd_endpoint
     uint32_t                 bandwidth;
     uint32_t                 max_packet;
     st_usb_ohci_list_entry_t link;     /* Ext. */
-#if	1 == BSP_LP64_SUPPORT
+#if	defined(BSP_CFG_CORE_CA55)
     uint32_t                  iso_info;       /* Ext. */
 #else
     st_usb_ohci_iso_info_p_t iso_info; /* Ext. */
@@ -368,11 +364,11 @@ typedef struct usb_ohci_hcd_endpoint_descriptor
     uint8_t                              reserved[1];
     uint32_t                             physical_address;
     st_usb_ohci_list_entry_t             link;
-#if	1 == BSP_LP64_SUPPORT
+#if	defined(BSP_CFG_CORE_CA55)
     uint32_t          endpoint;
-#else /* #if	1 == BSP_LP64_SUPPORT */
+#else /* #if	defined(BSP_CFG_CORE_CA55) */
     st_usb_ohci_hcd_endpoint_p_t         endpoint;
-#endif /* #if	1 == BSP_LP64_SUPPORT */
+#endif /* #if	defined(BSP_CFG_CORE_CA55) */
     uint32_t                             reclamation_frame;
     st_usb_ohci_list_entry_t             paused_link;
     st_usb_ohci_hc_endpoint_descriptor_t hc_ed;
@@ -385,20 +381,20 @@ typedef struct usb_ohci_hcd_transfer_descriptor
     uint8_t  using_flag     : 4;
     uint8_t  cancel_pending : 4;
     uint32_t physical_address;
-#if	1 == BSP_LP64_SUPPORT
+#if	defined(BSP_CFG_CORE_CA55)
     uint32_t                                  next_hcd_td;
-#else /* #if	1 == BSP_LP64_SUPPORT */
+#else /* #if	defined(BSP_CFG_CORE_CA55) */
     struct usb_ohci_hcd_transfer_descriptor * next_hcd_td;
-#endif /* #if	1 == BSP_LP64_SUPPORT */
+#endif /* #if	defined(BSP_CFG_CORE_CA55) */
     st_usb_ohci_list_entry_t     request_list;
-#if	1 == BSP_LP64_SUPPORT
+#if	defined(BSP_CFG_CORE_CA55)
     uint32_t                      usb_drequest;
-#else /* #if	1 == BSP_LP64_SUPPORT */
+#else /* #if	defined(BSP_CFG_CORE_CA55) */
     struct usb_ohci_request    * usb_drequest;
-#endif /* #if	1 == BSP_LP64_SUPPORT */
-#if	1 == BSP_LP64_SUPPORT
+#endif /* #if	defined(BSP_CFG_CORE_CA55) */
+#if	defined(BSP_CFG_CORE_CA55)
     uint32_t                                  endpoint;
-#else /* #if	1 == BSP_LP64_SUPPORT */
+#else /* #if	defined(BSP_CFG_CORE_CA55) */
     st_usb_ohci_hcd_endpoint_p_t endpoint;
 #endif /* #if	defined(BSP_MCU_GROUP_RZA3UL) */
     uint32_t transfer_count;

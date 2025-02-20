@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -649,15 +649,9 @@ void R_BSP_GICR_Enable (void)
                              BSP_PRV_GIC_GICR_WAKER_ProcessorSleep_Msk);
 
     /* wait for ChildrenAsleep bit to be cleared */
-    while (1)
-    {
-        if (0 ==
-            r_bsp_gic_io_regread_32(p_addr, BSP_PRV_GIC_GICR_WAKER_ChildrenAsleep_Pos,
-                                    BSP_PRV_GIC_GICR_WAKER_ChildrenAsleep_Msk))
-        {
-            break;
-        }
-    }
+    FSP_HARDWARE_REGISTER_WAIT(r_bsp_gic_io_regread_32(p_addr, BSP_PRV_GIC_GICR_WAKER_ChildrenAsleep_Pos,
+                                                       BSP_PRV_GIC_GICR_WAKER_ChildrenAsleep_Msk),
+                               0);
 }
 
 /*******************************************************************************************************************//**

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -29,19 +29,14 @@
  ******************************************************************************/
 void hw_usb_pset_dprpu (uint8_t usb_ip)
 {
- #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
-    FSP_PARAMETER_NOT_USED(usb_ip);
-    USB_M0->SYSCFG0 |= USB_DPRPU;
- #else                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
     if (USB_CFG_IP0 == usb_ip)
     {
-        USB_M0->SYSCFG |= USB_DPRPU;
+        USB_M0->SYSCFG0 |= USB_DPRPU;
     }
     else
     {
-        USB_M1->SYSCFG |= USB_DPRPU;
+        USB_M1->SYSCFG0 |= USB_DPRPU;
     }
- #endif                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 }
 
 /******************************************************************************
@@ -58,19 +53,14 @@ void hw_usb_pset_dprpu (uint8_t usb_ip)
  ******************************************************************************/
 void hw_usb_pclear_dprpu (uint8_t usb_ip)
 {
- #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
-    FSP_PARAMETER_NOT_USED(usb_ip);
-    USB_M0->SYSCFG0 = (uint16_t) (USB_M0->SYSCFG0 & (~USB_DPRPU));
- #else                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
     if (USB_CFG_IP0 == usb_ip)
     {
-        USB_M0->SYSCFG = (uint16_t) (USB_M0->SYSCFG & (~USB_DPRPU));
+        USB_M0->SYSCFG0 = (uint16_t) (USB_M0->SYSCFG0 & (~USB_DPRPU));
     }
     else
     {
-        USB_M1->SYSCFG = (uint16_t) (USB_M1->SYSCFG & (~USB_DPRPU));
+        USB_M1->SYSCFG0 = (uint16_t) (USB_M1->SYSCFG0 & (~USB_DPRPU));
     }
- #endif                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 }
 
 /******************************************************************************
@@ -218,7 +208,6 @@ void hw_usb_pset_ccpl (uint8_t usb_ip)
  ******************************************************************************/
 void hw_usb_pmodule_init (uint8_t usb_ip)
 {
- #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
     FSP_PARAMETER_NOT_USED(usb_ip);
     USB_M0->SYSCFG1   = (USB_CFG_BUSWAIT & USB_VAL_BWAIT3F);
     USB_M0->CFIFOSEL  = USB0_CFIFO_MBW;
@@ -229,90 +218,6 @@ void hw_usb_pmodule_init (uint8_t usb_ip)
     USB_M0->D0FIFOSEL |= USB_BIGEND;
     USB_M0->D1FIFOSEL |= USB_BIGEND;
   #endif                               /* USB_CFG_ENDIAN == USB_CFG_BIG */
- #else  /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
-    if (USB_CFG_IP0 == usb_ip)
-    {
-        USB_M0->SYSCFG |= USB_SCKE;
-
-        /* WAIT_LOOP */
-        while (USB_SCKE != (USB_M0->SYSCFG & USB_SCKE))
-        {
-            /* Wait for Set of SCKE */
-        }
-
-  #if defined(BSP_MCU_GROUP_RA6M3)
-        USB_M0->PHYSLEW = 0x5;
-  #endif                               /* defined(BSP_MCU_GROUP_RA6M3) */
-        USB_M0->SYSCFG   &= (uint16_t) (~USB_DRPD);
-        USB_M0->SYSCFG   |= USB_USBE;
-        USB_M0->CFIFOSEL  = USB0_CFIFO_MBW;
-        USB_M0->D0FIFOSEL = USB0_D0FIFO_MBW;
-        USB_M0->D1FIFOSEL = USB0_D1FIFO_MBW;
-  #if USB_CFG_ENDIAN == USB_CFG_BIG
-        USB_M0->CFIFOSEL  |= USB_BIGEND;
-        USB_M0->D0FIFOSEL |= USB_BIGEND;
-        USB_M0->D1FIFOSEL |= USB_BIGEND;
-  #endif                               /* USB_CFG_ENDIAN == USB_CFG_BIG */
-        USB_M0->INTENB0 = (USB_BEMPE | USB_BRDYE | USB_VBSE | USB_DVSE | USB_CTRE);
-    }
-    else
-    {
-  #if defined(BSP_MCU_GROUP_RA6M3)
-   #if USB_CFG_CLKSEL == USB_CFG_20MHZ
-        USB_M1->PHYSET &= (uint16_t) ~USB_CLKSEL;
-        USB_M1->PHYSET |= USB_CLKSEL_20;
-   #endif                              /* USB_CFG_CLKSEL == USB_CFG_20MHZ */
-
-   #if USB_CFG_CLKSEL == USB_CFG_12MHZ
-        USB_M1->PHYSET &= (uint16_t) ~USB_CLKSEL;
-        USB_M1->PHYSET |= USB_CLKSEL_12;
-   #endif                                /* USB_CFG_CLKSEL == USB_CFG_12MHZ */
-
-   #if USB_CFG_CLKSEL == USB_CFG_OTHER
-        USB_M1->PHYSET |= USB_HSEB;
-   #endif                                /* USB_CFG_OTHER == USB_CFG_OTHER */
-
-        usb_cpu_delay_1us((uint16_t) 1); /* wait 1usec */
-
-        USB_M1->PHYSET = (uint16_t) (USB_M1->PHYSET & (~USB_DIRPD));
-        usb_cpu_delay_xms(1);            /* wait 1msec */
-
-   #if ((USB_CFG_CLKSEL == USB_CFG_12MHZ) || (USB_CFG_CLKSEL == USB_CFG_20MHZ) || (USB_CFG_CLKSEL == USB_CFG_24MHZ))
-        USB_M1->PHYSET = (uint16_t) (USB_M1->PHYSET & (~USB_PLLRESET));
-   #endif /* (USB_CFG_CLKSEL == USB_CFG_12MHZ) || (USB_CFG_CLKSEL == USB_CFG_20MHZ) || (USB_CFG_CLKSEL == USB_CFG_24MHZ) */
-        USB_M1->SYSCFG = (uint16_t) (USB_M1->SYSCFG & (~USB_DRPD));
-
-        USB_M1->SYSCFG |= USB_USBE;
-
-        USB_M1->LPSTS |= USB_SUSPENDM;
-
-   #if ((USB_CFG_CLKSEL == USB_CFG_12MHZ) || (USB_CFG_CLKSEL == USB_CFG_20MHZ) || (USB_CFG_CLKSEL == USB_CFG_24MHZ))
-
-        /* WAIT_LOOP */
-        while (USB_PLLLOCK != (USB_M1->PLLSTA & USB_PLLLOCK))
-        {
-            /* Wait for PLL Lock */
-        }
-   #endif                              /* (USB_CFG_CLKSEL == USB_CFG_12MHZ) || (USB_CFG_CLKSEL == USB_CFG_20MHZ) || (USB_CFG_CLKSEL == USB_CFG_24MHZ) */
-
-        USB_M1->BUSWAIT = (USB_CFG_BUSWAIT | USB_BWAIT_B11_B8_WRITE);
-
-        USB_M1->PHYSET |= USB_REPSEL_16;
-
-        USB_M1->CFIFOSEL  = USB1_CFIFO_MBW;
-        USB_M1->D0FIFOSEL = USB1_D0FIFO_MBW;
-        USB_M1->D1FIFOSEL = USB1_D1FIFO_MBW;
-
-   #if USB_CFG_ENDIAN == USB_CFG_BIG
-        USB_M1->CFIFOSEL  |= USB_BIGEND;
-        USB_M1->D0FIFOSEL |= USB_BIGEND;
-        USB_M1->D1FIFOSEL |= USB_BIGEND;
-   #endif                              /* USB_CFG_ENDIAN == USB_CFG_BIG */
-
-        USB_M1->INTENB0 = (USB_BEMPE | USB_BRDYE | USB_VBSE | USB_DVSE | USB_CTRE);
-  #endif                               /* defined(BSP_MCU_GROUP_RA6M3) */
-    }
- #endif  /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 }
 
 /******************************************************************************
@@ -329,40 +234,28 @@ void hw_usb_pmodule_init (uint8_t usb_ip)
  ******************************************************************************/
 void hw_usb_pcontrol_dprpu (uint8_t usb_ip, uint8_t state)
 {
- #if defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
-    FSP_PARAMETER_NOT_USED(usb_ip);
-    if (USB_ON == state)
-    {
-        USB_M0->SYSCFG0 |= (uint16_t) (USB_DPRPU);
-    }
-    else
-    {
-        USB_M0->SYSCFG0 &= (uint16_t) (~USB_DPRPU);
-    }
- #else                                 /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
     if (USB_IP0 == usb_ip)
     {
         if (USB_ON == state)
         {
-            USB_M0->SYSCFG |= (uint16_t) (USB_DPRPU);
+            USB_M0->SYSCFG0 |= (uint16_t) (USB_DPRPU);
         }
         else
         {
-            USB_M0->SYSCFG &= (uint16_t) (~USB_DPRPU);
+            USB_M0->SYSCFG0 &= (uint16_t) (~USB_DPRPU);
         }
     }
     else
     {
         if (USB_ON == state)
         {
-            USB_M1->SYSCFG |= (uint16_t) (USB_DPRPU);
+            USB_M1->SYSCFG0 |= (uint16_t) (USB_DPRPU);
         }
         else
         {
-            USB_M1->SYSCFG &= (uint16_t) (~USB_DPRPU);
+            USB_M1->SYSCFG0 &= (uint16_t) (~USB_DPRPU);
         }
     }
- #endif                                /* defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
 }
 
 /******************************************************************************

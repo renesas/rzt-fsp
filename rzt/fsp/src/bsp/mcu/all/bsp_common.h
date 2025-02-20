@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -59,6 +59,8 @@ FSP_HEADER
 
 #define BSP_PRV_ICLK_FREQ_200_MHZ              (200000000U)  // ICLK frequency is 200 MHz
 #define BSP_PRV_ICLK_FREQ_150_MHZ              (150000000U)  // ICLK frequency is 150 MHz
+
+#define BSP_PRV_PCLKAM_FREQ_200_MHz            (200000000U)  // PCLKAM frequency is 200 MHz
 
 #define BSP_PRV_PCLKH_FREQ_250_MHZ             (250000000U)  // PCLKH frequency is 250 MHz
 #define BSP_PRV_PCLKH_FREQ_200_MHZ             (200000000U)  // PCLKH frequency is 200 MHz
@@ -149,10 +151,13 @@ FSP_HEADER
  * functions. */
 #if (3 == BSP_CFG_ASSERT)
  #define FSP_ASSERT(a)
+ #define FSP_ASSERT_NOT_RETURN_VALUE(a)
 #elif (2 == BSP_CFG_ASSERT)
- #define FSP_ASSERT(a)    {assert(a);}
+ #define FSP_ASSERT(a)                     {assert(a);}
+ #define FSP_ASSERT_NOT_RETURN_VALUE(a)    {assert(a);}
 #else
- #define FSP_ASSERT(a)    FSP_ERROR_RETURN((a), FSP_ERR_ASSERTION)
+ #define FSP_ASSERT(a)                     FSP_ERROR_RETURN((a), FSP_ERR_ASSERTION)
+ #define FSP_ASSERT_NOT_RETURN_VALUE(a)    FSP_ERROR_NOT_RETURN_VALUE((a), FSP_ERR_ASSERTION)
 #endif                                 // ifndef FSP_ASSERT
 
 /** All FSP error codes are returned using this macro. Calls ::FSP_ERROR_LOG function if condition "a" is false. Used
@@ -168,6 +173,22 @@ FSP_HEADER
         {                                               \
             FSP_ERROR_LOG(err);                         \
             return err;                                 \
+        }                                               \
+    }
+
+/** This function performs the same operation as ::FSP_ERROR_RETURN, but can be applied to functions that do not return
+ *  an error code. */
+
+#define FSP_ERROR_NOT_RETURN_VALUE(a, err)              \
+    {                                                   \
+        if ((a))                                        \
+        {                                               \
+            (void) 0;                  /* Do nothing */ \
+        }                                               \
+        else                                            \
+        {                                               \
+            FSP_ERROR_LOG(err);                         \
+            return;                                     \
         }                                               \
     }
 
@@ -300,7 +321,8 @@ typedef enum e_fsp_priv_clock
     FSP_PRIV_CLOCK_PCLKCAN,
     FSP_PRIV_CLOCK_CKIO,
     FSP_PRIV_CLOCK_XSPI0_CLK,
-    FSP_PRIV_CLOCK_XSPI1_CLK
+    FSP_PRIV_CLOCK_XSPI1_CLK,
+    FSP_PRIV_CLOCK_PCLKAM
 } fsp_priv_clock_t;
 
 /***********************************************************************************************************************
@@ -426,6 +448,14 @@ __STATIC_INLINE uint32_t R_FSP_SystemClockHzGet (fsp_priv_clock_t clock)
 #endif
             break;
         }
+
+#if (2 == BSP_FEATURE_CGC_SCKCR_TYPE)
+        case FSP_PRIV_CLOCK_PCLKAM:
+        {
+            clock_hz = BSP_PRV_PCLKAM_FREQ_200_MHz;
+            break;
+        }
+#endif
 
         case FSP_PRIV_CLOCK_PCLKH:
         {

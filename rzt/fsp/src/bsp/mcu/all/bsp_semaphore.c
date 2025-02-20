@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -62,13 +62,19 @@ void bsp_semaphore_init (void)
     /* Disable register protection for semaphore related registers. */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
 
-    /* Enable read clear function. */
+    /* Enable read clear function for External Host and Internal CPUs. */
     R_MBXSEM->SEMRCEN = BSP_PRV_SEMRCEN_ENABLE;
+
+    /* Enable read clear function for Internal CPUs. */
+    R_MBXSEM->SEMRCENAR = BSP_PRV_SEMRCEN_ENABLE;
 
     for (sem_num = 0; sem_num < BSP_SEMAPHORE_RESOURCE_MAX; sem_num++)
     {
-        /* Set the semaphore state not being used. */
+        /* Set the semaphore state not being used for External Host and Internal CPUs. */
         R_MBXSEM->SEM[sem_num] = BSP_PRV_RESOURCE_NOT_USED;
+
+        /* Set the semaphore state not being used for Internal CPUs. */
+        R_MBXSEM->SEMAR[sem_num] = BSP_PRV_RESOURCE_NOT_USED;
     }
 
     /* Enable register protection for semaphore related registers. */

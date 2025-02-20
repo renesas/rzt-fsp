@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -167,54 +167,74 @@ static const uint32_t gs_wrapped_key_value_len_hmac[RSIP_KEY_HMAC_NUM] =
 
 const rsip_api_t g_rsip_on_rsip =
 {
-    .open                 = R_RSIP_Open,
-    .close                = R_RSIP_Close,
-    .randomNumberGenerate = R_RSIP_RandomNumberGenerate,
-    .keyGenerate          = R_RSIP_KeyGenerate,
-    .keyPairGenerate      = R_RSIP_KeyPairGenerate,
-    .encryptedKeyWrap     = R_RSIP_EncryptedKeyWrap,
-    .injectedKeyImport    = R_RSIP_InjectedKeyImport,
-    .publicKeyExport      = R_RSIP_PublicKeyExport,
-    .aesCipherInit        = R_RSIP_AES_Cipher_Init,
-    .aesCipherUpdate      = R_RSIP_AES_Cipher_Update,
-    .aesCipherFinish      = R_RSIP_AES_Cipher_Finish,
-    .aesAeadInit          = R_RSIP_AES_AEAD_Init,
-    .aesAeadLengthsSet    = R_RSIP_AES_AEAD_LengthsSet,
-    .aesAeadAadUpdate     = R_RSIP_AES_AEAD_AADUpdate,
-    .aesAeadUpdate        = R_RSIP_AES_AEAD_Update,
-    .aesAeadFinish        = R_RSIP_AES_AEAD_Finish,
-    .aesAeadVerify        = R_RSIP_AES_AEAD_Verify,
-    .aesMacInit           = R_RSIP_AES_MAC_Init,
-    .aesMacUpdate         = R_RSIP_AES_MAC_Update,
-    .aesMacSignFinish     = R_RSIP_AES_MAC_SignFinish,
-    .aesMacVerifyFinish   = R_RSIP_AES_MAC_VerifyFinish,
-    .ecdsaSign            = R_RSIP_ECDSA_Sign,
-    .ecdsaVerify          = R_RSIP_ECDSA_Verify,
-    .rsaEncrypt           = R_RSIP_RSA_Encrypt,
-    .rsaDecrypt           = R_RSIP_RSA_Decrypt,
-    .rsaesPkcs1V15Encrypt = R_RSIP_RSAES_PKCS1_V1_5_Encrypt,
-    .rsaesPkcs1V15Decrypt = R_RSIP_RSAES_PKCS1_V1_5_Decrypt,
-    .rsaesOaepEncrypt     = R_RSIP_RSAES_OAEP_Encrypt,
-    .rsaesOaepDecrypt     = R_RSIP_RSAES_OAEP_Decrypt,
-    .rsassaPkcs1V15Sign   = R_RSIP_RSASSA_PKCS1_V1_5_Sign,
-    .rsassaPkcs1V15Verify = R_RSIP_RSASSA_PKCS1_V1_5_Verify,
-    .rsassaPssSign        = R_RSIP_RSASSA_PSS_Sign,
-    .rsassaPssVerify      = R_RSIP_RSASSA_PSS_Verify,
-    .shaCompute           = R_RSIP_SHA_Compute,
-    .shaInit              = R_RSIP_SHA_Init,
-    .shaUpdate            = R_RSIP_SHA_Update,
-    .shaFinish            = R_RSIP_SHA_Finish,
-    .shaSuspend           = R_RSIP_SHA_Suspend,
-    .shaResume            = R_RSIP_SHA_Resume,
-    .hmacCompute          = R_RSIP_HMAC_Compute,
-    .hmacVerify           = R_RSIP_HMAC_Verify,
-    .hmacInit             = R_RSIP_HMAC_Init,
-    .hmacUpdate           = R_RSIP_HMAC_Update,
-    .hmacSignFinish       = R_RSIP_HMAC_SignFinish,
-    .hmacVerifyFinish     = R_RSIP_HMAC_VerifyFinish,
-    .hmacSuspend          = R_RSIP_HMAC_Suspend,
-    .hmacResume           = R_RSIP_HMAC_Resume,
-    .otfInit              = R_RSIP_OTF_Init,
+    .open                      = R_RSIP_Open,
+    .close                     = R_RSIP_Close,
+    .randomNumberGenerate      = R_RSIP_RandomNumberGenerate,
+    .keyGenerate               = R_RSIP_KeyGenerate,
+    .keyPairGenerate           = R_RSIP_KeyPairGenerate,
+    .encryptedKeyWrap          = R_RSIP_EncryptedKeyWrap,
+    .rfc3394_KeyWrap           = R_RSIP_RFC3394_KeyWrap,
+    .rfc3394_KeyUnwrap         = R_RSIP_RFC3394_KeyUnwrap,
+    .injectedKeyImport         = R_RSIP_InjectedKeyImport,
+    .publicKeyExport           = R_RSIP_PublicKeyExport,
+    .aesCipherInit             = R_RSIP_AES_Cipher_Init,
+    .aesCipherUpdate           = R_RSIP_AES_Cipher_Update,
+    .aesCipherFinish           = R_RSIP_AES_Cipher_Finish,
+    .aesAeadInit               = R_RSIP_AES_AEAD_Init,
+    .aesAeadLengthsSet         = R_RSIP_AES_AEAD_LengthsSet,
+    .aesAeadAadUpdate          = R_RSIP_AES_AEAD_AADUpdate,
+    .aesAeadUpdate             = R_RSIP_AES_AEAD_Update,
+    .aesAeadFinish             = R_RSIP_AES_AEAD_Finish,
+    .aesAeadVerify             = R_RSIP_AES_AEAD_Verify,
+    .aesMacInit                = R_RSIP_AES_MAC_Init,
+    .aesMacUpdate              = R_RSIP_AES_MAC_Update,
+    .aesMacSignFinish          = R_RSIP_AES_MAC_SignFinish,
+    .aesMacVerifyFinish        = R_RSIP_AES_MAC_VerifyFinish,
+    .ecdsaSign                 = R_RSIP_ECDSA_Sign,
+    .ecdsaVerify               = R_RSIP_ECDSA_Verify,
+    .ecdhKeyAgree              = R_RSIP_ECDH_KeyAgree,
+    .ecdhPlainKeyAgree         = R_RSIP_ECDH_PlainKeyAgree,
+    .rsaEncrypt                = R_RSIP_RSA_Encrypt,
+    .rsaDecrypt                = R_RSIP_RSA_Decrypt,
+    .rsaesPkcs1V15Encrypt      = R_RSIP_RSAES_PKCS1_V1_5_Encrypt,
+    .rsaesPkcs1V15Decrypt      = R_RSIP_RSAES_PKCS1_V1_5_Decrypt,
+    .rsaesOaepEncrypt          = R_RSIP_RSAES_OAEP_Encrypt,
+    .rsaesOaepDecrypt          = R_RSIP_RSAES_OAEP_Decrypt,
+    .rsassaPkcs1V15Sign        = R_RSIP_RSASSA_PKCS1_V1_5_Sign,
+    .rsassaPkcs1V15Verify      = R_RSIP_RSASSA_PKCS1_V1_5_Verify,
+    .rsassaPssSign             = R_RSIP_RSASSA_PSS_Sign,
+    .rsassaPssVerify           = R_RSIP_RSASSA_PSS_Verify,
+    .shaCompute                = R_RSIP_SHA_Compute,
+    .shaInit                   = R_RSIP_SHA_Init,
+    .shaUpdate                 = R_RSIP_SHA_Update,
+    .shaFinish                 = R_RSIP_SHA_Finish,
+    .shaSuspend                = R_RSIP_SHA_Suspend,
+    .shaResume                 = R_RSIP_SHA_Resume,
+    .hmacCompute               = R_RSIP_HMAC_Compute,
+    .hmacVerify                = R_RSIP_HMAC_Verify,
+    .hmacInit                  = R_RSIP_HMAC_Init,
+    .hmacUpdate                = R_RSIP_HMAC_Update,
+    .hmacSignFinish            = R_RSIP_HMAC_SignFinish,
+    .hmacVerifyFinish          = R_RSIP_HMAC_VerifyFinish,
+    .hmacSuspend               = R_RSIP_HMAC_Suspend,
+    .hmacResume                = R_RSIP_HMAC_Resume,
+    .pkiEcdsaCertVerify        = R_RSIP_PKI_ECDSA_CertVerify,
+    .pkiVerifiedCertInfoExport = R_RSIP_PKI_VerifiedCertInfoExport,
+    .pkiVerifiedCertInfoImport = R_RSIP_PKI_VerifiedCertInfoImport,
+    .pkiCertKeyImport          = R_RSIP_PKI_CertKeyImport,
+    .kdfMacKeyImport           = R_RSIP_KDF_MACKeyImport,
+    .kdfEcdhSecretKeyImport    = R_RSIP_KDF_ECDHSecretKeyImport,
+    .kdfhmacInit               = R_RSIP_KDF_HMAC_Init,
+    .kdfhmacMacUpdate          = R_RSIP_KDF_HMAC_MACUpdate,
+    .kdfhmacEcdhSecretUpdate   = R_RSIP_KDF_HMAC_ECDHSecretUpdate,
+    .kdfhmacUpdate             = R_RSIP_KDF_HMAC_Update,
+    .kdfhmacSignFinish         = R_RSIP_KDF_HMAC_SignFinish,
+    .kdfhmacSuspend            = R_RSIP_KDF_HMAC_Suspend,
+    .kdfhmacResume             = R_RSIP_KDF_HMAC_Resume,
+    .kdfMacConcatenate         = R_RSIP_KDF_MACConcatenate,
+    .kdfDerivedKeyImport       = R_RSIP_KDF_DerivedKeyImport,
+    .kdfDerivedIvWrap          = R_RSIP_KDF_DerivedIVWrap,
+    .otfInit                   = R_RSIP_OTF_Init,
 };
 
 /*******************************************************************************************************************//**
@@ -645,6 +665,230 @@ fsp_err_t R_RSIP_EncryptedKeyWrap (rsip_ctrl_t * const                 p_ctrl,
         case RSIP_RET_FAIL:
         {
             err = FSP_ERR_CRYPTO_RSIP_FAIL;
+            break;
+        }
+
+        default:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_FATAL;
+        }
+    }
+
+    return err;
+}
+
+/*******************************************************************************************************************//**
+ * This function provides Key Wrap algorithm compliant with RFC3394.
+ * Using p_wrapped_kek to wrap p_wrapped_target_key, and output the result to p_rfc3394_wrapped_target_key.
+ *
+ * Implements @ref rsip_api_t::rfc3394_KeyWrap.
+ *
+ * @par State transition
+ * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
+ *
+ * @par Conditions
+ * - Key type of p_wrapped_kek must be one of the following:
+ *   - @ref RSIP_KEY_TYPE_AES_128
+ *   - @ref RSIP_KEY_TYPE_AES_256
+ * - Key type of p_wrapped_target_key must be one of the following:
+ *   - @ref RSIP_KEY_TYPE_AES_128
+ *   - @ref RSIP_KEY_TYPE_AES_256
+ *
+ * @retval FSP_SUCCESS                           Normal termination.
+ * @retval FSP_ERR_ASSERTION                     A required parameter is NULL.
+ * @retval FSP_ERR_NOT_OPEN                      Module is not open.
+ * @retval FSP_ERR_INVALID_STATE                 Internal state is illegal.
+ * @retval FSP_ERR_NOT_ENABLED                   Input key type is disabled in this function by configuration.
+ * @retval FSP_ERR_INVALID_ARGUMENT              Input key type or mode is illegal.
+ * @retval FSP_ERR_CRYPTO_RSIP_FAIL              Input parameter is invalid.
+ *
+ * @retval FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL      Input key value is illegal.
+ *
+ * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
+ *                                               by the processing is in use by other processing.
+ * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
+ **********************************************************************************************************************/
+fsp_err_t R_RSIP_RFC3394_KeyWrap (rsip_ctrl_t * const              p_ctrl,
+                                  rsip_wrapped_key_t const * const p_wrapped_kek,
+                                  rsip_wrapped_key_t const * const p_wrapped_target_key,
+                                  uint8_t * const                  p_rfc3394_wrapped_target_key)
+{
+    rsip_instance_ctrl_t * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
+
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_instance_ctrl);
+    FSP_ASSERT(p_wrapped_kek);
+    FSP_ASSERT(p_wrapped_target_key);
+    FSP_ASSERT(p_rfc3394_wrapped_target_key);
+    FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    /* Check key type */
+    FSP_ERROR_RETURN(RSIP_ALG_AES == p_wrapped_kek->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+
+    /* Check configuration */
+    FSP_ERROR_RETURN(gp_func_rfc3394_key_wrap[p_wrapped_kek->subtype], FSP_ERR_NOT_ENABLED);
+#endif
+
+    /* Check state */
+    FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
+
+    /* Check key type and get parameters */
+    uint32_t        wrapped_key_type[1] = {0};
+    uint32_t        key_index_size      = 0;
+    uint32_t        wrapped_key_size    = 0;
+    rsip_key_type_t key_type            = (rsip_key_type_t) RSIP_PRV_KEY_TYPE(p_wrapped_target_key->alg,
+                                                                              p_wrapped_target_key->subtype);
+    FSP_ERROR_RETURN(FSP_SUCCESS ==
+                     get_rfc3394_key_wrap_param(key_type, wrapped_key_type, &key_index_size, &wrapped_key_size),
+                     FSP_ERR_INVALID_ARGUMENT);
+
+    /* Call primitive (cast to match the argument type with the primitive function) */
+    rsip_ret_t rsip_ret =
+        gp_func_rfc3394_key_wrap[p_wrapped_kek->subtype]((const uint32_t *) p_wrapped_kek->value,
+                                                         wrapped_key_type,
+                                                         (const uint32_t *) p_wrapped_target_key->value,
+                                                         (uint32_t *) p_rfc3394_wrapped_target_key,
+                                                         key_index_size,
+                                                         wrapped_key_size);
+
+    /* Check error */
+    fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
+    switch (rsip_ret)
+    {
+        case RSIP_RET_PASS:
+        {
+            err = FSP_SUCCESS;
+            break;
+        }
+
+        case RSIP_RET_FAIL:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_FAIL;
+            break;
+        }
+
+        case RSIP_RET_KEY_FAIL:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL;
+            break;
+        }
+
+        case RSIP_RET_RESOURCE_CONFLICT:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT;
+            break;
+        }
+
+        default:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_FATAL;
+        }
+    }
+
+    return err;
+}
+
+/*******************************************************************************************************************//**
+ * This function provides Key Unwrap algorithm compliant with RFC3394.
+ * Using p_wrapped_kek to unwrap p_rfc3394_wrapped_target_key, and output the result to p_wrapped_target_key.
+ *
+ * Implements @ref rsip_api_t::rfc3394_KeyUnwrap.
+ *
+ * @par State transition
+ * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
+ *
+ * @par Conditions
+ * - Key type of p_wrapped_kek must be one of the following:
+ *   - @ref RSIP_KEY_TYPE_AES_128
+ *   - @ref RSIP_KEY_TYPE_AES_256
+ * - The third argument key_type represents the key type of p_rfc3394_wrapped_target_key must be one of the following:
+ *   - @ref RSIP_KEY_TYPE_AES_128
+ *   - @ref RSIP_KEY_TYPE_AES_256
+ *
+ * @retval FSP_SUCCESS                           Normal termination.
+ * @retval FSP_ERR_ASSERTION                     A required parameter is NULL.
+ * @retval FSP_ERR_NOT_OPEN                      Module is not open.
+ * @retval FSP_ERR_INVALID_STATE                 Internal state is illegal.
+ * @retval FSP_ERR_NOT_ENABLED                   Input key type is disabled in this function by configuration.
+ * @retval FSP_ERR_INVALID_ARGUMENT              Input key type or mode is illegal.
+ * @retval FSP_ERR_CRYPTO_RSIP_FAIL              Input parameter is invalid.
+ *
+ * @retval FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL      Input key value is illegal.
+ *
+ * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
+ *                                               by the processing is in use by other processing.
+ * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
+ **********************************************************************************************************************/
+fsp_err_t R_RSIP_RFC3394_KeyUnwrap (rsip_ctrl_t * const              p_ctrl,
+                                    rsip_wrapped_key_t const * const p_wrapped_kek,
+                                    rsip_key_type_t const            key_type,
+                                    uint8_t const * const            p_rfc3394_wrapped_target_key,
+                                    rsip_wrapped_key_t * const       p_wrapped_target_key)
+{
+    rsip_instance_ctrl_t * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
+
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_instance_ctrl);
+    FSP_ASSERT(p_wrapped_kek);
+    FSP_ASSERT(p_rfc3394_wrapped_target_key);
+    FSP_ASSERT(p_wrapped_target_key);
+    FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+
+    /* Check key type */
+    FSP_ERROR_RETURN(RSIP_ALG_AES == p_wrapped_kek->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+
+    /* Check configuration */
+    FSP_ERROR_RETURN(gp_func_rfc3394_key_unwrap[p_wrapped_kek->subtype], FSP_ERR_NOT_ENABLED);
+#endif
+
+    /* Check state */
+    FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
+
+    /* Check key type and get parameters */
+    uint32_t wrapped_key_type[1] = {0};
+    uint32_t key_index_size      = 0;
+    uint32_t wrapped_key_size    = 0;
+    FSP_ERROR_RETURN(FSP_SUCCESS ==
+                     get_rfc3394_key_wrap_param(key_type, wrapped_key_type, &key_index_size, &wrapped_key_size),
+                     FSP_ERR_INVALID_ARGUMENT);
+
+    /* Call primitive (cast to match the argument type with the primitive function) */
+    rsip_ret_t rsip_ret =
+        gp_func_rfc3394_key_unwrap[p_wrapped_kek->subtype]((const uint32_t *) p_wrapped_kek->value,
+                                                           wrapped_key_type,
+                                                           (const uint32_t *) p_rfc3394_wrapped_target_key,
+                                                           (uint32_t *) p_wrapped_target_key->value,
+                                                           wrapped_key_size,
+                                                           key_index_size);
+
+    /* Check error */
+    fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
+    switch (rsip_ret)
+    {
+        case RSIP_RET_PASS:
+        {
+            p_wrapped_target_key->alg     = r_rsip_key_type_to_alg(key_type);
+            p_wrapped_target_key->subtype = r_rsip_key_type_to_subtype(key_type);
+
+            err = FSP_SUCCESS;
+            break;
+        }
+
+        case RSIP_RET_FAIL:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_FAIL;
+            break;
+        }
+
+        case RSIP_RET_KEY_FAIL:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL;
+            break;
+        }
+
+        case RSIP_RET_RESOURCE_CONFLICT:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT;
             break;
         }
 

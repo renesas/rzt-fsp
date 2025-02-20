@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -46,6 +46,7 @@ void r_rsip_func016(uint32_t ARG1);
 void r_rsip_func017(uint32_t ARG1);
 void r_rsip_func022(void);
 void r_rsip_func023(void);
+void r_rsip_func029(void);
 void r_rsip_func030(void);
 void r_rsip_func031(void);
 void r_rsip_func032(void);
@@ -98,6 +99,8 @@ void r_rsip_func309(void);
 void r_rsip_func310(void);
 void r_rsip_func311(void);
 void r_rsip_func400(const uint32_t ARG1[]);
+void r_rsip_func440(const uint32_t ARG1[]);
+void r_rsip_func441(const uint32_t ARG1[]);
 
 /* Open */
 void       r_rsip_p00(void);
@@ -256,6 +259,22 @@ rsip_ret_t r_rsip_p0f(const uint32_t InData_Cmd[],
                       const uint32_t InData_IV[],
                       const uint32_t InData_InstData[],
                       uint32_t       OutData_KeyIndex[]);
+
+/* RFC3394 AES Key Wrap */
+rsip_ret_t r_rsip_p8f(const uint32_t InData_Cmd[],
+                      const uint32_t InData_KeyIndex[],
+                      const uint32_t InData_WrappedKeyType[],
+                      const uint32_t InData_WrappedKeyIndex[],
+                      uint32_t       OutData_Text[],
+                      uint32_t       KEY_INDEX_SIZE,
+                      uint32_t       WRAPPED_KEY_SIZE);
+rsip_ret_t r_rsip_p90(const uint32_t InData_Cmd[],
+                      const uint32_t InData_KeyIndex[],
+                      const uint32_t InData_WrappedKeyType[],
+                      const uint32_t InData_Text[],
+                      uint32_t       OutData_KeyIndex[],
+                      uint32_t       WRAPPED_KEY_SIZE,
+                      uint32_t       KEY_INDEX_SIZE);
 
 /* RNG */
 rsip_ret_t r_rsip_p20(uint32_t p_random[]);

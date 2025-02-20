@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -328,12 +328,16 @@ typedef struct st_mtu3_extended_uvw_cfg
     mtu3_noise_filter_setting_uvw_t noise_filter_mtioc_setting_uvw;
     mtu3_noise_filter_clock_t       noise_filter_mtioc_clk_uvw;
 
-    uint8_t   capture_u_ipl;           ///< Capture/Compare match U interrupt priority
-    uint8_t   capture_v_ipl;           ///< Capture/Compare match V interrupt priority
-    uint8_t   capture_w_ipl;           ///< Capture/Compare match W interrupt priority
-    IRQn_Type capture_u_irq;           ///< Capture/Compare match U interrupt
-    IRQn_Type capture_v_irq;           ///< Capture/Compare match V interrupt
-    IRQn_Type capture_w_irq;           ///< Capture/Compare match W interrupt
+    uint8_t   capture_u_ipl;                             ///< Capture/Compare match U interrupt priority
+    uint8_t   capture_v_ipl;                             ///< Capture/Compare match V interrupt priority
+    uint8_t   capture_w_ipl;                             ///< Capture/Compare match W interrupt priority
+    IRQn_Type capture_u_irq;                             ///< Capture/Compare match U interrupt
+    IRQn_Type capture_v_irq;                             ///< Capture/Compare match V interrupt
+    IRQn_Type capture_w_irq;                             ///< Capture/Compare match W interrupt
+
+    bsp_irq_gpt_selected_event_t capture_u_select_event; ///< Selected capture u event
+    bsp_irq_gpt_selected_event_t capture_v_select_event; ///< Selected capture v event
+    bsp_irq_gpt_selected_event_t capture_w_select_event; ///< Selected capture w event
 } mtu3_extended_uvw_cfg_t;
 
 typedef enum e_mtu3_phase_counting_mode
@@ -383,26 +387,30 @@ typedef struct st_mtu3_extended_cfg
     mtu3_noise_filter_mtclk_setting_t  noise_filter_mtclk_setting;
     mtu3_noise_filter_external_clock_t noise_filter_mtclk_clk;
 
-    bool adc_request_enable;                        ///< A/D Converter Start Request Enable(ch5 and ch8 are excluded)
+    bool adc_request_enable;                             ///< A/D Converter Start Request Enable(ch5 and ch8 are excluded)
 
-    mtu3_elc_operation_t mtu3_elc_event_operation;  ///< MTU3 event link operation
+    mtu3_elc_operation_t mtu3_elc_event_operation;       ///< MTU3 event link operation
 
     /* Used for other than MTU5 */
 
-    uint8_t   capture_a_ipl;                        ///< Capture/Compare match A interrupt priority
-    uint8_t   capture_b_ipl;                        ///< Capture/Compare match B interrupt priority
-    IRQn_Type capture_a_irq;                        ///< Capture/Compare match A interrupt
-    IRQn_Type capture_b_irq;                        ///< Capture/Compare match B interrupt
+    uint8_t   capture_a_ipl;                             ///< Capture/Compare match A interrupt priority
+    uint8_t   capture_b_ipl;                             ///< Capture/Compare match B interrupt priority
+    IRQn_Type capture_a_irq;                             ///< Capture/Compare match A interrupt
+    IRQn_Type capture_b_irq;                             ///< Capture/Compare match B interrupt
 
-    mtu3_extended_uvw_cfg_t const * p_uvw_cfg;      ///< Advanced MTU ch5 features, optional
-    mtu3_extended_pwm_cfg_t const * p_pwm_cfg;      ///< Advanced PWM features, optional
-    mtu3_phase_counting_mode_t      counting_mode;  ///< Select the counting mode.
-    mtu3_bit_mode_t                 bit_mode;       ///< Select bit mode
-    mtu3_external_clock_t           external_clock; ///< Select External Clock Input Pins
+    mtu3_extended_uvw_cfg_t const * p_uvw_cfg;           ///< Advanced MTU ch5 features, optional
+    mtu3_extended_pwm_cfg_t const * p_pwm_cfg;           ///< Advanced PWM features, optional
+    mtu3_phase_counting_mode_t      counting_mode;       ///< Select the counting mode.
+    mtu3_bit_mode_t                 bit_mode;            ///< Select bit mode
+    mtu3_external_clock_t           external_clock;      ///< Select External Clock Input Pins
 
-    uint8_t capture_a_source_select;                ///< Identify the GPT_INT for capture a
-    uint8_t capture_b_source_select;                ///< Identify the GPT_INT for capture b
-    uint8_t cycle_end_source_select;                ///< Identify the GPT_INT for capture overflow/underflow
+    uint8_t capture_a_source_select;                     ///< Identify the GPT_INT for capture a
+    uint8_t capture_b_source_select;                     ///< Identify the GPT_INT for capture b
+    uint8_t cycle_end_source_select;                     ///< Identify the GPT_INT for capture overflow/underflow
+
+    bsp_irq_gpt_selected_event_t capture_a_select_event; ///< Selected capture a event
+    bsp_irq_gpt_selected_event_t capture_b_select_event; ///< Selected capture b event
+    bsp_irq_gpt_selected_event_t cycle_end_select_event; ///< Selected cycle end event
 } mtu3_extended_cfg_t;
 
 /**********************************************************************************************************************

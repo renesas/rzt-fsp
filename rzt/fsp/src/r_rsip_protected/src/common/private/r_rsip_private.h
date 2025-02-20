@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -38,6 +38,18 @@ typedef rsip_ret_t (* rsip_func_key_pair_generate_t)(uint32_t OutData_PubKeyInde
 /* Encrypted key wrap */
 typedef rsip_ret_t (* rsip_func_encrypted_key_wrap_t)(const uint32_t InData_IV[], const uint32_t InData_InstData[],
                                                       uint32_t OutData_KeyIndex[]);
+
+/* RFC3394 Key Wrap */
+typedef rsip_ret_t (* rsip_func_rfc3394_key_wrap_t)(const uint32_t InData_KeyIndex[],
+                                                    const uint32_t InData_WrappedKeyType[],
+                                                    const uint32_t InData_WrappedKeyIndex[], uint32_t OutData_Text[],
+                                                    uint32_t KEY_INDEX_SIZE, uint32_t WRAPPED_KEY_SIZE);
+
+/* RFC3394 Key Unwrap */
+typedef rsip_ret_t (* rsip_func_rfc3394_key_unwrap_t)(const uint32_t InData_KeyIndex[],
+                                                      const uint32_t InData_WrappedKeyType[],
+                                                      const uint32_t InData_Text[], uint32_t OutData_KeyIndex[],
+                                                      uint32_t WRAPPED_KEY_SIZE, uint32_t KEY_INDEX_SIZE);
 
 /* AES-ECB/CBC/CTR */
 typedef rsip_ret_t (* rsip_func_aes_cipher_init_t)(const uint32_t InData_KeyIndex[], const uint32_t InData_IV[]);
@@ -205,6 +217,9 @@ extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_rsa_pub[R
 extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_rsa_priv[RSIP_KEY_RSA_NUM];
 extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_hmac[RSIP_KEY_HMAC_NUM];
 
+extern const rsip_func_rfc3394_key_wrap_t   gp_func_rfc3394_key_wrap[RSIP_KEY_AES_NUM];
+extern const rsip_func_rfc3394_key_unwrap_t gp_func_rfc3394_key_unwrap[RSIP_KEY_AES_NUM];
+
 extern const rsip_func_subset_aes_cipher_t gp_func_aes_cipher[RSIP_KEY_AES_NUM];
 extern const rsip_func_subset_aes_xts_t    gp_func_aes_xts_enc[RSIP_KEY_AES_NUM];
 extern const rsip_func_subset_aes_xts_t    gp_func_aes_xts_dec[RSIP_KEY_AES_NUM];
@@ -238,7 +253,7 @@ extern const rsip_func_kdf_derived_key_import_t     gp_func_kdf_derived_key_impo
 [RSIP_KEY_KDF_HMAC_NUM][RSIP_KEY_AES_NUM];
 extern const rsip_func_kdf_derived_key_import_t gp_func_kdf_derived_key_import_hmac
 [RSIP_KEY_KDF_HMAC_NUM][RSIP_KEY_HMAC_NUM];
-extern const rsip_func_kdf_derived_iv_wrap_t               gp_func_kdf_derived_iv_wrap[RSIP_KEY_KDF_HMAC_NUM][2];
+extern const rsip_func_kdf_derived_iv_wrap_t               gp_func_kdf_derived_iv_wrap[RSIP_KEY_KDF_HMAC_NUM][3];
 extern const rsip_func_kdf_tls12_prf_verify_data_compute_t gp_func_kdf_tls12_prf_verify_data_compute
 [RSIP_KEY_KDF_HMAC_NUM][2];
 
@@ -268,6 +283,22 @@ rsip_ret_t r_rsip_close(void);
  * @param[in] p_key_update_key_value KUK value.
  **********************************************************************************************************************/
 void r_rsip_kuk_set(const uint8_t * p_key_update_key_value);
+
+/*******************************************************************************************************************//**
+ * Gets parameters for RFC3394 AES Key Wrap from target key type.
+ *
+ * @param[in]  key_type         Key type of target key.
+ * @param[out] wrapped_key_type Key type number used for primitives.
+ * @param[out] key_index_size   Word size of key index.
+ * @param[out] wrapped_key_size Word size of AES-wrapped key.
+ *
+ * @retval FSP_SUCCESS              Normal termination.
+ * @retval FSP_ERR_INVALID_ARGUMENT Invalid key type.
+ **********************************************************************************************************************/
+fsp_err_t get_rfc3394_key_wrap_param(rsip_key_type_t key_type,
+                                     uint32_t      * wrapped_key_type,
+                                     uint32_t      * key_index_size,
+                                     uint32_t      * wrapped_key_size);
 
 /*******************************************************************************************************************//**
  * 1. Initialize hash operation.

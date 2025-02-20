@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -25,6 +25,14 @@ FSP_HEADER
 /***********************************************************************************************************************
  * Macro definitions
  **********************************************************************************************************************/
+#define ELC_GPT_INTSELY3_OFFSET    (28)
+#define ELC_GPT_INTSELY2_OFFSET    (24)
+#define ELC_GPT_INTSELY1_OFFSET    (20)
+#define ELC_GPT_INTSELY0_OFFSET    (16)
+#define ELC_GPT_INTSELX3_OFFSET    (12)
+#define ELC_GPT_INTSELX2_OFFSET    (8)
+#define ELC_GPT_INTSELX1_OFFSET    (4)
+#define ELC_GPT_INTSELX0_OFFSET    (0)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -69,7 +77,8 @@ typedef enum e_elc_gpt_event_mask
 /** Extended configuration structure for ELC. */
 typedef struct st_elc_extended_cfg
 {
-    uint32_t elc_gpt_event_mask[BSP_FEATURE_ELC_GPT_EVENT_MASK_NUM]; ///< ELC GPT Event source mask
+    uint32_t elc_gpt_event_source[BSP_FEATURE_ELC_GPT_EVENT_MASK_NUM]; ///< ELC GPTn_m_INT0 to NT3 Event source
+    uint32_t elc_gpt_event_mask[BSP_FEATURE_ELC_GPT_EVENT_MASK_NUM];   ///< ELC GPTn_m_INT4 Event source mask
 } elc_extended_cfg_t;
 #endif
 

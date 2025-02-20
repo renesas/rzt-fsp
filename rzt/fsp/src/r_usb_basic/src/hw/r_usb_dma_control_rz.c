@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -435,7 +435,7 @@ uint32_t r_usb_dmaca_getversion (void)
  *******************************************************************************/
 static bool r_usb_dmaca_set_transfer_data (uint8_t channel, usb_dmaca_transfer_data_cfg_t * p_cfg)
 {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     uint32_t p_src_pa_adr;
     uint32_t p_des_pa_adr;
 #else

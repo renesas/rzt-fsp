@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -69,10 +69,6 @@ uint16_t usb_cstd_get_buf_size (usb_utr_t * ptr, uint16_t pipe)
     {
         /* Pipe select */
         hw_usb_write_pipesel(ptr, pipe);
-
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || \
-        defined(BSP_MCU_GROUP_RZT2H)
-
         /* Read CNTMD */
         buffer = hw_usb_read_pipecfg(ptr);
         if (USB_CFG_CNTMDON == (buffer & USB_CNTMDFIELD))
@@ -84,15 +80,11 @@ uint16_t usb_cstd_get_buf_size (usb_utr_t * ptr, uint16_t pipe)
         }
         else
         {
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
         buffer = hw_usb_read_pipemaxp(ptr);
 
         /* Max Packet Size */
         size = (uint16_t) (buffer & USB_MXPS);
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || \
-        defined(BSP_MCU_GROUP_RZT2H)
-    }
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
+        }
     }
 
     return size;
@@ -181,14 +173,7 @@ void usb_cstd_pipe_init (usb_utr_t * ptr, uint16_t pipe)
 
     hw_usb_write_pipecfg(ptr, g_usb_pipe_table[ip_no][pipe].pipe_cfg);
 
- #if defined(BSP_MCU_GROUP_RA6M3)
-    if (USB_IP1 == ip_no)
-    {
-        hw_usb_write_pipebuf(ptr, g_usb_pipe_table[ip_no][pipe].pipe_buf);
-    }
- #elif defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) /* defined(BSP_MCU_GROUP_RA6M3) */
     hw_usb_write_pipebuf(ptr, g_usb_pipe_table[ip_no][pipe].pipe_buf);
- #endif                                                             /* defined(BSP_MCU_GROUP_RA6M3) */
     hw_usb_write_pipemaxp(ptr, g_usb_pipe_table[ip_no][pipe].pipe_maxp);
     hw_usb_write_pipeperi(ptr, g_usb_pipe_table[ip_no][pipe].pipe_peri);
 
@@ -272,11 +257,7 @@ void usb_cstd_clr_pipe_cnfg (usb_utr_t * ptr, uint16_t pipe_no)
     usb_cstd_chg_curpipe(ptr, (uint16_t) USB_PIPE0, (uint16_t) USB_CUSE, USB_FALSE);
     hw_usb_write_pipesel(ptr, pipe_no);
     hw_usb_write_pipecfg(ptr, 0);
-
- #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || \
-    defined(BSP_MCU_GROUP_RZT2H)
     hw_usb_write_pipebuf(ptr, 0);
- #endif                                /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) */
     hw_usb_write_pipemaxp(ptr, 0);
     hw_usb_write_pipeperi(ptr, 0);
     hw_usb_write_pipesel(ptr, 0);

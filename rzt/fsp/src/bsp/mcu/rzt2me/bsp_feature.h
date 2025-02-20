@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -61,6 +61,8 @@ FSP_HEADER
 #define BSP_FEATURE_BSP_BOOT_PARAMETER                         (2U)
 #define BSP_FEATURE_BSP_CA55_CORE_NUM                          (0U)
 #define BSP_FEATURE_BSP_CR52_CORE_NUM                          (2U)
+#define BSP_FEATURE_BSP_CS0_BASE_ADDRESS                       (0x70000000U)
+#define BSP_FEATURE_BSP_CS0_SIZE                               (0x10000000U)
 #define BSP_FEATURE_BSP_DDRSS_SUPPORTED                        (0U)
 #define BSP_FEATURE_BSP_ENCOUT_SUPPORTED                       (0U)
 #define BSP_FEATURE_BSP_ENDAT_UNIT                             (0U)
@@ -109,6 +111,10 @@ FSP_HEADER
 #define BSP_FEATURE_BSP_SHOSTIF_SUPPORTED                      (0U)
 #define BSP_FEATURE_BSP_SLAVE_STOP_SUPPORTED                   (0U)
 #define BSP_FEATURE_BSP_TRACE_CLOCK_SUPPORTED                  (1U)
+#define BSP_FEATURE_BSP_XSPI0_CS0_BASE_ADDRESS                 (0x60000000U)
+#define BSP_FEATURE_BSP_XSPI0_CS0_SIZE                         (0x8000000U)
+#define BSP_FEATURE_BSP_XSPI1_CS0_BASE_ADDRESS                 (0x68000000U)
+#define BSP_FEATURE_BSP_XSPI1_CS0_SIZE                         (0x8000000U)
 
 #define BSP_FEATURE_CAN_CHECK_PCLKB_RATIO                      (0U)
 #define BSP_FEATURE_CAN_CLOCK                                  (0U)
@@ -212,6 +218,7 @@ FSP_HEADER
 #define BSP_FEATURE_ELC_ELC_SSEL_NUM                           (19)
 #define BSP_FEATURE_ELC_EVENT_MASK_NUM                         (4U)
 #define BSP_FEATURE_ELC_GPT_EVENT_MASK_NUM                     (0U)
+#define BSP_FEATURE_ELC_GPT_EVENT_SOURCE_NUM                   (0U)
 #define BSP_FEATURE_ELC_GROUP1_PORT_NUM                        (BSP_IO_PORT_16)
 #define BSP_FEATURE_ELC_GROUP2_PORT_NUM                        (BSP_IO_PORT_18)
 #define BSP_FEATURE_ELC_PERIPHERAL_0_MASK                      (0xFFFFFFFFU) // ELC event source no.0 to 31 available on this MCU
@@ -223,6 +230,8 @@ FSP_HEADER
 #define BSP_FEATURE_ELC_PERIPHERAL_6_MASK                      (0x00000000U) // ELC event source no.192 to 223 available on this MCU.
 #define BSP_FEATURE_ELC_PERIPHERAL_7_MASK                      (0x00000000U) // ELC event source no.224 to 255 available on this MCU.
 #define BSP_FEATURE_ELC_PERIPHERAL_TYPE                        (1U)
+
+#define BSP_FEATURE_BSP_ENCIF_MSTP_SUPPORTED                   (1U)
 
 #define BSP_FEATURE_ESC_MAX_PORTS                              (3U)
 #define BSP_FEATURE_ETHER_FIFO_DEPTH                           (0x0000070FU)
@@ -367,6 +376,8 @@ FSP_HEADER
 #define BSP_FEATURE_RSIP_OTP_ADDRESS_SPACE                     (1U)
 #define BSP_FEATURE_RSIP_OTF_CHANNEL                           (2U)
 
+#define BSP_FEATURE_RTC_MODULE_START_TYPE                      (1U)
+
 #define BSP_FEATURE_SCI_ADDRESS_MATCH_CHANNELS                 (BSP_FEATURE_SCI_CHANNELS)
 #define BSP_FEATURE_SCI_CHANNELS                               (0x3FU)
 #define BSP_FEATURE_SCI_SAFETY_CHANNEL                         (5U)
@@ -378,6 +389,13 @@ FSP_HEADER
 #define BSP_FEATURE_SCI_UART_FIFO_CHANNELS                     (0x3FFU)
 #define BSP_FEATURE_SCI_UART_FIFO_DEPTH                        (16U)
 #define BSP_FEATURE_SCIE_SUPPORTED                             (0U)
+
+#define BSP_FEATURE_SDHI_CLOCK                                 (0xFFU) // Feature not available on this MCU
+#define BSP_FEATURE_SDHI_HAS_CARD_DETECTION                    (0)     // Feature not available on this MCU
+#define BSP_FEATURE_SDHI_MAX_CHANNELS                          (0)     // Feature not available on this MCU
+#define BSP_FEATURE_SDHI_MIN_CLOCK_DIVISION_SHIFT              (0)     // Feature not available on this MCU
+#define BSP_FEATURE_SDHI_SUPPORTS_8_BIT_MMC                    (0)     // Feature not available on this MCU
+#define BSP_FEATURE_SDHI_VALID_CHANNEL_MASK                    (0)     // Feature not available on this MCU
 
 #define BSP_FEATURE_SEM_SUPPORTED                              (1U)
 
@@ -410,6 +428,8 @@ FSP_HEADER
 #define BSP_FEATURE_TZC400_SUPPORTED                           (0U)
 
 #define BSP_FEATURE_USB_HOST_HS_SET_TYPE                       (1U)
+#define BSP_FEATURE_USB_HOST_INIT_TYPE                         (1U)
+#define BSP_FEATURE_USB_PERI_INIT_TYPE                         (1U)
 
 #define BSP_FEATURE_XSPI_CHANNELS                              (0x03U)
 #define BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE         (2U)

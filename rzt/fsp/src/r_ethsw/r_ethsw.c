@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -5025,7 +5025,7 @@ fsp_err_t R_ETHSW_TdmaEnableSet (ether_switch_ctrl_t * const p_ctrl, ethsw_tdma_
 
         p_switch_reg->TDMA_CONFIG_b.TIMER_SEL = p_tdma_enable->time_num &
                                                 (R_ETHSW_TDMA_CONFIG_TIMER_SEL_Msk >>
-                                                 R_ETHSW_TDMA_CONFIG_RED_PERIOD_Pos);
+                                                 R_ETHSW_TDMA_CONFIG_TIMER_SEL_Pos);
 
         p_switch_reg->TDMA_IRQ_CONTROL_b.TCV_INT_EN = 1;
         p_switch_reg->INT_CONFIG_b.TDMA_INT         = 1;

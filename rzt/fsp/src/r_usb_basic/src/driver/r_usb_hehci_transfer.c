@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -19,6 +19,7 @@
  * Includes   <System Includes> , "Project Includes"
  ***********************************************************************************************************************/
 #include "r_usb_hhci_local.h"
+#include "r_usb_extern.h"
 
 /***********************************************************************************************************************
  * Macro definitions
@@ -30,6 +31,10 @@
 #define USB_VAL_XFE0        (0xFFFFFFE0U)
 #define USB_VAL_FFF         (0x00000FFFU)
 
+#if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
+#define USB_VAL_15000       (15000)
+#endif /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
+
 #if  USB_IP_EHCI_OHCI == 1
 /***********************************************************************************************************************
  * External variables and functions
@@ -39,10 +44,6 @@
  * Private global variables and functions
  ***********************************************************************************************************************/
 
-
- #ifdef USB_HOST_COMPLIANCE_MODE
-extern uint8_t g_usb_hstd_test_packet_parameter_flag;
- #endif                                /* USB_HOST_COMPLIANCE_MODE */
 
 /***********************************************************************************************************************
  * Static variables and functions
@@ -224,7 +225,7 @@ void usb_hstd_ehci_set_async_qh (st_usb_hci_tr_req_t * p_tr_req, st_usb_ehci_qh_
 
     p_qh->endpoint2.dword = endpoint2.dword;
     p_qh->endpoint1.dword = endpoint1.dword;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     if (USB_NULL == p_qh->qtd_head)
 #else
     if (NULL == p_qh->qtd_head)
@@ -237,7 +238,7 @@ void usb_hstd_ehci_set_async_qh (st_usb_hci_tr_req_t * p_tr_req, st_usb_ehci_qh_
     else
     {
         /* When Next_qTD of QH is not set */
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         p_qh->next_qtd.address = (uint32_t) r_usb_va_to_pa((uint64_t) p_qh->qtd_head);
  #else
         p_qh->next_qtd.address = (uint32_t) p_qh->qtd_head;
@@ -272,7 +273,7 @@ void usb_hstd_ehci_transfer_end_qh (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr_
     uint16_t            status;
     uint16_t            ret;
 
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
     p_qh = (st_usb_ehci_qh_t *) (uintptr_t) (r_usb_pa_to_va((uint64_t) p_tr_req->hci_info));
  #else
     p_qh = (st_usb_ehci_qh_t *) p_tr_req->hci_info;
@@ -284,7 +285,7 @@ void usb_hstd_ehci_transfer_end_qh (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr_
     if (USB_EP_CNTRL == p_tr_req->bit.eptype)
     {
         /* SETUP is skipped, and the DATA is set */
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         p_data_qtd = (st_usb_ehci_qtd_t *) (uintptr_t) (r_usb_pa_to_va((uint64_t) (p_qh->qtd_head)));
         p_data_qtd =
             (st_usb_ehci_qtd_t *) (uintptr_t) (r_usb_pa_to_va((uint64_t) (p_data_qtd->next_qtd.address &
@@ -296,7 +297,7 @@ void usb_hstd_ehci_transfer_end_qh (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr_
     }
     else
     {
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         p_data_qtd = (st_usb_ehci_qtd_t *) (uintptr_t) (r_usb_pa_to_va((uint64_t) p_qh->qtd_head));
  #else
         p_data_qtd = (st_usb_ehci_qtd_t *)(uintptr_t) p_qh->qtd_head;
@@ -319,7 +320,7 @@ void usb_hstd_ehci_transfer_end_qh (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr_
             break;
         }
 
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         if (p_data_qtd == (st_usb_ehci_qtd_t *) (uintptr_t) r_usb_pa_to_va((uint64_t) p_qh->qtd_end))
 
 #else
@@ -331,7 +332,7 @@ void usb_hstd_ehci_transfer_end_qh (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr_
 
         if (0 == p_data_qtd->next_qtd.bit.t)
         {
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
             p_data_qtd =
                 (st_usb_ehci_qtd_t *) (uintptr_t) (r_usb_pa_to_va((uint64_t) p_data_qtd->next_qtd.address &
                                                                   USB_VAL_XFE0));
@@ -353,7 +354,7 @@ void usb_hstd_ehci_transfer_end_qh (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr_
     /* =========== */
     /*  Clear qTD  */
     /* =========== */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     usb_hstd_ehci_clear_qtd((st_usb_ehci_qtd_t *)(uintptr_t) p_qh->qtd_head);
 #else
     usb_hstd_ehci_clear_qtd(p_qh->qtd_head);
@@ -403,7 +404,7 @@ void usb_hstd_ehci_transfer_end_itd (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr
     uint8_t * p_data_buf;
     uint8_t * tmp_itd_buffer;
 
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
     p_itd = ((st_usb_ehci_itd_t *) (uintptr_t) (r_usb_pa_to_va((uint64_t) p_tr_req->hci_info)));
  #else
     p_itd = (st_usb_ehci_itd_t *) p_tr_req->hci_info;
@@ -415,7 +416,7 @@ void usb_hstd_ehci_transfer_end_itd (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr
     if (p_tr_req->bit.direction == USB_HCI_DIRECTION_IN)
     {
         /* Set Distination Address */
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         p_data_buf = (uint8_t *) (r_usb_pa_to_va((uint64_t) p_tr_req->databuf));
  #else
         p_data_buf = (uint8_t *)(uintptr_t) p_tr_req->databuf;
@@ -426,7 +427,7 @@ void usb_hstd_ehci_transfer_end_itd (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_tr
             if (p_itd->transaction[i].bit.length > 0)
             {
                 /* copy IN data */
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
                 tmp_itd_buffer = (uint8_t *) (r_usb_pa_to_va((uint64_t) &p_itd->tmp_buffer[i][0]));
  #else
                 tmp_itd_buffer = &p_itd->tmp_buffer[i][0];
@@ -486,7 +487,7 @@ void usb_hstd_ehci_transfer_end_sitd (usb_utr_t * ptr, st_usb_hci_tr_req_t * p_t
     st_usb_ehci_sitd_t * p_sitd;
     uint32_t             remain_size;
     uint16_t             status;
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
     p_sitd = (st_usb_ehci_sitd_t *) (r_usb_pa_to_va((uint64_t) p_tr_req->hci_info));
  #else
     p_sitd = (st_usb_ehci_sitd_t *) p_tr_req->hci_info;
@@ -557,10 +558,13 @@ static void usb_hstd_ehci_make_cntrol_bulk_interrupt_request (st_usb_hci_tr_req_
     uint32_t            tr_size;
     uint32_t            pollrate_offset;
     uint32_t            max_period;
- #ifdef USB_HOST_COMPLIANCE_MODE
-    st_usb_ehci_qtd_t * p_qtd_head_tmp;
-    st_usb_ehci_qtd_t * p_qtd_end_tmp;
- #endif                                /* USB_HOST_COMPLIANCE_MODE */
+#if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
+    st_usb_ehci_qtd_t * p_qtd_head_tmp = 0;
+    st_usb_ehci_qtd_t * p_qtd_end_tmp = 0;
+#if defined(BSP_CFG_CORE_CA55)
+    st_usb_ehci_qtd_t * p_qtd_next_tmp = 0;
+#endif /* defined(BSP_CFG_CORE_CA55) */
+ #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
     if (USB_HCI_DIRECTION_OUT == p_tr_req->bit.direction)
     {
@@ -707,7 +711,7 @@ static void usb_hstd_ehci_make_cntrol_bulk_interrupt_request (st_usb_hci_tr_req_
     }
 
     /* QH registration */
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     p_tr_req->hci_info = (void *) r_usb_va_to_pa((uint64_t) p_qh);
     p_qh->qtd_head     = (uint32_t) r_usb_va_to_pa((uint64_t) p_qtd_head);
     p_qh->qtd_end      = (uint32_t) r_usb_va_to_pa((uint64_t) p_qtd_end);
@@ -717,26 +721,35 @@ static void usb_hstd_ehci_make_cntrol_bulk_interrupt_request (st_usb_hci_tr_req_
     p_qh->qtd_end      = p_qtd_end;
  #endif
 
- #ifdef USB_HOST_COMPLIANCE_MODE
+#if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
     if (g_usb_hstd_test_packet_parameter_flag)
     {
-  #if 1 == BSP_LP64_SUPPORT
+  #if defined(BSP_CFG_CORE_CA55)
         p_qtd_head_tmp = (st_usb_ehci_qtd_t *) (r_usb_pa_to_va((uint64_t) (p_qh->qtd_head)));
         p_qtd_head_tmp->transfer_info.bit.status_active = 0;
-        p_qtd_head_tmp->next_qtd.pointer->transfer_info.bit.status_active = 0;
+        /* p_qtd_head_tmp->next_qtd.pointer->transfer_info.bit.status_active = 0; */
+        p_qtd_next_tmp = (st_usb_ehci_qtd_t *) (r_usb_pa_to_va((uint64_t) (p_qtd_head_tmp->next_qtd.address)));
+        p_qtd_next_tmp->transfer_info.bit.status_active = 0;
+
 
         p_qtd_end_tmp = (st_usb_ehci_qtd_t *) (r_usb_pa_to_va((uint64_t) (p_qh->qtd_end)));
         p_qtd_end_tmp->transfer_info.bit.status_active = 0;
   #else
         p_qtd_head_tmp = (st_usb_ehci_qtd_t *) p_qh->qtd_head;
-        p_qtd_head_tmp->transfer_info.bit.status_active = 0;
-        p_qtd_head_tmp->next_qtd.pointer->transfer_info.bit.status_active = 0;
+        if(NULL != p_qtd_head_tmp)
+        {
+        	p_qtd_head_tmp->transfer_info.bit.status_active = 0;
+        	p_qtd_head_tmp->next_qtd.pointer->transfer_info.bit.status_active = 0;
+        }
 
-        p_qtd_end_tmp = (st_usb_ehci_qtd_t *) p_qh->qtd_end;
-        p_qtd_end_tmp->transfer_info.bit.status_active = 0;
+        if(NULL != p_qtd_end_tmp)
+        {
+        	p_qtd_end_tmp = (st_usb_ehci_qtd_t *) p_qh->qtd_end;
+        	p_qtd_end_tmp->transfer_info.bit.status_active = 0;
+        }
   #endif
     }
- #endif                                     /* USB_HOST_COMPLIANCE_MODE */
+ #endif                                     /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
     if (USB_EP_INT == p_tr_req->bit.eptype) /* Interrupt */
     {
@@ -785,10 +798,10 @@ static void usb_hstd_ehci_make_cntrol_bulk_interrupt_request (st_usb_hci_tr_req_
         }
     }
 
- #ifdef USB_HOST_COMPLIANCE_MODE
+#if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
     if (g_usb_hstd_test_packet_parameter_flag)
     {
-  #if 1 == BSP_LP64_SUPPORT
+  #if defined(BSP_CFG_CORE_CA55)
         p_qtd_head_tmp = (st_usb_ehci_qtd_t *) (r_usb_pa_to_va((uint64_t) (p_qh->qtd_head)));
         p_qtd_end_tmp  = (st_usb_ehci_qtd_t *) (r_usb_pa_to_va((uint64_t) (p_qh->qtd_end)));
   #else
@@ -796,13 +809,27 @@ static void usb_hstd_ehci_make_cntrol_bulk_interrupt_request (st_usb_hci_tr_req_
         p_qtd_end_tmp  = (st_usb_ehci_qtd_t *) p_qh->qtd_end;
   #endif
 
-        p_qtd_head_tmp->transfer_info.bit.status_active = 1;                   /* Setup stage */
-        r_usb_hstd_hci_wait_time(15000);
-        p_qtd_head_tmp->next_qtd.pointer->transfer_info.bit.status_active = 1; /* Data stage(IN) */
-        p_qtd_end_tmp->transfer_info.bit.status_active = 1;                    /* Status stage */
-        r_usb_hstd_hci_wait_time(15000);
+        if(NULL != p_qtd_head_tmp)
+        {
+        	p_qtd_head_tmp->transfer_info.bit.status_active = 1;                   /* Setup stage */
+        }
+        r_usb_hstd_hci_wait_time(USB_VAL_15000);
+#if defined(BSP_CFG_CORE_CA55)
+        p_qtd_next_tmp = (st_usb_ehci_qtd_t *) (r_usb_pa_to_va((uint64_t) (p_qtd_head_tmp->next_qtd.address)));
+        p_qtd_next_tmp->transfer_info.bit.status_active = 1;
+#else
+        if(NULL != p_qtd_head_tmp)
+        {
+        	p_qtd_head_tmp->next_qtd.pointer->transfer_info.bit.status_active = 1; /* Data stage(IN) */
+        }
+#endif
+        if(NULL != p_qtd_end_tmp)
+        {
+        	p_qtd_end_tmp->transfer_info.bit.status_active = 1;                    /* Status stage */
+        }
+        r_usb_hstd_hci_wait_time(USB_VAL_15000);
     }
- #endif /* USB_HOST_COMPLIANCE_MODE */
+ #endif /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 } /* End of function usb_hstd_ehci_make_cntrol_bulk_interrupt_request() */
 
 /***********************************************************************************************************************
@@ -847,7 +874,7 @@ static void usb_hstd_ehci_make_isochronous_request (st_usb_hci_tr_req_t * p_tr_r
             }
         }
 
-   #if 1 == BSP_LP64_SUPPORT
+   #if defined(BSP_CFG_CORE_CA55)
         p_tr_req->hci_info = (void *) r_usb_va_to_pa((uint64_t) p_itd);
  #else
         p_tr_req->hci_info = p_itd;
@@ -899,7 +926,7 @@ static void usb_hstd_ehci_make_isochronous_request (st_usb_hci_tr_req_t * p_tr_r
             }
         }
 
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         p_tr_req->hci_info = (void *) r_usb_va_to_pa((uint64_t) p_sitd);
  #else
         p_tr_req->hci_info = p_sitd;
@@ -973,7 +1000,7 @@ static void usb_hstd_ehci_set_qtd (st_usb_ehci_qtd_t * p_qtd,
 
     if (0 != bufferadrs)
     {
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         p_qtd->buffer[0].address = (uint32_t) r_usb_va_to_pa(bufferadrs);
  #else
         p_qtd->buffer[0].address = bufferadrs;
@@ -1054,7 +1081,7 @@ static void usb_hstd_ehci_start_periodic_qh (st_usb_ehci_qh_t * p_qh)
     /* Set Transfer Request Flag */
     p_qh->info.tr_req_flag = TRUE;
 
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
     p_qh->next_qtd.address = (uint32_t) r_usb_va_to_pa((uint64_t) p_qh->qtd_head);
  #else
     p_qh->next_qtd.address = (uint32_t) p_qh->qtd_head;
@@ -1084,7 +1111,7 @@ static void usb_hstd_ehci_init_itd (st_usb_hci_tr_req_t * p_tr_req,
     uint32_t address;
 
     pg = 0;
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
     tmp_bufferadrs            = (uint32_t) (r_usb_pa_to_va((uint64_t) &p_itd->tmp_buffer[0][0]));
     p_itd->buffer[pg].address = (uint32_t) r_usb_va_to_pa((uint64_t) (tmp_bufferadrs & USB_VAL_FFFFF000));
  #else
@@ -1094,7 +1121,7 @@ static void usb_hstd_ehci_init_itd (st_usb_hci_tr_req_t * p_tr_req,
 
     for (n = 0; n < 8; n++)
     {
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         p_itd->transaction[n].bit.offset = ((uint32_t) r_usb_va_to_pa((uint64_t) tmp_bufferadrs)) & USB_VAL_FFF; /* Offset */
  #else
         p_itd->transaction[n].bit.offset = (tmp_bufferadrs & USB_VAL_FFF);                         /* Offset */
@@ -1107,7 +1134,7 @@ static void usb_hstd_ehci_init_itd (st_usb_hci_tr_req_t * p_tr_req,
         if (address != (tmp_bufferadrs & USB_VAL_FFFFF000))
         {
             pg++;
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
             p_itd->buffer[pg].address = ((uint32_t) r_usb_va_to_pa((uint64_t) tmp_bufferadrs)) & USB_VAL_FFFFF000;
  #else
             p_itd->buffer[pg].address = (tmp_bufferadrs & USB_VAL_FFFFF000);
@@ -1144,7 +1171,7 @@ static void usb_hstd_ehci_start_itd (st_usb_hci_tr_req_t * p_tr_req)
     uint32_t            remain;
     uint8_t           * p_databuf;
     uint8_t           * tmp_itd_duffer;
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
     p_itd = (st_usb_ehci_itd_t *) (r_usb_pa_to_va((uint64_t) p_tr_req->hci_info));
  #else
     p_itd = (st_usb_ehci_itd_t *) p_tr_req->hci_info;
@@ -1170,7 +1197,7 @@ static void usb_hstd_ehci_start_itd (st_usb_hci_tr_req_t * p_tr_req)
         remain -= trsize;
 
         /* Set Source Address */
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
         p_databuf = (uint8_t *) (r_usb_pa_to_va((uint64_t) ((p_tr_req->databuf) + (p_tr_req->bit.mps * i))));
  #else
         p_databuf = (uint8_t *)(uintptr_t) (p_tr_req->databuf + (p_tr_req->bit.mps * i));
@@ -1179,7 +1206,7 @@ static void usb_hstd_ehci_start_itd (st_usb_hci_tr_req_t * p_tr_req)
         /* Copy OUT data */
         if (USB_HCI_DIRECTION_OUT == p_itd->info.direction)
         {
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
             tmp_itd_duffer = (uint8_t *) (r_usb_pa_to_va((uint64_t) &p_itd->tmp_buffer[p_itd->next_setup_uframe][0]));
  #else
             tmp_itd_duffer = &p_itd->tmp_buffer[p_itd->next_setup_uframe][0];
@@ -1341,7 +1368,7 @@ static void usb_hstd_ehci_set_sitd (st_usb_ehci_sitd_t * p_sitd,
     p_sitd->state.bit.ioc                     = ioc & 0x00000001U;       /* interrupt on completion */
     p_sitd->state.bit.page_select             = 0;                       /* page select */
     p_sitd->state.bit.total_bytes_to_transfer = totalsize & USB_VAL_3FF; /* total size */
- #if 1 == BSP_LP64_SUPPORT
+ #if defined(BSP_CFG_CORE_CA55)
     p_sitd->buffer[0].address = (uint32_t) r_usb_va_to_pa((uint64_t) bufferadrs);
     p_sitd->buffer[1].address = (uint32_t) r_usb_va_to_pa((uint64_t) ((bufferadrs & USB_VAL_FFFFF000) + USB_VAL_1000));
  #else

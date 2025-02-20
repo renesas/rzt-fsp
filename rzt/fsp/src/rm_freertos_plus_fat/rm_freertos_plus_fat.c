@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -251,6 +251,7 @@ fsp_err_t RM_FREERTOS_PLUS_FAT_DiskDeinit (rm_freertos_plus_fat_ctrl_t * const p
 #endif
 
     FF_DeleteIOManager(p_disk->pxIOManager);
+    p_disk->pxIOManager            = NULL;
     p_disk->xStatus.bIsInitialised = 0U;
 
     return FSP_SUCCESS;
@@ -264,6 +265,7 @@ fsp_err_t RM_FREERTOS_PLUS_FAT_DiskDeinit (rm_freertos_plus_fat_ctrl_t * const p
  * @retval FSP_SUCCESS           Information stored in p_info.
  * @retval FSP_ERR_ASSERTION     An input parameter was invalid.
  * @retval FSP_ERR_NOT_OPEN      Module not open.
+ * @retval FSP_ERR_NOT_FOUND     The value of p_iomanager is NULL.
  **********************************************************************************************************************/
 fsp_err_t RM_FREERTOS_PLUS_FAT_InfoGet (rm_freertos_plus_fat_ctrl_t * const p_ctrl,
                                         FF_Disk_t * const                   p_disk,
@@ -281,12 +283,18 @@ fsp_err_t RM_FREERTOS_PLUS_FAT_InfoGet (rm_freertos_plus_fat_ctrl_t * const p_ct
 #endif
 
     FF_IOManager_t * p_iomanager = p_disk->pxIOManager;
+
     p_info->type = (rm_freertos_plus_fat_type_t) p_iomanager->xPartition.ucType;
+
+    if (0U == p_disk->xStatus.bIsInitialised)
+    {
+        return FSP_ERR_NOT_FOUND;
+    }
 
     FF_Error_t ff_error;
     FF_GetFreeSize(p_iomanager, &ff_error);
 
-    uint64_t free_sectors = p_iomanager->xPartition.ulFreeClusterCount * p_iomanager->xPartition.ulSectorsPerCluster;
+    uint64_t free_sectors = (p_iomanager->xPartition.ulFreeClusterCount * p_iomanager->xPartition.ulSectorsPerCluster);
     p_info->sector_size         = p_iomanager->usSectorSize;
     p_info->free_sectors        = (uint32_t) free_sectors;
     p_info->sectors_per_cluster = p_iomanager->xPartition.ulSectorsPerCluster;
@@ -318,13 +326,16 @@ fsp_err_t RM_FREERTOS_PLUS_FAT_Close (rm_freertos_plus_fat_ctrl_t * const p_ctrl
     FSP_ERROR_RETURN(RM_FREERTOS_PLUS_FAT_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    p_instance_ctrl->open = 0;
-    p_instance_ctrl->p_cfg->p_block_media->p_api->close(p_instance_ctrl->p_cfg->p_block_media->p_ctrl);
+    fsp_err_t err = p_instance_ctrl->p_cfg->p_block_media->p_api->close(p_instance_ctrl->p_cfg->p_block_media->p_ctrl);
+    if (FSP_SUCCESS == err)
+    {
 #if 2 == BSP_CFG_RTOS
-    vSemaphoreDelete(p_instance_ctrl->p_mutex);
+        vSemaphoreDelete(p_instance_ctrl->p_mutex);
 #endif
+        p_instance_ctrl->open = 0;
+    }
 
-    return FSP_SUCCESS;
+    return err;
 }
 
 /*******************************************************************************************************************//**
@@ -369,7 +380,7 @@ int32_t rm_freertos_plus_fat_read (uint8_t * p_data, uint32_t sector, uint32_t n
 
     if (FSP_SUCCESS != err)
     {
-        return FF_ERR_IOMAN_DRIVER_FATAL_ERROR;
+        return (int32_t) (FF_ERR_IOMAN_DRIVER_FATAL_ERROR | FF_ERRFLAG);
     }
 
     lReturnCode = FF_ERR_NONE;
@@ -415,7 +426,7 @@ int32_t rm_freertos_plus_fat_write (uint8_t * p_data, uint32_t sector, uint32_t 
 
     if (FSP_SUCCESS != err)
     {
-        return FF_ERR_IOMAN_DRIVER_FATAL_ERROR;
+        return (int32_t) (FF_ERR_IOMAN_DRIVER_FATAL_ERROR | FF_ERRFLAG);
     }
 
     lReturnCode = FF_ERR_NONE;

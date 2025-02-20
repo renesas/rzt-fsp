@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -214,7 +214,7 @@ void                  r_usb_hstd_hci_set_hub_info(uint32_t hubaddr,
                                                   uint32_t devaddr,
                                                   uint32_t devspeed);
 void r_usb_hstd_hci_set_device_address_of_hub_port(uint16_t hubaddr, uint16_t devaddr);
-void r_usb_hstd_hci_electrical_test(uint16_t rootport, uint8_t mode);
+void r_usb_hstd_hci_electrical_test(usb_utr_t * ptr, uint16_t rootport, uint8_t mode);
 void r_usb_hstd_hci_wait_time(uint32_t ms);
 
 void r_usb_module_init(void);

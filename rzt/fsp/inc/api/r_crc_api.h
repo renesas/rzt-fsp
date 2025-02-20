@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -72,9 +72,9 @@ typedef enum e_crc_snoop_direction
 /** Structure for CRC inputs */
 typedef struct st_crc_input_t
 {
-    uint32_t num_bytes;                // Length of input buffer
-    uint32_t crc_seed;                 // CRC seed value
-    void   * p_input_buffer;           // Pointer to input buffer
+    uint32_t     num_bytes;            ///< Length of input buffer. It must be 4-byte aligned when a 32-bit CRC polynomial function is used.
+    uint32_t     crc_seed;             ///< CRC seed value
+    const void * p_input_buffer;       ///< Pointer to input buffer
 } crc_input_t;
 
 /** CRC control block.  Allocate an instance specific control block to pass into the CRC API calls.

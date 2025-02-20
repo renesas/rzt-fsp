@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -1315,6 +1315,8 @@ typedef enum e_poeg_state
     /** GPT output disable request active from the GTETRG pin. If a filter is used, this flag represents the state of
      * the filtered input. */
     POEG_STATE_PIN_DISABLE_REQUEST_ACTIVE = 1U << 16,
+    POEG_STATE_DSMIF0_1_DISABLE_REQUEST   = 1U << 20,       ///< GPT output disabled due to DSMIF0 error 1
+    POEG_STATE_DSMIF1_1_DISABLE_REQUEST   = 1U << 21,       ///< GPT output disabled due to DSMIF1 error 1
     POEG_STATE_DSMIF0_DISABLE_REQUEST     = 1U << 24,       ///< GPT output disabled due to DSMIF0 error 0
     POEG_STATE_DSMIF1_DISABLE_REQUEST     = 1U << 25,       ///< GPT output disabled due to DSMIF1 error 0
 } poeg_state_t;
@@ -1335,8 +1337,10 @@ typedef enum e_poeg_trigger
     POEG_TRIGGER_ACMPHS5          = 1U << 9, ///< Disable GPT output based on ACMPHS5 comparator result
 
     /** The GPT output pins can be disabled when DSMIF error occurs (LLPP only). */
-    POEG_TRIGGER_DERR0E = 1U << 22,          ///< Permit output disabled by DSMIF0 error detection
-    POEG_TRIGGER_DERR1E = 1U << 23,          ///< Permit output disabled by DSMIF1 error detection
+    POEG_TRIGGER_DERR0E_1 = 1U << 18,        ///< Permit output disabled by DSMIF0 error 1 detection
+    POEG_TRIGGER_DERR1E_1 = 1U << 19,        ///< Permit output disabled by DSMIF1 error 1 detection
+    POEG_TRIGGER_DERR0E   = 1U << 22,        ///< Permit output disabled by DSMIF0 error detection
+    POEG_TRIGGER_DERR1E   = 1U << 23,        ///< Permit output disabled by DSMIF1 error detection
 } poeg_trigger_t;
 
 /*==============================================

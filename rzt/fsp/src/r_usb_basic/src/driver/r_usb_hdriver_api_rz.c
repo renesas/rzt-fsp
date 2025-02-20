@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -409,13 +409,6 @@ usb_er_t R_USB_HstdMgrOpen (usb_utr_t * ptr)
 
     /* Scheduler init */
     usb_hstd_sche_init();
- #if (BSP_CFG_RTOS == 2)
-  #if defined(USB_CFG_HMSC_USE)
-
-    /* create access control semaphore */
-    vSemaphoreCreateBinary(SemaphoreHandleRead);
-  #endif                               /* #if defined(USB_CFG_HMSC_USE) */
- #endif                                /* #if (BSP_CFG_RTOS == 2) */
 
     /* Manager Mode */
     g_usb_hstd_mgr_mode[USB_PORT0] = USB_DETACHED;

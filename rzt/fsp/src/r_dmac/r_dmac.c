@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -97,22 +97,22 @@ void dmac_err_int_isr(uint32_t id);
 
 static fsp_err_t r_dmac_prv_enable(dmac_instance_ctrl_t * p_instance_ctrl);
 static void      r_dmac_prv_disable(dmac_instance_ctrl_t * p_instance_ctrl);
-static void      r_dmac_config_transfer_info_register_mode(dmac_instance_ctrl_t * p_instance_ctrl,
+static fsp_err_t r_dmac_config_transfer_info_register_mode(dmac_instance_ctrl_t * p_instance_ctrl,
                                                            transfer_info_t      * p_info);
-static void     r_dmac_config_transfer_info_link_mode(dmac_instance_ctrl_t * p_instance_ctrl);
-static uint32_t r_dmac_config_chext(uint32_t src_address, uint32_t dest_address);
-static bool     r_dmac_address_tcm_check(uint32_t address);
+static fsp_err_t r_dmac_config_transfer_info_link_mode(dmac_instance_ctrl_t * p_instance_ctrl);
+static uint32_t  r_dmac_config_chext(uintptr_t src_address, uintptr_t dest_address);
+static bool      r_dmac_address_tcm_check(uintptr_t address);
 
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
 static fsp_err_t r_dma_open_parameter_checking(dmac_instance_ctrl_t * const p_instance_ctrl,
                                                transfer_cfg_t const * const p_cfg);
-static fsp_err_t r_dmac_info_paramter_checking(transfer_info_t const * const p_info);
-static fsp_err_t r_dmac_link_descriptor_paramter_checking(dmac_link_cfg_t const * p_descriptor);
+static fsp_err_t r_dmac_info_parameter_checking(transfer_info_t const * const p_info);
+static fsp_err_t r_dmac_link_descriptor_parameter_checking(dmac_link_cfg_t const * p_descriptor);
 static fsp_err_t r_dmac_enable_parameter_checking(dmac_instance_ctrl_t * const p_instance_ctrl);
 static fsp_err_t r_dmac_enable_parameter_checking_register_mode(dmac_instance_ctrl_t * const p_instance_ctrl);
 static fsp_err_t r_dmac_enable_parameter_checking_link_mode(dmac_instance_ctrl_t * const p_instance_ctrl);
 
-static bool r_dmac_address_tcm_via_axis_check(uint32_t address);
+static bool r_dmac_address_tcm_via_axis_check(uintptr_t address);
 
 #endif
 
@@ -160,11 +160,17 @@ const transfer_api_t g_transfer_on_dmac =
  * @retval FSP_ERR_IP_CHANNEL_NOT_PRESENT The configured channel is invalid.
  * @retval FSP_ERR_IRQ_BSP_DISABLED       The IRQ associated with the activation source is not enabled in the BSP.
  * @retval FSP_ERR_ALREADY_OPEN           The control structure is already opened.
+ * @retval FSP_ERR_INVALID_ADDRESS        Transfer source address is invalid.
+ *                                        Transfer destination address is invalid.
+ *                                        Descriptor address is invalid.
+ *
+ * @note When operating on the Cortex-A55, if you set 0x0 (NULL) as the source or destination address,
+ *       FSP_ERR_INVALID_ADDRESS is not returned, even if the address is invalid.
  **********************************************************************************************************************/
 fsp_err_t R_DMAC_Open (transfer_ctrl_t * const p_ctrl, transfer_cfg_t const * const p_cfg)
 {
-#if DMAC_CFG_PARAM_CHECKING_ENABLE
     fsp_err_t err = FSP_SUCCESS;
+#if DMAC_CFG_PARAM_CHECKING_ENABLE
     err = r_dma_open_parameter_checking(p_ctrl, p_cfg);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 #endif
@@ -179,12 +185,14 @@ fsp_err_t R_DMAC_Open (transfer_ctrl_t * const p_ctrl, transfer_cfg_t const * co
     if (DMAC_MODE_SELECT_REGISTER == p_extend->dmac_mode)
     {
         p_instance_ctrl->dmac_mode = DMAC_MODE_SELECT_REGISTER;
-        r_dmac_config_transfer_info_register_mode(p_instance_ctrl, p_cfg->p_info);
+        err = r_dmac_config_transfer_info_register_mode(p_instance_ctrl, p_cfg->p_info);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
     }
     else if (DMAC_MODE_SELECT_LINK == p_extend->dmac_mode)
     {
         p_instance_ctrl->dmac_mode = DMAC_MODE_SELECT_LINK;
-        r_dmac_config_transfer_info_link_mode(p_instance_ctrl);
+        err = r_dmac_config_transfer_info_link_mode(p_instance_ctrl);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
     }
     else
     {
@@ -213,6 +221,7 @@ fsp_err_t R_DMAC_Open (transfer_ctrl_t * const p_ctrl, transfer_cfg_t const * co
  * @retval FSP_ERR_NOT_ENABLED      DMAC is not enabled. The current configuration must not be valid.
  * @retval FSP_ERR_INVALID_MODE     DMA mode is register mode. This function can only be used when the DMA mode is link mode.
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
+ * @retval FSP_ERR_INVALID_ADDRESS  Descriptor address is invalid.
  **********************************************************************************************************************/
 fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_ctrl, dmac_link_cfg_t * p_descriptor)
 {
@@ -224,7 +233,7 @@ fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_ctrl, dmac_link_cf
     FSP_ASSERT(p_instance_ctrl != NULL);
     FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
     FSP_ASSERT(p_descriptor != NULL);
-    err = r_dmac_link_descriptor_paramter_checking(p_descriptor);
+    err = r_dmac_link_descriptor_parameter_checking(p_descriptor);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 #endif
 
@@ -248,8 +257,9 @@ fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_ctrl, dmac_link_cf
 #if defined(BSP_CFG_CORE_CA55)
 
     /* Set address of the link destination */
-    va = (uint64_t) p_descriptor;
-    R_BSP_MmuVatoPa(va, &pa);
+    va  = (uint64_t) p_descriptor;
+    err = R_BSP_MmuVatoPa(va, &pa);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
     p_instance_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) pa;
 #else
 
@@ -274,6 +284,11 @@ fsp_err_t R_DMAC_LinkDescriptorSet (transfer_ctrl_t * const p_ctrl, dmac_link_cf
  * @retval FSP_ERR_NOT_ENABLED      DMAC is not enabled. The current configuration must not be valid.
  * @retval FSP_ERR_INVALID_MODE     DMA mode is link mode. This function can only be used when the DMA mode is register mode.
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
+ * @retval FSP_ERR_INVALID_ADDRESS  Transfer source address is invalid.
+ *                                  Transfer destination address is invalid.
+ *
+ * @note When operating on the Cortex-A55, if you set 0x0 (NULL) as the source or destination address,
+ *       FSP_ERR_INVALID_ADDRESS is not returned, even if the address is invalid.
  **********************************************************************************************************************/
 fsp_err_t R_DMAC_Reconfigure (transfer_ctrl_t * const p_ctrl, transfer_info_t * p_info)
 {
@@ -284,7 +299,7 @@ fsp_err_t R_DMAC_Reconfigure (transfer_ctrl_t * const p_ctrl, transfer_info_t * 
 #if DMAC_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl != NULL);
     FSP_ERROR_RETURN(p_instance_ctrl->open == DMAC_ID, FSP_ERR_NOT_OPEN);
-    err = r_dmac_info_paramter_checking(p_info);
+    err = r_dmac_info_parameter_checking(p_info);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
     dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
@@ -295,7 +310,8 @@ fsp_err_t R_DMAC_Reconfigure (transfer_ctrl_t * const p_ctrl, transfer_info_t * 
 #endif
 
     /* Reconfigure the transfer settings. */
-    r_dmac_config_transfer_info_register_mode(p_instance_ctrl, p_info);
+    err = r_dmac_config_transfer_info_register_mode(p_instance_ctrl, p_info);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
     err = r_dmac_prv_enable(p_ctrl);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_NOT_ENABLED);
@@ -436,11 +452,13 @@ fsp_err_t R_DMAC_InfoGet (transfer_ctrl_t * const p_ctrl, transfer_properties_t 
 /*******************************************************************************************************************//**
  * Make the following transfer settings to continue the transfer.
  *
- * @retval FSP_SUCCESS           Successful continuous transfer settings.
- * @retval FSP_ERR_ASSERTION     An input parameter is invalid.
- * @retval FSP_ERR_NOT_OPEN      Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
- * @retval FSP_ERR_INVALID_MODE  This API cannot be called during link mode operation or setting not to use the Next1 register.
- * @retval FSP_ERR_INVALID_CALL  Invalid call. The series of transfer processing has finished.
+ * @retval FSP_SUCCESS             Successful continuous transfer settings.
+ * @retval FSP_ERR_ASSERTION       An input parameter is invalid.
+ * @retval FSP_ERR_NOT_OPEN        Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
+ * @retval FSP_ERR_INVALID_MODE    This API cannot be called during link mode operation or setting not to use the Next1 register.
+ * @retval FSP_ERR_INVALID_CALL    Invalid call. The series of transfer processing has finished.
+ * @retval FSP_ERR_INVALID_ADDRESS Transfer source address is invalid.
+ *                                 Transfer destination address is invalid.
  **********************************************************************************************************************/
 fsp_err_t R_DMAC_Reload (transfer_ctrl_t * const p_ctrl,
                          void const * volatile   p_src,
@@ -490,33 +508,35 @@ fsp_err_t R_DMAC_Reload (transfer_ctrl_t * const p_ctrl,
 #if defined(BSP_CFG_CORE_CA55)
 
             /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
-            va = (uint64_t) p_src_cast;
-            R_BSP_MmuVatoPa(va, &pa);
+            va  = (uint64_t) p_src_cast;
+            err = R_BSP_MmuVatoPa(va, &pa);
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA = (uint32_t) pa;
 
-            va = (uint64_t) p_dest_cast;
-            R_BSP_MmuVatoPa(va, &pa);
+            va  = (uint64_t) p_dest_cast;
+            err = R_BSP_MmuVatoPa(va, &pa);
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA = (uint32_t) pa;
 #elif ((1 == BSP_CFG_CORE_CR52) && (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA))
 
             /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+                (true == r_dmac_address_tcm_check((uintptr_t) p_src_cast)) ?
                 ((uint32_t) p_src_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_src_cast);
 
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+                (true == r_dmac_address_tcm_check((uintptr_t) p_dest_cast)) ?
                 ((uint32_t) p_dest_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_dest_cast);
 #else
 
             /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+                (true == r_dmac_address_tcm_check((uintptr_t) p_src_cast)) ?
                 ((uint32_t) p_src_cast +
                  DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_src_cast);
 
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+                (true == r_dmac_address_tcm_check((uintptr_t) p_dest_cast)) ?
                 ((uint32_t) p_dest_cast +
                  DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_dest_cast);
 #endif
@@ -527,32 +547,34 @@ fsp_err_t R_DMAC_Reload (transfer_ctrl_t * const p_ctrl,
 #if defined(BSP_CFG_CORE_CA55)
 
             /* Register set currently in use is the Next1 register. Set the Next0 register for the next transfer. */
-            va = (uint64_t) p_src_cast;
-            R_BSP_MmuVatoPa(va, &pa);
+            va  = (uint64_t) p_src_cast;
+            err = R_BSP_MmuVatoPa(va, &pa);
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA = (uint32_t) pa;
 
-            va = (uint64_t) p_dest_cast;
-            R_BSP_MmuVatoPa(va, &pa);
+            va  = (uint64_t) p_dest_cast;
+            err = R_BSP_MmuVatoPa(va, &pa);
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA = (uint32_t) pa;
 #elif ((1 == BSP_CFG_CORE_CR52) && (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA))
 
             /* Register set currently in use is the Next0 register. Set the Next1 register for the next transfer. */
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_src)) ?
+                (true == r_dmac_address_tcm_check((uintptr_t) p_src)) ?
                 ((uint32_t) p_src + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_src);
 
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_dest)) ?
+                (true == r_dmac_address_tcm_check((uintptr_t) p_dest)) ?
                 ((uint32_t) p_dest + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_dest);
 #else
 
             /* Register set currently in use is the Next0 register. Set the Next1 register for the next transfer. */
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_src)) ?
+                (true == r_dmac_address_tcm_check((uintptr_t) p_src)) ?
                 ((uint32_t) p_src + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_src);
 
             p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
-                (true == r_dmac_address_tcm_check((uint32_t) p_dest)) ?
+                (true == r_dmac_address_tcm_check((uintptr_t) p_dest)) ?
                 ((uint32_t) p_dest + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_dest);
 #endif
 
@@ -744,8 +766,13 @@ static void r_dmac_prv_disable (dmac_instance_ctrl_t * p_instance_ctrl)
  * @param       p_info         Pointer to transfer info.
  *                             The structure of this argument will be changed in next major release to reflect the transfer
  *                             API replace.
+ *
+ * @retval FSP_SUCCESS               Successful register mode information configure.
+ * @retval FSP_ERR_INVALID_ADDRESS   Transfer source address is invalid.
+ *                                   Transfer destination address is invalid.
  **********************************************************************************************************************/
-static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_instance_ctrl, transfer_info_t * p_info)
+static fsp_err_t r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_instance_ctrl,
+                                                            transfer_info_t      * p_info)
 {
     dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
@@ -756,8 +783,9 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
     uint32_t * p_dest_cast;
 
 #if defined(BSP_CFG_CORE_CA55)
-    uint64_t pa;                       /* Physical Address */
-    uint64_t va;                       /* Virtual Address */
+    uint64_t  pa;                      /* Physical Address */
+    uint64_t  va;                      /* Virtual Address */
+    fsp_err_t err;
 #endif
 
     uint32_t dctrl = DMAC_PRV_DCTRL_DEFAULT_VALUE;
@@ -871,33 +899,56 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
     p_dest_cast = (uint32_t *) p_info->p_dest;
 
 #if defined(BSP_CFG_CORE_CA55)
-    va = (uint64_t) p_src_cast;
-    R_BSP_MmuVatoPa(va, &pa);
-    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA = (uint32_t) pa;
+    va  = (uint64_t) p_src_cast;
+    err = R_BSP_MmuVatoPa(va, &pa);
 
-    va = (uint64_t) p_dest_cast;
-    R_BSP_MmuVatoPa(va, &pa);
-    p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA = (uint32_t) pa;
+    /* The src address can be NULL if the address is set by R_DMAC_Reconfigure().
+     * When the MMU translation result of the NULL (=0) address is an error, the SA register is set to 0 and error is not returned here. */
+    if ((0 == va) && (FSP_SUCCESS != err))
+    {
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA = 0;
+    }
+    else
+    {
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA = (uint32_t) pa;
+    }
+
+    va  = (uint64_t) p_dest_cast;
+    err = R_BSP_MmuVatoPa(va, &pa);
+
+    /* The destination address can be NULL if the address is set by R_DMAC_Reconfigure().
+     * When the MMU translation result of the NULL (=0) address is an error, the DA register is set to 0 and error is not returned here. */
+    if ((0 == va) && (FSP_SUCCESS != err))
+    {
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA = 0;
+    }
+    else
+    {
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA = (uint32_t) pa;
+    }
+
 #elif ((1 == BSP_CFG_CORE_CR52) && (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA))
 
     /* When DMAC accesses TCM, use CPU1ATCM(0x21000000 - 0x2107FFFF) / CPU1BTCM(0x21100000 - 0x2110FFFF) area. */
     p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
-        (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+        (true == r_dmac_address_tcm_check((uintptr_t) p_src_cast)) ?
         ((uint32_t) p_src_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_src_cast);
 
     p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
-        (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+        (true == r_dmac_address_tcm_check((uintptr_t) p_dest_cast)) ?
         ((uint32_t) p_dest_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) : ((uint32_t) p_dest_cast);
 #else
 
     /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
     p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA =
-        (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+        (true == r_dmac_address_tcm_check((uintptr_t) p_src_cast)) ?
         ((uint32_t) p_src_cast +
          DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_src_cast);
 
     p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA =
-        (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+        (true == r_dmac_address_tcm_check((uintptr_t) p_dest_cast)) ?
         ((uint32_t) p_dest_cast +
          DMAC_PRV_CPU0_TCM_BASE_ADDRESS) : ((uint32_t) p_dest_cast);
 #endif
@@ -906,9 +957,47 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
     p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG         = chcfg;
     p_instance_ctrl->p_reg->GRP[group].CH[channel].CHITVL_b.ITVL = p_extend->transfer_interval;
 
-    uint32_t src_address  = (uint32_t) (uintptr_t) p_info->p_src;
-    uint32_t dest_address = (uint32_t) (uintptr_t) p_info->p_dest;
-    uint32_t chext        = r_dmac_config_chext(src_address, dest_address);
+    uint32_t chext = 0;
+
+    uintptr_t src_address  = (uintptr_t) p_info->p_src;
+    uintptr_t dest_address = (uintptr_t) p_info->p_dest;
+
+#if defined(BSP_CFG_CORE_CA55)
+    va  = (uint64_t) src_address;
+    err = R_BSP_MmuVatoPa(va, &pa);
+
+    /* The src address can be NULL if the address is set by R_DMAC_Reconfigure().
+     * When the MMU translation result of the NULL (=0) address is an error, the error is not returned here. */
+    if ((0 == va) && (FSP_SUCCESS != err))
+    {
+        src_address = 0;
+    }
+    else
+    {
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+        src_address = (uintptr_t) pa;
+    }
+
+    va  = (uint64_t) dest_address;
+    err = R_BSP_MmuVatoPa(va, &pa);
+
+    /* The dest address can be NULL if the address is set by R_DMAC_Reconfigure().
+     * When the MMU translation result of the NULL (=0) address is an error, the error is not returned here. */
+    if ((0 == va) && (FSP_SUCCESS != err))
+    {
+        dest_address = 0;
+    }
+    else
+    {
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+        dest_address = (uintptr_t) pa;
+    }
+#endif
+
+    if ((0 != src_address) && (0 != dest_address))
+    {
+        chext |= r_dmac_config_chext(src_address, dest_address);
+    }
 
     if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operaion)
     {
@@ -916,35 +1005,58 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
         p_dest_cast = (uint32_t *) p_info->p_next1_dest;
 
 #if defined(BSP_CFG_CORE_CA55)
-        va = (uint64_t) p_src_cast;
-        R_BSP_MmuVatoPa(va, &pa);
-        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA = (uint32_t) pa;
+        va  = (uint64_t) p_src_cast;
+        err = R_BSP_MmuVatoPa(va, &pa);
 
-        va = (uint64_t) p_dest_cast;
-        R_BSP_MmuVatoPa(va, &pa);
-        p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA = (uint32_t) pa;
+        /* The src address can be NULL if the address is set by R_DMAC_Reconfigure().
+         * When the MMU translation result of the NULL (=0) address is an error, the SA register is set to 0 and error is not returned here. */
+        if ((0 == va) && (FSP_SUCCESS != err))
+        {
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].SA = 0;
+        }
+        else
+        {
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA = (uint32_t) pa;
+        }
+
+        va  = (uint64_t) p_dest_cast;
+        err = R_BSP_MmuVatoPa(va, &pa);
+
+        /* The destination address can be NULL if the address is set by R_DMAC_Reconfigure().
+         * When the MMU translation result of the NULL (=0) address is an error, the DA register is set to 0 and error is not returned here. */
+        if ((0 == va) && (FSP_SUCCESS != err))
+        {
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[0].DA = 0;
+        }
+        else
+        {
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+            p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA = (uint32_t) pa;
+        }
+
 #elif ((1 == BSP_CFG_CORE_CR52) && (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA))
 
         /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
         p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
-            (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+            (true == r_dmac_address_tcm_check((uintptr_t) p_src_cast)) ?
             ((uint32_t) p_src_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) :
             ((uint32_t) p_src_cast);
 
         p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
-            (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+            (true == r_dmac_address_tcm_check((uintptr_t) p_dest_cast)) ?
             ((uint32_t) p_dest_cast + DMAC_PRV_CPU1_TCM_BASE_ADDRESS) :
             ((uint32_t) p_dest_cast);
 #else
 
         /* When DMAC accesses TCM, use CPU0ATCM(0x20000000 - 0x2007FFFF) / CPU0BTCM(0x20100000 - 0x2010FFFF) area. */
         p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].SA =
-            (true == r_dmac_address_tcm_check((uint32_t) p_src_cast)) ?
+            (true == r_dmac_address_tcm_check((uintptr_t) p_src_cast)) ?
             ((uint32_t) p_src_cast + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) :
             ((uint32_t) p_src_cast);
 
         p_instance_ctrl->p_reg->GRP[group].CH[channel].N[1].DA =
-            (true == r_dmac_address_tcm_check((uint32_t) p_dest_cast)) ?
+            (true == r_dmac_address_tcm_check((uintptr_t) p_dest_cast)) ?
             ((uint32_t) p_dest_cast + DMAC_PRV_CPU0_TCM_BASE_ADDRESS) :
             ((uint32_t) p_dest_cast);
 #endif
@@ -954,18 +1066,58 @@ static void r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t * p_
         src_address  = (uint32_t) (uintptr_t) p_info->p_next1_src;
         dest_address = (uint32_t) (uintptr_t) p_info->p_next1_dest;
 
-        chext |= r_dmac_config_chext(src_address, dest_address);
+#if defined(BSP_CFG_CORE_CA55)
+        va  = (uint64_t) src_address;
+        err = R_BSP_MmuVatoPa(va, &pa);
+
+        /* The src address can be NULL if the address is set by R_DMAC_Reconfigure().
+         * When the MMU translation result of the NULL (=0) address is an error, the error is not returned here. */
+        if ((0 == va) && (FSP_SUCCESS != err))
+        {
+            src_address = 0;
+        }
+        else
+        {
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+            src_address = (uintptr_t) pa;
+        }
+
+        va  = (uint64_t) dest_address;
+        err = R_BSP_MmuVatoPa(va, &pa);
+
+        /* The dest address can be NULL if the address is set by R_DMAC_Reconfigure().
+         * When the MMU translation result of the NULL (=0) address is an error, the error is not returned here. */
+        if ((0 == va) && (FSP_SUCCESS != err))
+        {
+            dest_address = 0;
+        }
+        else
+        {
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+            dest_address = (uintptr_t) pa;
+        }
+#endif
+
+        if ((0 != src_address) && (0 != dest_address))
+        {
+            chext |= r_dmac_config_chext(src_address, dest_address);
+        }
     }
 
     p_instance_ctrl->p_reg->GRP[group].CH[channel].CHEXT = chext;
+
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**
  * Set the hardware registers for link mode operation.
  *
  * @param[in]   p_instance_ctrl         Pointer to control structure.
+ *
+ * @retval FSP_SUCCESS              Successful link mode information configure.
+ * @retval FSP_ERR_INVALID_ADDRESS  Descriptor address is invalid.
  **********************************************************************************************************************/
-static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_instance_ctrl)
+static fsp_err_t r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_instance_ctrl)
 {
     dmac_extended_cfg_t * p_extend = (dmac_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
 
@@ -973,8 +1125,9 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_inst
     uint8_t channel = DMAC_PRV_CHANNEL(p_extend->channel);
 
 #if defined(BSP_CFG_CORE_CA55)
-    uint64_t pa;                       /* Physical Address */
-    uint64_t va;                       /* Virtual Address */
+    uint64_t  pa;                      /* Physical Address */
+    uint64_t  va;                      /* Virtual Address */
+    fsp_err_t err;
 #endif
 
     uint32_t dctrl = DMAC_PRV_DCTRL_DEFAULT_VALUE;
@@ -1048,8 +1201,9 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_inst
 #if defined(BSP_CFG_CORE_CA55)
 
     /* Set address of the link destination */
-    va = (uint64_t) (p_extend->p_descriptor);
-    R_BSP_MmuVatoPa(va, &pa);
+    va  = (uint64_t) (p_extend->p_descriptor);
+    err = R_BSP_MmuVatoPa(va, &pa);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
     p_instance_ctrl->p_reg->GRP[group].CH[channel].NXLA = (uint32_t) pa;
 #else
 
@@ -1062,6 +1216,8 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_inst
 
     /* Set link mode */
     p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DMS = 1U;
+
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**
@@ -1072,7 +1228,7 @@ static void r_dmac_config_transfer_info_link_mode (dmac_instance_ctrl_t * p_inst
  *
  * @retval CHEXT_n register value.
  **********************************************************************************************************************/
-static uint32_t r_dmac_config_chext (uint32_t src_address, uint32_t dest_address)
+static uint32_t r_dmac_config_chext (uintptr_t src_address, uintptr_t dest_address)
 {
     uint32_t chext = 0;
 
@@ -1102,7 +1258,7 @@ static uint32_t r_dmac_config_chext (uint32_t src_address, uint32_t dest_address
  *
  * @retval true if the address is in TCM area, false if not
  **********************************************************************************************************************/
-static bool r_dmac_address_tcm_check (uint32_t address)
+static bool r_dmac_address_tcm_check (uintptr_t address)
 {
     return (bool) ((address <= DMAC_PRV_ATCM_END_ADDRESS) ||
                    ((DMAC_PRV_BTCM_START_ADDRESS <= address) && (address <= DMAC_PRV_BTCM_END_ADDRESS)));
@@ -1122,6 +1278,7 @@ static bool r_dmac_address_tcm_check (uint32_t address)
  * @retval FSP_ERR_IP_CHANNEL_NOT_PRESENT The configured channel is invalid.
  * @retval FSP_ERR_IRQ_BSP_DISABLED       Callback is NULL and the DMAC IRQ is not enabled.
  * @retval FSP_ERR_ALREADY_OPEN           The control structure is already opened.
+ * @retval FSP_ERR_INVALID_ADDRESS        Descriptor address is invalid.
  **********************************************************************************************************************/
 static fsp_err_t r_dma_open_parameter_checking (dmac_instance_ctrl_t * const p_instance_ctrl,
                                                 transfer_cfg_t const * const p_cfg)
@@ -1138,14 +1295,14 @@ static fsp_err_t r_dma_open_parameter_checking (dmac_instance_ctrl_t * const p_i
         FSP_ERROR_RETURN(p_extend->dmac_int_irq >= 0, FSP_ERR_IRQ_BSP_DISABLED);
     }
 
-    fsp_err_t err = r_dmac_info_paramter_checking(p_cfg->p_info);
+    fsp_err_t err = r_dmac_info_parameter_checking(p_cfg->p_info);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
     if (DMAC_MODE_SELECT_LINK == p_extend->dmac_mode)
     {
         if (NULL != p_extend->p_descriptor)
         {
-            err = r_dmac_link_descriptor_paramter_checking(p_extend->p_descriptor);
+            err = r_dmac_link_descriptor_parameter_checking(p_extend->p_descriptor);
             FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
         }
     }
@@ -1161,7 +1318,7 @@ static fsp_err_t r_dma_open_parameter_checking (dmac_instance_ctrl_t * const p_i
  * @retval FSP_SUCCESS              The transfer info is valid.
  * @retval FSP_ERR_ASSERTION        A transfer info setting is invalid.
  **********************************************************************************************************************/
-static fsp_err_t r_dmac_info_paramter_checking (transfer_info_t const * const p_info)
+static fsp_err_t r_dmac_info_parameter_checking (transfer_info_t const * const p_info)
 {
     FSP_ASSERT(p_info != NULL);
 
@@ -1175,24 +1332,46 @@ static fsp_err_t r_dmac_info_paramter_checking (transfer_info_t const * const p_
  *
  * @retval FSP_SUCCESS              The transfer info is valid.
  * @retval FSP_ERR_ASSERTION        A transfer info setting is invalid.
+ * @retval FSP_ERR_INVALID_ADDRESS  Descriptor address is invalid.
  **********************************************************************************************************************/
-static fsp_err_t r_dmac_link_descriptor_paramter_checking (dmac_link_cfg_t const * p_descriptor)
+static fsp_err_t r_dmac_link_descriptor_parameter_checking (dmac_link_cfg_t const * p_descriptor)
 {
     dmac_link_cfg_t const * p_current_descriptor = p_descriptor;
-
+ #if defined(BSP_CFG_CORE_CA55)
+    uint64_t  va;
+    uint64_t  pa;
+    fsp_err_t err;
+ #endif
     do
     {
+ #if defined(BSP_CFG_CORE_CA55)
+        va  = (uint64_t) p_current_descriptor;
+        err = R_BSP_MmuVatoPa(va, &pa);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+
+        /* Start address of the link destination must be 4 byte align.
+         * (See section 'Next Link Address Register n (NXLA_n)' of the RZ microprocessor manual) */
+        FSP_ASSERT(0U == (pa & DMAC_PRV_MASK_ALIGN_N_BYTES(DMAC_PRV_MASK_ALIGN_4_BYTES)));
+
+        /* Start address of the link destination must not be in TCM area.
+         * (See section 'TCM Access via AXIS Interface of Cortex-R52' of the RZ microprocessor manual) */
+        FSP_ERROR_RETURN(false == r_dmac_address_tcm_check((uintptr_t) pa), FSP_ERR_ASSERTION);
+        FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uintptr_t) pa), FSP_ERR_ASSERTION);
+
+        err = R_BSP_MmuPatoVa(pa, &va, BSP_MMU_CONVERSION_NON_CACHE);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+ #else
+
         /* Start address of the link destination must be 4 byte align.
          * (See section 'Next Link Address Register n (NXLA_n)' of the RZ microprocessor manual) */
         FSP_ASSERT(0U == ((uintptr_t) p_current_descriptor & DMAC_PRV_MASK_ALIGN_N_BYTES(DMAC_PRV_MASK_ALIGN_4_BYTES)));
 
         /* Start address of the link destination must not be in TCM area.
          * (See section 'TCM Access via AXIS Interface of Cortex-R52' of the RZ microprocessor manual) */
-        FSP_ERROR_RETURN(false == r_dmac_address_tcm_check((uint32_t) (uintptr_t) p_current_descriptor),
+        FSP_ERROR_RETURN(false == r_dmac_address_tcm_check((uintptr_t) p_current_descriptor), FSP_ERR_ASSERTION);
+        FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uintptr_t) p_current_descriptor),
                          FSP_ERR_ASSERTION);
-        FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uint32_t) (uintptr_t) p_current_descriptor),
-                         FSP_ERR_ASSERTION);
-
+ #endif
         if (DMAC_LINK_END_ENABLE == p_current_descriptor->header.link_end)
         {
             break;
@@ -1261,14 +1440,14 @@ static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_c
     transfer_addr_mode_t dest_addr_mode =
         (transfer_addr_mode_t) p_instance_ctrl->p_reg->GRP[group].CH[channel].CHCFG_b.DAD;
 
-    /* When the transfer source address is beat-aligned, specify SAD = 0 (increment).
+    /* When the transfer source address is beat-unaligned, specify SAD = 0 (increment).
      * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
     if (0U != ((uintptr_t) p_src & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
     {
         FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == src_addr_mode);
     }
 
-    /* When the transfer destination address is beat-aligned, specify DAD = 0 (increment).
+    /* When the transfer destination address is beat-unaligned, specify DAD = 0 (increment).
      * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
     if (0U != ((uintptr_t) p_dest & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
     {
@@ -1284,14 +1463,14 @@ static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_c
         FSP_ASSERT(NULL != p_src_next1);
         FSP_ASSERT(NULL != p_dest_next1);
 
-        /* When the transfer source address is beat-aligned, specify SAD = 0 (increment).
+        /* When the transfer source address is beat-unaligned, specify SAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
         if (0U != ((uintptr_t) p_src_next1 & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
         {
             FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == src_addr_mode);
         }
 
-        /* When the transfer destination address is beat-aligned, specify DAD = 0 (increment).
+        /* When the transfer destination address is beat-unaligned, specify DAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
         if (0U != ((uintptr_t) p_dest_next1 & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
         {
@@ -1338,14 +1517,14 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
         transfer_addr_mode_t dest_addr_mode =
             (transfer_addr_mode_t) ((channel_cfg >> DMAC_PRV_CHCFG_DAD_OFFSET) & DMAC_PRV_CHCFG_DAD_VALUE_MASK);
 
-        /* When the transfer source address is beat-aligned, specify SAD = 0 (increment).
+        /* When the transfer source address is beat-unaligned, specify SAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
         if (0U != ((uintptr_t) p_src & DMAC_PRV_MASK_ALIGN_N_BYTES(src_size)))
         {
             FSP_ASSERT(TRANSFER_ADDR_MODE_INCREMENTED == src_addr_mode);
         }
 
-        /* When the transfer destination address is beat-aligned, specify DAD = 0 (increment).
+        /* When the transfer destination address is beat-unaligned, specify DAD = 0 (increment).
          * (See section 'Channel Configuration Register n (CHCFG_n)' of the RZ microprocessor manual) */
         if (0U != ((uintptr_t) p_dest & DMAC_PRV_MASK_ALIGN_N_BYTES(dest_size)))
         {
@@ -1374,7 +1553,7 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
  *
  * @retval true if the address is in TCM via AXIS area, false if not
  **********************************************************************************************************************/
-static bool r_dmac_address_tcm_via_axis_check (uint32_t address)
+static bool r_dmac_address_tcm_via_axis_check (uintptr_t address)
 {
  #if (1 == BSP_FEATURE_DMAC_HAS_CPU1_TCM_AREA)
 

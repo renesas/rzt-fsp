@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -9,6 +9,7 @@
  ******************************************************************************/
 #include <r_usb_basic.h>
 #include <r_usb_basic_api.h>
+#include "r_usb_basic_cfg.h"
 
 #include "inc/r_usb_typedef.h"
 #include "inc/r_usb_extern.h"
@@ -43,11 +44,7 @@
 
 /** Declare a task handler for the created tasks. **/
   #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-   #if USB_IP_EHCI_OHCI == 0
-static TaskHandle_t g_hcd_tsk_hdl;
-   #else                               /* #if USB_IP_EHCI_OHCI == 0 */
 static TaskHandle_t g_hci_tsk_hdl;
-   #endif /* #if USB_IP_EHCI_OHCI == 0 */
 static TaskHandle_t g_mgr_tsk_hdl;
    #if USB_CFG_HUB == USB_CFG_ENABLE
 static TaskHandle_t g_hub_tsk_hdl;
@@ -69,14 +66,10 @@ SemaphoreHandle_t SemaphoreHandleRead;
  #endif                                /* defined(USB_CFG_HMSC_USE) */
 
 /** Declare a mailbox handler for the created tasks **/
- #if USB_IP_EHCI_OHCI == 0
-static QueueHandle_t g_hcd_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
- #else                                 /* #if USB_IP_EHCI_OHCI == 0 */
-static QueueHandle_t g_hci_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
- #endif /* #if USB_IP_EHCI_OHCI == 0 */
-static QueueHandle_t g_mgr_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hub_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_pcd_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
+static QueueHandle_t g_hci_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static QueueHandle_t g_mgr_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static QueueHandle_t g_hub_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static QueueHandle_t g_pcd_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_cls_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_hmsc_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_hmsc_req_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
@@ -91,11 +84,7 @@ static QueueHandle_t g_pipe_hdl[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1] USB_BUFFER_P
 QueueHandle_t * g_mbx_table[12] USB_BUFFER_PLACE_IN_SECTION;
 
 /** Declare a memory handler for the created tasks **/
- #if USB_IP_EHCI_OHCI == 0
-static QueueHandle_t g_hcd_mpl_hdl USB_BUFFER_PLACE_IN_SECTION;
- #else                                 /* #if USB_IP_EHCI_OHCI == 0 */
-static QueueHandle_t g_hci_mpl_hdl USB_BUFFER_PLACE_IN_SECTION;
- #endif /* #if USB_IP_EHCI_OHCI == 0 */
+static QueueHandle_t g_hci_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_mgr_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_hub_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_cls_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
@@ -106,11 +95,7 @@ static QueueHandle_t g_hhid_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
 static QueueHandle_t g_pmsc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
 
   #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-   #if USB_IP_EHCI_OHCI == 0
-static void * g_p_hcd_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-   #else                               /* #if USB_IP_EHCI_OHCI == 0 */
 static void * g_p_hci_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
-   #endif /* #if USB_IP_EHCI_OHCI == 0 */
 static void * g_p_mgr_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
 static void * g_p_hub_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
 static void * g_p_cls_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
@@ -129,11 +114,7 @@ static void * g_p_hhid_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
 /** Declare an array of memory pool handlers. **/
 QueueHandle_t * g_mpl_table[] =
 {
- #if USB_IP_EHCI_OHCI == 0
-    &g_hcd_mpl_hdl,                    /* A memory pool handler of USB HCD task */
- #else
     &g_hci_mpl_hdl,                    /* A memory pool handler of USB HCI task */
- #endif
     &g_mgr_mpl_hdl,                    /* A memory pool handler of USB MGR task */
     &g_mgr_mpl_hdl,                    /* A memory pool handler of USB MGR task */
     &g_hub_mpl_hdl,                    /* A memory pool handler of USB HUB task */
@@ -167,22 +148,10 @@ usb_rtos_err_t usb_rtos_configuration (void)
     uint16_t       pipe_loop;
     uint16_t       addr_loop;
 
-  #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
+#if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
     uint16_t i;
     void   * tmptr = NULL;
 
-   #if USB_IP_EHCI_OHCI == 0
-
-    /** Create mailbox for each task. **/
-    /** USB HCD task **/
-    g_hcd_mbx_hdl = xQueueCreate(QUEUE_SIZE, sizeof(void *));
-    if (NULL == g_hcd_mbx_hdl)
-    {
-        err = UsbRtos_Err_Init_Mbx;
-
-        return err;
-    }
-   #else                               /* #if USB_IP_EHCI_OHCI == 0 */
     /** Create mailbox for each task. **/
     /** USB HCI task **/
     g_hci_mbx_hdl = xQueueCreate(QUEUE_SIZE, sizeof(void *));
@@ -192,7 +161,6 @@ usb_rtos_err_t usb_rtos_configuration (void)
 
         return err;
     }
-   #endif
 
     /** USB MGR task **/
     g_mgr_mbx_hdl = xQueueCreate(QUEUE_SIZE, sizeof(void *));
@@ -202,7 +170,7 @@ usb_rtos_err_t usb_rtos_configuration (void)
 
         return err;
     }
-
+#if USB_CFG_HUB == USB_CFG_ENABLE
     /** USB HUB task **/
     g_hub_mbx_hdl = xQueueCreate(QUEUE_SIZE, sizeof(void *));
     if (NULL == g_hub_mbx_hdl)
@@ -211,6 +179,7 @@ usb_rtos_err_t usb_rtos_configuration (void)
 
         return err;
     }
+#endif /* USB_CFG_HUB == USB_CFG_ENABLE */
 
     /** USB Internal Communication mailbox **/
     g_cls_mbx_hdl = xQueueCreate(QUEUE_SIZE, sizeof(void *));
@@ -267,46 +236,8 @@ usb_rtos_err_t usb_rtos_configuration (void)
     }
    #endif                              /* defined(USB_CFG_HHID_USE) */
 
-   #if USB_IP_EHCI_OHCI == 0
-
     /** Create memory pool using for each task **/
-    /** USB HCD task **/
-    g_hcd_mpl_hdl = xQueueCreate(QUEUE_SIZE, sizeof(void *));
-    if (NULL != g_hcd_mpl_hdl)
-    {
-        /* WAIT_LOOP */
-        for (i = 0; i < QUEUE_SIZE; i++)
-        {
-            tmptr = pvPortMalloc(sizeof(usb_utr_t));
-            if (NULL == tmptr)
-            {
-                err = UsbRtos_Err_Init_Mpl;
-            }
-            else if (UsbRtos_Success == err)
-            {
-                g_p_hcd_mpl[i] = tmptr;
-                xQueueSend(g_hcd_mpl_hdl, &tmptr, 0);
-            }
-            else
-            {
-                /* None */
-            }
-        }
-    }
-    else
-    {
-        err = UsbRtos_Err_Init_Mpl;
-
-        return err;
-    }
-
-    if (UsbRtos_Err_Init_Mpl == err)
-    {
-        return err;
-    }
-   #else                               /* #if USB_IP_EHCI_OHCI == 0 */
-    /** Create memory pool using for each task **/
-    /** USB HCD task **/
+    /** USB HCI task **/
     g_hci_mpl_hdl = xQueueCreate(QUEUE_SIZE, sizeof(void *));
     if (NULL != g_hci_mpl_hdl)
     {
@@ -340,7 +271,6 @@ usb_rtos_err_t usb_rtos_configuration (void)
     {
         return err;
     }
-   #endif                              /* #if USB_IP_EHCI_OHCI == 0 */
 
     /** USB MGR task **/
     g_mgr_mpl_hdl = xQueueCreate(QUEUE_SIZE, sizeof(void *));
@@ -594,28 +524,17 @@ usb_rtos_err_t usb_rtos_configuration (void)
     }
    #endif                              /* defined(USB_CFG_HHID_USE) */
 
-   #if USB_IP_EHCI_OHCI == 0
-
-    /** USB Tasks Creation **/
-    ret = xTaskCreate((TaskFunction_t) usb_hstd_hcd_task, /** Entry function of USB HCD task  **/
-                      "HCD_TSK",                          /** Name of USB HCD task            **/
-                      HCD_STACK_SIZE,                     /** Stack size in words             **/
-                      NULL,                               /** Task's parameter                **/
-                      HCD_TSK_PRI,                        /** Task's priority                 **/
-                      &g_hcd_tsk_hdl);                    /** Task handler for use later      **/
-    if (pdPASS != ret)
-    {
-        err = UsbRtos_Err_Init_Tsk;
-
-        return err;
-    }
-   #else                                                  /* #if USB_IP_EHCI_OHCI == 0 */
     /* Initialize g_mbx_table */
     g_mbx_table[0]  = &g_hci_mbx_hdl;
     g_mbx_table[1]  = &g_mgr_mbx_hdl;                     /* A mailbox handler of USB HCD task */
     g_mbx_table[2]  = &g_mgr_mbx_hdl;                     /* A mailbox handler of USB HCD task */
-    g_mbx_table[3]  = &g_hub_mbx_hdl;                     /* A mailbox handler of USB MGR task */
+#if USB_CFG_HUB == USB_CFG_ENABLE
+    g_mbx_table[3]  = &g_hub_mbx_hdl;                     /* A mailbox handler of USB HUB task */
     g_mbx_table[4]  = &g_hub_mbx_hdl;                     /* A mailbox handler of USB HUB task */
+#else
+    g_mbx_table[3]  = NULL;                     /* A mailbox handler of USB HUB task */
+    g_mbx_table[4]  = NULL;                     /* A mailbox handler of USB HUB task */
+#endif
     g_mbx_table[5]  = &g_cls_mbx_hdl;                     /* A mailbox handler of USB internal communication */
     g_mbx_table[6]  = &g_hmsc_mbx_hdl;                    /* A mailbox handler of USB PCD task */
     g_mbx_table[7]  = &g_hmsc_req_mbx_hdl;                /* A mailbox handler of USB HMSC */
@@ -665,12 +584,11 @@ usb_rtos_err_t usb_rtos_configuration (void)
         return err;
     }
     #endif                                 /* USB_CFG_HUB == USB_CFG_ENABLE */
-   #endif                                  /* #if USB_IP_EHCI_OHCI == 0 */
   #endif                                   /* ( (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST ) */
 
   #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
     g_mbx_table[0]  = NULL;
-    g_mbx_table[1]  = &g_hcd_mbx_hdl;      /* A mailbox handler of USB HCD task */
+    g_mbx_table[1]  = NULL;                /* A mailbox handler of USB HCD task */
     g_mbx_table[2]  = &g_mgr_mbx_hdl;      /* A mailbox handler of USB HCD task */
     g_mbx_table[3]  = &g_hub_mbx_hdl;      /* A mailbox handler of USB MGR task */
     g_mbx_table[4]  = &g_cls_mbx_hdl;      /* A mailbox handler of USB HUB task */
@@ -787,13 +705,7 @@ usb_rtos_err_t usb_rtos_delete (void)
     uint16_t i;
 
     /** Create mailbox for each task. **/
-   #if USB_IP_EHCI_OHCI == 0
-
-    /** USB HCD task **/
-    vQueueDelete(g_hcd_mbx_hdl);
-   #else                               /* #if USB_IP_EHCI_OHCI == 0 */
     vQueueDelete(g_hci_mbx_hdl);
-   #endif /* #if USB_IP_EHCI_OHCI == 0 */
 
     /** USB MGR task **/
     vQueueDelete(g_mgr_mbx_hdl);
@@ -828,22 +740,12 @@ usb_rtos_err_t usb_rtos_delete (void)
    #endif                              /* defined(USB_CFG_HHID_USE) */
 
     /** Create memory pool using for each task **/
-   #if USB_IP_EHCI_OHCI == 0
-
-    /** USB HCD task **/
-    vQueueDelete(g_hcd_mpl_hdl);
-    for (i = 0; i < QUEUE_SIZE; i++)
-    {
-        vPortFree(g_p_hcd_mpl[i]);
-    }
-   #else                               /* #if USB_IP_EHCI_OHCI == 0 */
     /** USB HCI task **/
     vQueueDelete(g_hci_mpl_hdl);
     for (i = 0; i < QUEUE_SIZE; i++)
     {
         vPortFree(g_p_hci_mpl[i]);
     }
-   #endif                              /* #if USB_IP_EHCI_OHCI == 0 */
 
     /** USB MGR task **/
     vQueueDelete(g_mgr_mpl_hdl);
@@ -906,9 +808,7 @@ usb_rtos_err_t usb_rtos_delete (void)
    #endif                              /* defined(USB_CFG_HHID_USE) */
 
     /** USB Tasks Creation **/
-   #if USB_IP_EHCI_OHCI == 0
-    vTaskDelete(g_hcd_tsk_hdl);
-   #endif
+    vTaskDelete(g_hci_tsk_hdl);
 
    #if USB_CFG_HUB == USB_CFG_ENABLE
     vTaskDelete(g_hub_tsk_hdl);

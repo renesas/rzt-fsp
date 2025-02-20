@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -143,20 +143,6 @@ typedef struct st_rsip_wufpk
     uint8_t value[RSIP_CFG_BYTE_SIZE_WRAPPED_KEY_VALUE_UFPK];
 } rsip_wufpk_t;
 
-/** Verified certificate information */
-typedef struct st_rsip_verified_cert_info
-{
-    uint8_t value[RSIP_CFG_BYTE_SIZE_PKI_ENC_CERT_INFO];
-} rsip_verified_cert_info_t;
-
-/** Data types */
-typedef enum e_rsip_initial_vector_type
-{
-    RSIP_INITIAL_VECTOR_TYPE_AES_16_BYTE    = 0, ///< Wrapped AES initial vector (unprocessed)
-    RSIP_INITIAL_VECTOR_TYPE_AES_TLS12_CBC  = 0, ///< Wrapped AES initial vector (TLS1.2 AES-CBC)
-    RSIP_INITIAL_VECTOR_TYPE_AES_TLS12_AEAD = 1, ///< Wrapped AES nonce (TLS1.2 AES AEAD)
-} rsip_initial_vector_type_t;
-
 /** TLS1.2 PRF labels */
 typedef enum e_rsip_tls12_prf_label
 {
@@ -220,6 +206,15 @@ fsp_err_t R_RSIP_EncryptedKeyWrap(rsip_ctrl_t * const                 p_ctrl,
                                   rsip_key_type_t const               key_type,
                                   uint8_t const * const               p_encrypted_key,
                                   rsip_wrapped_key_t * const          p_wrapped_key);
+fsp_err_t R_RSIP_RFC3394_KeyWrap(rsip_ctrl_t * const              p_ctrl,
+                                 rsip_wrapped_key_t const * const p_wrapped_kek,
+                                 rsip_wrapped_key_t const * const p_wrapped_target_key,
+                                 uint8_t * const                  p_rfc3394_wrapped_target_key);
+fsp_err_t R_RSIP_RFC3394_KeyUnwrap(rsip_ctrl_t * const              p_ctrl,
+                                   rsip_wrapped_key_t const * const p_wrapped_kek,
+                                   rsip_key_type_t const            key_type,
+                                   uint8_t const * const            p_rfc3394_wrapped_target_key,
+                                   rsip_wrapped_key_t * const       p_wrapped_target_key);
 fsp_err_t R_RSIP_InjectedKeyImport(rsip_key_type_t const      key_type,
                                    uint8_t const * const      p_injected_key,
                                    rsip_wrapped_key_t * const p_wrapped_key,

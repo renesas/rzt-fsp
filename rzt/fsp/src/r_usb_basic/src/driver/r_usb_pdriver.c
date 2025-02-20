@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -90,12 +90,6 @@ static void usb_pstd_interrupt (uint16_t type, uint16_t status, usb_cfg_t * p_cf
     usb_utr_t utr;
 
     utr.ip = p_cfg->module_number;
-  #if (USB_CFG_DMA == USB_CFG_ENABLE)
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
-    utr.p_transfer_rx = p_cfg->p_transfer_rx;
-    utr.p_transfer_tx = p_cfg->p_transfer_tx;
-  #endif
-  #endif
 
     /* check interrupt status */
     switch (type)
@@ -137,9 +131,7 @@ static void usb_pstd_interrupt (uint16_t type, uint16_t status, usb_cfg_t * p_cf
         /* VBUS */
         case USB_INT_VBINT:
         {
-  #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
             hw_usb_set_cnen(p_cfg->module_number);
-  #endif                                       /* defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
             if (USB_ATTACH == usb_pstd_chk_vbsts(utr.ip))
             {
                 USB_PRINTF0("VBUS int attach\n");
@@ -409,9 +401,7 @@ static void usb_pstd_interrupt (usb_utr_t * p_mess)
         /* VBUS */
         case USB_INT_VBINT:
         {
-  #if defined(BSP_MCU_GROUP_RA6M3) || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
             hw_usb_set_cnen(p_mess->ip);
-  #endif                                         /* defined(BSP_MCU_GROUP_RA6M3)  || defined(BSP_MCU_GROUP_RZT2M) || defined(BSP_MCU_GROUP_RZT2L) || defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H) */
             if (USB_ATTACH == usb_pstd_chk_vbsts(p_mess->ip))
             {
                 USB_PRINTF0("VBUS int attach\n");
@@ -1658,12 +1648,6 @@ void usb_peri_devdefault (usb_utr_t * ptr, uint16_t mode, uint16_t data2)
 
  #if (defined(USB_CFG_PCDC_USE) | defined(USB_CFG_PHID_USE))
     usb_instance_ctrl_t ctrl;
-  #if (USB_CFG_DMA == USB_CFG_ENABLE)
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
-    ctrl.p_transfer_rx = ptr->p_transfer_rx;
-    ctrl.p_transfer_tx = ptr->p_transfer_tx;
-  #endif
- #endif
  #endif
 
     usb_peri_detach(ptr, USB_NULL, USB_NULL);
@@ -1704,10 +1688,7 @@ void usb_peri_devdefault (usb_utr_t * ptr, uint16_t mode, uint16_t data2)
 
     if (NULL == ptable)
     {
-        while (1)
-        {
-            /* Error */
-        }
+        return;
     }
 
     len = (uint16_t) (*(uint8_t *) ((uintptr_t) ptable + (uint32_t) 3));
@@ -1787,12 +1768,6 @@ void usb_peri_configured (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
     g_usb_peri_connected = USB_TRUE;
 
     ctrl.module_number = ptr->ip;
- #if (USB_CFG_DMA == USB_CFG_ENABLE)
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
-    ctrl.p_transfer_rx = ptr->p_transfer_rx;
-    ctrl.p_transfer_tx = ptr->p_transfer_tx;
- #endif
- #endif
     usb_set_event(USB_STATUS_CONFIGURED, &ctrl);
 
  #if defined(USB_CFG_PMSC_USE)
@@ -1865,12 +1840,6 @@ void usb_peri_resume (usb_utr_t * ptr, uint16_t data1, uint16_t data2)
     FSP_PARAMETER_NOT_USED(data2);
 
     ctrl.module_number = ptr->ip;
- #if (USB_CFG_DMA == USB_CFG_ENABLE)
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) && !defined(BSP_MCU_GROUP_RZT2H)
-    ctrl.p_transfer_rx = ptr->p_transfer_rx;
-    ctrl.p_transfer_tx = ptr->p_transfer_tx;
-#endif
- #endif
  #if (BSP_CFG_RTOS == 2)
     ctrl.p_data = (void *) ptr->cur_task_hdl;
  #endif                                /* (BSP_CFG_RTOS == 2) */
@@ -1912,9 +1881,9 @@ void usb_pvnd_read_complete (usb_utr_t * mess, uint16_t data1, uint16_t data2)
     usb_instance_ctrl_t ctrl;
 
     /* Set Receive data length */
-    ctrl.size = mess->read_req_len - mess->tranlen;
+    ctrl.data_size = mess->read_req_len - mess->tranlen;
     ctrl.pipe = mess->keyword;         /* Pipe number setting */
-    ctrl.type = USB_PVND;              /* Device class setting  */
+    ctrl.type = USB_CLASS_INTERNAL_PVND;              /* Device class setting  */
   #if (BSP_CFG_RTOS == 2)
     ctrl.p_data = (void *) mess->cur_task_hdl;
   #endif /* (BSP_CFG_RTOS == 2) */
@@ -1922,32 +1891,32 @@ void usb_pvnd_read_complete (usb_utr_t * mess, uint16_t data1, uint16_t data2)
     {
         case USB_DATA_OK:
         {
-            ctrl.status = USB_SUCCESS;
+            ctrl.status = FSP_SUCCESS;
             break;
         }
 
         case USB_DATA_SHT:
         {
-            ctrl.status = USB_ERR_SHORT;
+            ctrl.status = FSP_ERR_USB_SIZE_SHORT;
             break;
         }
 
         case USB_DATA_OVR:
         {
-            ctrl.status = USB_ERR_OVER;
+            ctrl.status = FSP_ERR_USB_SIZE_OVER;
             break;
         }
 
         case USB_DATA_ERR:
         default:
         {
-            ctrl.status = USB_ERR_NG;
+            ctrl.status = FSP_ERR_USB_FAILED;
             break;
         }
     }
 
     ctrl.module_number = mess->ip;
-    usb_set_event(USB_STS_READ_COMPLETE, &ctrl);
+    usb_set_event(USB_STATUS_READ_COMPLETE, &ctrl);
 }                                      /* End of function usb_pvnd_read_complete() */
 
 /******************************************************************************
@@ -1961,21 +1930,21 @@ void usb_pvnd_write_complete (usb_utr_t * mess, uint16_t data1, uint16_t data2)
     usb_instance_ctrl_t ctrl;
 
     ctrl.pipe = mess->keyword;         /* Pipe number setting */
-    ctrl.type = USB_PVND;              /* CDC Control class  */
+    ctrl.type = USB_CLASS_INTERNAL_PVND;              /* CDC Control class  */
     if (USB_DATA_NONE == mess->status)
     {
-        ctrl.status = USB_SUCCESS;
+        ctrl.status = FSP_SUCCESS;
     }
     else
     {
-        ctrl.status = USB_ERR_NG;
+        ctrl.status = FSP_ERR_USB_FAILED;
     }
 
     ctrl.module_number = mess->ip;
   #if (BSP_CFG_RTOS == 2)
     ctrl.p_data = (void *) mess->cur_task_hdl;
   #endif                               /* (BSP_CFG_RTOS == 2) */
-    usb_set_event(USB_STS_WRITE_COMPLETE, &ctrl);
+    usb_set_event(USB_STATUS_WRITE_COMPLETE, &ctrl);
 } /* End of function usb_pvnd_write_complete() */
 
  #endif                                /* defined(USB_CFG_PVND_USE) */

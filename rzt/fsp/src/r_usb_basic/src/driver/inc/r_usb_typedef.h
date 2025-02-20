@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -36,23 +36,13 @@ typedef TMO     usb_tm_t;
 typedef VP      usb_mh_t;
 typedef VP_INT  usb_vp_int_t;
 
-#if defined(BSP_MCU_GROUP_RA6M3)
-typedef volatile R_USB_HS0_Type * usb_regadr1_t; // @@
-typedef volatile R_USB_FS0_Type * usb_regadr_t;
-#elif defined(BSP_MCU_GROUP_RA6M5)               /* defined(BSP_MCU_GROUP_RA6M3) */
-typedef volatile R_USB_FS0_Type * usb_regadr1_t;
-typedef volatile R_USB_FS0_Type * usb_regadr_t;
-#else /* defined (BSP_MCU_GROUP_RZT2M) */
- #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
+#if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
 typedef volatile R_USBF_Type * usb_regadr1_t;
 typedef volatile R_USBF_Type * usb_regadr_t;
- #else                                 /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
+#else                                 /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 typedef volatile R_USBHC_Type * usb_regadr1_t;
 typedef volatile R_USBHC_Type * usb_regadr_t;
- #endif
-#endif /* defined(BSP_MCU_GROUP_RA6M3) */
-
-// typedef volatile R_USB_FS0_Type * usb_regadr_t;
+#endif
 
 typedef struct usb_utr usb_utr_t;
 typedef void        (* usb_cb_t)(struct usb_utr *, uint16_t, uint16_t);
@@ -80,10 +70,6 @@ typedef struct usb_utr
 #endif /* #if (BSP_CFG_RTOS == 2) */
     uint8_t errcnt;                            /* Error count */
     uint8_t segment;                           /* Last flag */
-#if !defined(BSP_MCU_GROUP_RZT2M) && !defined(BSP_MCU_GROUP_RZT2L) && !defined(BSP_MCU_GROUP_RZT2ME) || defined(BSP_MCU_GROUP_RZT2H)
-    const transfer_instance_t * p_transfer_tx; ///< Send context
-    const transfer_instance_t * p_transfer_rx; ///< Receive context
-#endif
     union
     {
         usb_regadr_t ipp;                      /* USB module startAddress(USB0/USB1)*/

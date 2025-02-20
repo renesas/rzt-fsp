@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -737,11 +737,11 @@ void bsp_mmu_writetablelink (st_mmu_table_info_t * p_table_info, uint64_t vaddre
  **********************************************************************************************************************/
 void bsp_mmu_writetable (st_mmu_table_info_t * p_table_info, r_mmu_pgtbl_cfg_t * p_section_info)
 {
-    int32_t    i;
-    int32_t    num_of_desc;
-    int32_t    table_index;
-    uint64_t * pg_desc_ptr;
-    uint32_t   pa_stride;
+    volatile int32_t i;
+    int32_t          num_of_desc;
+    int32_t          table_index;
+    uint64_t       * pg_desc_ptr;
+    uint32_t         pa_stride;
 
     if (BSP_MMU_TABLE_LEVEL_1 == p_table_info->table_level)
     {

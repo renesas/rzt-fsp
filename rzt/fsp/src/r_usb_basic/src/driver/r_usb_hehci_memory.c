@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -175,7 +175,7 @@ st_usb_ehci_qh_t * usb_hstd_ehci_alloc_qh (void)
             p_qh->info.enable                = TRUE;
             p_qh->next_qtd.address           = 0x00000001;
             p_qh->alternate_next_qtd.address = 0x00000001;
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
             p_qh->qtd_head = USB_NULL;
             p_qh->qtd_end  = USB_NULL;
 #else
@@ -293,7 +293,7 @@ st_usb_ehci_qtd_t * usb_hstd_ehci_alloc_qtd (void)
 
     if (NULL != gsp_usb_hstd_ehci_qtd_top)
     {
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
         p_ret_qtd =
             (st_usb_ehci_qtd_t *) (uintptr_t) (r_usb_pa_to_va((uint64_t) gsp_usb_hstd_ehci_qtd_top));
         gsp_usb_hstd_ehci_qtd_top =
@@ -328,7 +328,7 @@ void usb_hstd_ehci_free_qtd (st_usb_ehci_qtd_t * p_free_qtd)
 {
     usb_hstd_hci_lock_resouce();
 
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
     p_free_qtd->next_qtd.address = (uint32_t) r_usb_va_to_pa((uint64_t) gsp_usb_hstd_ehci_qtd_top);
     gsp_usb_hstd_ehci_qtd_top    = (st_usb_ehci_qtd_t *) (r_usb_pa_to_va((uint64_t) p_free_qtd));
  #else

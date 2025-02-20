@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -77,6 +77,9 @@ FSP_HEADER
 #define BSP_OVERRIDE_CGC_DIVIDER_CFG_T
 #define BSP_OVERRIDE_CGC_CLOCK_CHANGE_T
 #define BSP_OVERRIDE_CGC_CLOCKS_CFG_T
+#define BSP_OVERRIDE_DISPLAY_IN_FORMAT_T
+#define BSP_OVERRIDE_DISPLAY_INPUT_CFG_T
+#define BSP_OVERRIDE_DISPLAY_DATA_SWAP_T
 #define BSP_OVERRIDE_ELC_PERIPHERAL_T
 #define BSP_OVERRIDE_ERROR_EVENT_T
 #define BSP_OVERRIDE_ETHER_EVENT_T
@@ -411,6 +414,62 @@ typedef struct st_cgc_clocks_cfg
     cgc_clock_change_t pll2_state;     ///< State of PLL2
     cgc_clock_change_t pll3_state;     ///< State of PLL3
 } cgc_clocks_cfg_t;
+
+/*==============================================
+ * DISPLAY API Overrides
+ *==============================================*/
+
+typedef enum e_display_in_format
+{
+    DISPLAY_IN_FORMAT_32BITS_ARGB8888 = 0,                         ///< ARGB8888, 32 bits
+    DISPLAY_IN_FORMAT_32BITS_RGB888   = 1,                         ///< RGB888,   32 bits
+    DISPLAY_IN_FORMAT_16BITS_RGB565   = 2,                         ///< RGB565,   16 bits
+    DISPLAY_IN_FORMAT_16BITS_ARGB1555 = 3,                         ///< ARGB1555, 16 bits
+    DISPLAY_IN_FORMAT_16BITS_ARGB4444 = 4,                         ///< ARGB4444, 16 bits
+
+    DISPLAY_IN_FORMAT_CLUT8 = 5,                                   ///< CLUT8
+    DISPLAY_IN_FORMAT_CLUT4 = 6,                                   ///< CLUT4
+    DISPLAY_IN_FORMAT_CLUT1 = 7,                                   ///< CLUT1
+
+    DISPLAY_IN_FORMAT_32BITS_RGBA8888                        = 8,  ///< RGBA8888,                        32 bits
+    DISPLAY_IN_FORMAT_24BITS_BGR888                          = 9,  ///< BGR888,                          24 bits
+    DISPLAY_IN_FORMAT_24BITS_RGB888                          = 10, ///< RGB888,                          24 bits
+    DISPLAY_IN_FORMAT_32BITS_ABGR8888                        = 11, ///< ABGR8888,                        32 bits
+    DISPLAY_IN_FORMAT_24BITS_YCBCR444_INTERLEAVED            = 12, ///< YCbCr444 interleaved,             24 bits
+    DISPLAY_IN_FORMAT_16BITS_YCBCR422_INTERLEAVED_TYPE0_UYVY = 13, ///< YCbCr422 interleaved type0 UYVY,  16 bits
+    DISPLAY_IN_FORMAT_16BITS_YCBCR422_INTERLEAVED_TYPE0_YUY2 = 14, ///< YCbCr422 interleaved type0 YUY2,  16 bits
+    DISPLAY_IN_FORMAT_16BITS_YCBCR422_INTERLEAVED_TYPE0_YVYU = 15, ///< YCbCr422 interleaved type0 YVYU,  16 bits
+    DISPLAY_IN_FORMAT_16BITS_YCBCR422_INTERLEAVED_TYPE1      = 16, ///< YCbCr420 interleaved type1,       16 bits
+    DISPLAY_IN_FORMAT_16BITS_YCBCR420_INTERLEAVED            = 17, ///< YCbCr420 interleaved,             12 bits
+    DISPLAY_IN_FORMAT_16BITS_YCBCR420_PLANAR                 = 18, ///< YCbCr420 planar,                  16bits
+
+    /** All other options start at this value. */
+    DISPLAY_IN_FORMAT_CUSTOM = 0x80,
+} display_in_format_t;
+
+typedef enum e_display_data_swap
+{
+    DISPLAY_DATA_SWAP_8BIT  = 1,
+    DISPLAY_DATA_SWAP_16BIT = 2,
+    DISPLAY_DATA_SWAP_32BIT = 4,
+    DISPLAY_DATA_SWAP_64BIT = 8,
+} display_data_swap_t;
+
+/** Graphics plane input configuration structure */
+typedef struct st_display_input_cfg
+{
+    uint32_t          * p_base;        ///< Base address to the frame buffer
+    uint32_t          * p_base_cb;     ///< Base address to the frame buffer for Cb plane
+    uint32_t          * p_base_cr;     ///< Base address to the frame buffer for Cr plane
+    uint16_t            hsize;         ///< Horizontal pixels in a line
+    uint16_t            vsize;         ///< Vertical pixels in a frame
+    int16_t             coordinate_x;  ///< Coordinate X
+    int16_t             coordinate_y;  ///< Coordinate Y
+    uint16_t            hstride;       ///< Memory stride (bytes) in a line
+    uint16_t            hstride_cbcr;  ///< Memory stride (bytes) in a line for Cb and Cr plane
+    display_in_format_t format;        ///< Input format setting
+    display_data_swap_t data_swap;     ///< Input data swap_Setting
+} display_input_cfg_t;
 
 /*==============================================
  * ELC API Overrides

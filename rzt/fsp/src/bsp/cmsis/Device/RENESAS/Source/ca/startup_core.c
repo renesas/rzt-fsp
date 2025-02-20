@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -57,9 +57,12 @@ extern fsp_vector_t g_sgi_ppi_vector_table[BSP_CORTEX_VECTOR_TABLE_ENTRIES];
  * Private global variables and functions
  **********************************************************************************************************************/
 void system_init(void) BSP_PLACE_IN_SECTION(".loader_text");
+void bsp_register_initialization(void);
 void bsp_reset_vector_address_setting(void);
 
 void Default_Handler(void);
+
+bool g_bsp_software_reset_occurred BSP_PLACE_IN_SECTION(".software_reset");
 
 /*******************************************************************************************************************//**
  * Default exception handler.
@@ -105,6 +108,7 @@ void branch_to_IrqLowEl32_Handler(void)    BSP_PLACE_IN_SECTION(".intvec_0x680")
 void branch_to_FiqLowEl32_Handler(void)    BSP_PLACE_IN_SECTION(".intvec_0x700");
 void branch_to_SerrorLowEl32_Handler(void) BSP_PLACE_IN_SECTION(".intvec_0x780");
 
+void        Software_Reset_Handler(void);
 __WEAK void FIQ_Handler(void);
 __WEAK void IRQ_Handler(void);
 void        FIQ_ExecuteHandler(void);
@@ -276,6 +280,23 @@ BSP_ATTRIBUTE_STACKLESS void branch_to_SerrorLowEl32_Handler (void)
  **********************************************************************************************************************/
 BSP_ATTRIBUTE_STACKLESS void system_init (void)
 {
+    /* g_bsp_software_reset_occurred = false */
+    __asm volatile (
+        "MOV  x0, %0    \n"
+        "MOV  w1, #0    \n"
+        "STRB  w1, [x0] \n"
+        ::"r" (&g_bsp_software_reset_occurred) : "memory");
+
+    __asm volatile (
+        "b bsp_register_initialization          \n"
+        ::: "memory");
+}
+
+/*******************************************************************************************************************//**
+ * Initialize each register.
+ **********************************************************************************************************************/
+BSP_ATTRIBUTE_STACKLESS void bsp_register_initialization (void)
+{
     /* Set Vector Base Address Register (VBAR) to point to initializer routine */
     __asm volatile (
         "LDR  x0, =__Vectors                    \n"
@@ -375,13 +396,13 @@ void bsp_reset_vector_address_setting (void)
     R_RWP_S->PRCRS = (uint16_t) BSP_PRV_PRCR_SYSTEM_UNLOCK;
 
 #if (0 == BSP_CFG_CORE_CA55)
-    R_CA55->RVBA[0].L = (uint32_t) ((uintptr_t) &system_init);
+    R_CA55->RVBA[0].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
 #elif (1 == BSP_CFG_CORE_CA55)
-    R_CA55->RVBA[1].L = (uint32_t) ((uintptr_t) &system_init);
+    R_CA55->RVBA[1].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
 #elif (2 == BSP_CFG_CORE_CA55)
-    R_CA55->RVBA[2].L = (uint32_t) ((uintptr_t) &system_init);
+    R_CA55->RVBA[2].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
 #elif (3 == BSP_CFG_CORE_CA55)
-    R_CA55->RVBA[3].L = (uint32_t) ((uintptr_t) &system_init);
+    R_CA55->RVBA[3].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
 #endif
 
     R_RWP_S->PRCRS = (uint16_t) BSP_PRV_PRCR_LOCK;
@@ -390,12 +411,104 @@ void bsp_reset_vector_address_setting (void)
 }
 
 /*******************************************************************************************************************//**
+ * Software Reset handler Function.
+ *********************************************************************************************************************/
+BSP_ATTRIBUTE_STACKLESS void Software_Reset_Handler (void)
+{
+    /* Processing equivalent to R_BSP_CacheInvalidateAll */
+    __asm volatile (
+        "DSB       SY                                       \n"
+        "IC        IALLU                                    \n"
+        "DMB       SY                                       \n"
+        "MRS       x2, CLIDR_EL1                            \n"
+        "UBFX      x0, x2, #24, #3                          \n"
+        "AND       x3, x0, #0x7                             \n"
+        "CBZ       x3, cache_invalidation_end               \n"
+        "MOVZ      x4, #0x0                                 \n"
+        "B         cache_invalidation_per_level             \n"
+
+        "cache_invalidation_next_way:                       \n"
+        "SUB       x8, x8, #0x1, LSL #0                     \n"
+
+        "cache_invalidation_per_way:                        \n"
+        "UXTB      w9, w0                                   \n"
+        "LSL       x9, x8, x9                               \n"
+        "ORR       x9, x9, x5, LSL #0                       \n"
+        "UXTB      w10, w6                                  \n"
+        "LSL       x10, x7, x10                             \n"
+        "ORR       x9, x9, x10, LSL #0                      \n"
+        "DC        ISW, x9                                  \n"
+        "CBNZ      x8, cache_invalidation_next_way          \n"
+        "CBNZ      x7, cache_invalidation_next_set          \n"
+
+        "cache_invalidation_next_level:                     \n"
+        "ADD       x4, x4, #0x1                             \n"
+
+        "cache_invalidation_per_level:                      \n"
+        "CMP       x4, x3, LSL #0                           \n"
+        "B.CS      cache_invalidation_per_level_end         \n"
+        "MOV       x0, #0x3                                 \n"
+        "MUL       x0, x4, x0                               \n"
+        "UXTB      w0, w0                                   \n"
+        "LSR       x0, x2, x0                               \n"
+        "AND       x0, x0, #0x7                             \n"
+        "CMP       x0, #0x2, LSL #0                         \n"
+        "B.CC      cache_invalidation_next_level            \n"
+        "LSL       x5, x4, #1                               \n"
+        "MOV       x0, x5                                   \n"
+        "MSR       CSSELR_EL1, x0                           \n"
+        "DSB       SY                                       \n"
+        "MRS       x0, CCSIDR_EL1                           \n"
+        "AND       x1, x0, #0x7                             \n"
+        "ADD       x6, x1, #0x4                             \n"
+        "UBFX      x1, x0, #3, #10                          \n"
+        "AND       x1, x1, #0x3ff                           \n"
+        "UBFX      x7, x0, #13, #15                         \n"
+        "AND       x7, x7, #0x7fff                          \n"
+        "CLZ       w0, w1                                   \n"
+        "UBFX      x0, x0, #0, #32                          \n"
+        "CMP       x0, #0x20, LSL #0                        \n"
+        "B.NE      cache_invalidation_per_set               \n"
+        "SUB       x0, x0, #0x1, LSL #0                     \n"
+        "B         cache_invalidation_per_set               \n"
+
+        "cache_invalidation_next_set:                       \n"
+        "SUB       x7, x7, #0x1, LSL #0                     \n"
+
+        "cache_invalidation_per_set:                        \n"
+        "MOV       x8, x1                                   \n"
+        "B         cache_invalidation_per_way               \n"
+
+        "cache_invalidation_per_level_end:                  \n"
+        "DSB       SY                                       \n"
+        "ISB       SY                                       \n"
+        "cache_invalidation_end:                              \n"
+        ::: "memory");
+
+    /* g_bsp_software_reset_occurred = true */
+    __asm volatile (
+        "MOV  x0, %0                                        \n"
+        "MOV  w1, #1                                        \n"
+        "STRB  w1, [x0]                                     \n"
+        ::"r" (&g_bsp_software_reset_occurred) : "memory");
+
+    __asm volatile (
+        "b bsp_register_initialization                      \n"
+        ::: "memory");
+}
+
+/*******************************************************************************************************************//**
  * FIQ handler Function.
  *********************************************************************************************************************/
 __WEAK void FIQ_Handler (void)
 {
     __asm volatile (
-        "STP  x29, x30, [SP, #-0x10]!           \n"
+        "STP  x30, XZR, [SP, #-0x10]!           \n"
+        "STP  x28, x29, [SP, #-0x10]!           \n"
+        "STP  x26, x27, [SP, #-0x10]!           \n"
+        "STP  x24, x25, [SP, #-0x10]!           \n"
+        "STP  x22, x23, [SP, #-0x10]!           \n"
+        "STP  x20, x21, [SP, #-0x10]!           \n"
         "STP  x18, x19, [SP, #-0x10]!           \n"
         "STP  x16, x17, [SP, #-0x10]!           \n"
         "STP  x14, x15, [SP, #-0x10]!           \n"
@@ -408,18 +521,25 @@ __WEAK void FIQ_Handler (void)
         "STP  x0, x1, [SP, #-0x10]!             \n"
 
 #if __FPU_USED
-        "STP  d30, d31, [SP, #-0x10]!           \n"
-        "STP  d28, d29, [SP, #-0x10]!           \n"
-        "STP  d26, d27, [SP, #-0x10]!           \n"
-        "STP  d24, d25, [SP, #-0x10]!           \n"
-        "STP  d22, d23, [SP, #-0x10]!           \n"
-        "STP  d20, d21, [SP, #-0x10]!           \n"
-        "STP  d18, d19, [SP, #-0x10]!           \n"
-        "STP  d16, d17, [SP, #-0x10]!           \n"
-        "STP  d6, d7, [SP, #-0x10]!             \n"
-        "STP  d4, d5, [SP, #-0x10]!             \n"
-        "STP  d2, d3, [SP, #-0x10]!             \n"
-        "STP  d0, d1, [SP, #-0x10]!             \n"
+        "MRS  x0, FPCR                          \n"
+        "MRS  x1, FPSR                          \n"
+        "STP  x0, x1, [SP, #-0x10]!             \n"
+        "STP  q30, q31, [SP, #-0x20]!           \n"
+        "STP  q28, q29, [SP, #-0x20]!           \n"
+        "STP  q26, q27, [SP, #-0x20]!           \n"
+        "STP  q24, q25, [SP, #-0x20]!           \n"
+        "STP  q22, q23, [SP, #-0x20]!           \n"
+        "STP  q20, q21, [SP, #-0x20]!           \n"
+        "STP  q18, q19, [SP, #-0x20]!           \n"
+        "STP  q16, q17, [SP, #-0x20]!           \n"
+        "STP  q14, q15, [SP, #-0x20]!           \n"
+        "STP  q12, q13, [SP, #-0x20]!           \n"
+        "STP  q10, q11, [SP, #-0x20]!           \n"
+        "STP  q8, q9, [SP, #-0x20]!             \n"
+        "STP  q6, q7, [SP, #-0x20]!             \n"
+        "STP  q4, q5, [SP, #-0x20]!             \n"
+        "STP  q2, q3, [SP, #-0x20]!             \n"
+        "STP  q0, q1, [SP, #-0x20]!             \n"
 #endif
 
         /* Save the SPSR and ELR. */
@@ -438,18 +558,25 @@ __WEAK void FIQ_Handler (void)
         "ISB  SY                                \n"
 
 #if __FPU_USED
-        "LDP  d0, d1, [sp], #0x10               \n"
-        "LDP  d2, d3, [sp], #0x10               \n"
-        "LDP  d4, d5, [sp], #0x10               \n"
-        "LDP  d6, d7, [sp], #0x10               \n"
-        "LDP  d16, d17, [sp], #0x10             \n"
-        "LDP  d18, d19, [sp], #0x10             \n"
-        "LDP  d20, d21, [sp], #0x10             \n"
-        "LDP  d22, d23, [sp], #0x10             \n"
-        "LDP  d24, d25, [sp], #0x10             \n"
-        "LDP  d26, d27, [sp], #0x10             \n"
-        "LDP  d28, d29, [sp], #0x10             \n"
-        "LDP  d30, d31, [sp], #0x10             \n"
+        "LDP  q0, q1, [sp], #0x20               \n"
+        "LDP  q2, q3, [sp], #0x20               \n"
+        "LDP  q4, q5, [sp], #0x20               \n"
+        "LDP  q6, q7, [sp], #0x20               \n"
+        "LDP  q8, q9, [sp], #0x20               \n"
+        "LDP  q10, q11, [sp], #0x20             \n"
+        "LDP  q12, q13, [sp], #0x20             \n"
+        "LDP  q14, q15, [sp], #0x20             \n"
+        "LDP  q16, q17, [sp], #0x20             \n"
+        "LDP  q18, q19, [sp], #0x20             \n"
+        "LDP  q20, q21, [sp], #0x20             \n"
+        "LDP  q22, q23, [sp], #0x20             \n"
+        "LDP  q24, q25, [sp], #0x20             \n"
+        "LDP  q26, q27, [sp], #0x20             \n"
+        "LDP  q28, q29, [sp], #0x20             \n"
+        "LDP  q30, q31, [sp], #0x20             \n"
+        "LDP  x0, x1, [sp], #0x10               \n"
+        "MSR  FPCR, x0                          \n"
+        "MSR  FPSR, x1                          \n"
 #endif
 
         "LDP  x0, x1, [sp], #0x10               \n"
@@ -462,7 +589,12 @@ __WEAK void FIQ_Handler (void)
         "LDP  x14, x15, [sp], #0x10             \n"
         "LDP  x16, x17, [sp], #0x10             \n"
         "LDP  x18, x19, [sp], #0x10             \n"
-        "LDP  x29, x30, [sp], #0x10             \n"
+        "LDP  x20, x21, [sp], #0x10             \n"
+        "LDP  x22, x23, [sp], #0x10             \n"
+        "LDP  x24, x25, [sp], #0x10             \n"
+        "LDP  x26, x27, [sp], #0x10             \n"
+        "LDP  x28, x29, [sp], #0x10             \n"
+        "LDP  x30, XZR, [sp], #0x10             \n"
 
         "ERET                                   \n"
         ::: "memory");
@@ -558,10 +690,7 @@ void FIQ_ExecuteHandler (void)
         aliased       = 1;
         target_int_id = int_id[1];
 
-        if ((R_BSP_GIC_INTID_1020 <= int_id[1]) && (int_id[1] <= R_BSP_GIC_INTID_1023))
-        {
-            return;
-        }
+        FSP_ASSERT_NOT_RETURN_VALUE((R_BSP_GIC_INTID_1020 > int_id[1]) || (int_id[1] > R_BSP_GIC_INTID_1023));
     }
 
     irq = (IRQn_Type) (target_int_id - BSP_CORTEX_VECTOR_TABLE_ENTRIES);

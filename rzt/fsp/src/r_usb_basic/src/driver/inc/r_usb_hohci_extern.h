@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -54,7 +54,7 @@ void                       usb_hstd_ohci_insert_head_list(st_usb_ohci_list_entry
                                                           st_usb_ohci_list_entry_p_t link);
 void usb_hstd_ohci_insert_tail_list(st_usb_ohci_list_entry_p_t list_head,
                                     st_usb_ohci_list_entry_p_t link);
-#if 1 == BSP_LP64_SUPPORT
+#if defined(BSP_CFG_CORE_CA55)
 uint64_t usb_hstd_ohci_physical_address_of (void * p_data);
 #endif
 void     usb_hstd_ohci_pause_ed(usb_utr_t * ptr, st_usb_ohci_hcd_endpoint_p_t endpoint);

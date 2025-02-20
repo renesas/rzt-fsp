@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -252,7 +252,7 @@ fsp_err_t R_SCI_I2C_Read (i2c_master_ctrl_t * const p_ctrl,
     fsp_err_t err = FSP_SUCCESS;
 
     /* Record the restart information about this transfer.
-     * This is done here to keep the parameter (argument) list of iic_master_read_write to 4. */
+     * This is done here to keep the parameter (argument) list of sci_i2c_read_write to 4. */
     ((sci_i2c_instance_ctrl_t *) p_ctrl)->restart = restart;
 
     /* Call the common helper function to perform I2C Read operation.*/
@@ -267,7 +267,7 @@ fsp_err_t R_SCI_I2C_Read (i2c_master_ctrl_t * const p_ctrl,
  *  This function will fail if there is already an in-progress I2C transfer on the associated channel. Otherwise, the
  *  I2C write operation will begin. When no callback is provided by the user, this function performs a blocking write.
  *  Otherwise, the write operation is non-blocking and the caller will be notified when the operation has finished by
- *  an I2C_EVENT_TX_COMPLETE in the callback.
+ *  an I2C_MASTER_EVENT_TX_COMPLETE in the callback.
  *
  * @retval  FSP_SUCCESS                 Function executed without issue.
  * @retval  FSP_ERR_ASSERTION           p_ctrl, p_src, p_callback is NULL.
@@ -284,7 +284,7 @@ fsp_err_t R_SCI_I2C_Write (i2c_master_ctrl_t * const p_ctrl,
     fsp_err_t err = FSP_SUCCESS;
 
     /* Record the restart information about this transfer.
-     * This is done here to keep the parameter (argument) list of iic_master_read_write to 4. */
+     * This is done here to keep the parameter (argument) list of sci_i2c_read_write to 4. */
     ((sci_i2c_instance_ctrl_t *) p_ctrl)->restart = restart;
 
     /* Call the common helper function to perform I2C Write operation.*/

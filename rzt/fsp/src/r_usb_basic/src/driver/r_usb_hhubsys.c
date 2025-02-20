@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2020 - 2024 Renesas Electronics Corporation and/or its affiliates
+* Copyright (c) 2020 - 2025 Renesas Electronics Corporation and/or its affiliates
 *
 * SPDX-License-Identifier: BSD-3-Clause
 */
@@ -228,10 +228,12 @@ void usb_hhub_open (usb_utr_t * ptr, uint16_t devaddr, uint16_t data2)
             USB_PRINTF1("### hHubOpen pget_blk error (%ld)\n", err);
 
             /* WAIT_LOOP */
+#ifdef USB_DEBUG_ON
             while (1)
             {
                 /* Non */
             }
+#endif
         }
 
         /* Pipe number set */
@@ -1468,9 +1470,7 @@ static uint16_t usb_hhub_port_attach (uint16_t hubaddr, uint16_t portnum, usb_cl
     uint16_t    hpphub, hubport, buffer;
     usb_er_t    err;
     usb_utr_t * ptr;
-   #if (!defined(BSP_MCU_GROUP_RA6M3))
     usb_instance_ctrl_t ctrl;
-   #endif                              /* (!defined(BSP_MCU_GROUP_RA6M3)) */
 
     ptr     = (usb_utr_t *) mess;
     hubaddr = g_usb_shhub_hub_addr[ptr->ip];
@@ -1520,15 +1520,10 @@ static uint16_t usb_hhub_port_attach (uint16_t hubaddr, uint16_t portnum, usb_cl
 
                     case 0x02:
                     {
-   #if defined(BSP_MCU_GROUP_RA6M3)
-                        g_usb_hstd_device_speed[ptr->ip] = USB_LSCONNECT;
-   #else                                                              /* defined(BSP_MCU_GROUP_RA6M3) */
                         g_usb_hstd_device_speed[ptr->ip] = USB_NOCONNECT;
-
                         ctrl.device_address = 0;                      /* USB Device address */
                         ctrl.module_number  = (uint8_t) ptr->ip;      /* Module number setting */
                         usb_set_event(USB_STATUS_NOT_SUPPORT, &ctrl); /* Set Event()  */
-   #endif /* defined(BSP_MCU_GROUP_RA6M3) */
                         USB_PRINTF0(" Low-Speed Device\n");
                         break;
                     }
@@ -2409,10 +2404,12 @@ static void usb_hhub_check_class (usb_utr_t * ptr, uint16_t ** table)
     {
         /* Send Message failure */
         /* WAIT_LOOP */
+#ifdef USB_DEBUG_ON
         while (1)
         {
             /* Non */
         }
+#endif
     }
   #endif                               /* (BSP_CFG_RTOS == 2) */
 }
@@ -2807,10 +2804,12 @@ static void usb_hhub_class_request_complete (usb_utr_t * ptr, uint16_t data1, ui
         USB_PRINTF0("### CheckResult function pget_blk error\n");
 
         /* WAIT_LOOP */
+#ifdef USB_DEBUG_ON
         while (1)
         {
             /* Non */
         }
+#endif
     }
 }
 
@@ -3005,10 +3004,12 @@ static void usb_hhub_check_request (usb_utr_t * ptr, uint16_t result)
         USB_PRINTF0("### CheckRequest function pget_blk error\n");
 
         /* WAIT_LOOP */
+#ifdef USB_DEBUG_ON
         while (1)
         {
             /* Non */
         }
+#endif
     }
 }
 
@@ -3598,10 +3599,12 @@ static void usb_hhub_specified_path (usb_clsinfo_t * ptr)
         USB_PRINTF0("### SpecifiedPass function pget_blk error\n");
 
         /* WAIT_LOOP */
+#ifdef USB_DEBUG_ON
         while (1)
         {
             /* Non */
         }
+#endif
     }
 }
 
@@ -3647,10 +3650,12 @@ static void usb_hhub_specified_path_wait (usb_clsinfo_t * ptr, uint16_t times)
         USB_PRINTF0("### SpecifiedPassWait function pget_blk error\n");
 
         /* WAIT_LOOP */
+#ifdef USB_DEBUG_ON
         while (1)
         {
             /* Non */
         }
+#endif
     }
 }
 
