@@ -32,7 +32,8 @@ var group___r_t_c___a_p_i =
       [ "time", "group___r_t_c___a_p_i.html#ad7915eec1adda98a5740960381911c50", null ],
       [ "channel", "group___r_t_c___a_p_i.html#afe687352b349ef422a1bea06357df121", null ],
       [ "source", "group___r_t_c___a_p_i.html#ad79be9fceab2cd8a122e5d2254fc4c90", null ],
-      [ "noise_filter", "group___r_t_c___a_p_i.html#aab9203daea2e24a16626b2b40c98d3fa", null ]
+      [ "noise_filter", "group___r_t_c___a_p_i.html#aab9203daea2e24a16626b2b40c98d3fa", null ],
+      [ "mode", "group___r_t_c___a_p_i.html#a3f87f96a5361cf95695fb1815d73b42b", null ]
     ] ],
     [ "rtc_info_t", "group___r_t_c___a_p_i.html#structrtc__info__t", [
       [ "clock_source", "group___r_t_c___a_p_i.html#aba0edee87eb628db01fb1fa070a0c144", null ],
@@ -124,7 +125,13 @@ var group___r_t_c___a_p_i =
       [ "RTC_TIME_CAPTURE_SOURCE_DISABLED", "group___r_t_c___a_p_i.html#gga60a231559f89a160d0849ae222518ecaadab60261dd01089e692cf2773b2d600d", null ],
       [ "RTC_TIME_CAPTURE_SOURCE_PIN_RISING", "group___r_t_c___a_p_i.html#gga60a231559f89a160d0849ae222518ecaafea97857443fe80f89e2b32533005cd5", null ],
       [ "RTC_TIME_CAPTURE_SOURCE_PIN_FALLING", "group___r_t_c___a_p_i.html#gga60a231559f89a160d0849ae222518ecaa74b616ab24c70b286d37f1f01030823a", null ],
-      [ "RTC_TIME_CAPTURE_SOURCE_PIN_BOTH", "group___r_t_c___a_p_i.html#gga60a231559f89a160d0849ae222518ecaa3644f3972808104dc47b065116f3792e", null ]
+      [ "RTC_TIME_CAPTURE_SOURCE_PIN_BOTH", "group___r_t_c___a_p_i.html#gga60a231559f89a160d0849ae222518ecaa3644f3972808104dc47b065116f3792e", null ],
+      [ "RTC_TIME_CAPTURE_SOURCE_SOFTWARE", "group___r_t_c___a_p_i.html#gga60a231559f89a160d0849ae222518ecaab80f4151122f5c5305921cd45ab0a779", null ],
+      [ "RTC_TIME_CAPTURE_SOURCE_ELC_EVENT", "group___r_t_c___a_p_i.html#gga60a231559f89a160d0849ae222518ecaaafff8e150784ffc05af8976ed5a226cc", null ]
+    ] ],
+    [ "rtc_time_capture_mode_t", "group___r_t_c___a_p_i.html#ga1055e04d46ad556c31bfb4a62daf3cfd", [
+      [ "RTC_TIME_CAPTURE_MODE_CONTINUOUS", "group___r_t_c___a_p_i.html#gga1055e04d46ad556c31bfb4a62daf3cfda74931ef77430d1ad3b84bc7d5d51f6ea", null ],
+      [ "RTC_TIME_CAPTURE_MODE_ONE_SHOT", "group___r_t_c___a_p_i.html#gga1055e04d46ad556c31bfb4a62daf3cfdad87199ee6c06279d6c78869cef6ca14c", null ]
     ] ],
     [ "rtc_time_capture_noise_filter_t", "group___r_t_c___a_p_i.html#gaeaa54438f4298dee64468529c104b6a7", [
       [ "RTC_TIME_CAPTURE_NOISE_FILTER_OFF", "group___r_t_c___a_p_i.html#ggaeaa54438f4298dee64468529c104b6a7a14d8d0855f067c6c2b41884bfa5db7a6", null ],

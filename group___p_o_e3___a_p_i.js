@@ -131,9 +131,21 @@ var group___p_o_e3___a_p_i =
       [ "POE3_STATE_OUTPUT_SHORT_CIRCUIT_2_ERROR_REQUEST", "group___p_o_e3___a_p_i.html#gae490ab83f87c7dd38218d37b067db3a4a12a0900fdff34d0cc993edc52c5bf363", null ]
     ] ],
     [ "poe3_active_level_t", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29", [
-      [ "POE3_ACTIVE_LEVEL_HIGH", "group___p_o_e3___a_p_i.html#ggaa58f11ffa14b81b06be9cb9b44662c29a1b5aa801311f610463b62f232b66a813", null ],
-      [ "POE3_ACTIVE_LEVEL_LOW", "group___p_o_e3___a_p_i.html#ggaa58f11ffa14b81b06be9cb9b44662c29a70590aad38d23d8b3053aacf051d28ac", null ],
-      [ "POE3_ACTIVE_LEVEL_SETTING_NONE", "group___p_o_e3___a_p_i.html#ggaa58f11ffa14b81b06be9cb9b44662c29a250ded7ff787e01986df6c679fb4626d", null ]
+      [ "POE3_ACTIVE_LEVEL_HIGH", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a1b5aa801311f610463b62f232b66a813", null ],
+      [ "POE3_ACTIVE_LEVEL_LOW", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a70590aad38d23d8b3053aacf051d28ac", null ],
+      [ "POE3_ACTIVE_LEVEL_SETTING_NONE", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a250ded7ff787e01986df6c679fb4626d", null ],
+      [ "POE3_ACTIVE_LEVEL_HIGH", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a1b5aa801311f610463b62f232b66a813", null ],
+      [ "POE3_ACTIVE_LEVEL_LOW", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a70590aad38d23d8b3053aacf051d28ac", null ],
+      [ "POE3_ACTIVE_LEVEL_SETTING_NONE", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a250ded7ff787e01986df6c679fb4626d", null ],
+      [ "POE3_ACTIVE_LEVEL_HIGH", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a1b5aa801311f610463b62f232b66a813", null ],
+      [ "POE3_ACTIVE_LEVEL_LOW", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a70590aad38d23d8b3053aacf051d28ac", null ],
+      [ "POE3_ACTIVE_LEVEL_SETTING_NONE", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a250ded7ff787e01986df6c679fb4626d", null ],
+      [ "POE3_ACTIVE_LEVEL_HIGH", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a1b5aa801311f610463b62f232b66a813", null ],
+      [ "POE3_ACTIVE_LEVEL_LOW", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a70590aad38d23d8b3053aacf051d28ac", null ],
+      [ "POE3_ACTIVE_LEVEL_SETTING_NONE", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a250ded7ff787e01986df6c679fb4626d", null ],
+      [ "POE3_ACTIVE_LEVEL_HIGH", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a1b5aa801311f610463b62f232b66a813", null ],
+      [ "POE3_ACTIVE_LEVEL_LOW", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a70590aad38d23d8b3053aacf051d28ac", null ],
+      [ "POE3_ACTIVE_LEVEL_SETTING_NONE", "group___p_o_e3___a_p_i.html#gaa58f11ffa14b81b06be9cb9b44662c29a250ded7ff787e01986df6c679fb4626d", null ]
     ] ],
     [ "poe3_pin_select_t", "group___p_o_e3___a_p_i.html#ga6c33170753465c0e38b9f70e430cfff2", [
       [ "POE3_PIN_SELECT_0", "group___p_o_e3___a_p_i.html#gga6c33170753465c0e38b9f70e430cfff2a26b82ba7af4fd848934c4731054d7b00", null ],

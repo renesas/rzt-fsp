@@ -20,6 +20,7 @@ var group___p_c_i___a_p_i =
     ] ],
     [ "pci_callback_args_t", "group___p_c_i___a_p_i.html#structpci__callback__args__t", [
       [ "event", "group___p_c_i___a_p_i.html#a252e6908580582e492688eee99b411ef", null ],
+      [ "dma_channel", "group___p_c_i___a_p_i.html#a2cd9974ae16fab24d0ad21d124fdc9d6", null ],
       [ "data1", "group___p_c_i___a_p_i.html#a57f5f27eb7bf037afd1b78e90b06ee08", null ],
       [ "data2", "group___p_c_i___a_p_i.html#ae9f0f12597badf2fb457e2c7176821dc", null ],
       [ "data3", "group___p_c_i___a_p_i.html#ab42b0e643024f64c27b3b4c5eabfc0ce", null ],
@@ -88,7 +89,10 @@ var group___p_c_i___a_p_i =
       [ "PCI_EVENT_PME_TURN_OFF_RCV_EVENT", "group___p_c_i___a_p_i.html#ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1aef4d554b5952519917179f77597d500d", null ],
       [ "PCI_EVENT_PME_STATUS_CLEAR", "group___p_c_i___a_p_i.html#ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1a72ac714d76304f6c2e050d699e7917d5", null ],
       [ "PCI_EVENT_PM_PME_RECEIVE", "group___p_c_i___a_p_i.html#ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1adaf29e55ef241926fd6fe6461bba8a86", null ],
-      [ "PCI_EVENT_POWEROFF_L2", "group___p_c_i___a_p_i.html#ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1a74a89de101cdae151d358a33278394e8", null ]
+      [ "PCI_EVENT_POWEROFF_L2", "group___p_c_i___a_p_i.html#ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1a74a89de101cdae151d358a33278394e8", null ],
+      [ "PCI_EVENT_DMA_TRANSFER_COMPLETE", "group___p_c_i___a_p_i.html#ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1ac00e2e15aa442b08d785a5e5a766faf7", null ],
+      [ "PCI_EVENT_DMA_TRANSFER_STOP", "group___p_c_i___a_p_i.html#ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1ad82b0a9c48a443201576e1793e8bac4e", null ],
+      [ "PCI_EVENT_DMA_TRANSFER_ERROR", "group___p_c_i___a_p_i.html#ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1a2c56fc7be4c94b02b6c42f33c9668c9e", null ]
     ] ],
     [ "pci_configuration_write_type_t", "group___p_c_i___a_p_i.html#ga4416af14da0b65e9990414db9e9e7ef3", [
       [ "PCI_CONFIGURATION_WRITE_TYPE_0", "group___p_c_i___a_p_i.html#gga4416af14da0b65e9990414db9e9e7ef3a3f142b534de3b8712fb55bc0a1f8d2df", null ],

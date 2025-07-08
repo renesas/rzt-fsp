@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -299,11 +299,11 @@ bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="grou
 <tr class="memdesc:aaf45b7d102061452a09f5db26bdd1148"><td class="mdescLeft">&#160;</td><td class="mdescRight">Low Hold SCL during reception for the period between the 9th and the 1st clock cycle. <br /></td></tr>
 <tr class="separator:aaf45b7d102061452a09f5db26bdd1148"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a396548dfcb29b480fc122a89c42cc9bc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__instance__t">transfer_instance_t</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i2_c___s_l_a_v_e___a_p_i.html#a396548dfcb29b480fc122a89c42cc9bc">p_transfer_tx</a></td></tr>
-<tr class="memdesc:a396548dfcb29b480fc122a89c42cc9bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">DTC instance for I2C transmit.Set to NULL if unused.  <a href="#a396548dfcb29b480fc122a89c42cc9bc">More...</a><br /></td></tr>
+<tr class="memdesc:a396548dfcb29b480fc122a89c42cc9bc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer instance for I2C transmit. Set to NULL if unused.  <a href="#a396548dfcb29b480fc122a89c42cc9bc">More...</a><br /></td></tr>
 <tr class="separator:a396548dfcb29b480fc122a89c42cc9bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16c339fdbe177593d15cfdfdcb645ece"><td class="memItemLeft" align="right" valign="top"><a id="a16c339fdbe177593d15cfdfdcb645ece"></a>
 <a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__instance__t">transfer_instance_t</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i2_c___s_l_a_v_e___a_p_i.html#a16c339fdbe177593d15cfdfdcb645ece">p_transfer_rx</a></td></tr>
-<tr class="memdesc:a16c339fdbe177593d15cfdfdcb645ece"><td class="mdescLeft">&#160;</td><td class="mdescRight">DTC instance for I2C receive. Set to NULL if unused. <br /></td></tr>
+<tr class="memdesc:a16c339fdbe177593d15cfdfdcb645ece"><td class="mdescLeft">&#160;</td><td class="mdescRight">Transfer instance for I2C receive. Set to NULL if unused. <br /></td></tr>
 <tr class="separator:a16c339fdbe177593d15cfdfdcb645ece"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac194239c95dc0a5a71e220937295d67c"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___i2_c___s_l_a_v_e___a_p_i.html#ac194239c95dc0a5a71e220937295d67c">p_callback</a> )(<a class="el" href="group___i2_c___s_l_a_v_e___a_p_i.html#structi2c__slave__callback__args__t">i2c_slave_callback_args_t</a> *p_args)</td></tr>
 <tr class="memdesc:ac194239c95dc0a5a71e220937295d67c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to callback function.  <a href="#ac194239c95dc0a5a71e220937295d67c">More...</a><br /></td></tr>
@@ -346,8 +346,8 @@ void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" h
       </table>
 </div><div class="memdoc">
 
-<p>DTC instance for I2C transmit.Set to NULL if unused. </p>
-<p>DTC support </p>
+<p>Transfer instance for I2C transmit. Set to NULL if unused. </p>
+<p>Transfer API support </p>
 
 </div>
 </div>
@@ -602,6 +602,8 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggaa26f7dd0df29bb18d57fa02c7f64588dad673e065daa619986628967645f3e5d8"></a>I2C_SLAVE_RATE_FASTPLUS&#160;</td><td class="fielddoc"><p>1 MHz </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ggaa26f7dd0df29bb18d57fa02c7f64588da4b7bd298e52182a4240461db3ea39e2f"></a>I2C_SLAVE_RATE_HIGHSPEED&#160;</td><td class="fielddoc"><p>3.4 MHz </p>
+</td></tr>
 </table>
 
 </div>
@@ -666,7 +668,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

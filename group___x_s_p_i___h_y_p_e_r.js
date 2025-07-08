@@ -56,6 +56,7 @@ var group___x_s_p_i___h_y_p_e_r =
     [ "R_XSPI_HYPER_Close", "group___x_s_p_i___h_y_p_e_r.html#ga18f866b0d9e5e876018f448642fe9024", null ],
     [ "R_XSPI_HYPER_BurstTypeSet", "group___x_s_p_i___h_y_p_e_r.html#ga0dd1bd1a499b711b67881920d5e00a47", null ],
     [ "R_XSPI_HYPER_AccessSpaceSet", "group___x_s_p_i___h_y_p_e_r.html#gaaeb7cbd1abbb6230d65f5c80741bd23c", null ],
+    [ "R_XSPI_HYPER_DirectTransfer", "group___x_s_p_i___h_y_p_e_r.html#ga1bd6bcab769c986f4f7d96b135faed66", null ],
     [ "R_XSPI_HYPER_Write", "group___x_s_p_i___h_y_p_e_r.html#ga41d34dd155d2dea4439cb196c0f97271", null ],
     [ "R_XSPI_HYPER_Erase", "group___x_s_p_i___h_y_p_e_r.html#ga948d860aae9cf93a67762635067b8ddf", null ],
     [ "R_XSPI_HYPER_StatusGet", "group___x_s_p_i___h_y_p_e_r.html#gacda208d0dc55871cab5c696388a24bc1", null ],

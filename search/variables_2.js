@@ -13,11 +13,12 @@ var searchData=
   ['b_5ftx_5fcarrier',['b_tx_carrier',['../group___u_s_b___p_c_d_c___a_p_i.html#a6fdf45d945abbb8784efe11afb142783',1,'usb_serial_state_bitmap_t']]],
   ['back_5fporch',['back_porch',['../group___d_i_s_p_l_a_y___a_p_i.html#a83eeb54c5e545831c8a29f044bc225e7',1,'display_timing_t']]],
   ['bankset',['bankSet',['../group___s_p_i___f_l_a_s_h___a_p_i.html#ae581e587fb514ab784257d07a77d6b32',1,'spi_flash_api_t']]],
+  ['base',['base',['../structbsp__mpu__dynamic__cfg__t.html#ad24f3bc3cbf12f7f248e20fa996ee45e',1,'bsp_mpu_dynamic_cfg_t']]],
   ['base_5faddress',['base_address',['../group___p_c_i_e___e_p.html#a408e0d69a135aadbe1f741131dcd4c39',1,'pcie_ep_window_settings_t::base_address()'],['../group___p_c_i_e___r_c.html#a7d6bfc3d5ecac627fdf38d3ca96e4fec',1,'pcie_rc_window_settings_t::base_address()'],['../group___p_c_i_e___r_c.html#a779280953a10f1df7104cf551c418942',1,'pcie_rc_msi_window_settings_t::base_address()']]],
   ['baud_5frate_5ferror_5fx_5f1000',['baud_rate_error_x_1000',['../group___s_c_i___u_a_r_t.html#a4b30100db260c9d7a0ef8623562e548e',1,'sci_uart_baud_calculation_t']]],
   ['baud_5frate_5fprescaler',['baud_rate_prescaler',['../group___c_a_n___a_p_i.html#a33ae62d869abaf989823b7bb1563de41',1,'can_bit_timing_cfg_t']]],
-  ['baudrate',['baudrate',['../group___s_c_i___u_a_r_t.html#a265ff65e259a80b26e375ed3292ae3e5',1,'sci_uart_baud_calculation_t']]],
-  ['baudset',['baudSet',['../group___u_a_r_t___a_p_i.html#a8b0f901bcc26bd6836fe620235585f98',1,'uart_api_t']]],
+  ['baudrate',['baudrate',['../group___s_m_c_i___a_p_i.html#a5c866965929776f3cfae03ad3d121234',1,'smci_speed_params_t::baudrate()'],['../group___s_c_i___u_a_r_t.html#a265ff65e259a80b26e375ed3292ae3e5',1,'sci_uart_baud_calculation_t::baudrate()']]],
+  ['baudset',['baudSet',['../group___s_m_c_i___a_p_i.html#a8d5f3d07f5f746a977e8dff3c3ee1d4c',1,'smci_api_t::baudSet()'],['../group___u_a_r_t___a_p_i.html#a8b0f901bcc26bd6836fe620235585f98',1,'uart_api_t::baudSet()']]],
   ['bbreak',['bbreak',['../group___u_s_b___h_c_d_c___a_p_i.html#ad19c98bf543605318ec7fa876615497e',1,'usb_hcdc_serialstate_t']]],
   ['bchar_5fformat',['bchar_format',['../group___u_s_b___h_c_d_c___a_p_i.html#af10bc623fb14294fd7f677d43edb4a0c',1,'usb_hcdc_linecoding_t']]],
   ['bdata_5fbits',['bdata_bits',['../group___u_s_b___h_c_d_c___a_p_i.html#afb91b547c4b5102bccc5edeee167d058',1,'usb_hcdc_linecoding_t']]],
@@ -50,7 +51,7 @@ var searchData=
   ['bsp_5fgicd_5ficfgr_5finit',['BSP_GICD_ICFGR_INIT',['../group___b_s_p___m_c_u___r_z_t2_l.html#ga84a07d34155c4b75df64d839486a101b',1,'BSP_GICD_ICFGR_INIT():&#160;bsp_irq_sense.c'],['../group___b_s_p___m_c_u___r_z_t2_l.html#ga84a07d34155c4b75df64d839486a101b',1,'BSP_GICD_ICFGR_INIT():&#160;bsp_irq_sense.c'],['../group___b_s_p___m_c_u___r_z_t2_m.html#ga84a07d34155c4b75df64d839486a101b',1,'BSP_GICD_ICFGR_INIT():&#160;bsp_irq_sense.c'],['../group___b_s_p___m_c_u___r_z_t2_m_e.html#ga84a07d34155c4b75df64d839486a101b',1,'BSP_GICD_ICFGR_INIT():&#160;bsp_irq_sense.c']]],
   ['btx_5fcarrier',['btx_carrier',['../group___u_s_b___h_c_d_c___a_p_i.html#a1d466553fb6366fec3b2e5c9f123b95b',1,'usb_hcdc_serialstate_t']]],
   ['buffer_5finit_5fvalue',['buffer_init_value',['../group___i_o_p_o_r_t.html#a8cacbb5efbafad8505bd0140ece21b08',1,'ioport_event_group_input_t']]],
-  ['buffer_5fmode',['buffer_mode',['../group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a00165cb76b8ec9693745d9f3132cf4e3',1,'three_phase_cfg_t::buffer_mode()'],['../group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#ad91be3680c05db6659f73c803f3a720a',1,'mtu3_three_phase_instance_ctrl_t::buffer_mode()']]],
+  ['buffer_5fmode',['buffer_mode',['../group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#a00165cb76b8ec9693745d9f3132cf4e3',1,'three_phase_cfg_t::buffer_mode()'],['../group___m_t_u3.html#a07c88226f7b297098ab45ec9bd612bb3',1,'mtu3_extended_cfg_t::buffer_mode()'],['../group___m_t_u3___t_h_r_e_e___p_h_a_s_e.html#ad91be3680c05db6659f73c803f3a720a',1,'mtu3_three_phase_instance_ctrl_t::buffer_mode()']]],
   ['bufferchange',['bufferChange',['../group___d_i_s_p_l_a_y___a_p_i.html#a6551b58832a32c7767f078ee7bce31ac',1,'display_api_t']]],
   ['bufferrelease',['bufferRelease',['../group___e_t_h_e_r___a_p_i.html#a4f988e111dadbfab48e9eccec8d462b5',1,'ether_api_t']]],
   ['build',['build',['../group___r_e_n_e_s_a_s___c_o_m_m_o_n.html#ac43952692411ec98dc1a9b9ac2a828a8',1,'fsp_pack_version_t::version_id_b_s']]],
@@ -59,5 +60,6 @@ var searchData=
   ['bus_5fwidth',['bus_width',['../group___s_d_m_m_c___a_p_i.html#a2169b066e0d84bdf2f8349348ea5f749',1,'sdmmc_cfg_t']]],
   ['busy',['busy',['../group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html#a3a4e62883ff430e1e9a1fbd940116697',1,'rm_block_media_status_t']]],
   ['byte_5fswap',['byte_swap',['../group___s_p_i.html#aa3f17ea0c2b813af6cc166d0f58e8530',1,'spi_extended_cfg_t']]],
-  ['bytes',['bytes',['../group___i2_c___s_l_a_v_e___a_p_i.html#a43903d76b59b527cef993d5cdbe9a2b9',1,'i2c_slave_callback_args_t']]]
+  ['bytes',['bytes',['../group___i2_c___s_l_a_v_e___a_p_i.html#a43903d76b59b527cef993d5cdbe9a2b9',1,'i2c_slave_callback_args_t']]],
+  ['bytes_5frecvd',['bytes_recvd',['../group___s_m_c_i___a_p_i.html#a01380440d67d90170b2157583ab8a4df',1,'smci_status_t']]]
 ];

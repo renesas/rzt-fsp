@@ -88,7 +88,8 @@ var group___c_g_c___a_p_i =
       [ "CGC_PLL_DIV_1", "group___c_g_c___a_p_i.html#ggaba4cdc2e548dc20fb3800c3d1adcc315a322db864f5341badeeced4700731b5ba", null ],
       [ "CGC_PLL_DIV_2", "group___c_g_c___a_p_i.html#ggaba4cdc2e548dc20fb3800c3d1adcc315a5f2f46c73e1f9db203129250b371ac7f", null ],
       [ "CGC_PLL_DIV_3", "group___c_g_c___a_p_i.html#ggaba4cdc2e548dc20fb3800c3d1adcc315af88ae194228b4cbbd36ab95e90651fb0", null ],
-      [ "CGC_PLL_DIV_4", "group___c_g_c___a_p_i.html#ggaba4cdc2e548dc20fb3800c3d1adcc315a4e852af9f984d3357ac0e3a9c656a073", null ]
+      [ "CGC_PLL_DIV_4", "group___c_g_c___a_p_i.html#ggaba4cdc2e548dc20fb3800c3d1adcc315a4e852af9f984d3357ac0e3a9c656a073", null ],
+      [ "CGC_PLL_DIV_6", "group___c_g_c___a_p_i.html#ggaba4cdc2e548dc20fb3800c3d1adcc315a3619a5c5db89a47093b5edb7ce118ee4", null ]
     ] ],
     [ "cgc_pll_out_div_t", "group___c_g_c___a_p_i.html#ga2e1a2208bb6a8c30053b9034596f73d6", [
       [ "CGC_PLL_OUT_DIV_2", "group___c_g_c___a_p_i.html#gga2e1a2208bb6a8c30053b9034596f73d6a6efbc87b2ec66edae384b2cd7326aa3d", null ],
@@ -98,6 +99,7 @@ var group___c_g_c___a_p_i =
       [ "CGC_PLL_OUT_DIV_6", "group___c_g_c___a_p_i.html#gga2e1a2208bb6a8c30053b9034596f73d6af7dcf6f34e89757c52ce711de34f6c9d", null ],
       [ "CGC_PLL_OUT_DIV_8", "group___c_g_c___a_p_i.html#gga2e1a2208bb6a8c30053b9034596f73d6ae5699b0d549e49dad3eff04cfcf9591a", null ],
       [ "CGC_PLL_OUT_DIV_9", "group___c_g_c___a_p_i.html#gga2e1a2208bb6a8c30053b9034596f73d6a91157f2e952b13361a9ab38315871127", null ],
+      [ "CGC_PLL_OUT_DIV_1_5", "group___c_g_c___a_p_i.html#gga2e1a2208bb6a8c30053b9034596f73d6adfc43f1bbe4b30136db15b969f508543", null ],
       [ "CGC_PLL_OUT_DIV_16", "group___c_g_c___a_p_i.html#gga2e1a2208bb6a8c30053b9034596f73d6a0b89923ee4892080c7c804c79f625055", null ]
     ] ],
     [ "cgc_sys_clock_div_t", "group___c_g_c___a_p_i.html#ga78ac772149fadd3ec1fb21dc674e2b8d", [

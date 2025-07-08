@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -174,6 +174,10 @@ Summary</h1>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
+<tr class="memitem:structhyperbus__command__address__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__command__address__t">hyperbus_command_address_t</a></td></tr>
+<tr class="separator:structhyperbus__command__address__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structhyperbus__direct__transfer__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__direct__transfer__t">hyperbus_direct_transfer_t</a></td></tr>
+<tr class="separator:structhyperbus__direct__transfer__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structhyperbus__status__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__status__t">hyperbus_status_t</a></td></tr>
 <tr class="separator:structhyperbus__status__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structhyperbus__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__cfg__t">hyperbus_cfg_t</a></td></tr>
@@ -198,6 +202,63 @@ Enumerations</h2></td></tr>
 <tr class="separator:gab325479320e6b1f53d7d0f51b813dacb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
+<a name="structhyperbus__command__address__t" id="structhyperbus__command__address__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structhyperbus__command__address__t">&#9670;&nbsp;</a></span>hyperbus_command_address_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct hyperbus_command_address_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Command-address bit information in HyperBus protocol </p>
+</div>
+</div>
+</div>
+<a name="structhyperbus__direct__transfer__t" id="structhyperbus__direct__transfer__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structhyperbus__direct__transfer__t">&#9670;&nbsp;</a></span>hyperbus_direct_transfer_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct hyperbus_direct_transfer_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Structure to define a direct transfer. </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a4a40b834ebb8273504ba7747cdb8f9b7"></a><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__command__address__t">hyperbus_command_address_t</a></td>
+<td class="fieldname">
+command_address</td>
+<td class="fielddoc">
+Command/Address. </td></tr>
+<tr><td class="fieldtype">
+<a id="a0071ada6029ffd652e4885529258c0b8"></a>union <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#unionhyperbus__direct__transfer__t_8____unnamed____">hyperbus_direct_transfer_t</a></td>
+<td class="fieldname">
+__unnamed__</td>
+<td class="fielddoc">
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a416559d0947776d482c256d493335700"></a>uint8_t</td>
+<td class="fieldname">
+dummy_cycles</td>
+<td class="fielddoc">
+Number of dummy cycles. </td></tr>
+<tr><td class="fieldtype">
+<a id="ac5452014bf7614c30c54cf807d422dfc"></a>uint8_t</td>
+<td class="fieldname">
+data_length</td>
+<td class="fielddoc">
+Data length. </td></tr>
+</table>
+
+</div>
+</div>
 <a name="structhyperbus__status__t" id="structhyperbus__status__t"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#structhyperbus__status__t">&#9670;&nbsp;</a></span>hyperbus_status_t</h2>
 
@@ -301,18 +362,20 @@ Pointer to implementation specific extended configurations. </td></tr>
 <tr class="separator:aef6c90f5c5a94e43fc65ffaf4d7d9133"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0bda295fe6536d760a1fd8e8bb3933f0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a0bda295fe6536d760a1fd8e8bb3933f0">burstTypeSet</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga4a303af2d7c438292696f29174791a69">hyperbus_burst_type_t</a> burst_type)</td></tr>
 <tr class="separator:a0bda295fe6536d760a1fd8e8bb3933f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a846ba39817ba412950946f7bc4522d88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a846ba39817ba412950946f7bc4522d88">accessSpaceSet</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#gaaae0706da636f984d170cd1651abf04c">hyperbus_space_select_t</a> access_space)</td></tr>
-<tr class="separator:a846ba39817ba412950946f7bc4522d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6662cf3efb6cb64916127d1879eaa8ed"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a6662cf3efb6cb64916127d1879eaa8ed">write</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, uint8_t const *const p_src, uint8_t *const p_dest, uint32_t byte_count)</td></tr>
-<tr class="separator:a6662cf3efb6cb64916127d1879eaa8ed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a9f392f63b6a9dcdbc78dbfbac2ed2241"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a9f392f63b6a9dcdbc78dbfbac2ed2241">erase</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, uint8_t *const p_device_address, uint32_t byte_count)</td></tr>
-<tr class="separator:a9f392f63b6a9dcdbc78dbfbac2ed2241"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22376bf8b77c368cc3fe3a7a106adbe7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a22376bf8b77c368cc3fe3a7a106adbe7">statusGet</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *ctrl_t, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__status__t">hyperbus_status_t</a> *const p_status)</td></tr>
-<tr class="separator:a22376bf8b77c368cc3fe3a7a106adbe7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f47dfa7e5dde8403962020ec44bb2ee"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a2f47dfa7e5dde8403962020ec44bb2ee">autoCalibrate</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl)</td></tr>
-<tr class="separator:a2f47dfa7e5dde8403962020ec44bb2ee"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5afbace0bcf6cd20775e2ac96ba91f39"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a5afbace0bcf6cd20775e2ac96ba91f39">close</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *ctrl_t)</td></tr>
-<tr class="separator:a5afbace0bcf6cd20775e2ac96ba91f39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afc8cc6488b7263d4183a1600ba1dab25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#afc8cc6488b7263d4183a1600ba1dab25">accessSpaceSet</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#gaaae0706da636f984d170cd1651abf04c">hyperbus_space_select_t</a> access_space)</td></tr>
+<tr class="separator:afc8cc6488b7263d4183a1600ba1dab25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3d08a9c6918b8b6932e0d15b5b21fd88"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a3d08a9c6918b8b6932e0d15b5b21fd88">directTransfer</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__direct__transfer__t">hyperbus_direct_transfer_t</a> *const p_transfer)</td></tr>
+<tr class="separator:a3d08a9c6918b8b6932e0d15b5b21fd88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5d12f7a396114f4509de4b5b3f2fee11"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a5d12f7a396114f4509de4b5b3f2fee11">write</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, uint8_t const *const p_src, uint8_t *const p_dest, uint32_t byte_count)</td></tr>
+<tr class="separator:a5d12f7a396114f4509de4b5b3f2fee11"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6250081482ac1a88d195860018bbad8"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ae6250081482ac1a88d195860018bbad8">erase</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, uint8_t *const p_device_address, uint32_t byte_count)</td></tr>
+<tr class="separator:ae6250081482ac1a88d195860018bbad8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae606a7a11c7c48e6dbb804a208078c40"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ae606a7a11c7c48e6dbb804a208078c40">statusGet</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const ctrl_t, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__status__t">hyperbus_status_t</a> *const p_status)</td></tr>
+<tr class="separator:ae606a7a11c7c48e6dbb804a208078c40"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63bb5fad782082d0f4e9033bef2ba8ef"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a63bb5fad782082d0f4e9033bef2ba8ef">autoCalibrate</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl)</td></tr>
+<tr class="separator:a63bb5fad782082d0f4e9033bef2ba8ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae9977d51a242df3cd21e8abb4424b8e6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ae9977d51a242df3cd21e8abb4424b8e6">close</a> )(<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const ctrl_t)</td></tr>
+<tr class="separator:ae9977d51a242df3cd21e8abb4424b8e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
 <a id="aef6c90f5c5a94e43fc65ffaf4d7d9133"></a>
@@ -359,14 +422,14 @@ Pointer to implementation specific extended configurations. </td></tr>
 
 </div>
 </div>
-<a id="a846ba39817ba412950946f7bc4522d88"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a846ba39817ba412950946f7bc4522d88">&#9670;&nbsp;</a></span>accessSpaceSet</h2>
+<a id="afc8cc6488b7263d4183a1600ba1dab25"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afc8cc6488b7263d4183a1600ba1dab25">&#9670;&nbsp;</a></span>accessSpaceSet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::accessSpaceSet) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#gaaae0706da636f984d170cd1651abf04c">hyperbus_space_select_t</a> access_space)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::accessSpaceSet) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#gaaae0706da636f984d170cd1651abf04c">hyperbus_space_select_t</a> access_space)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -381,14 +444,36 @@ Pointer to implementation specific extended configurations. </td></tr>
 
 </div>
 </div>
-<a id="a6662cf3efb6cb64916127d1879eaa8ed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6662cf3efb6cb64916127d1879eaa8ed">&#9670;&nbsp;</a></span>write</h2>
+<a id="a3d08a9c6918b8b6932e0d15b5b21fd88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3d08a9c6918b8b6932e0d15b5b21fd88">&#9670;&nbsp;</a></span>directTransfer</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::write) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, uint8_t const *const p_src, uint8_t *const p_dest, uint32_t byte_count)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::directTransfer) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__direct__transfer__t">hyperbus_direct_transfer_t</a> *const p_transfer)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Direct Read/Write raw data from/to the HyperBus.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_ctrl</td><td>Pointer to a driver handle </td></tr>
+    <tr><td class="paramdir">[in]</td><td class="paramname">p_transfer</td><td>Pointer to command-address, data values and lengths </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a5d12f7a396114f4509de4b5b3f2fee11"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5d12f7a396114f4509de4b5b3f2fee11">&#9670;&nbsp;</a></span>write</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::write) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, uint8_t const *const p_src, uint8_t *const p_dest, uint32_t byte_count)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -405,14 +490,14 @@ Pointer to implementation specific extended configurations. </td></tr>
 
 </div>
 </div>
-<a id="a9f392f63b6a9dcdbc78dbfbac2ed2241"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a9f392f63b6a9dcdbc78dbfbac2ed2241">&#9670;&nbsp;</a></span>erase</h2>
+<a id="ae6250081482ac1a88d195860018bbad8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6250081482ac1a88d195860018bbad8">&#9670;&nbsp;</a></span>erase</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::erase) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, uint8_t *const p_device_address, uint32_t byte_count)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::erase) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, uint8_t *const p_device_address, uint32_t byte_count)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -428,14 +513,14 @@ Pointer to implementation specific extended configurations. </td></tr>
 
 </div>
 </div>
-<a id="a22376bf8b77c368cc3fe3a7a106adbe7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22376bf8b77c368cc3fe3a7a106adbe7">&#9670;&nbsp;</a></span>statusGet</h2>
+<a id="ae606a7a11c7c48e6dbb804a208078c40"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae606a7a11c7c48e6dbb804a208078c40">&#9670;&nbsp;</a></span>statusGet</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::statusGet) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *ctrl_t, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__status__t">hyperbus_status_t</a> *const p_status)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::statusGet) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const ctrl_t, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__status__t">hyperbus_status_t</a> *const p_status)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -450,14 +535,14 @@ Pointer to implementation specific extended configurations. </td></tr>
 
 </div>
 </div>
-<a id="a2f47dfa7e5dde8403962020ec44bb2ee"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f47dfa7e5dde8403962020ec44bb2ee">&#9670;&nbsp;</a></span>autoCalibrate</h2>
+<a id="a63bb5fad782082d0f4e9033bef2ba8ef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63bb5fad782082d0f4e9033bef2ba8ef">&#9670;&nbsp;</a></span>autoCalibrate</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::autoCalibrate) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::autoCalibrate) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -471,14 +556,14 @@ Pointer to implementation specific extended configurations. </td></tr>
 
 </div>
 </div>
-<a id="a5afbace0bcf6cd20775e2ac96ba91f39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5afbace0bcf6cd20775e2ac96ba91f39">&#9670;&nbsp;</a></span>close</h2>
+<a id="ae9977d51a242df3cd21e8abb4424b8e6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae9977d51a242df3cd21e8abb4424b8e6">&#9670;&nbsp;</a></span>close</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::close) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *ctrl_t)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  hyperbus_api_t::close) (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const ctrl_t)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -677,7 +762,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

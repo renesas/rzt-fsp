@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -160,7 +160,8 @@ $(document).ready(function(){initNavTree('group___e_t_h_e_r___s_w_i_t_c_h___a_p_
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">Ethernet Switch Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___i_n_t_e_r_f_a_c_e_s.html">Networking</a></div></div>  </div>
 </div><!--header-->
@@ -186,6 +187,11 @@ Data Structures</h2></td></tr>
 Typedefs</h2></td></tr>
 <tr class="memitem:ga64fa5aecbe46856bea7ed1bf4ff56bed"><td class="memItemLeft" align="right" valign="top">typedef void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___s_w_i_t_c_h___a_p_i.html#ga64fa5aecbe46856bea7ed1bf4ff56bed">ether_switch_ctrl_t</a></td></tr>
 <tr class="separator:ga64fa5aecbe46856bea7ed1bf4ff56bed"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
+Enumerations</h2></td></tr>
+<tr class="memitem:gacd79a4b5f23db68c622b963ff8aa8524"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___e_t_h_e_r___s_w_i_t_c_h___a_p_i.html#gacd79a4b5f23db68c622b963ff8aa8524">ether_switch_event_t</a> </td></tr>
+<tr class="separator:gacd79a4b5f23db68c622b963ff8aa8524"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structether__switch__callback__args__t" id="structether__switch__callback__args__t"></a>
@@ -210,18 +216,31 @@ channel</td>
 <td class="fielddoc">
 Device channel number. </td></tr>
 <tr><td class="fieldtype">
+<a id="a30ef4edfb0a6ee1d0cfec234dbf87ef3"></a>uint32_t</td>
+<td class="fieldname">
+ports</td>
+<td class="fielddoc">
+Bitmap of ports on which the interrupt occurred. </td></tr>
+<tr><td class="fieldtype">
+<a id="a2f998ad882519096d87da28359eea096"></a>uint32_t</td>
+<td class="fieldname">
+queue_index</td>
+<td class="fielddoc">
+Queue index where a interrupt occurs. </td></tr>
+<tr><td class="fieldtype">
+<a id="a4fe5367c86c4967b3ab5b240536cfb8b"></a><a class="el" href="group___e_t_h_e_r___s_w_i_t_c_h___a_p_i.html#gacd79a4b5f23db68c622b963ff8aa8524">ether_switch_event_t</a></td>
+<td class="fieldname">
+event</td>
+<td class="fielddoc">
+The event can be used to identify what caused the callback. <p>Event code. </p>
+</td></tr>
+<tr><td class="fieldtype">
 <a id="ac665dd88ab129d179973926e43458c75"></a>void const  *</td>
 <td class="fieldname">
 p_context</td>
 <td class="fielddoc">
 Placeholder for user data. Set in <a class="el" href="group___e_t_h_e_r___s_w_i_t_c_h___a_p_i.html#ab10f70e9fedb5561a08fb18da3deec19">ether_switch_api_t::open</a> function in <a class="el" href="group___e_t_h_e_r___s_w_i_t_c_h___a_p_i.html#structether__switch__cfg__t">ether_switch_cfg_t</a>. <p>Placeholder for user data. </p>
 </td></tr>
-<tr><td class="fieldtype">
-<a id="a4fe5367c86c4967b3ab5b240536cfb8b"></a>ether_switch_event_t</td>
-<td class="fieldname">
-event</td>
-<td class="fielddoc">
-Event code. </td></tr>
 <tr><td class="fieldtype">
 <a id="ad292fff19863dc85d807766039a39938"></a>uint32_t</td>
 <td class="fieldname">
@@ -406,13 +425,45 @@ Pointer to the API structure for this instance. </td></tr>
 
 </div>
 </div>
+<h2 class="groupheader">Enumeration Type Documentation</h2>
+<a id="gacd79a4b5f23db68c622b963ff8aa8524"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gacd79a4b5f23db68c622b963ff8aa8524">&#9670;&nbsp;</a></span>ether_switch_event_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___e_t_h_e_r___s_w_i_t_c_h___a_p_i.html#gacd79a4b5f23db68c622b963ff8aa8524">ether_switch_event_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Events that can trigger a callback function </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gacd79a4b5f23db68c622b963ff8aa8524aa0a0514df6bac40c835e4fcda32073b4"></a>ETHER_SWITCH_EVENT_RX_COMPLETE&#160;</td><td class="fielddoc"><p>A descriptor complete to receive a flame. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gacd79a4b5f23db68c622b963ff8aa8524a0487493c21c16952bd6586b0230c88d7"></a>ETHER_SWITCH_EVENT_TX_COMPLETE&#160;</td><td class="fielddoc"><p>A descriptor complete to transmit a flame. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gacd79a4b5f23db68c622b963ff8aa8524a200ad7f19a1e015a4212e6fc5a9f164f"></a>ETHER_SWITCH_EVENT_RX_QUEUE_FULL&#160;</td><td class="fielddoc"><p>A RX descriptor queue is full. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gacd79a4b5f23db68c622b963ff8aa8524af64610e3efae1b13eeaa962e5928891e"></a>ETHER_SWITCH_EVENT_RX_MESSAGE_LOST&#160;</td><td class="fielddoc"><p>Receive a frame when a RX descriptor queue is full. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gacd79a4b5f23db68c622b963ff8aa8524ab169af7dabcf0471a530ce24997bdf8d"></a>ETHER_SWITCH_EVENT_LINK_CHANGE&#160;</td><td class="fielddoc"><p>Change Link status. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gacd79a4b5f23db68c622b963ff8aa8524ab169af7dabcf0471a530ce24997bdf8d"></a>ETHER_SWITCH_EVENT_LINK_CHANGE&#160;</td><td class="fielddoc"><p>Change Link status. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gacd79a4b5f23db68c622b963ff8aa8524ab169af7dabcf0471a530ce24997bdf8d"></a>ETHER_SWITCH_EVENT_LINK_CHANGE&#160;</td><td class="fielddoc"><p>Change Link status. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
 </div><!-- contents -->
 </div><!-- doc-content -->
 <!-- HTML footer for doxygen 1.8.7-->
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

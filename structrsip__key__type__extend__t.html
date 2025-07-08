@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZT Flexible Software Package Documentation: sdhi_instance_ctrl_t Struct Reference</title>
+<title>RZT Flexible Software Package Documentation: rsip_key_type_extend_t Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -76,7 +76,7 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
   </div>
 </div>
 <script type="text/javascript">
-$(document).ready(function(){initNavTree('structsdhi__instance__ctrl__t.html','');});
+$(document).ready(function(){initNavTree('structrsip__key__type__extend__t.html','');});
 </script>
 
 <script src="search/mark.min.js"></script>
@@ -158,16 +158,63 @@ $(document).ready(function(){initNavTree('structsdhi__instance__ctrl__t.html',''
     <div id="searchResults"></div>
 </div>
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Data Fields</a>  </div>
   <div class="headertitle">
-<div class="title">sdhi_instance_ctrl_t Struct Reference</div>  </div>
+<div class="title">rsip_key_type_extend_t Struct Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
 
-<p><code>#include &lt;r_sdhi.h&gt;</code></p>
+<p><code>#include &lt;r_rsip_private.h&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-attribs"></a>
+Data Fields</h2></td></tr>
+<tr class="memitem:a42456a743b0b4e4f00f4ad6f86efdd88"><td class="memItemLeft" align="right" valign="top"><a id="a42456a743b0b4e4f00f4ad6f86efdd88"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structrsip__key__type__extend__t.html#a42456a743b0b4e4f00f4ad6f86efdd88">alg</a></td></tr>
+<tr class="memdesc:a42456a743b0b4e4f00f4ad6f86efdd88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Key algorithm. <br /></td></tr>
+<tr class="separator:a42456a743b0b4e4f00f4ad6f86efdd88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a059cdac9f11cf975b3de7415a262053c"><td class="memItemLeft" align="right" valign="top"><a id="a059cdac9f11cf975b3de7415a262053c"></a>
+uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structrsip__key__type__extend__t.html#a059cdac9f11cf975b3de7415a262053c">subtype</a></td></tr>
+<tr class="memdesc:a059cdac9f11cf975b3de7415a262053c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Key subtype. <br /></td></tr>
+<tr class="separator:a059cdac9f11cf975b3de7415a262053c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>SDMMC instance control block. This is private to the FSP and should not be used or modified by the application. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li>r_sdhi.h</li>
+<div class="textblock"><p>Parsed key type </p>
+</div><h2 class="groupheader">Field Documentation</h2>
+<a id="a42456a743b0b4e4f00f4ad6f86efdd88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42456a743b0b4e4f00f4ad6f86efdd88">&#9670;&nbsp;</a></span>alg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t rsip_key_type_extend_t::alg</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Key algorithm. </p>
+
+</div>
+</div>
+<a id="a059cdac9f11cf975b3de7415a262053c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a059cdac9f11cf975b3de7415a262053c">&#9670;&nbsp;</a></span>subtype</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint8_t rsip_key_type_extend_t::subtype</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Key subtype. </p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>r_rsip_private.h</li>
 </ul>
 </div><!-- contents -->
 </div><!-- doc-content -->
@@ -175,8 +222,8 @@ $(document).ready(function(){initNavTree('structsdhi__instance__ctrl__t.html',''
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-    <li class="navelem"><a class="el" href="structsdhi__instance__ctrl__t.html">sdhi_instance_ctrl_t</a></li>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+    <li class="navelem"><a class="el" href="structrsip__key__type__extend__t.html">rsip_key_type_extend_t</a></li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

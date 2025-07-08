@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -306,13 +306,13 @@ I/O address. </td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="ab35355443eb3a9e54978e515ddef980d"></a>union <a class="el" href="group___p_c_i___a_p_i.html#unionpci__message__transfer__t_8____unnamed____">pci_message_transfer_t</a></td>
+<a id="a88b5b83e2fba53d97d314e391554d145"></a>union <a class="el" href="group___p_c_i___a_p_i.html#unionpci__message__transfer__t_8____unnamed____">pci_message_transfer_t</a></td>
 <td class="fieldname">
 __unnamed__</td>
 <td class="fielddoc">
 </td></tr>
 <tr><td class="fieldtype">
-<a id="a612068b0107b91f9b4751951b196489e"></a>union <a class="el" href="group___p_c_i___a_p_i.html#unionpci__message__transfer__t_8____unnamed____">pci_message_transfer_t</a></td>
+<a id="a64b5868d8fe5c068a9830af123680ee9"></a>union <a class="el" href="group___p_c_i___a_p_i.html#unionpci__message__transfer__t_8____unnamed____">pci_message_transfer_t</a></td>
 <td class="fieldname">
 __unnamed__</td>
 <td class="fielddoc">
@@ -389,6 +389,12 @@ Current LTSSM state. </td></tr>
 event</td>
 <td class="fielddoc">
 Event code. </td></tr>
+<tr><td class="fieldtype">
+<a id="a2cd9974ae16fab24d0ad21d124fdc9d6"></a>uint32_t</td>
+<td class="fieldname">
+dma_channel</td>
+<td class="fielddoc">
+Channel of DMA (valid only for DMA-related events) </td></tr>
 <tr><td class="fieldtype">
 <a id="a57f5f27eb7bf037afd1b78e90b06ee08"></a>uint32_t</td>
 <td class="fieldname">
@@ -1067,6 +1073,12 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1a74a89de101cdae151d358a33278394e8"></a>PCI_EVENT_POWEROFF_L2&#160;</td><td class="fielddoc"><p>POWEROFF indication on L2. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1ac00e2e15aa442b08d785a5e5a766faf7"></a>PCI_EVENT_DMA_TRANSFER_COMPLETE&#160;</td><td class="fielddoc"><p>DMA transfer complete. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1ad82b0a9c48a443201576e1793e8bac4e"></a>PCI_EVENT_DMA_TRANSFER_STOP&#160;</td><td class="fielddoc"><p>DMA transfer stop. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggacf7f5432fe7d5dc3e3f9f2ab7a0538a1a2c56fc7be4c94b02b6c42f33c9668c9e"></a>PCI_EVENT_DMA_TRANSFER_ERROR&#160;</td><td class="fielddoc"><p>DMA transfer error. </p>
+</td></tr>
 </table>
 
 </div>
@@ -1179,7 +1191,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

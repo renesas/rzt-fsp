@@ -2,6 +2,7 @@ var searchData=
 [
   ['usb_20hmsc_20block_20media_20implementation_20_28rm_5fblock_5fmedia_5fusb_29',['USB HMSC Block Media Implementation (rm_block_media_usb)',['../group___r_m___b_l_o_c_k___m_e_d_i_a___u_s_b.html',1,'']]],
   ['user_20block_20media_20implementation_20_28rm_5fblock_5fmedia_5fuser_29',['User Block Media Implementation (rm_block_media_user)',['../group___r_m___b_l_o_c_k___m_e_d_i_a___u_s_e_r.html',1,'']]],
+  ['uart_20_28r_5fsci_5fuart_29',['UART (r_sci_uart)',['../group___s_c_i___u_a_r_t.html',1,'']]],
   ['uart_20interface',['UART Interface',['../group___u_a_r_t___a_p_i.html',1,'']]],
   ['uart_5fapi_5ft',['uart_api_t',['../group___u_a_r_t___a_p_i.html#structuart__api__t',1,'']]],
   ['uart_5fcallback_5fargs_5ft',['uart_callback_args_t',['../group___u_a_r_t___a_p_i.html#structuart__callback__args__t',1,'']]],
@@ -75,6 +76,7 @@ var searchData=
   ['usb_5fclass',['USB_CLASS',['../group___u_s_b___a_p_i.html#ga1e0073f633fa828440e2f3c576cfbc62',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fdfu',['USB_CLASS_DFU',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2ac1fe471dfd6edc739aa2d500a8634b08',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fend',['USB_CLASS_END',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2ada9301f70f2342c0853a2d41486fcdd9',1,'r_usb_basic_api.h']]],
+  ['usb_5fclass_5fhaud',['USB_CLASS_HAUD',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2a4abf229f7006ea763d03aa58987f9879',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fhcdc',['USB_CLASS_HCDC',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2aa31d93178a24f042fb19db6da3b5a2d8',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fhcdcc',['USB_CLASS_HCDCC',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2a849e5469fce2840fde1a475474f3ddc4',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fhhid',['USB_CLASS_HHID',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2a38b8cf9a51297016282ad06c4d9ae875',1,'r_usb_basic_api.h']]],

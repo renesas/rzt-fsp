@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -160,6 +160,7 @@ $(document).ready(function(){initNavTree('group___r_m___f_r_e_e_r_t_o_s___p_l_u_
 <div class="header">
   <div class="summary">
 <a href="#nested-classes">Data Structures</a> &#124;
+<a href="#typedef-members">Typedefs</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
 <div class="title">FreeRTOS+FAT Port Interface<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___i_n_t_e_r_f_a_c_e_s.html">Interfaces</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___s_t_o_r_a_g_e___i_n_t_e_r_f_a_c_e_s.html">Storage</a></div></div>  </div>
@@ -177,10 +178,21 @@ Data Structures</h2></td></tr>
 <tr class="separator:structrm__freertos__plus__fat__callback__args__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structrm__freertos__plus__fat__device__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__device__t">rm_freertos_plus_fat_device_t</a></td></tr>
 <tr class="separator:structrm__freertos__plus__fat__device__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structrm__freertos__plus__fat__info__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__info__t">rm_freertos_plus_fat_info_t</a></td></tr>
+<tr class="separator:structrm__freertos__plus__fat__info__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structrm__freertos__plus__fat__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__cfg__t">rm_freertos_plus_fat_cfg_t</a></td></tr>
+<tr class="separator:structrm__freertos__plus__fat__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structrm__freertos__plus__fat__disk__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__disk__cfg__t">rm_freertos_plus_fat_disk_cfg_t</a></td></tr>
+<tr class="separator:structrm__freertos__plus__fat__disk__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structrm__freertos__plus__fat__api__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__api__t">rm_freertos_plus_fat_api_t</a></td></tr>
 <tr class="separator:structrm__freertos__plus__fat__api__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structrm__freertos__plus__fat__instance__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__instance__t">rm_freertos_plus_fat_instance_t</a></td></tr>
 <tr class="separator:structrm__freertos__plus__fat__instance__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="typedef-members"></a>
+Typedefs</h2></td></tr>
+<tr class="memitem:gad722ac0d57e8884d9903d65a29bb4a8c"><td class="memItemLeft" align="right" valign="top">typedef void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a></td></tr>
+<tr class="separator:gad722ac0d57e8884d9903d65a29bb4a8c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="enum-members"></a>
 Enumerations</h2></td></tr>
@@ -250,6 +262,160 @@ Sector size in bytes. </td></tr>
 
 </div>
 </div>
+<a name="structrm__freertos__plus__fat__info__t" id="structrm__freertos__plus__fat__info__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structrm__freertos__plus__fat__info__t">&#9670;&nbsp;</a></span>rm_freertos_plus_fat_info_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct rm_freertos_plus_fat_info_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Basic information about a FAT volume. </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a4733bca3959bec27f6b569363ecace49"></a>uint32_t</td>
+<td class="fieldname">
+sector_size</td>
+<td class="fielddoc">
+Sector size. </td></tr>
+<tr><td class="fieldtype">
+<a id="a741668e1a0f9c98e5c0cbaefef7e954a"></a>uint32_t</td>
+<td class="fieldname">
+sectors_per_cluster</td>
+<td class="fielddoc">
+Sectors per cluster. </td></tr>
+<tr><td class="fieldtype">
+<a id="ad48ce228b76c184982c9020e12c99dfc"></a>uint32_t</td>
+<td class="fieldname">
+total_sectors</td>
+<td class="fielddoc">
+Total number of sectors. </td></tr>
+<tr><td class="fieldtype">
+<a id="ac9ea1bf75d805ed8abdcc64257a1b8c5"></a>uint32_t</td>
+<td class="fieldname">
+free_sectors</td>
+<td class="fielddoc">
+Current free sectors. </td></tr>
+<tr><td class="fieldtype">
+<a id="af4c1ae805008465cae7d86a310e23df1"></a>uint8_t *</td>
+<td class="fieldname">
+p_volume_label</td>
+<td class="fielddoc">
+Volume label. </td></tr>
+<tr><td class="fieldtype">
+<a id="a01224205cd4ec21dea0bc9cc25bcd2ef"></a><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gac21461e79821454c7712431da634d6fc">rm_freertos_plus_fat_type_t</a></td>
+<td class="fieldname">
+type</td>
+<td class="fielddoc">
+FAT type for this disk. </td></tr>
+<tr><td class="fieldtype">
+<a id="ab9bf8c9e77ca394557f201c5852fb780"></a>uint8_t</td>
+<td class="fieldname">
+partition_number</td>
+<td class="fielddoc">
+Partition number for this disk. </td></tr>
+</table>
+
+</div>
+</div>
+<a name="structrm__freertos__plus__fat__cfg__t" id="structrm__freertos__plus__fat__cfg__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structrm__freertos__plus__fat__cfg__t">&#9670;&nbsp;</a></span>rm_freertos_plus_fat_cfg_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct rm_freertos_plus_fat_cfg_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>FreeRTOS+FAT configuration structure. </p>
+</div><table class="memberdecls">
+<tr><td colspan="2"><h3>Data Fields</h3></td></tr>
+<tr class="memitem:ad0f1f909c84e7ca64cf7e4788f626e1d"><td class="memItemLeft" align="right" valign="top"><a id="ad0f1f909c84e7ca64cf7e4788f626e1d"></a>
+void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ad0f1f909c84e7ca64cf7e4788f626e1d">p_callback</a> )(<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__callback__args__t">rm_freertos_plus_fat_callback_args_t</a> *p_args)</td></tr>
+<tr class="memdesc:ad0f1f909c84e7ca64cf7e4788f626e1d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to callback function. <br /></td></tr>
+<tr class="separator:ad0f1f909c84e7ca64cf7e4788f626e1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9d6da3cae5e12533f84878e68854a30"><td class="memItemLeft" align="right" valign="top"><a id="ab9d6da3cae5e12533f84878e68854a30"></a>
+void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ab9d6da3cae5e12533f84878e68854a30">p_context</a></td></tr>
+<tr class="memdesc:ab9d6da3cae5e12533f84878e68854a30"><td class="mdescLeft">&#160;</td><td class="mdescRight">User defined context passed into callback function. <br /></td></tr>
+<tr class="separator:ab9d6da3cae5e12533f84878e68854a30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a726e99d2e212bb7f761944d1a82aa20f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#a726e99d2e212bb7f761944d1a82aa20f">p_busy_callback</a> )(void const *<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#afa46246aad442263015bcaa94190be58">p_busy_context</a>)</td></tr>
+<tr class="separator:a726e99d2e212bb7f761944d1a82aa20f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa46246aad442263015bcaa94190be58"><td class="memItemLeft" align="right" valign="top"><a id="afa46246aad442263015bcaa94190be58"></a>
+void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#afa46246aad442263015bcaa94190be58">p_busy_context</a></td></tr>
+<tr class="memdesc:afa46246aad442263015bcaa94190be58"><td class="mdescLeft">&#160;</td><td class="mdescRight">User defined context passed into busy callback function. <br /></td></tr>
+<tr class="separator:afa46246aad442263015bcaa94190be58"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab2bb7d2e256a97c39dcc61e309c7c22e"><td class="memItemLeft" align="right" valign="top"><a id="ab2bb7d2e256a97c39dcc61e309c7c22e"></a>
+void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ab2bb7d2e256a97c39dcc61e309c7c22e">p_extend</a></td></tr>
+<tr class="memdesc:ab2bb7d2e256a97c39dcc61e309c7c22e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Extension parameter for hardware specific settings. <br /></td></tr>
+<tr class="separator:ab2bb7d2e256a97c39dcc61e309c7c22e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<h4 class="groupheader">Field Documentation</h4>
+<a id="a726e99d2e212bb7f761944d1a82aa20f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a726e99d2e212bb7f761944d1a82aa20f">&#9670;&nbsp;</a></span>p_busy_callback</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_cfg_t::p_busy_callback) (void const *<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#afa46246aad442263015bcaa94190be58">p_busy_context</a>)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>The busy callback function is called when the device is busy with a write or erase operation. It can be used to pend the current thread while waiting for the operation to complete and to manage timeouts if required. Set to NULL if pending the thread is not required and the thread will block waiting for the device busy status to clear. If this function returns an error (anything except FSP_SUCCESS), the upper layer function returns FF_ERR_IOMAN_DRIVER_FATAL_ERROR. </p>
+
+</div>
+</div>
+
+</div>
+</div>
+<a name="structrm__freertos__plus__fat__disk__cfg__t" id="structrm__freertos__plus__fat__disk__cfg__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structrm__freertos__plus__fat__disk__cfg__t">&#9670;&nbsp;</a></span>rm_freertos_plus_fat_disk_cfg_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct rm_freertos_plus_fat_disk_cfg_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Initializing a FAT disk. </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="ae07b6fbada0093fcd9cc44d31c10aa0c"></a><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__device__t">rm_freertos_plus_fat_device_t</a></td>
+<td class="fieldname">
+device</td>
+<td class="fielddoc">
+Device sector data. </td></tr>
+<tr><td class="fieldtype">
+<a id="a2b8598799a6100b00f5e7aafdc2fb4b2"></a>uint32_t</td>
+<td class="fieldname">
+cache_size_bytes</td>
+<td class="fielddoc">
+Chache memory size. </td></tr>
+<tr><td class="fieldtype">
+<a id="a7c12f43ea0deee00304826977eb96c4a"></a>uint8_t *</td>
+<td class="fieldname">
+p_cache</td>
+<td class="fielddoc">
+Pointer to cache memory. </td></tr>
+<tr><td class="fieldtype">
+<a id="ab31bddef4da4ed04ea586ec92668d252"></a>uint8_t</td>
+<td class="fieldname">
+partition_number</td>
+<td class="fielddoc">
+Partition number for this disk. </td></tr>
+</table>
+
+</div>
+</div>
 <a name="structrm__freertos__plus__fat__api__t" id="structrm__freertos__plus__fat__api__t"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#structrm__freertos__plus__fat__api__t">&#9670;&nbsp;</a></span>rm_freertos_plus_fat_api_t</h2>
 
@@ -261,20 +427,20 @@ Sector size in bytes. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<div class="textblock"><p>FreeRTOS plus Fat functions implemented at the HAL layer will follow this API. </p>
+<div class="textblock"><p>FreeRTOS+FAT functions implemented at the HAL layer will follow this API. </p>
 </div><table class="memberdecls">
 <tr><td colspan="2"><h3>Data Fields</h3></td></tr>
-<tr class="memitem:ac9ef76da5473a78a42fdaf3e4bd65650"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ac9ef76da5473a78a42fdaf3e4bd65650">open</a> )(rm_freertos_plus_fat_ctrl_t *const p_ctrl, rm_freertos_plus_fat_cfg_t const *const p_cfg)</td></tr>
+<tr class="memitem:ac9ef76da5473a78a42fdaf3e4bd65650"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ac9ef76da5473a78a42fdaf3e4bd65650">open</a> )(<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__cfg__t">rm_freertos_plus_fat_cfg_t</a> const *const p_cfg)</td></tr>
 <tr class="separator:ac9ef76da5473a78a42fdaf3e4bd65650"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaab7bc55bea492140d1eb5ad59858c2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#aaab7bc55bea492140d1eb5ad59858c2f">mediaInit</a> )(rm_freertos_plus_fat_ctrl_t *const p_ctrl, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__device__t">rm_freertos_plus_fat_device_t</a> *const p_device)</td></tr>
+<tr class="memitem:aaab7bc55bea492140d1eb5ad59858c2f"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#aaab7bc55bea492140d1eb5ad59858c2f">mediaInit</a> )(<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__device__t">rm_freertos_plus_fat_device_t</a> *const p_device)</td></tr>
 <tr class="separator:aaab7bc55bea492140d1eb5ad59858c2f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa597f30568b2324b673bc972c55294eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#aa597f30568b2324b673bc972c55294eb">diskInit</a> )(rm_freertos_plus_fat_ctrl_t *const p_ctrl, rm_freertos_plus_fat_disk_cfg_t const *const p_disk_cfg, FF_Disk_t *const p_disk)</td></tr>
+<tr class="memitem:aa597f30568b2324b673bc972c55294eb"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#aa597f30568b2324b673bc972c55294eb">diskInit</a> )(<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__disk__cfg__t">rm_freertos_plus_fat_disk_cfg_t</a> const *const p_disk_cfg, FF_Disk_t *const p_disk)</td></tr>
 <tr class="separator:aa597f30568b2324b673bc972c55294eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adf46076db217070ad630100244fadbdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#adf46076db217070ad630100244fadbdd">diskDeinit</a> )(rm_freertos_plus_fat_ctrl_t *const p_ctrl, FF_Disk_t *const p_disk)</td></tr>
+<tr class="memitem:adf46076db217070ad630100244fadbdd"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#adf46076db217070ad630100244fadbdd">diskDeinit</a> )(<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, FF_Disk_t *const p_disk)</td></tr>
 <tr class="separator:adf46076db217070ad630100244fadbdd"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0f2cf2904b6b2b3c93ededa4483517c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#a0f2cf2904b6b2b3c93ededa4483517c9">infoGet</a> )(rm_freertos_plus_fat_ctrl_t *const p_ctrl, FF_Disk_t *const p_disk, rm_freertos_plus_fat_info_t *const p_info)</td></tr>
+<tr class="memitem:a0f2cf2904b6b2b3c93ededa4483517c9"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#a0f2cf2904b6b2b3c93ededa4483517c9">infoGet</a> )(<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, FF_Disk_t *const p_disk, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__info__t">rm_freertos_plus_fat_info_t</a> *const p_info)</td></tr>
 <tr class="separator:a0f2cf2904b6b2b3c93ededa4483517c9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae68e8edd354ff6c3b5ab7b22920af3b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ae68e8edd354ff6c3b5ab7b22920af3b3">close</a> )(rm_freertos_plus_fat_ctrl_t *const p_ctrl)</td></tr>
+<tr class="memitem:ae68e8edd354ff6c3b5ab7b22920af3b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ae68e8edd354ff6c3b5ab7b22920af3b3">close</a> )(<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl)</td></tr>
 <tr class="separator:ae68e8edd354ff6c3b5ab7b22920af3b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h4 class="groupheader">Field Documentation</h4>
@@ -285,7 +451,7 @@ Sector size in bytes. </td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::open) (rm_freertos_plus_fat_ctrl_t *const p_ctrl, rm_freertos_plus_fat_cfg_t const *const p_cfg)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::open) (<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__cfg__t">rm_freertos_plus_fat_cfg_t</a> const *const p_cfg)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -307,7 +473,7 @@ Sector size in bytes. </td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::mediaInit) (rm_freertos_plus_fat_ctrl_t *const p_ctrl, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__device__t">rm_freertos_plus_fat_device_t</a> *const p_device)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::mediaInit) (<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__device__t">rm_freertos_plus_fat_device_t</a> *const p_device)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -329,7 +495,7 @@ Sector size in bytes. </td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::diskInit) (rm_freertos_plus_fat_ctrl_t *const p_ctrl, rm_freertos_plus_fat_disk_cfg_t const *const p_disk_cfg, FF_Disk_t *const p_disk)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::diskInit) (<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__disk__cfg__t">rm_freertos_plus_fat_disk_cfg_t</a> const *const p_disk_cfg, FF_Disk_t *const p_disk)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -352,7 +518,7 @@ Sector size in bytes. </td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::diskDeinit) (rm_freertos_plus_fat_ctrl_t *const p_ctrl, FF_Disk_t *const p_disk)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::diskDeinit) (<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, FF_Disk_t *const p_disk)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -375,7 +541,7 @@ Sector size in bytes. </td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::infoGet) (rm_freertos_plus_fat_ctrl_t *const p_ctrl, FF_Disk_t *const p_disk, rm_freertos_plus_fat_info_t *const p_info)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::infoGet) (<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl, FF_Disk_t *const p_disk, <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__info__t">rm_freertos_plus_fat_info_t</a> *const p_info)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -397,7 +563,7 @@ Sector size in bytes. </td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::close) (rm_freertos_plus_fat_ctrl_t *const p_ctrl)</td>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>(*  rm_freertos_plus_fat_api_t::close) (<a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *const p_ctrl)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -429,13 +595,13 @@ Sector size in bytes. </td></tr>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
 <tr><td class="fieldtype">
-<a id="a4784d2d0db1893699de3f79f2ae51459"></a>rm_freertos_plus_fat_ctrl_t *</td>
+<a id="a4784d2d0db1893699de3f79f2ae51459"></a><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a> *</td>
 <td class="fieldname">
 p_ctrl</td>
 <td class="fielddoc">
 Pointer to the control structure for this instance. </td></tr>
 <tr><td class="fieldtype">
-<a id="a048316e439a6ee0077566db43810a6eb"></a>rm_freertos_plus_fat_cfg_t <br class="typebreak" />
+<a id="a048316e439a6ee0077566db43810a6eb"></a><a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#structrm__freertos__plus__fat__cfg__t">rm_freertos_plus_fat_cfg_t</a> <br class="typebreak" />
 const  *const</td>
 <td class="fieldname">
 p_cfg</td>
@@ -448,6 +614,22 @@ p_api</td>
 <td class="fielddoc">
 Pointer to the API structure for this instance. </td></tr>
 </table>
+
+</div>
+</div>
+<h2 class="groupheader">Typedef Documentation</h2>
+<a id="gad722ac0d57e8884d9903d65a29bb4a8c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad722ac0d57e8884d9903d65a29bb4a8c">&#9670;&nbsp;</a></span>rm_freertos_plus_fat_ctrl_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef void <a class="el" href="group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#gad722ac0d57e8884d9903d65a29bb4a8c">rm_freertos_plus_fat_ctrl_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>FreeRTOS+FAT control structure </p>
 
 </div>
 </div>
@@ -488,6 +670,7 @@ Pointer to the API structure for this instance. </td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
+<p>FAT filesystem types. </p>
 <table class="fieldtable">
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggac21461e79821454c7712431da634d6fcace10419bd90ffbd7594f12753ef94967"></a>RM_FREERTOS_PLUS_FAT_TYPE_FAT32&#160;</td><td class="fielddoc"><p>FAT32 disk. </p>
 </td></tr>
@@ -505,7 +688,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

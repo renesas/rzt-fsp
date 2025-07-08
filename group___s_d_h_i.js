@@ -1,5 +1,12 @@
 var group___s_d_h_i =
 [
+    [ "sdhi_instance_ctrl_t", "group___s_d_h_i.html#structsdhi__instance__ctrl__t", null ],
+    [ "sdhi_extended_cfg_t", "group___s_d_h_i.html#structsdhi__extended__cfg__t", [
+      [ "oxmnirq_irq", "group___s_d_h_i.html#a90da5c435335743404d7c7c0ebcd6ee9", null ],
+      [ "oxmnirq_ipl", "group___s_d_h_i.html#a3310cd08d781cff5710a720a1b254d57", null ],
+      [ "sd_pwen_output", "group___s_d_h_i.html#aba2e63193b48454dc4644cd8dab00395", null ],
+      [ "sd_iovs_output", "group___s_d_h_i.html#ad9cb8921a9944fdb4252562311e28ce2", null ]
+    ] ],
     [ "R_SDHI_Open", "group___s_d_h_i.html#ga37b6d1c11d0f6d92ef6ae985a420ffbb", null ],
     [ "R_SDHI_MediaInit", "group___s_d_h_i.html#gabacaaf35153339d0931c6c0932eca4e3", null ],
     [ "R_SDHI_Read", "group___s_d_h_i.html#ga400250f503190acfb97e58a561feec69", null ],

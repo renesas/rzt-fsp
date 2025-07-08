@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -349,12 +349,6 @@ slope_microvolts</td>
 <td class="fielddoc">
 Temperature sensor slope in microvolts/degrees C. </td></tr>
 <tr><td class="fieldtype">
-<a id="a0ffb4b8f70b79eef55805cedcbde013b"></a>bool</td>
-<td class="fieldname">
-calibration_ongoing</td>
-<td class="fielddoc">
-Calibration is in progress. </td></tr>
-<tr><td class="fieldtype">
 <a id="a90f47e90b6be16f8705cbfc9789120be"></a>volatile const void *</td>
 <td class="fieldname">
 p_address</td>
@@ -372,6 +366,12 @@ Temperature sensor calibration data1. </td></tr>
 calibration_data2</td>
 <td class="fielddoc">
 Temperature sensor calibration data2. </td></tr>
+<tr><td class="fieldtype">
+<a id="a0ffb4b8f70b79eef55805cedcbde013b"></a>bool</td>
+<td class="fieldname">
+calibration_ongoing</td>
+<td class="fielddoc">
+Calibration is in progress. </td></tr>
 </table>
 
 </div>
@@ -980,6 +980,10 @@ Pointer to the API structure for this instance. </td></tr>
 </td></tr>
 <tr><td class="fieldname"><a id="ggae2177d6e5bf43e3749cc60f835456847a7cfc303adbef8d07936d89275852ded3"></a>ADC_EVENT_ZERO_CROSS_DETECTION&#160;</td><td class="fielddoc"><p>Zero-cross detection interrupt. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="ggae2177d6e5bf43e3749cc60f835456847a745be33396b1b53bb5292cfc29aaf286"></a>ADC_EVENT_CAPTURE_A&#160;</td><td class="fielddoc"><p>Capture A conversion complete. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggae2177d6e5bf43e3749cc60f835456847a261363a2befcc3e6b25736d94cd5578f"></a>ADC_EVENT_CAPTURE_B&#160;</td><td class="fielddoc"><p>Capture B conversion complete. </p>
+</td></tr>
 </table>
 
 </div>
@@ -1490,7 +1494,7 @@ Pointer to the API structure for this instance. </td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

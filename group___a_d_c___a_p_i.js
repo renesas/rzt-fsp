@@ -19,10 +19,10 @@ var group___a_d_c___a_p_i =
       [ "elc_event", "group___a_d_c___a_p_i.html#a06d242e573821f38b3a7543dd9eb5548", null ],
       [ "calibration_data", "group___a_d_c___a_p_i.html#a5869042d58165926402aa499eefb68f2", null ],
       [ "slope_microvolts", "group___a_d_c___a_p_i.html#abaf272ea2350e486390dc250ae8f9af3", null ],
-      [ "calibration_ongoing", "group___a_d_c___a_p_i.html#a0ffb4b8f70b79eef55805cedcbde013b", null ],
       [ "p_address", "group___a_d_c___a_p_i.html#a90f47e90b6be16f8705cbfc9789120be", null ],
       [ "calibration_data1", "group___a_d_c___a_p_i.html#a366d981b2bfa6c2ade3a3f8f8c00ff70", null ],
-      [ "calibration_data2", "group___a_d_c___a_p_i.html#afec4154b488a160a33ceebca6affc94e", null ]
+      [ "calibration_data2", "group___a_d_c___a_p_i.html#afec4154b488a160a33ceebca6affc94e", null ],
+      [ "calibration_ongoing", "group___a_d_c___a_p_i.html#a0ffb4b8f70b79eef55805cedcbde013b", null ]
     ] ],
     [ "adc_cfg_t", "group___a_d_c___a_p_i.html#structadc__cfg__t", [
       [ "unit", "group___a_d_c___a_p_i.html#a5da30f972881cd9d64f3a7add1ccd522", null ],
@@ -98,7 +98,9 @@ var group___a_d_c___a_p_i =
       [ "ADC_EVENT_FIFO_OVERFLOW", "group___a_d_c___a_p_i.html#ggae2177d6e5bf43e3749cc60f835456847a0df21824c256f4cb9689cb1d6a3dd91a", null ],
       [ "ADC_EVENT_WINDOW_COMPARE_A", "group___a_d_c___a_p_i.html#ggae2177d6e5bf43e3749cc60f835456847a0194955f4f59f8d6952adc058539632b", null ],
       [ "ADC_EVENT_WINDOW_COMPARE_B", "group___a_d_c___a_p_i.html#ggae2177d6e5bf43e3749cc60f835456847ab32572630797968579adeed03f19bcd3", null ],
-      [ "ADC_EVENT_ZERO_CROSS_DETECTION", "group___a_d_c___a_p_i.html#ggae2177d6e5bf43e3749cc60f835456847a7cfc303adbef8d07936d89275852ded3", null ]
+      [ "ADC_EVENT_ZERO_CROSS_DETECTION", "group___a_d_c___a_p_i.html#ggae2177d6e5bf43e3749cc60f835456847a7cfc303adbef8d07936d89275852ded3", null ],
+      [ "ADC_EVENT_CAPTURE_A", "group___a_d_c___a_p_i.html#ggae2177d6e5bf43e3749cc60f835456847a745be33396b1b53bb5292cfc29aaf286", null ],
+      [ "ADC_EVENT_CAPTURE_B", "group___a_d_c___a_p_i.html#ggae2177d6e5bf43e3749cc60f835456847a261363a2befcc3e6b25736d94cd5578f", null ]
     ] ],
     [ "adc_channel_t", "group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814", [
       [ "ADC_CHANNEL_0", "group___a_d_c___a_p_i.html#gaafc4060027875f8fe46242b0656d7814a69dddf5b6edfe54ac25b653d8f62d104", null ],

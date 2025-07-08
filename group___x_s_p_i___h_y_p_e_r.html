@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -177,6 +177,8 @@ Functions</h2></td></tr>
 <tr class="separator:ga0dd1bd1a499b711b67881920d5e00a47"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gaaeb7cbd1abbb6230d65f5c80741bd23c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___h_y_p_e_r.html#gaaeb7cbd1abbb6230d65f5c80741bd23c">R_XSPI_HYPER_AccessSpaceSet</a> (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#gaaae0706da636f984d170cd1651abf04c">hyperbus_space_select_t</a> access_space)</td></tr>
 <tr class="separator:gaaeb7cbd1abbb6230d65f5c80741bd23c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1bd6bcab769c986f4f7d96b135faed66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___h_y_p_e_r.html#ga1bd6bcab769c986f4f7d96b135faed66">R_XSPI_HYPER_DirectTransfer</a> (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const p_ctrl, <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__direct__transfer__t">hyperbus_direct_transfer_t</a> *const p_transfer)</td></tr>
+<tr class="separator:ga1bd6bcab769c986f4f7d96b135faed66"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga41d34dd155d2dea4439cb196c0f97271"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___h_y_p_e_r.html#ga41d34dd155d2dea4439cb196c0f97271">R_XSPI_HYPER_Write</a> (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, uint8_t const *const p_src, uint8_t *const p_dest, uint32_t byte_count)</td></tr>
 <tr class="separator:ga41d34dd155d2dea4439cb196c0f97271"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga948d860aae9cf93a67762635067b8ddf"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___x_s_p_i___h_y_p_e_r.html#ga948d860aae9cf93a67762635067b8ddf">R_XSPI_HYPER_Erase</a> (<a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *p_ctrl, uint8_t *const p_device_address, uint32_t byte_count)</td></tr>
@@ -197,7 +199,8 @@ Features</h2>
 <li>Can be configured with HyperRAM device on either of the 2 channels</li>
 <li>Memory mapped read and write access to the HyperRAM memory space<a class="anchor" id="um_hyper_ram_read_write_memory_space"></a></li>
 <li>Memory mapped read and write access to the HyperRAM register space<a class="anchor" id="um_hyper_ram_read_register_space"></a><a class="anchor" id="um_hyper_ram_write_register_space"></a></li>
-<li>Can be configured the access destination address space: memory space or register space<a class="anchor" id="um_hyper_access_space_set"></a> </li>
+<li>Can be configured the access destination address space: memory space or register space<a class="anchor" id="um_hyper_access_space_set"></a></li>
+<li>Sending device specific commands and reading back responses<a class="anchor" id="um_hyper_direct_transfer"></a> </li>
 </ul>
 <h1><a class="anchor" id="r-xspi-hyper-configuration"></a>
 Configuration</h1>
@@ -208,23 +211,23 @@ The following build time configurations are defined in fsp_cfg/r_xspi_hyper_cfg.
 <tr>
 <th>Configuration</th><th>Options</th><th>Default</th><th>Description </th></tr>
 <tr>
-<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; Start Address</td><td>MCU Specific Options</td><td></td><td>Start address of xSPI Unit0 CS0 in memory mapping mode. </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 0 &gt; Chip Select 0 &gt; Start Address</td><td>Address should be the start address of xspi unit 0 external address space</td><td>0x60000000 </td><td>Start address of xSPI Unit 0 Chip Select 0 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit0 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x600FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 0 &gt; Chip Select 0 &gt; End Address</td><td>Address should be within xspi unit 0 external address space</td><td>0x600FFFFF </td><td>End address of xSPI Unit 0 Chip Select 1 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit0 &gt; CS1 &gt; Start Address</td><td>Address should be within xspi unit0 external address space</td><td>0x64000000 </td><td>Start address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 0 &gt; Chip Select 1 &gt; Start Address</td><td>Address should be within xspi unit 0 external address space</td><td>0x64000000 </td><td>Start address of xSPI Unit 0 Chip Select 1 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit0 &gt; CS1 &gt; End Address</td><td>Address should be within xspi unit0 external address space</td><td>0x640FFFFF </td><td>End address of xSPI Unit0 CS1 in memory mapping mode. </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 0 &gt; Chip Select 1 &gt; End Address</td><td>Address should be within xspi unit 0 external address space</td><td>0x640FFFFF </td><td>End address of xSPI Unit 0 Chip Select 1 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; Start Address</td><td>MCU Specific Options</td><td></td><td>Start address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 1 &gt; Chip Select 0 &gt; Start Address</td><td>Address should be the start address of xspi unit 1 external address space</td><td>0x68000000 </td><td>Start address of xSPI Unit 1 Chip Select 0 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit1 &gt; CS0 &gt; End Address</td><td>Address should be within xspi unit1 external address space</td><td>0x680FFFFF </td><td>End address of xSPI Unit1 CS0 in memory mapping mode. </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 1 &gt; Chip Select 0 &gt; End Address</td><td>Address should be within xspi unit 1 external address space</td><td>0x680FFFFF </td><td>End address of xSPI Unit 1 Chip Select 0 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit1 &gt; CS1 &gt; Start Address</td><td>Address should be within xspi unit1 external address space</td><td>0x6C000000 </td><td>Start address of xSPI Unit1 CS1 in memory mapping mode. </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 1 &gt; Chip Select 1 &gt; Start Address</td><td>Address should be within xspi unit 1 external address space</td><td>0x6C000000 </td><td>Start address of xSPI Unit 1 Chip Select 1 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Unit1 &gt; CS1 &gt; End Address</td><td>Address should be within xspi unit1 external address space</td><td>0x6C0FFFFF </td><td>End address of xSPI Unit1 CS1 in memory mapping mode. </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 1 &gt; Chip Select 1 &gt; End Address</td><td>Address should be within xspi unit 1 external address space</td><td>0x6C0FFFFF </td><td>End address of xSPI Unit 1 Chip Select 1 in memory mapping mode. </td></tr>
 <tr>
-<td>Custom Address Space &gt; Custom Address Space Enable</td><td>MCU Specific Options</td><td></td><td>When disabled, Custom Address Space is not applied and address space is set according to Flash Size. When enabled, Flash Size is disabled and Custom Address Space settings are applied. </td></tr>
+<td>Memory Mapping Address Space &gt; Memory Mapping Address Space Configuration Support</td><td>MCU Specific Options</td><td></td><td>Support status of Memory Mapping Address Space setting on this MCU. If Not supported, the address space set in Memory Mapping Address Space is invalid. </td></tr>
 <tr>
 <td>Parameter Checking</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -252,9 +255,9 @@ Disable</li>
 </ul>
 </td><td>Disable </td><td>Enable prefetch function on memory-mapped reads of xSPI Unit 1. </td></tr>
 <tr>
-<td>Unit 0 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit0. </td></tr>
+<td>Unit 0 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit 0. </td></tr>
 <tr>
-<td>Unit 1 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit1. </td></tr>
+<td>Unit 1 IO voltage</td><td>MCU Specific Options</td><td></td><td>Voltage setting of xSPI Unit 1. </td></tr>
 </table>
  <h2>Configurations for Storage &gt; HyperRAM (r_xspi_hyper)</h2>
 This module can be added to the Stacks tab via New Stack &gt; Storage &gt; HyperRAM (r_xspi_hyper).<br />
@@ -274,23 +277,7 @@ Chip Select 1</li>
 </ul>
 </td><td>Chip Select 0 </td><td>Specify the HyperBus chip select line to use. </td></tr>
 <tr>
-<td>General &gt; RAM Size</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-1MB</li>
-<li>
-2MB</li>
-<li>
-4MB</li>
-<li>
-8MB</li>
-<li>
-16MB</li>
-<li>
-32MB</li>
-<li>
-64MB</li>
-</ul>
-</td><td>8MB </td><td>Specify the HyperRAM size. </td></tr>
+<td>General &gt; RAM Size</td><td>MCU Specific Options</td><td></td><td>Specify the HyperRAM size. </td></tr>
 <tr>
 <td>General &gt; Initial latency (Read)</td><td>Refer to the RZT Configuration tool for available options.</td><td>6 CYCLES </td><td>Specify the read latency cycle </td></tr>
 <tr>
@@ -354,51 +341,87 @@ Pin Configuration</h2>
 Usage Notes</h1>
 <h2><a class="anchor" id="r-xspi-memory-mapped-access"></a>
 HYPER Memory Mapped Access</h2>
-<p>After <a class="el" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open()</a> completes successfully, the HyperRAM device contents are mapped to address 0x60000000 (unit 0) or 0x68000000 (unit 1) based on the unit configured and can be read like on-chip RAM. When not using the cache, access the HyperRAM device via the mirror space 0x40000000 (unit 0) or 0x48000000 (unit 1). Unit 0 and Unit 1 support until 128 MB of address space.</p>
-<p>The address map details for the external address space xSPI in RZ/T2M and RZ/T2L is as follows:</p>
+<p>After <a class="el" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open()</a> completes successfully, the HYPER device contents are mapped to External Address Space xSPIn or their mirror spaces and can be read like on-chip memory. Please refer to xSPI "Overview" section in your device's manual on address map details.</p>
+<p>In the configurator properties, 'Memory Mapping Address Space Configuration Support' is set to either 'Supported' or 'Not Supported' depending on your device. The method of memory mapped access address configuration depends on the value of 'Memory Mapping Address Space Configuration Support'.</p>
+<h3>Example Configurations for the Device 'Memory Mapping Address Space Configuration Support' is 'Supported'</h3>
+<p>If 'Memory Mapping Address Space Configuration Support' is 'Supported', 'Memory Mapping Address Space' should be set appropriately for your device. The table below shows an example of 'Memory Mapping Address Space' configurations when 64MB memory is used as a slave device in each Chip Select.</p>
 <table class="doxtable">
 <tr>
-<th>Address </th><th>Space  </th></tr>
+<th>Properties </th><th>RZ/T2ME </th><th>RZ/T2H  </th></tr>
 <tr>
-<td>0x40000000 to 0x43FFFFFF </td><td>unit 0 CS0 mirror space </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 0 &gt; Chip Select 0 &gt; Start Address </td><td>0x60000000 (Fixed) </td><td>0x40000000 (Fixed) </td></tr>
 <tr>
-<td>0x44000000 to 0x47FFFFFF </td><td>unit 0 CS1 mirror space </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 0 &gt; Chip Select 0 &gt; End Address </td><td>0x63FFFFFF </td><td>0x43FFFFFF </td></tr>
 <tr>
-<td>0x48000000 to 0x4BFFFFFF </td><td>unit 1 CS0 mirror space </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 0 &gt; Chip Select 1 &gt; Start Address </td><td>0x64000000 </td><td>0x48000000 </td></tr>
 <tr>
-<td>0x4C000000 to 0x4FFFFFFF </td><td>unit 1 CS1 mirror space </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 0 &gt; Chip Select 1 &gt; End Address </td><td>0x67FFFFFF </td><td>0x4BFFFFFF </td></tr>
 <tr>
-<td>0x60000000 to 0x63FFFFFF </td><td>unit 0 CS0 </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 1 &gt; Chip Select 0 &gt; Start Address </td><td>0x68000000 (Fixed) </td><td>0x50000000 (Fixed) </td></tr>
 <tr>
-<td>0x64000000 to 0x67FFFFFF </td><td>unit 0 CS1 </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 1 &gt; Chip Select 0 &gt; End Address </td><td>0x6BFFFFFF </td><td>0x53FFFFFF </td></tr>
 <tr>
-<td>0x68000000 to 0x6BFFFFFF </td><td>unit 1 CS0 </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 1 &gt; Chip Select 1 &gt; Start Address </td><td>0x6C000000 </td><td>0x58000000 </td></tr>
 <tr>
-<td>0x6C000000 to 0x6FFFFFFF </td><td>unit 1 CS1 </td></tr>
+<td>Memory Mapping Address Space &gt; Unit 1 &gt; Chip Select 1 &gt; End Address </td><td>0x6FFFFFFF </td><td>0x5BFFFFFF </td></tr>
+<tr>
+<td>Memory Mapping Address Space &gt; Memory Mapping Address Space Configuration Support </td><td>Supported </td><td>Supported </td></tr>
 </table>
-<p>The address map for the external address space xSPI in RZ/T2ME is as follows:</p>
+<p>The address space of each chip select set by the above configuration is as follows.</p>
 <table class="doxtable">
 <tr>
-<th>Address </th><th>Space  </th></tr>
+<th>Address Space of Each Chip Select </th><th>RZ/T2ME </th><th>RZ/T2H  </th></tr>
 <tr>
-<td>0x40000000 to 0x47FFFFFF </td><td>unit 0 CS0 mirror space + unit 0 CS1 mirror space </td></tr>
+<td>Unit 0 Chip Select 0 Start Address </td><td>0x60000000 (Fixed) </td><td>0x40000000 (Fixed) </td></tr>
 <tr>
-<td>0x48000000 to 0x4FFFFFFF </td><td>unit 1 CS0 mirror space + unit 1 CS1 mirror space </td></tr>
+<td>Unit 0 Chip Select 0 End Address </td><td>0x63FFFFFF </td><td>0x43FFFFFF </td></tr>
 <tr>
-<td>0x60000000 to 0x67FFFFFF </td><td>unit 0 CS0 + unit 0 CS1 </td></tr>
+<td>Unit 0 Chip Select 1 Start Address </td><td>0x64000000 </td><td>0x48000000 </td></tr>
 <tr>
-<td>0x68000000 to 0x6FFFFFFF </td><td>unit 1 CS0 + unit 1 CS1 </td></tr>
+<td>Unit 0 Chip Select 1 End Address </td><td>0x67FFFFFF </td><td>0x4BFFFFFF </td></tr>
+<tr>
+<td>Unit 1 Chip Select 0 Start Address </td><td>0x68000000 (Fixed) </td><td>0x50000000 (Fixed) </td></tr>
+<tr>
+<td>Unit 1 Chip Select 0 End Address </td><td>0x6BFFFFFF </td><td>0x53FFFFFF </td></tr>
+<tr>
+<td>Unit 1 Chip Select 1 Start Address </td><td>0x6C000000 </td><td>0x58000000 </td></tr>
+<tr>
+<td>Unit 1 Chip Select 1 End Address </td><td>0x6FFFFFFF </td><td>0x5BFFFFFF </td></tr>
 </table>
-<p>The address map for the external address space xSPI in RZ/T2H is as follows:</p>
+<h3>Example Configurations for the Device 'Memory Mapping Address Space Configuration Support' is 'Not Supported'</h3>
+<p>If 'Memory Mapping Address Space Configuration Support' is 'Not Supported' for your device, 'Memory Mapping Address Space' configurations are invalid. In this case, the start address of each chip select is fixed by device, and only the size of the address space is configured in 'Memory Size' property. The table below shows an example of the address space configuration when 64MB memory is used as a slave device in Unit 0 Chip Select 0.</p>
 <table class="doxtable">
 <tr>
-<th>Address </th><th>Space  </th></tr>
+<th>Properties </th><th>RZ/T2M </th><th>RZ/T2L  </th></tr>
 <tr>
-<td>0x40000000 to 0x4FFFFFFF </td><td>unit 0 CS0 + unit 0 CS1 </td></tr>
+<td>Memory Mapping Address Space &gt; Memory Mapping Address Space Configuration Support </td><td>Not Supported </td><td>Not Supported </td></tr>
 <tr>
-<td>0x50000000 to 0x5FFFFFFF </td><td>unit 1 CS0 + unit 1 CS1 </td></tr>
+<td>General &gt; Unit </td><td>0 </td><td>0 </td></tr>
+<tr>
+<td>General &gt; Chip Select </td><td>0 </td><td>0 </td></tr>
+<tr>
+<td>General &gt; Memory Size </td><td>64MB </td><td>64MB </td></tr>
 </table>
-<dl class="section note"><dt>Note</dt><dd>When Custom Address Space Enable configuration setting for RZ/T2ME and RZ/T2H is Enable, start address of CS1 space depends on the CS1 start address set in Custom Address Space configuration. When Disable, the start address of CS1 space is set so that each CS uses half of the address space.</dd></dl>
+<p>The address space of each chip select set by the above configuration is as follows. </p><table class="doxtable">
+<tr>
+<th>Address Space of Each Chip Select </th><th>RZ/T2M </th><th>RZ/T2L  </th></tr>
+<tr>
+<td>Unit 0 Chip Select 0 Start Address </td><td>0x60000000 (Fixed) </td><td>0x60000000 (Fixed) </td></tr>
+<tr>
+<td>Unit 0 Chip Select 0 End Address </td><td>0x63FFFFFF (64MB Size) </td><td>0x63FFFFFF (64MB Size) </td></tr>
+<tr>
+<td>Unit 0 Chip Select 1 Start Address </td><td>0x64000000 (Fixed) </td><td>0x64000000 (Fixed) </td></tr>
+<tr>
+<td>Unit 0 Chip Select 1 End Address </td><td>0x640FFFFF (default) </td><td>0x640FFFFF (default) </td></tr>
+<tr>
+<td>Unit 1 Chip Select 0 Start Address </td><td>0x68000000 (Fixed) </td><td>0x68000000 (Fixed) </td></tr>
+<tr>
+<td>Unit 1 Chip Select 0 End Address </td><td>0x680FFFFF (default) </td><td>0x680FFFFF (default) </td></tr>
+<tr>
+<td>Unit 1 Chip Select 1 Start Address </td><td>0x6C000000 (Fixed) </td><td>0x6C000000 (Fixed) </td></tr>
+<tr>
+<td>Unit 1 Chip Select 1 End Address </td><td>0x6C0FFFFF (default) </td><td>0x6C0FFFFF (default) </td></tr>
+</table>
 <h2><a class="anchor" id="r-xspi-hyper-access-space-select"></a>
 Dynamic address space selection (Memory and Register)</h2>
 <p>This driver allows user to dynamically select whether to access memory space or register space. Call <a class="el" href="group___x_s_p_i___h_y_p_e_r.html#gaaeb7cbd1abbb6230d65f5c80741bd23c">R_XSPI_HYPER_AccessSpaceSet()</a>, and assign HYPERBUS_SPACE_SELECT_MEMORY_SPACE or HYPERBUS_SPACE_SELECT_REGISTER_SPACE to the second argument.</p>
@@ -406,27 +429,29 @@ Dynamic address space selection (Memory and Register)</h2>
 <h2><a class="anchor" id="r-xspi-hyper-limitations"></a>
 Limitations</h2>
 <ul>
-<li>Prefetch function support for memory-mapping access is applied to all slave devices connected xSPI0 or xSPI1. When connecting different types of devices (for example, HyperRAM and OSPI) to same xSPI unit, make sure that the prefetch function settings are the same.</li>
-<li>When Enable is selected in the Custom Address Space Enable configuration, Custom Address Space settings are applied to all slave devices connected xSPI0 or xSPI1. When connecting different types of devices (for example, QSPI and OSPI) to xSPI units, make sure that Custom Address Space settings are the same for all xSPI modules.</li>
+<li>Prefetch function support for memory-mapping access is applied to all slave devices connected xSPI0 or xSPI1. When using different types of xSPI modules (for example, xSPI_HYPER and xSPI_OSPI) to same xSPI unit, make sure that the prefetch function settings in the configurator properties are the same.</li>
+<li>In the configurator properties, when 'Memory Mapping Address Space Configuration Support' is 'Supported', memory mapping address space settings are applied to all slave devices connected xSPI0 or xSPI1. When using different types of xSPI modules (for example, xSPI_HYPER and xSPI_OSPI), make sure that 'Memory Mapping Address Space' settings are the same for all xSPI modules.</li>
+<li>When accessing register space in memory mapping, make sure that the memory attribute of the xSPI address space is device memory attribute.</li>
 </ul>
 <h1><a class="anchor" id="r-xspi-hyper-examples"></a>
 Examples</h1>
 <h2><a class="anchor" id="r-xspi-hyper-examples-basic"></a>
 Basic Example</h2>
 <p>This is a basic example of minimal use of the HyperBus module in an application.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#define XSPI1_CS0_MIRROR_BASE                (0x48000000)</span></div><div class="line"><span class="preprocessor">#define XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH    (256)</span></div><div class="line">uint16_t write_data[XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH];</div><div class="line">uint16_t read_data[XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH];</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_xspi_hyper_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Write some data to the write buffer */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        write_data[i] = i;</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Open the XSPI_HYPER instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open</a>(&amp;g_hyperbus_ctrl, &amp;g_hyperbus_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_HYPER_Open() and any required device specific initialization, data can be write directly</span></div><div class="line"><span class="comment">     * to the HyperRAM connected to XSPI unit 1 */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        *((<span class="keyword">volatile</span> uint16_t *) XSPI1_CS0_MIRROR_BASE + 0x0000 + i) = write_data[i];</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_HYPER_Open() and any required device specific initialization, data can be read directly</span></div><div class="line"><span class="comment">     * to the HyperRAM connected to XSPI unit 1 */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        read_data[i] = *((<span class="keyword">volatile</span> uint16_t *) XSPI1_CS0_MIRROR_BASE + 0x0000 + i);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the read data */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        <span class="keywordflow">if</span> (read_data[i] != write_data[i])</div><div class="line">        {</div><div class="line">            <span class="comment">/* Verify error. */</span></div><div class="line">            __BKPT(0);</div><div class="line">        }</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        ;</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Register Space Access Example</h2>
+<div class="fragment"><div class="line"><span class="preprocessor">#define XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH    (256)</span></div><div class="line">uint16_t write_data[XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH];</div><div class="line">uint16_t read_data[XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH];</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_xspi_hyper_basic_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Write some data to the write buffer */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        write_data[i] = i;</div><div class="line">    }</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Open the XSPI_HYPER instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open</a>(&amp;g_hyperbus_ctrl, &amp;g_hyperbus_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_HYPER_Open() and any required device specific initialization, data can be write directly</span></div><div class="line"><span class="comment">     * to the HyperRAM connected to XSPI unit 1 */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        *((<span class="keyword">volatile</span> uint16_t *) HYPERRAM_BASE_ADDRESS + 0x0000 + i) = write_data[i];</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_HYPER_Open() and any required device specific initialization, data can be read directly</span></div><div class="line"><span class="comment">     * to the HyperRAM connected to XSPI unit 1 */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        read_data[i] = *((<span class="keyword">volatile</span> uint16_t *) HYPERRAM_BASE_ADDRESS + 0x0000 + i);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the read data */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        <span class="keywordflow">if</span> (read_data[i] != write_data[i])</div><div class="line">        {</div><div class="line">            <span class="comment">/* Verify error. */</span></div><div class="line">            __BKPT(0);</div><div class="line">        }</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="keywordflow">while</span> (1)</div><div class="line">    {</div><div class="line">        ;</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Register Space Access Example (R_XSPI_HYPER_AccessSpaceSet)</h2>
 <p>This is an example of using <a class="el" href="group___x_s_p_i___h_y_p_e_r.html#gaaeb7cbd1abbb6230d65f5c80741bd23c">R_XSPI_HYPER_AccessSpaceSet()</a> to change the address space from memory to register.</p>
-<div class="fragment"><div class="line"><span class="preprocessor">#define XSPI1_CS0_MIRROR_BASE                   (0x48000000)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_DEVICE_ID_REGISTER0_ADDRESS    (0x0U)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_ID_REGISTER0_DEFAULT_VALUE     (0x810C)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_xspi_hyper_access_space_register_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Open the XSPI_HYPER instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open</a>(&amp;g_hyperbus_ctrl, &amp;g_hyperbus_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Change address space to register space */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaaeb7cbd1abbb6230d65f5c80741bd23c">R_XSPI_HYPER_AccessSpaceSet</a>(&amp;g_hyperbus_ctrl, <a class="code" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ggaaae0706da636f984d170cd1651abf04ca83236d9b6814def686db93fbfc6802cb">HYPERBUS_SPACE_SELECT_REGISTER_SPACE</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Reading ID register 0 with Memory-mapping */</span></div><div class="line">    <span class="keyword">volatile</span> uint16_t * p_id_register0_addr = (uint16_t *) XSPI1_CS0_MIRROR_BASE +</div><div class="line">                                              HYPERRAM_DEVICE_ID_REGISTER0_ADDRESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the ID register0 value */</span></div><div class="line">    <span class="keywordflow">if</span> (HYPERRAM_ID_REGISTER0_DEFAULT_VALUE != *p_id_register0_addr)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Verify error. */</span></div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Change Initial Latency Example</h2>
-<p>This is an example of changing the initial latency of HyperRAM. By register space access, rewrite the value of Confiugration register 0 of HyperRAM device.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#define HYPERRAM_DEVICE_ID_REGISTER0_ADDRESS    (0x0U)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_ID_REGISTER0_DEFAULT_VALUE     (0x0C81U)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_xspi_hyper_access_space_register_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Open the XSPI_HYPER instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open</a>(&amp;g_hyperbus_ctrl, &amp;g_hyperbus_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Change address space to register space */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaaeb7cbd1abbb6230d65f5c80741bd23c">R_XSPI_HYPER_AccessSpaceSet</a>(&amp;g_hyperbus_ctrl, <a class="code" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ggaaae0706da636f984d170cd1651abf04ca83236d9b6814def686db93fbfc6802cb">HYPERBUS_SPACE_SELECT_REGISTER_SPACE</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Reading ID register 0 with Memory-mapping */</span></div><div class="line">    <span class="keyword">volatile</span> uint16_t * p_id_register0_addr = (uint16_t *) HYPERRAM_BASE_ADDRESS +</div><div class="line">                                              HYPERRAM_DEVICE_ID_REGISTER0_ADDRESS;</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the ID register0 value. Apply __REV16 to account for endian difference. */</span></div><div class="line">    <span class="keywordflow">if</span> (__REV16(HYPERRAM_ID_REGISTER0_DEFAULT_VALUE) != *p_id_register0_addr)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Verify error. */</span></div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Reading Status Register Example (R_XSPI_HYPER_DirectTransfer)</h2>
+<p>This is an example of using R_XSPI_HYPER_DirectTransfer with read direction to read identification register 0 value from HyperRAM device.</p>
+<div class="fragment"><div class="line"><span class="preprocessor">#define HYPERRAM_CA_ID_REGISTER_0_READ         (0xE00000000000U)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_ID_REGISTER0_DEFAULT_VALUE    (0x0C81U)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_xspi_hyper_direct_transfer_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__direct__transfer__t">hyperbus_direct_transfer_t</a> hyper_direct_transfer_id =</div><div class="line">    {</div><div class="line">        <span class="comment">/* Set Command-Address bits to access ID Register 0 Read. */</span></div><div class="line">        .<a class="code" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a4a40b834ebb8273504ba7747cdb8f9b7">command_address</a>.command_address_info = (uint64_t) HYPERRAM_CA_ID_REGISTER_0_READ,</div><div class="line">        .data_length  = 2,</div><div class="line">        .dummy_cycles = 6,</div><div class="line"></div><div class="line">        <span class="comment">/* Read data is stored in .data member. */</span></div><div class="line">        .data                                 = 0,</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Open the XSPI_HYPER instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open</a>(&amp;g_hyperbus_ctrl, &amp;g_hyperbus_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Send transaction to read ID Register 0 */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#ga1bd6bcab769c986f4f7d96b135faed66">R_XSPI_HYPER_DirectTransfer</a>(&amp;g_hyperbus_ctrl, &amp;hyper_direct_transfer_id);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Verify the ID register0 value. Apply __REV16 to account for endian difference. */</span></div><div class="line">    <span class="keywordflow">if</span> (__REV16(HYPERRAM_ID_REGISTER0_DEFAULT_VALUE) != hyper_direct_transfer_id.data)</div><div class="line">    {</div><div class="line">        <span class="comment">/* Verify error. */</span></div><div class="line">        __BKPT(0);</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --> <h2>Change Initial Latency Example (R_XSPI_HYPER_DirectTransfer)</h2>
+<p>This is an example of changing the initial latency of HyperRAM. By sending register access command, rewrite the value of Confiugration register 0 of HyperRAM device.</p>
 <dl class="section note"><dt>Note</dt><dd>This is a setting example specific to the HyperRAM device installed in RZ/T2M RSK. Please refer to the respective device datasheet for details. </dd>
 <dd>
-When using this example code, Set module configuration value as below. Otherwise configure to default value.<ul>
+When using this example code, Set module configuration value as below.<ul>
 <li>General &gt; Initial latency (Read) is 4 CYCLES</li>
 <li>General &gt; Initial latency (Memory Write) is 4 CYCLES</li>
-<li>HyperBus Transaction Characteristic &gt; Initial Access Space is Register Space (AS = 1)</li>
 </ul>
 </dd></dl>
-<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define XSPI1_CS0_MIRROR_BASE                                          (0x48000000)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_DEVICE_CONFIGURATION_REGISTER_0_ADDRESS               (0x1000U)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_CONFIGURATION_REGISTER0_DEFAULT_VALUE                 (0x1F8F)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_4CLOCK_SET    (0xFU)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_VALUE_MASK    (0xFF0FU)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_OFFSET        (4U)</span></div><div class="line"></div><div class="line"><span class="preprocessor">#define XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH                              (256)</span></div><div class="line">uint16_t write_data[XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH];</div><div class="line">uint16_t read_data[XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH];</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_xspi_hyper_change_initial_latency_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* Open the XSPI_HYPER instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open</a>(&amp;g_hyperbus_ctrl, &amp;g_hyperbus_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Set the address of Configuration register 0 (CR0) to user-defined local variable */</span></div><div class="line">    <span class="keyword">volatile</span> uint16_t * p_configuration_register0_addr = (uint16_t *) XSPI1_CS0_MIRROR_BASE +</div><div class="line">                                                         (HYPERRAM_DEVICE_CONFIGURATION_REGISTER_0_ADDRESS &gt;&gt; 1);</div><div class="line"></div><div class="line">    <span class="comment">/* Rewrite the value of CR0 in the byte order of HyperBus protocol compliant.</span></div><div class="line"><span class="comment">     * Initial latency will be changed from 6 cycles(default) to 4 cycles.</span></div><div class="line"><span class="comment">     * (in HyperRAM with RZ/T2M RSK, the function bit of initial latency is CR0[7-4]) */</span></div><div class="line">    *p_configuration_register0_addr = (uint16_t) __REV16((HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_4CLOCK_SET &lt;&lt;</div><div class="line">                                                          HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_OFFSET) |</div><div class="line">                                                         (HYPERRAM_CONFIGURATION_REGISTER0_DEFAULT_VALUE &amp;</div><div class="line">                                                          HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_VALUE_MASK));</div><div class="line"></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;dsb&quot;</span>);</div><div class="line"></div><div class="line">    <span class="comment">/* Change address space access destination from register space to memory space */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaaeb7cbd1abbb6230d65f5c80741bd23c">R_XSPI_HYPER_AccessSpaceSet</a>(&amp;g_hyperbus_ctrl, <a class="code" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ggaaae0706da636f984d170cd1651abf04ca3ec946779fe08d22b43f51718aacb7a1">HYPERBUS_SPACE_SELECT_MEMORY_SPACE</a>);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line">    <span class="comment">/* Write some data to the write buffer */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        write_data[i] = i;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_HYPER_Open() and any required device specific initialization, data can be write directly</span></div><div class="line"><span class="comment">     * to the HyperRAM connected to XSPI unit 1 */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        *((<span class="keyword">volatile</span> uint16_t *) XSPI1_CS0_MIRROR_BASE + 0x0000 + i) = write_data[i];</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_HYPER_Open() and any required device specific initialization, data can be read directly</span></div><div class="line"><span class="comment">     * to the HyperRAM connected to XSPI unit 1 */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        read_data[i] = *((<span class="keyword">volatile</span> uint16_t *) XSPI1_CS0_MIRROR_BASE + 0x0000 + i);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the read data */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        <span class="keywordflow">if</span> (read_data[i] != write_data[i])</div><div class="line">        {</div><div class="line">            <span class="comment">/* Verify error. */</span></div><div class="line">            __BKPT(0);</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><p> The initial latency can be changed by changing the settings of bits [7:4] of CR0. The sample code describes the case of changing from the factory default 6 cycle latency (at a maximum operating frequency of 166 MHz) to 4 cycle latency (at a maximum operating frequency of 100 MHz). Set the latency cycle for the HyperBus controller and HyperRAM according to the specification of the using HyperRAM.</p>
+<div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor">#define HYPERRAM_CA_CONFIGURATION_REGISTER_0_WRITE                     (0x600001000000U)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_CONFIGURATION_REGISTER0_DEFAULT_VALUE                 (0x1F8FU)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_4CLOCK_SET    (0xFU)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_VALUE_MASK    (0xFF0FU)</span></div><div class="line"><span class="preprocessor">#define HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_OFFSET        (4U)</span></div><div class="line"></div><div class="line"><span class="preprocessor">#define XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH                              (256)</span></div><div class="line">uint16_t write_data[XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH];</div><div class="line">uint16_t read_data[XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH];</div><div class="line"></div><div class="line"><span class="keywordtype">void</span> r_xspi_hyper_change_initial_latency_example (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <a class="code" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__direct__transfer__t">hyperbus_direct_transfer_t</a> hyper_direct_transfer =</div><div class="line">    {</div><div class="line">        <span class="comment">/* Set Command-Address bits to access Configuration Register 0 Write. */</span></div><div class="line">        .<a class="code" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a4a40b834ebb8273504ba7747cdb8f9b7">command_address</a>.command_address_info = (uint64_t) HYPERRAM_CA_CONFIGURATION_REGISTER_0_WRITE,</div><div class="line">        .data_length  = 2,</div><div class="line">        .dummy_cycles = 6,</div><div class="line"></div><div class="line">        <span class="comment">/* Set the value of CR0 in the byte order of HyperBus protocol compliant.</span></div><div class="line"><span class="comment">         * Initial latency will be changed from 6 cycles(default) to 4 cycles.</span></div><div class="line"><span class="comment">         * (in HyperRAM with RZ/T2M RSK, the function bit of initial latency is CR0[7-4]) */</span></div><div class="line">        .data                                 =</div><div class="line">            __REV16((HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_4CLOCK_SET &lt;&lt;</div><div class="line">                     HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_OFFSET) |</div><div class="line">                    (HYPERRAM_CONFIGURATION_REGISTER0_DEFAULT_VALUE &amp;</div><div class="line">                     HYPERRAM_CONFIGURATION_REGISTER0_INITIAL_LATENCY_VALUE_MASK)),</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Open the XSPI_HYPER instance */</span></div><div class="line">    <a class="code" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#gaf8a2c741ebcc619ec85b896fedac688b">R_XSPI_HYPER_Open</a>(&amp;g_hyperbus_ctrl, &amp;g_hyperbus_cfg);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Send transaction to update Configuration Register 0 */</span></div><div class="line">    err = <a class="code" href="group___x_s_p_i___h_y_p_e_r.html#ga1bd6bcab769c986f4f7d96b135faed66">R_XSPI_HYPER_DirectTransfer</a>(&amp;g_hyperbus_ctrl, &amp;hyper_direct_transfer);</div><div class="line">    handle_error(err);</div><div class="line"></div><div class="line"></div><div class="line">    <span class="comment">/* Write some data */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        write_data[i] = i;</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_HYPER_Open() and any required device specific initialization, data can be write directly</span></div><div class="line"><span class="comment">     * to the HyperRAM connected to XSPI unit 1 */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        *((<span class="keyword">volatile</span> uint16_t *) HYPERRAM_BASE_ADDRESS + 0x0000 + i) = write_data[i];</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* After R_XSPI_HYPER_Open() and any required device specific initialization, data can be read directly</span></div><div class="line"><span class="comment">     * to the HyperRAM connected to XSPI unit 1 */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        read_data[i] = *((<span class="keyword">volatile</span> uint16_t *) HYPERRAM_BASE_ADDRESS + 0x0000 + i);</div><div class="line">    }</div><div class="line"></div><div class="line">    <span class="comment">/* Verify the read data */</span></div><div class="line">    <span class="keywordflow">for</span> (uint16_t i = 0; i &lt; XSPI_HYPERRAM_EXAMPLE_DATA_LENGTH; i++)</div><div class="line">    {</div><div class="line">        <span class="keywordflow">if</span> (read_data[i] != write_data[i])</div><div class="line">        {</div><div class="line">            <span class="comment">/* Verify error. */</span></div><div class="line">            __BKPT(0);</div><div class="line">        }</div><div class="line">    }</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><p> The initial latency can be changed by changing the settings of bits [7:4] of CR0. The sample code describes the case of changing from the factory default 6 cycle latency (at a maximum operating frequency of 166 MHz) to 4 cycle latency (at a maximum operating frequency of 100 MHz). Set the latency cycle for the HyperBus controller and HyperRAM according to the specification of the using HyperRAM.</p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
@@ -722,7 +747,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Close the HYPER driver module.</p>
-<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a5afbace0bcf6cd20775e2ac96ba91f39">hyperbus_api_t::close</a>.</p>
+<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ae9977d51a242df3cd21e8abb4424b8e6">hyperbus_api_t::close</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Configuration was successful. </td></tr>
@@ -797,11 +822,49 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Dynamic access address space configuration.</p>
-<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a846ba39817ba412950946f7bc4522d88">hyperbus_api_t::accessSpaceSet</a></p>
+<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#afc8cc6488b7263d4183a1600ba1dab25">hyperbus_api_t::accessSpaceSet</a></p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Address space successfully changed as specified by the argument. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>The parameter p_ctrl is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga1bd6bcab769c986f4f7d96b135faed66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1bd6bcab769c986f4f7d96b135faed66">&#9670;&nbsp;</a></span>R_XSPI_HYPER_DirectTransfer()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___r_e_n_e_s_a_s___e_r_r_o_r___c_o_d_e_s.html#gadfb1288da0fcc7ae1dc88c58601374f8">fsp_err_t</a> R_XSPI_HYPER_DirectTransfer </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ga76e479fdbeed623a1b44f162a6bad31e">hyperbus_ctrl_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_ctrl</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__direct__transfer__t">hyperbus_direct_transfer_t</a> *const&#160;</td>
+          <td class="paramname"><em>p_transfer</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Read/Write raw data directly with the HyperRAM.</p>
+<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a3d08a9c6918b8b6932e0d15b5b21fd88">hyperbus_api_t::directTransfer</a>.</p>
+<dl class="retval"><dt>Return values</dt><dd>
+  <table class="retval">
+    <tr><td class="paramname">FSP_SUCCESS</td><td>The flash was programmed successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Driver is not opened. </td></tr>
   </table>
   </dd>
@@ -847,7 +910,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Program a page of data to the flash.</p>
-<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a6662cf3efb6cb64916127d1879eaa8ed">hyperbus_api_t::write</a>.</p>
+<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a5d12f7a396114f4509de4b5b3f2fee11">hyperbus_api_t::write</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported by HyperBus - HyperRAM. </td></tr>
@@ -889,7 +952,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Erase a block or sector of flash. The byte_count must exactly match one of the erase sizes defined in <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__cfg__t">hyperbus_cfg_t</a>. For chip erase, byte_count must be HYPER_FLASH_ERASE_SIZE_CHIP_ERASE.</p>
-<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a9f392f63b6a9dcdbc78dbfbac2ed2241">hyperbus_api_t::erase</a>.</p>
+<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ae6250081482ac1a88d195860018bbad8">hyperbus_api_t::erase</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported by HyperBus - HyperRAM. </td></tr>
@@ -925,7 +988,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Gets the write or erase status of the flash.</p>
-<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a22376bf8b77c368cc3fe3a7a106adbe7">hyperbus_api_t::statusGet</a>.</p>
+<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#ae606a7a11c7c48e6dbb804a208078c40">hyperbus_api_t::statusGet</a>.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported by HyperBus - HyperRAM. </td></tr>
@@ -951,7 +1014,7 @@ Enumerations</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Auto-calibrate the HyperRAM device using the preamble pattern.</p>
-<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a2f47dfa7e5dde8403962020ec44bb2ee">hyperbus_api_t::autoCalibrate</a>. </p><dl class="section note"><dt>Note</dt><dd>The preamble pattern must be written to the configured address before calling this API.</dd></dl>
+<p>Implements <a class="el" href="group___h_y_p_e_r_b_u_s___a_p_i.html#a63bb5fad782082d0f4e9033bef2ba8ef">hyperbus_api_t::autoCalibrate</a>. </p><dl class="section note"><dt>Note</dt><dd>The preamble pattern must be written to the configured address before calling this API.</dd></dl>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>API not supported by HyperBus - HyperFlash. (Planned support for FSP v2.1.0 or later.) </td></tr>
@@ -967,7 +1030,7 @@ Enumerations</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

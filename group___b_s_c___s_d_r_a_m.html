@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -191,7 +191,7 @@ Features</h2>
 <p>The BSC SDRAM driver has the following key features:</p><ul>
 <li>Memory mapped write/read access to the SDRAM<a class="anchor" id="um_sdram_write"></a><a class="anchor" id="um_sdram_read"></a></li>
 <li>Supports 16bit Data bus size<a class="anchor" id="um_sdram_databus_settings"></a></li>
-<li>Supports CS3 space<a class="anchor" id="um_sdram_cs_settings"></a></li>
+<li>Supports 'CS3 only' or 'CS2 and CS3' space<a class="anchor" id="um_sdram_cs_settings"></a></li>
 <li>Can be configured with SDRAM device<a class="anchor" id="um_sdram_configuration"></a><a class="anchor" id="um_sdram_cas_latency_settings"></a></li>
 <li>Can be configured with SDRAM timing<a class="anchor" id="um_sdram_timing_settings"></a></li>
 <li>Auto-Refresh operation<a class="anchor" id="um_sdram_auto_refresh"></a></li>
@@ -233,7 +233,13 @@ This module can be added to the Stacks tab via New Stack &gt; Storage &gt; SDRAM
 <tr>
 <td>General &gt; Name</td><td>Name must be a valid C symbol</td><td>g_sdram0 </td><td>Module name. </td></tr>
 <tr>
-<td>General &gt; Chip Select</td><td>Chip Select 3</td><td>Chip Select 3 </td><td>Specify the SDRAM chip select line to use. </td></tr>
+<td>General &gt; Chip Select</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Chip Select 2 and 3</li>
+<li>
+Chip Select 3</li>
+</ul>
+</td><td>Chip Select 3 </td><td>Specify the SDRAM chip select line to use. </td></tr>
 <tr>
 <td>General &gt; Data Bus Width</td><td>16-bit</td><td>16-bit </td><td>Select the number of SDRAM data bus width. </td></tr>
 <tr>
@@ -451,6 +457,140 @@ Bank Active Mode (using READ and WRIT commands)</li>
 </ul>
 </td><td>Auto Precharge Mode (using READA and WRITA commands) </td><td>Select whether to access in auto-precharge mode (using READA and WRITA commands) or in bank active mode (using READ and WRIT commands). </td></tr>
 <tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Idle Cycles &gt; Read-Read Cycles In The Same CS Space</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+0 CYCLE</li>
+<li>
+1 CYCLE</li>
+<li>
+2 CYCLES</li>
+<li>
+4 CYCLES</li>
+<li>
+6 CYCLES</li>
+<li>
+8 CYCLES</li>
+<li>
+10 CYCLES</li>
+<li>
+12 CYCLES</li>
+</ul>
+</td><td>4 CYCLES </td><td>Idle cycle insertion between Read-Read cycles in the same CS space (for CS2 configuration). </td></tr>
+<tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Idle Cycles &gt; Read-Read Cycles In The Different CS Spaces</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+0 CYCLE</li>
+<li>
+1 CYCLE</li>
+<li>
+2 CYCLES</li>
+<li>
+4 CYCLES</li>
+<li>
+6 CYCLES</li>
+<li>
+8 CYCLES</li>
+<li>
+10 CYCLES</li>
+<li>
+12 CYCLES</li>
+</ul>
+</td><td>4 CYCLES </td><td>Idle cycle insertion between Read-Read cycles in different CS space (for CS2 configuration). </td></tr>
+<tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Idle Cycles &gt; Read-Write Cycles In The Same CS Spaces</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+0 CYCLE</li>
+<li>
+1 CYCLE</li>
+<li>
+2 CYCLES</li>
+<li>
+4 CYCLES</li>
+<li>
+6 CYCLES</li>
+<li>
+8 CYCLES</li>
+<li>
+10 CYCLES</li>
+<li>
+12 CYCLES</li>
+</ul>
+</td><td>4 CYCLES </td><td>Idle cycle insertion between Read-Write cycles in the same CS space (for CS2 configuration). </td></tr>
+<tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Idle Cycles &gt; Read-Write Cycles In The Different CS Spaces</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+0 CYCLE</li>
+<li>
+1 CYCLE</li>
+<li>
+2 CYCLES</li>
+<li>
+4 CYCLES</li>
+<li>
+6 CYCLES</li>
+<li>
+8 CYCLES</li>
+<li>
+10 CYCLES</li>
+<li>
+12 CYCLES</li>
+</ul>
+</td><td>4 CYCLES </td><td>Idle cycle insertion between Read-Write cycles in different CS space (for CS2 configuration). </td></tr>
+<tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Idle Cycles &gt; Write-Read Cycles And Write-Write Cycles</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+0 CYCLE</li>
+<li>
+1 CYCLE</li>
+<li>
+2 CYCLES</li>
+<li>
+4 CYCLES</li>
+<li>
+6 CYCLES</li>
+<li>
+8 CYCLES</li>
+<li>
+10 CYCLES</li>
+<li>
+12 CYCLES</li>
+</ul>
+</td><td>4 CYCLES </td><td>Idle cycles between Write-Read cycles and Write-Write cycles (for CS2 configuration). </td></tr>
+<tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Address Bit Width &gt; Row Address Bit Width</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+11-bit</li>
+<li>
+12-bit</li>
+<li>
+13-bit</li>
+</ul>
+</td><td>11-bit </td><td>Select the number of SDRAM row address bus width (for CS2 configuration). </td></tr>
+<tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Address Bit Width &gt; Column Address Bit Width</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+8-bit</li>
+<li>
+9-bit</li>
+<li>
+10-bit</li>
+</ul>
+</td><td>8-bit </td><td>Select the number of SDRAM column address bus width (for CS2 configuration). </td></tr>
+<tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Wait Insertion for SDRAM Timing &gt; CAS Latency</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+1 CYCLE</li>
+<li>
+2 CYCLES</li>
+<li>
+3 CYCLES</li>
+<li>
+4 CYCLES</li>
+</ul>
+</td><td>1 CYCLE </td><td>CAS Latency (tCL) (for CS2 configuration) </td></tr>
+<tr>
+<td>CS2 Configuration (Only valid when CS2 use) &gt; Data Bus Width</td><td>16-bit</td><td>16-bit </td><td>Select the number of SDRAM data bus width. </td></tr>
+<tr>
 <td>Interrupts &gt; Callback</td><td>Name must be a valid C symbol</td><td>NULL </td><td>A user callback function can be provided. If this callback function is provided, it will be called from the interrupt service routine (ISR). </td></tr>
 <tr>
 <td>Interrupts &gt; Refresh Timer Compare Match Interrupt Priority</td><td>MCU Specific Options</td><td></td><td>Select the refresh timer compare match interrupt priority. </td></tr>
@@ -458,7 +598,7 @@ Bank Active Mode (using READ and WRIT commands)</li>
 </p>
 <h2><a class="anchor" id="r-bsc-sdram-auto-refresh-operation-configuration"></a>
 Auto-Refresh operation interval configuration</h2>
-<p>Auto-Refresh operation interval is calculated from "Refresh Cycle Period (tREF)" , "Row Address Bit Width" and "The Number of Continuous Refresh Cycles" user-setting. In the example below, Auto-Refresh operation interval setting target to the BSC peripheral is 7.8125 us. This interval is counted by CKIO clock.</p>
+<p>Auto-Refresh operation interval is calculated from "Refresh Cycle Period (tREF)" , "Row Address Bit Width" and "The Number of Continuous Refresh Cycles" user-setting (not "CS2 Configuration (Only valid when CS2 use)" configuration). In the example below, Auto-Refresh operation interval setting target to the BSC peripheral is 7.8125 us. This interval is counted by CKIO clock.</p>
 <p>Refresh Cycle Period (tREF) = 64 ms</p>
 <p>Row Address Bit Width = 13bit = 8192 row</p>
 <p>The Number of Continuous Refresh Cycles = 1</p>
@@ -469,12 +609,16 @@ Clock Configuration</h2>
 <h1><a class="anchor" id="r-bsc-sdram-usage_notes"></a>
 Usage Notes</h1>
 <h2>BSC_SDRAM Memory Mapped Access</h2>
-<p>After <a class="el" href="group___b_s_c___s_d_r_a_m.html#ga2f2e78724073df56351b78425722a8d9">R_BSC_SDRAM_Open()</a> completes successfully, the connected SDRAM device contents are mapped to address 0x78000000(External address space CS3) or 0x58000000(Mirror space of External address space CS3) and can be read like internal memory.</p>
+<p>After <a class="el" href="group___b_s_c___s_d_r_a_m.html#ga2f2e78724073df56351b78425722a8d9">R_BSC_SDRAM_Open()</a> completes successfully, the connected SDRAM device contents are mapped to address 0x78000000(External address space CS3)/0x74000000(External address space CS2) or 0x58000000(Mirror space of External address space CS3)/0x54000000(Mirror space of External address space CS2) and can be read like internal memory.</p>
 <p>When not using the cache, access the memory via the mirror space.</p>
 <p>The address map for the external address space for BSC_SDRAM is as follows:</p>
 <table class="doxtable">
 <tr>
 <th>Address </th><th>Space  </th></tr>
+<tr>
+<td>0x54000000 to 0x57FFFFFF </td><td>CS2 mirror space </td></tr>
+<tr>
+<td>0x74000000 to 0x77FFFFFF </td><td>CS2 space </td></tr>
 <tr>
 <td>0x58000000 to 0x5BFFFFFF </td><td>CS3 mirror space </td></tr>
 <tr>
@@ -493,6 +637,8 @@ Basic Example</h2>
 Data Structures</h2></td></tr>
 <tr class="memitem:structbsc__sdram__callback__args__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c___s_d_r_a_m.html#structbsc__sdram__callback__args__t">bsc_sdram_callback_args_t</a></td></tr>
 <tr class="separator:structbsc__sdram__callback__args__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:structbsc__sdram__cs2__settings__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c___s_d_r_a_m.html#structbsc__sdram__cs2__settings__t">bsc_sdram_cs2_settings_t</a></td></tr>
+<tr class="separator:structbsc__sdram__cs2__settings__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structbsc__sdram__extended__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c___s_d_r_a_m.html#structbsc__sdram__extended__cfg__t">bsc_sdram_extended_cfg_t</a></td></tr>
 <tr class="separator:structbsc__sdram__extended__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structbsc__sdram__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c___s_d_r_a_m.html#structbsc__sdram__instance__ctrl__t">bsc_sdram_instance_ctrl_t</a></td></tr>
@@ -528,6 +674,83 @@ Enumerations</h2></td></tr>
 p_context</td>
 <td class="fielddoc">
 Placeholder for user data. </td></tr>
+</table>
+
+</div>
+</div>
+<a name="structbsc__sdram__cs2__settings__t" id="structbsc__sdram__cs2__settings__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structbsc__sdram__cs2__settings__t">&#9670;&nbsp;</a></span>bsc_sdram_cs2_settings_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct bsc_sdram_cs2_settings_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Specify SDRAM CS2 configuration </p>
+</div><table class="fieldtable">
+<tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="a3bb243bb020d3fc8ffc0cd495896cf60"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga79b0fb0e78b2a3d1e9e7f0adacc4d59e">sdram_data_bus_width_t</a></td>
+<td class="fieldname">
+data_width</td>
+<td class="fielddoc">
+Select data bus width. </td></tr>
+<tr><td class="fieldtype">
+<a id="a2613b170eb1248b3e60df9b15c9fcfca"></a>uint32_t</td>
+<td class="fieldname">
+cas_latency</td>
+<td class="fielddoc">
+CAS Latency cycle (tCL) </td></tr>
+<tr><td class="fieldtype">
+<a id="a6c179e40211d15e460dc4d222892417f"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1716678cbfd8e382c54a8d7bda7ba4a5">sdram_address_bus_width_t</a></td>
+<td class="fieldname">
+row_address_width</td>
+<td class="fielddoc">
+Number of bits of SDRAM Row address. </td></tr>
+<tr><td class="fieldtype">
+<a id="ae4af1381de60f25f15ed23dd61f81c41"></a><a class="el" href="group___s_d_r_a_m___a_p_i.html#ga1716678cbfd8e382c54a8d7bda7ba4a5">sdram_address_bus_width_t</a></td>
+<td class="fieldname">
+column_address_width</td>
+<td class="fielddoc">
+Number of bits of SDRAM Column address. </td></tr>
+<tr><td class="fieldtype">
+<a id="a45bdfc872208f46cebe6c8167f7bd948"></a><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga159a39327eab5952ca46895345b624f4">bsc_sdram_idle_cycle_t</a></td>
+<td class="fieldname">
+r_r_same_space_idle_cycle</td>
+<td class="fielddoc">
+<p>Idle cycle between Read-Read cycles in the same CS space </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a16fd6a4838b54b8087cb206599767782"></a><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga159a39327eab5952ca46895345b624f4">bsc_sdram_idle_cycle_t</a></td>
+<td class="fieldname">
+r_r_different_space_idle_cycle</td>
+<td class="fielddoc">
+<p>Idle cycle between Read-Read cycles in the different CS space </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a35c187c22844e5aa0f187de79dc12542"></a><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga159a39327eab5952ca46895345b624f4">bsc_sdram_idle_cycle_t</a></td>
+<td class="fieldname">
+r_w_same_space_idle_cycle</td>
+<td class="fielddoc">
+<p>Idle cycle between Read-Write cycles in the same CS space </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="a8ce6b778b0631b18b31a9d3b337b88bd"></a><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga159a39327eab5952ca46895345b624f4">bsc_sdram_idle_cycle_t</a></td>
+<td class="fieldname">
+r_w_different_space_idle_cycle</td>
+<td class="fielddoc">
+<p>Idle cycle between Read-Write cycles in the different CS space </p>
+</td></tr>
+<tr><td class="fieldtype">
+<a id="acde5349ba2f81aac871a5586352fb26b"></a><a class="el" href="group___b_s_c___s_d_r_a_m.html#ga159a39327eab5952ca46895345b624f4">bsc_sdram_idle_cycle_t</a></td>
+<td class="fieldname">
+w_r_w_w_idle_cycle</td>
+<td class="fielddoc">
+<p>Idle cycle between Write-Read cycles and Write-Write cycles </p>
+</td></tr>
 </table>
 
 </div>
@@ -570,6 +793,8 @@ uint8_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="g
 IRQn_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c___s_d_r_a_m.html#af1ce523aa4a47428a4093c1677bbfd84">cmi_irq</a></td></tr>
 <tr class="memdesc:af1ce523aa4a47428a4093c1677bbfd84"><td class="mdescLeft">&#160;</td><td class="mdescRight">SDRAM refresh compare match interrupt priority. <br /></td></tr>
 <tr class="separator:af1ce523aa4a47428a4093c1677bbfd84"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3980e88017a9889451a872ca18bbb76a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="group___b_s_c___s_d_r_a_m.html#structbsc__sdram__cs2__settings__t">bsc_sdram_cs2_settings_t</a> const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c___s_d_r_a_m.html#a3980e88017a9889451a872ca18bbb76a">p_cs2_cfg</a></td></tr>
+<tr class="separator:a3980e88017a9889451a872ca18bbb76a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abd0499a56f6c17c41e5ab9b3eb2ee760"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c___s_d_r_a_m.html#abd0499a56f6c17c41e5ab9b3eb2ee760">p_callback</a> )(<a class="el" href="group___b_s_c___s_d_r_a_m.html#structbsc__sdram__callback__args__t">bsc_sdram_callback_args_t</a> *p_args)</td></tr>
 <tr class="separator:abd0499a56f6c17c41e5ab9b3eb2ee760"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae509c3fed7a7ac4dd1780a376f841adc"><td class="memItemLeft" align="right" valign="top">void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_c___s_d_r_a_m.html#ae509c3fed7a7ac4dd1780a376f841adc">p_context</a></td></tr>
@@ -666,6 +891,21 @@ IRQn_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 
 </div>
 </div>
+<a id="a3980e88017a9889451a872ca18bbb76a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3980e88017a9889451a872ca18bbb76a">&#9670;&nbsp;</a></span>p_cs2_cfg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="group___b_s_c___s_d_r_a_m.html#structbsc__sdram__cs2__settings__t">bsc_sdram_cs2_settings_t</a> const* bsc_sdram_extended_cfg_t::p_cs2_cfg</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>CS2 SDRAM configuration </p>
+
+</div>
+</div>
 <a id="abd0499a56f6c17c41e5ab9b3eb2ee760"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#abd0499a56f6c17c41e5ab9b3eb2ee760">&#9670;&nbsp;</a></span>p_callback</h2>
 
@@ -728,7 +968,9 @@ IRQn_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 </div><div class="memdoc">
 <p>SDRAM chip select. </p>
 <table class="fieldtable">
-<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga18786329189e0979c7835a569ac7fcb1a1cfbdbb13f78fe524ef586b0942eb953"></a>BSC_SDRAM_CHIP_SELECT_3&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 3. </p>
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga18786329189e0979c7835a569ac7fcb1aaf8279dc3b07bf6b554c88cd7c69c912"></a>BSC_SDRAM_CHIP_SELECT_2_3&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 2 and 3. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="gga18786329189e0979c7835a569ac7fcb1a1cfbdbb13f78fe524ef586b0942eb953"></a>BSC_SDRAM_CHIP_SELECT_3&#160;</td><td class="fielddoc"><p>Device connected to Chip-Select 3. </p>
 </td></tr>
 </table>
 
@@ -973,7 +1215,7 @@ IRQn_Type&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href=
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

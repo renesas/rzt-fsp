@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -247,9 +247,11 @@ Usage Notes</h1>
 <tr>
 <td rowspan="5">Shared Memory Driver </td><td>Name </td><td>g_shared_memory0 </td><td>g_shared_memory0 </td><td></td></tr>
 <tr>
-<td>Shared Memory Address </td><td colspan="2" align="center"><b>0x30100000</b> </td><td rowspan="3">Each value between CPU0 and CPU1 must be the same  </td></tr>
+<td>Shared Memory Address </td><td colspan="2" align="center"><b>0x301E0000 (RZ/T2M, RZ/T2ME)</b><br />
+<b>0x101E0000 (RZ/T2H_CR52)</b><br />
+<b>0x103E0000 (RZ/T2H_CA55)</b> </td><td>The value of CPU0 and CPU1 depends on the type of core and device  </td></tr>
 <tr>
-<td>Shared Memory Size </td><td colspan="2" align="center"><b>256</b>  </td></tr>
+<td>Shared Memory Size </td><td colspan="2" align="center"><b>256</b> </td><td rowspan="2">Each value between CPU0 and CPU1 must be the same  </td></tr>
 <tr>
 <td>Semaphore </td><td colspan="2" align="center"><b>0</b>  </td></tr>
 <tr>
@@ -566,7 +568,7 @@ Basic Example</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

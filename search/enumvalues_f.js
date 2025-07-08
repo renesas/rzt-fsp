@@ -42,6 +42,7 @@ var searchData=
   ['usb_5fbcport_5fsdp',['USB_BCPORT_SDP',['../group___u_s_b___a_p_i.html#ggae493db3a65e22cbc31478e187242b9d6a8409a0bde1863cfa160837a28053034d',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fdfu',['USB_CLASS_DFU',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2ac1fe471dfd6edc739aa2d500a8634b08',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fend',['USB_CLASS_END',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2ada9301f70f2342c0853a2d41486fcdd9',1,'r_usb_basic_api.h']]],
+  ['usb_5fclass_5fhaud',['USB_CLASS_HAUD',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2a4abf229f7006ea763d03aa58987f9879',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fhcdc',['USB_CLASS_HCDC',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2aa31d93178a24f042fb19db6da3b5a2d8',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fhcdcc',['USB_CLASS_HCDCC',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2a849e5469fce2840fde1a475474f3ddc4',1,'r_usb_basic_api.h']]],
   ['usb_5fclass_5fhhid',['USB_CLASS_HHID',['../group___u_s_b___a_p_i.html#ggab1dc4a2240edf1a50cca3945f31dc9f2a38b8cf9a51297016282ad06c4d9ae875',1,'r_usb_basic_api.h']]],

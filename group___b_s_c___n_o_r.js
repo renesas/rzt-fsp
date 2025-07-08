@@ -10,7 +10,8 @@ var group___b_s_c___n_o_r =
       [ "read_access_wait_cycle", "group___b_s_c___n_o_r.html#a5069f4fe5ab94d32c193ac2ca387baeb", null ],
       [ "write_access_wait_cycle", "group___b_s_c___n_o_r.html#a7cf6e080f0c1a06340bf05629e2c5472", null ],
       [ "cs_pullup_lag", "group___b_s_c___n_o_r.html#a3781cc1b5603e7039ca35026ba1d448b", null ],
-      [ "cs_pulldown_lead", "group___b_s_c___n_o_r.html#ace7d9e0be76e7ffb36732cebe70c361c", null ]
+      [ "cs_pulldown_lead", "group___b_s_c___n_o_r.html#ace7d9e0be76e7ffb36732cebe70c361c", null ],
+      [ "initial_access_memory_space", "group___b_s_c___n_o_r.html#a1ebaad0faece50cf2f4ab01f5ee255cc", null ]
     ] ],
     [ "bsc_nor_instance_ctrl_t", "group___b_s_c___n_o_r.html#structbsc__nor__instance__ctrl__t", null ],
     [ "bsc_nor_idle_cycle_t", "group___b_s_c___n_o_r.html#ga33c694d442e72e1e6dc152abc99d6f97", [
@@ -44,6 +45,10 @@ var group___b_s_c___n_o_r =
       [ "BSC_NOR_CS_WAIT_CYCLE_1_5", "group___b_s_c___n_o_r.html#gga215c501740e65c572970880a3d839529af50396332c021d25c9d60594d292f6c7", null ],
       [ "BSC_NOR_CS_WAIT_CYCLE_2_5", "group___b_s_c___n_o_r.html#gga215c501740e65c572970880a3d839529a33e04a7358889bbb865f5406240006df", null ],
       [ "BSC_NOR_CS_WAIT_CYCLE_3_5", "group___b_s_c___n_o_r.html#gga215c501740e65c572970880a3d839529a42773fcd96bad33ac45bdb6d0c8f5ee2", null ]
+    ] ],
+    [ "bsc_nor_memory_space_t", "group___b_s_c___n_o_r.html#ga3044b91e79127fcd5c0f934efbc689db", [
+      [ "BSC_NOR_MEMORY_SPACE_CS", "group___b_s_c___n_o_r.html#gga3044b91e79127fcd5c0f934efbc689dbadb1cd322b609fb0e22c5b15f75f0e2d2", null ],
+      [ "BSC_NOR_MEMORY_SPACE_CS_MIRROR", "group___b_s_c___n_o_r.html#gga3044b91e79127fcd5c0f934efbc689dba4dc70b83232fc783ab765d9fb685c33d", null ]
     ] ],
     [ "R_BSC_NOR_Open", "group___b_s_c___n_o_r.html#ga4e3dc47b0f1ac609c5a52a23590182c8", null ],
     [ "R_BSC_NOR_Write", "group___b_s_c___n_o_r.html#gaed8a141fe12ce3f6f55ca45d56af4ad3", null ],

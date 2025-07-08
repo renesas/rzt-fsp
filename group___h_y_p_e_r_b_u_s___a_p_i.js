@@ -1,5 +1,11 @@
 var group___h_y_p_e_r_b_u_s___a_p_i =
 [
+    [ "hyperbus_command_address_t", "group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__command__address__t", null ],
+    [ "hyperbus_direct_transfer_t", "group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__direct__transfer__t", [
+      [ "command_address", "group___h_y_p_e_r_b_u_s___a_p_i.html#a4a40b834ebb8273504ba7747cdb8f9b7", null ],
+      [ "dummy_cycles", "group___h_y_p_e_r_b_u_s___a_p_i.html#a416559d0947776d482c256d493335700", null ],
+      [ "data_length", "group___h_y_p_e_r_b_u_s___a_p_i.html#ac5452014bf7614c30c54cf807d422dfc", null ]
+    ] ],
     [ "hyperbus_status_t", "group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__status__t", [
       [ "device_busy", "group___h_y_p_e_r_b_u_s___a_p_i.html#a86a5cb38081704eb91b180dcf4fecb33", null ]
     ] ],
@@ -15,12 +21,13 @@ var group___h_y_p_e_r_b_u_s___a_p_i =
     [ "hyperbus_api_t", "group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__api__t", [
       [ "open", "group___h_y_p_e_r_b_u_s___a_p_i.html#aef6c90f5c5a94e43fc65ffaf4d7d9133", null ],
       [ "burstTypeSet", "group___h_y_p_e_r_b_u_s___a_p_i.html#a0bda295fe6536d760a1fd8e8bb3933f0", null ],
-      [ "accessSpaceSet", "group___h_y_p_e_r_b_u_s___a_p_i.html#a846ba39817ba412950946f7bc4522d88", null ],
-      [ "write", "group___h_y_p_e_r_b_u_s___a_p_i.html#a6662cf3efb6cb64916127d1879eaa8ed", null ],
-      [ "erase", "group___h_y_p_e_r_b_u_s___a_p_i.html#a9f392f63b6a9dcdbc78dbfbac2ed2241", null ],
-      [ "statusGet", "group___h_y_p_e_r_b_u_s___a_p_i.html#a22376bf8b77c368cc3fe3a7a106adbe7", null ],
-      [ "autoCalibrate", "group___h_y_p_e_r_b_u_s___a_p_i.html#a2f47dfa7e5dde8403962020ec44bb2ee", null ],
-      [ "close", "group___h_y_p_e_r_b_u_s___a_p_i.html#a5afbace0bcf6cd20775e2ac96ba91f39", null ]
+      [ "accessSpaceSet", "group___h_y_p_e_r_b_u_s___a_p_i.html#afc8cc6488b7263d4183a1600ba1dab25", null ],
+      [ "directTransfer", "group___h_y_p_e_r_b_u_s___a_p_i.html#a3d08a9c6918b8b6932e0d15b5b21fd88", null ],
+      [ "write", "group___h_y_p_e_r_b_u_s___a_p_i.html#a5d12f7a396114f4509de4b5b3f2fee11", null ],
+      [ "erase", "group___h_y_p_e_r_b_u_s___a_p_i.html#ae6250081482ac1a88d195860018bbad8", null ],
+      [ "statusGet", "group___h_y_p_e_r_b_u_s___a_p_i.html#ae606a7a11c7c48e6dbb804a208078c40", null ],
+      [ "autoCalibrate", "group___h_y_p_e_r_b_u_s___a_p_i.html#a63bb5fad782082d0f4e9033bef2ba8ef", null ],
+      [ "close", "group___h_y_p_e_r_b_u_s___a_p_i.html#ae9977d51a242df3cd21e8abb4424b8e6", null ]
     ] ],
     [ "hyperbus_instance_t", "group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__instance__t", [
       [ "p_ctrl", "group___h_y_p_e_r_b_u_s___a_p_i.html#af6ba53f7b7f767f85bd74cfe1f899987", null ],

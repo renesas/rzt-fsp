@@ -1,6 +1,7 @@
 var searchData=
 [
   ['sci_5fi2c_5fclock_5fsource_5ft',['sci_i2c_clock_source_t',['../group___s_c_i___i2_c.html#ga3fe23a21096cf11c12fb50717177ff57',1,'r_sci_i2c.h']]],
+  ['sci_5fsmci_5fclock_5fsource_5ft',['sci_smci_clock_source_t',['../group___s_c_i___s_m_c_i.html#gab46583a926fc41ae091dfc997fb813fd',1,'r_sci_smci.h']]],
   ['sci_5fspi_5fclock_5fsource_5ft',['sci_spi_clock_source_t',['../group___s_c_i___s_p_i.html#ga20b273db6ca4654e4eb5e8d5d414f4bd',1,'r_sci_spi.h']]],
   ['sci_5fuart_5fclock_5fsource_5ft',['sci_uart_clock_source_t',['../group___s_c_i___u_a_r_t.html#ga62708954aea3d9755a464318c83055fb',1,'r_sci_uart.h']]],
   ['sci_5fuart_5fclock_5ft',['sci_uart_clock_t',['../group___s_c_i___u_a_r_t.html#gaef6e8f161b3f19f95a469e775900c951',1,'r_sci_uart.h']]],
@@ -24,6 +25,12 @@ var searchData=
   ['sdram_5frefresh_5fcycle_5fsource_5fdiv_5ft',['sdram_refresh_cycle_source_div_t',['../group___s_d_r_a_m___a_p_i.html#ga1f0978f4b15342d88b8a8f9357152964',1,'r_sdram_api.h']]],
   ['sdram_5fwrite_5fburst_5fmode_5ft',['sdram_write_burst_mode_t',['../group___s_d_r_a_m___a_p_i.html#ga1c856af32e42c6541518ffc9baedd5ed',1,'r_sdram_api.h']]],
   ['shared_5fmemory_5fstate_5ft',['shared_memory_state_t',['../group___s_h_a_r_e_d___m_e_m_o_r_y___a_p_i.html#gae7a1de421a15ededd01891a6209216dd',1,'r_shared_memory_api.h']]],
+  ['smci_5fbaudrate_5fadjustment_5finteger_5ft',['smci_baudrate_adjustment_integer_t',['../group___s_m_c_i___a_p_i.html#gadd6e0bc7d0dc581c5f24068321bd6ac5',1,'r_smci_api.h']]],
+  ['smci_5fclock_5fconversion_5finteger_5ft',['smci_clock_conversion_integer_t',['../group___s_m_c_i___a_p_i.html#gaf3ce6b7f8d14861c050c192f69d961fb',1,'r_smci_api.h']]],
+  ['smci_5fconvention_5ftype_5ft',['smci_convention_type_t',['../group___s_m_c_i___a_p_i.html#gade8fe003b06ee6f7a3ada7ea785b66b7',1,'r_smci_api.h']]],
+  ['smci_5fevent_5ft',['smci_event_t',['../group___s_m_c_i___a_p_i.html#gaa4182189b3196a6fd900d0498837ffe0',1,'r_smci_api.h']]],
+  ['smci_5fprotocol_5ftype_5ft',['smci_protocol_type_t',['../group___s_m_c_i___a_p_i.html#ga9f7562804bb54466c04e54e6c5da3ca9',1,'r_smci_api.h']]],
+  ['smci_5fstate_5ft',['smci_state_t',['../group___s_m_c_i___a_p_i.html#ga7a61b0b370f0be4ef8bf93731ccbcdec',1,'r_smci_api.h']]],
   ['spi_5fbit_5forder_5ft',['spi_bit_order_t',['../group___s_p_i___a_p_i.html#ga90f5b39d4872c0c09255af5dcea6cd3e',1,'r_spi_api.h']]],
   ['spi_5fbit_5fwidth_5ft',['spi_bit_width_t',['../group___s_p_i___a_p_i.html#ga6ba4a8eef274a5b227fc2ab6ee61f8fd',1,'r_spi_api.h']]],
   ['spi_5fbyte_5fswap_5ft',['spi_byte_swap_t',['../group___s_p_i.html#ga83efd6c2d217481668d8d31cad4fb17e',1,'r_spi.h']]],

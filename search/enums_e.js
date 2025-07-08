@@ -2,6 +2,7 @@ var searchData=
 [
   ['three_5fphase_5fbuffer_5fmode_5ft',['three_phase_buffer_mode_t',['../group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga7bf8780070a6db03e31b85e97bcf8f09',1,'r_three_phase_api.h']]],
   ['three_5fphase_5fchannel_5ft',['three_phase_channel_t',['../group___t_h_r_e_e___p_h_a_s_e___a_p_i.html#ga012330a6f9685e6143def5e3e3dd3829',1,'r_three_phase_api.h']]],
+  ['timer_5fcompare_5fmatch_5ft',['timer_compare_match_t',['../group___t_i_m_e_r___a_p_i.html#gaf5f22f5e34fe6ea640fd6a1c7e864cd9',1,'r_timer_api.h']]],
   ['timer_5fdirection_5ft',['timer_direction_t',['../group___t_i_m_e_r___a_p_i.html#ga8d600bb7885c5490bb7e8f989aa2ff83',1,'r_timer_api.h']]],
   ['timer_5fevent_5ft',['timer_event_t',['../group___t_i_m_e_r___a_p_i.html#gac3bee51f7c9078f794c5ac19522f91eb',1,'r_timer_api.h']]],
   ['timer_5fmode_5ft',['timer_mode_t',['../group___t_i_m_e_r___a_p_i.html#ga6d4cd64aed5c0009ac26803efc9c13b2',1,'r_timer_api.h']]],

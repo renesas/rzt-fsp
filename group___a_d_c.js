@@ -94,7 +94,11 @@ var group___a_d_c =
       [ "ADC_SAMPLE_STATE_REG_CHANNEL_15", "group___a_d_c.html#gga2817e17c728f9a2b041b54fd92244c3babb07e48ee601912e22558cbd4246c4ce", null ],
       [ "ADC_SAMPLE_STATE_REG_CHANNEL_16_TO_31", "group___a_d_c.html#gga2817e17c728f9a2b041b54fd92244c3baff392de5f4360366983bf2a253fd4684", null ]
     ] ],
-    [ "adc_compare_cfg_t", "group___a_d_c.html#ga5d55db8f35fe6d81d9ed2189e6915259", null ],
+    [ "adc_compare_cfg_t", "group___a_d_c.html#ga5d55db8f35fe6d81d9ed2189e6915259", [
+      [ "ADC_COMPARE_CFG_EVENT_OUTPUT_OR", "group___a_d_c.html#gga5d55db8f35fe6d81d9ed2189e6915259a02d9f87ff15e67d4f6cc19bb027a2826", null ],
+      [ "ADC_COMPARE_CFG_EVENT_OUTPUT_XOR", "group___a_d_c.html#gga5d55db8f35fe6d81d9ed2189e6915259a0559afe6232d4c1a60271e5bd86d7ce7", null ],
+      [ "ADC_COMPARE_CFG_EVENT_OUTPUT_AND", "group___a_d_c.html#gga5d55db8f35fe6d81d9ed2189e6915259a75da70c47c1a446819748c2f08e89b60", null ]
+    ] ],
     [ "adc_window_b_channel_t", "group___a_d_c.html#gaf6b1491f26c341e3a6507881969bdad3", [
       [ "ADC_WINDOW_B_CHANNEL_0", "group___a_d_c.html#ggaf6b1491f26c341e3a6507881969bdad3a8f4fdff7c986f1f4721974cf2ab82e6b", null ],
       [ "ADC_WINDOW_B_CHANNEL_1", "group___a_d_c.html#ggaf6b1491f26c341e3a6507881969bdad3a767a0e14bd2712c181abed5447aa9e37", null ],
@@ -111,7 +115,8 @@ var group___a_d_c =
       [ "ADC_WINDOW_B_CHANNEL_12", "group___a_d_c.html#ggaf6b1491f26c341e3a6507881969bdad3ae0da5f50766c0522e37a8fe515984a2a", null ],
       [ "ADC_WINDOW_B_CHANNEL_13", "group___a_d_c.html#ggaf6b1491f26c341e3a6507881969bdad3a61af59fb34e8b44768d630e824c3cc1c", null ],
       [ "ADC_WINDOW_B_CHANNEL_14", "group___a_d_c.html#ggaf6b1491f26c341e3a6507881969bdad3adb66aacf179c977977d60842dcc495fd", null ],
-      [ "ADC_WINDOW_B_CHANNEL_15", "group___a_d_c.html#ggaf6b1491f26c341e3a6507881969bdad3a8ca6128339cea0546d98107aac104f56", null ]
+      [ "ADC_WINDOW_B_CHANNEL_15", "group___a_d_c.html#ggaf6b1491f26c341e3a6507881969bdad3a8ca6128339cea0546d98107aac104f56", null ],
+      [ "ADC_WINDOW_B_CHANNEL_NONE", "group___a_d_c.html#ggaf6b1491f26c341e3a6507881969bdad3aefff52854eb8bd5e5e0ed679d922290d", null ]
     ] ],
     [ "adc_window_b_mode_t", "group___a_d_c.html#ga0d0c470ca46c2801d243c06f03916e67", [
       [ "ADC_WINDOW_B_MODE_LESS_THAN_OR_OUTSIDE", "group___a_d_c.html#gga0d0c470ca46c2801d243c06f03916e67a9c18cac37a1497a88d9e891fd3b0fe90", null ]

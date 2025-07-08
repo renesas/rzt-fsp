@@ -23,6 +23,7 @@ var searchData=
   ['ether_5fselector_5fphylink_5fpolarity_5ft',['ether_selector_phylink_polarity_t',['../group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ga1761db3c5e2eea9a0969d8d6e2cbdcc5',1,'r_ether_selector_api.h']]],
   ['ether_5fselector_5fref_5fclock_5ft',['ether_selector_ref_clock_t',['../group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#ga55d5223ce76d2ee6b0704b96b87dc36e',1,'r_ether_selector_api.h']]],
   ['ether_5fselector_5fspeed_5ft',['ether_selector_speed_t',['../group___e_t_h_e_r___s_e_l_e_c_t_o_r___a_p_i.html#gada056d5471504dc225d11ec1c6ec2b14',1,'r_ether_selector_api.h']]],
+  ['ether_5fswitch_5fevent_5ft',['ether_switch_event_t',['../group___e_t_h_e_r___s_w_i_t_c_h___a_p_i.html#gacd79a4b5f23db68c622b963ff8aa8524',1,'r_ether_switch_api.h']]],
   ['ether_5fwake_5fon_5flan_5ft',['ether_wake_on_lan_t',['../group___e_t_h_e_r___a_p_i.html#ga9bc17e8981b3bb4f3d42d31c1f11bcd7',1,'r_ether_api.h']]],
   ['ether_5fzerocopy_5ft',['ether_zerocopy_t',['../group___e_t_h_e_r___a_p_i.html#gad3c9ba84cbe05cc1ff9b37d25318dd07',1,'r_ether_api.h']]],
   ['ethercat_5fssc_5fport_5feeprom_5fsize_5ft',['ethercat_ssc_port_eeprom_size_t',['../group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t.html#ga4770edd29dda539aabd891f0ac20b6f7',1,'rm_ethercat_ssc_port.h']]],

@@ -42,7 +42,8 @@ var group___i2_c___m_a_s_t_e_r___a_p_i =
     [ "i2c_master_rate_t", "group___i2_c___m_a_s_t_e_r___a_p_i.html#gaa30dd03665bdc1134233e8e2b1631f0a", [
       [ "I2C_MASTER_RATE_STANDARD", "group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aa929a32b2615c7c54efa382f06e901cc0", null ],
       [ "I2C_MASTER_RATE_FAST", "group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aae2e38e76a2477e68f2685b403bdeb9a9", null ],
-      [ "I2C_MASTER_RATE_FASTPLUS", "group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aaee266782cacb431c8623f7276063228b", null ]
+      [ "I2C_MASTER_RATE_FASTPLUS", "group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aaee266782cacb431c8623f7276063228b", null ],
+      [ "I2C_MASTER_RATE_HIGHSPEED", "group___i2_c___m_a_s_t_e_r___a_p_i.html#ggaa30dd03665bdc1134233e8e2b1631f0aa1d7bb973d7fad886e5a979777d5bc395", null ]
     ] ],
     [ "i2c_master_addr_mode_t", "group___i2_c___m_a_s_t_e_r___a_p_i.html#ga6203bcd8d8127b8fd442a2d33d112940", [
       [ "I2C_MASTER_ADDR_MODE_7BIT", "group___i2_c___m_a_s_t_e_r___a_p_i.html#gga6203bcd8d8127b8fd442a2d33d112940ab42fbd73d951db4694494c5acfa19dd8", null ],
@@ -51,6 +52,8 @@ var group___i2_c___m_a_s_t_e_r___a_p_i =
     [ "i2c_master_event_t", "group___i2_c___m_a_s_t_e_r___a_p_i.html#ga515f0c8b583f8851ce4d6474168769af", [
       [ "I2C_MASTER_EVENT_ABORTED", "group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa22226fd293eb8a7f80e4a80ca8699a4d", null ],
       [ "I2C_MASTER_EVENT_RX_COMPLETE", "group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa1b3d50a1a4fbf045307febd9eca1521a", null ],
-      [ "I2C_MASTER_EVENT_TX_COMPLETE", "group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa9273437457da4f6369e937d257c0211b", null ]
+      [ "I2C_MASTER_EVENT_TX_COMPLETE", "group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afa9273437457da4f6369e937d257c0211b", null ],
+      [ "I2C_MASTER_EVENT_START", "group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afab71cabec8399cca4d24b60cfda735a42", null ],
+      [ "I2C_MASTER_EVENT_BYTE_ACK", "group___i2_c___m_a_s_t_e_r___a_p_i.html#gga515f0c8b583f8851ce4d6474168769afac0fac7695efc6eab872cb17a88c3c93e", null ]
     ] ]
 ];

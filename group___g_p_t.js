@@ -4,6 +4,7 @@ var group___g_p_t =
       [ "output_enabled", "group___g_p_t.html#a5f0b69cc2d3cfe89baefcf348563df21", null ],
       [ "stop_level", "group___g_p_t.html#a5805853871548d015520f71f3ab00e93", null ]
     ] ],
+    [ "gpt_gtior_setting_t", "group___g_p_t.html#structgpt__gtior__setting__t", null ],
     [ "gpt_instance_ctrl_t", "group___g_p_t.html#structgpt__instance__ctrl__t", null ],
     [ "gpt_extended_pwm_cfg_t", "group___g_p_t.html#structgpt__extended__pwm__cfg__t", [
       [ "trough_ipl", "group___g_p_t.html#ad908895a31952a884009f3a63fdac8d0", null ],
@@ -47,18 +48,28 @@ var group___g_p_t =
       [ "icds", "group___g_p_t.html#ac64cd27d2480b8a9e9acdafb1f3e301c", null ],
       [ "capture_a_irq", "group___g_p_t.html#a630c77adb426ddddb5eac8b974fd7c85", null ],
       [ "capture_b_irq", "group___g_p_t.html#a22eb63abdf43064c9c83d81287c67c88", null ],
+      [ "compare_match_value", "group___g_p_t.html#a675417f6a403fed9258fe678ae934171", null ],
+      [ "compare_match_status", "group___g_p_t.html#a9220b2bd52f1ae03647b04e48610b8ff", null ],
       [ "dead_time_irq", "group___g_p_t.html#afbc788de7ed38b81ebb727b2c05d0525", null ],
       [ "p_pwm_cfg", "group___g_p_t.html#a55e5f85f57b77fd7ee5a1de7ff39da27", null ],
       [ "capture_a_source_select", "group___g_p_t.html#a8a4b67efcbdd8118270a3a10c980b3bc", null ],
       [ "capture_b_source_select", "group___g_p_t.html#ad2cd89401d71cb01b0b210165529e09e", null ],
       [ "cycle_end_source_select", "group___g_p_t.html#a6095dfec68e554e48dab215dab8e1554", null ],
       [ "dead_time_error_source_select", "group___g_p_t.html#a4c2d0a899c3cb24a9fa02e8667b13221", null ],
-      [ "trough_source_select", "group___g_p_t.html#a8197d0efe7b7c43a7a1ff26b1cdbe0c1", null ]
+      [ "trough_source_select", "group___g_p_t.html#a8197d0efe7b7c43a7a1ff26b1cdbe0c1", null ],
+      [ "gtior_setting", "group___g_p_t.html#ad8b8b467339a151f016017d175df2f9c", null ]
     ] ],
     [ "gpt_io_pin_t", "group___g_p_t.html#gaabd4a03d16b1b4254cc44c7779f44c60", [
       [ "GPT_IO_PIN_GTIOCA", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60aec2d2c471241869efb57a9a48a5d0eda", null ],
       [ "GPT_IO_PIN_GTIOCB", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60aebd74a7b9507fb082ec4cce60ebe9369", null ],
-      [ "GPT_IO_PIN_GTIOCA_AND_GTIOCB", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60a2b44d1e05050c34cc6e8d9ee4093294d", null ]
+      [ "GPT_IO_PIN_GTIOCA_AND_GTIOCB", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60a2b44d1e05050c34cc6e8d9ee4093294d", null ],
+      [ "GPT_IO_PIN_TROUGH", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60ac68b7e1ef5c48c55960faacd7eb538b9", null ],
+      [ "GPT_IO_PIN_CREST", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60acb3ba96929217eb6bb1ec5b2f1ccf9d4", null ],
+      [ "GPT_IO_PIN_ONE_SHOT_LEADING_EDGE", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60ae3e479af00c84f4ccf6e7376b4b44c8d", null ],
+      [ "GPT_IO_PIN_ONE_SHOT_TRAILING_EDGE", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60a59f7576cde98e497d35b98a926732e52", null ]
+    ] ],
+    [ "gpt_buffer_force_push_t", "group___g_p_t.html#gad88edb64095899568a918b753421c9fa", [
+      [ "GPT_BUFFER_FORCE_PUSH", "group___g_p_t.html#ggad88edb64095899568a918b753421c9faa23c94706bd1a34c9f1b9cfffea30f4cc", null ]
     ] ],
     [ "gpt_pin_level_t", "group___g_p_t.html#ga454c639e426428470ce78115af5d3648", [
       [ "GPT_PIN_LEVEL_LOW", "group___g_p_t.html#gga454c639e426428470ce78115af5d3648a3270f1165e7a86c5b12eecb9501390f4", null ],
@@ -181,5 +192,6 @@ var group___g_p_t =
     [ "R_GPT_OutputDisable", "group___g_p_t.html#gae204e5d6c9305923e98724005dcdf03d", null ],
     [ "R_GPT_AdcTriggerSet", "group___g_p_t.html#ga311c91c55f20338f7082fa4369e7c80f", null ],
     [ "R_GPT_CallbackSet", "group___g_p_t.html#ga8d7038dbf5dabb43acbb7b74b4980e79", null ],
-    [ "R_GPT_Close", "group___g_p_t.html#ga2fc5d6a737a00948802e2bb77fbe8d8c", null ]
+    [ "R_GPT_Close", "group___g_p_t.html#ga2fc5d6a737a00948802e2bb77fbe8d8c", null ],
+    [ "R_GPT_CompareMatchSet", "group___g_p_t.html#ga834be7c118edc5297a74cf588a447106", null ]
 ];

@@ -9,6 +9,7 @@ var searchData=
   ['bsc_5fnor_5faccess_5fwait_5fcycle_5ft',['bsc_nor_access_wait_cycle_t',['../group___b_s_c___n_o_r.html#ga2b80af58cf2755224b4b2da4c19fb8e8',1,'r_bsc_nor.h']]],
   ['bsc_5fnor_5fcs_5fwait_5fcycle_5ft',['bsc_nor_cs_wait_cycle_t',['../group___b_s_c___n_o_r.html#ga215c501740e65c572970880a3d839529',1,'r_bsc_nor.h']]],
   ['bsc_5fnor_5fidle_5fcycle_5ft',['bsc_nor_idle_cycle_t',['../group___b_s_c___n_o_r.html#ga33c694d442e72e1e6dc152abc99d6f97',1,'r_bsc_nor.h']]],
+  ['bsc_5fnor_5fmemory_5fspace_5ft',['bsc_nor_memory_space_t',['../group___b_s_c___n_o_r.html#ga3044b91e79127fcd5c0f934efbc689db',1,'r_bsc_nor.h']]],
   ['bsc_5fsdram_5fchip_5fselect_5ft',['bsc_sdram_chip_select_t',['../group___b_s_c___s_d_r_a_m.html#ga18786329189e0979c7835a569ac7fcb1',1,'r_bsc_sdram.h']]],
   ['bsc_5fsdram_5fcommand_5ft',['bsc_sdram_command_t',['../group___b_s_c___s_d_r_a_m.html#gada1c0e66f14f9002e9ac5468a5affd07',1,'r_bsc_sdram.h']]],
   ['bsc_5fsdram_5fidle_5fcycle_5ft',['bsc_sdram_idle_cycle_t',['../group___b_s_c___s_d_r_a_m.html#ga159a39327eab5952ca46895345b624f4',1,'r_bsc_sdram.h']]],

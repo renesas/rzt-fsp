@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZT Flexible Software Package Documentation: Cyclic Redundancy Check (CRC) Calculator (r_crc)</title>
+<title>RZT Flexible Software Package Documentation: CRC (r_crc)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v2.3.0</span>
+   &#160;<span id="projectnumber">Release v3.0.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -162,7 +162,7 @@ $(document).ready(function(){initNavTree('group___c_r_c.html','');});
 <a href="#func-members">Functions</a> &#124;
 <a href="#nested-classes">Data Structures</a>  </div>
   <div class="headertitle">
-<div class="title">Cyclic Redundancy Check (CRC) Calculator (r_crc)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___m_o_n_i_t_o_r_i_n_g___m_o_d_u_l_e_s.html">Monitoring</a></div></div>  </div>
+<div class="title">CRC (r_crc)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___m_o_n_i_t_o_r_i_n_g___m_o_d_u_l_e_s.html">Monitoring</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -231,27 +231,11 @@ This module can be added to the Stacks tab via New Stack &gt; Monitoring &gt; CR
 <tr>
 <td>Channel</td><td>Value must be 0 or 1</td><td>0 </td><td>Select the CRC channel. </td></tr>
 <tr>
-<td>CRC Polynomial</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-CRC-8</li>
-<li>
-CRC-16</li>
-<li>
-CRC-CCITT</li>
-<li>
-CRC-32</li>
-<li>
-CRC-32C</li>
-</ul>
-</td><td>CRC-32C </td><td>Select the CRC polynomial. </td></tr>
+<td>CRC Polynomial</td><td>MCU Specific Options</td><td></td><td>Select the CRC polynomial. </td></tr>
 <tr>
-<td>Bit Order</td><td><ul style="margin-top:0;margin-bottom:0;">
-<li>
-LSB</li>
-<li>
-MSB</li>
-</ul>
-</td><td>MSB </td><td>Select the CRC bit order. </td></tr>
+<td>Bit Order</td><td>MCU Specific Options</td><td></td><td>Select the CRC bit order. </td></tr>
+<tr>
+<td>Snoop Address</td><td>MCU Specific Options</td><td></td><td>Select the SCI register address CRC snoop </td></tr>
 </table>
 </p>
 <h2><a class="anchor" id="r-crc-clock-configuration"></a>
@@ -332,6 +316,7 @@ Data Structures</h2></td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl or p_cfg is NULL. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>Module already open. </td></tr>
     <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>The requested channel does not exist on this MCU. </td></tr>
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Hardware not support this feature. </td></tr>
   </table>
   </dd>
 </dl>
@@ -476,10 +461,15 @@ Data Structures</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p><a class="el" href="group___c_r_c___a_p_i.html#a4d4efcfb06b59c92801320f31e8f2eb7">crc_api_t::snoopEnable</a> is not supported on the CRC.</p>
+<p>Configure the snoop channel and set the CRC seed.</p>
+<p>Implements <a class="el" href="group___c_r_c___a_p_i.html#a4d4efcfb06b59c92801320f31e8f2eb7">crc_api_t::snoopEnable</a></p>
+<p>The CRC calculator can operate on reads and writes over any of the first ten SCI channels. For example, if set to channel 0, transmit, every byte written out SCI channel 0 is also sent to the CRC calculator as if the value was explicitly written directly to the CRC calculator.</p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Snoop configured successfully. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>Pointer to control stucture is NULL </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The driver is not opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>SNOOP operation is not supported. </td></tr>
   </table>
   </dd>
 </dl>
@@ -501,10 +491,14 @@ Data Structures</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p><a class="el" href="group___c_r_c___a_p_i.html#ab171c85217e275bda7426309bd832b02">crc_api_t::snoopDisable</a> is not supported on the CRC.</p>
+<p>Disable snooping.</p>
+<p>Implements <a class="el" href="group___c_r_c___a_p_i.html#ab171c85217e275bda7426309bd832b02">crc_api_t::snoopDisable</a></p>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
-    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>Function not supported in this implementation. </td></tr>
+    <tr><td class="paramname">FSP_SUCCESS</td><td>Snoop disabled. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The driver is not opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>SNOOP operation is not supported. </td></tr>
   </table>
   </dd>
 </dl>
@@ -517,7 +511,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v2.3.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>
