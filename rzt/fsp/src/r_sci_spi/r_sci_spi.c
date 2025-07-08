@@ -434,8 +434,14 @@ fsp_err_t R_SCI_SPI_CalculateBitrate (uint32_t                bitrate,
     }
     else
     {
+#if BSP_FEATURE_BSP_HAS_SCISPI_CLOCK
+        peripheral_clock = R_FSP_SciSpiClockHzGet();
+#elif BSP_FEATURE_BSP_HAS_SCI_CLOCK
+        peripheral_clock = R_FSP_SciClockHzGet();
+#else
         peripheral_clock =
             R_FSP_SystemClockHzGet((fsp_priv_clock_t) ((uint8_t) FSP_PRIV_CLOCK_PCLKSCI0 + (uint8_t) clock_source));
+#endif
     }
 
 #if SCI_SPI_CFG_PARAM_CHECKING_ENABLE
@@ -565,8 +571,8 @@ static void r_sci_spi_hw_config (sci_spi_instance_ctrl_t * const p_instance_ctrl
             R_SCI0_CFCLR_ERSC_Msk;
     ffclr = R_SCI0_FFCLR_DRC_Msk;
 
-    /* Set FCR. Reset fifo/data registers. */
-    p_instance_ctrl->p_reg->FCR = (8U << R_SCI0_FCR_RTRG_Pos);
+    /* Set FCR. Reset FIFO/data registers. */
+    p_instance_ctrl->p_reg->FCR = R_SCI0_FCR_TFRST_Msk | R_SCI0_FCR_RFRST_Msk;
 
     /* Write all settings except MOD[2:0] to CCR3 (See Figure 'SCI initialization flowchart example (clock synchronous
      * mode) in RZ microprocessor manual). */

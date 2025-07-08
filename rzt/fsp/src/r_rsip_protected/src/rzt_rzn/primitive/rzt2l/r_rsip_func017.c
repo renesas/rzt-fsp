@@ -93,9 +93,7 @@ void r_rsip_func017 (uint32_t ARG1)
         WR1_ADDR(REG_1420H, &S_HEAP[ARG1 + oLoop + 1]);
         WR1_ADDR(REG_1420H, &S_HEAP[ARG1 + oLoop + 2]);
         WR1_ADDR(REG_1420H, &S_HEAP[ARG1 + oLoop + 3]);
-        WR1_PROG(REG_1400H, 0x00c20011U);
-        WAIT_STS(REG_1404H, 30U, 0U);
-        WR1_PROG(REG_143CH, 0x00001800U);
+        r_rsip_subfunc003(0x00c20011U);
         WR1_PROG(REG_1600H, 0x00002422U);
         WR1_PROG(REG_1458H, 0x00000000U);
         r_rsip_func101(bswap_32big(0xfd809c96U), bswap_32big(0x02796e78U), bswap_32big(0x3347bceeU),
@@ -116,9 +114,7 @@ void r_rsip_func017 (uint32_t ARG1)
     WR1_ADDR(REG_1420H, &S_HEAP[ARG1 + oLoop + 2]);
     WR1_ADDR(REG_1420H, &S_HEAP[ARG1 + oLoop + 3]);
     WR1_PROG(REG_1A24H, 0x8c100005U);
-    WR1_PROG(REG_1400H, 0x00820011U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
+    r_rsip_subfunc003(0x00820011U);
     WR1_PROG(REG_1600H, 0x00007c1dU);
     WR1_PROG(REG_1458H, 0x00000000U);
     WR1_PROG(REG_143CH, 0x00602000U);

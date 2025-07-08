@@ -14,7 +14,9 @@
  **********************************************************************************************************************/
 
 /* Key code for writing PRCR register. */
-#define BSP_PRV_PRCR_KEY    (0xA500U)
+#define BSP_PRV_PRCR_KEY        (0xA500U)
+
+#define BSP_PRV_PRCR_TIMEOUT    (10000)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -84,6 +86,11 @@ void R_BSP_RegisterProtectEnable (bsp_reg_protect_t regs_to_protect)
  **********************************************************************************************************************/
 void R_BSP_RegisterProtectDisable (bsp_reg_protect_t regs_to_unprotect)
 {
+    /* If protection is already disabled, wait until protection is enabled on other cores */
+    uintptr_t timeout = BSP_PRV_PRCR_TIMEOUT;
+    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_NS->PRCRN & g_prcr_masks[regs_to_unprotect]), 0, timeout);
+    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_S->PRCRS & g_prcr_masks[regs_to_unprotect]), 0, timeout);
+
     /* If this is first entry then disable protection. */
     if (0U == g_protect_counters[regs_to_unprotect])
     {

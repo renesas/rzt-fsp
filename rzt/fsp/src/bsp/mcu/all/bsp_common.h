@@ -20,7 +20,7 @@
 #include <stdlib.h>
 
 /* Different compiler support. */
-#include "../../inc/fsp_common_api.h"
+#include "../../inc/api/fsp_common_api.h"
 #include "bsp_compiler_support.h"
 #include "bsp_cfg.h"
 
@@ -147,60 +147,57 @@ FSP_HEADER
  #define FSP_ERROR_LOG(err)
 #endif
 
+#if (3 == BSP_CFG_ASSERT)
+ #define FSP_ASSERT_ACTION(a, error_func)
+#elif (2 == BSP_CFG_ASSERT)
+ #define FSP_ASSERT_ACTION(a, error_func) \
+    {                                     \
+        R_BSP_FspAssert();                \
+        assert(a);                        \
+    }
+#else
+ #define FSP_ASSERT_ACTION(a, error_func)                   error_func((a), FSP_ERR_ASSERTION)
+#endif
+
 /** Default assertion calls ::FSP_ERROR_RETURN if condition "a" is false. Used to identify incorrect use of API's in FSP
  * functions. */
-#if (3 == BSP_CFG_ASSERT)
- #define FSP_ASSERT(a)
- #define FSP_ASSERT_NOT_RETURN_VALUE(a)
-#elif (2 == BSP_CFG_ASSERT)
- #define FSP_ASSERT(a)                     {assert(a);}
- #define FSP_ASSERT_NOT_RETURN_VALUE(a)    {assert(a);}
-#else
- #define FSP_ASSERT(a)                     FSP_ERROR_RETURN((a), FSP_ERR_ASSERTION)
- #define FSP_ASSERT_NOT_RETURN_VALUE(a)    FSP_ERROR_NOT_RETURN_VALUE((a), FSP_ERR_ASSERTION)
-#endif                                 // ifndef FSP_ASSERT
+#define FSP_ASSERT(a)                                       FSP_ASSERT_ACTION(a, FSP_ERROR_RETURN)
+
+/** Default assertion calls ::FSP_ERROR_NOT_RETURN_VALUE if condition "a" is false. Used to identify incorrect use of API's in FSP
+ * functions. */
+#define FSP_ASSERT_NOT_RETURN_VALUE(a)                      FSP_ASSERT_ACTION(a, FSP_ERROR_NOT_RETURN_VALUE)
+
+#define FSP_ERROR_ACTION(a, err, return_value)          \
+    {                                                   \
+        if ((a))                                        \
+        {                                               \
+            (void) 0;                  /* Do nothing */ \
+        }                                               \
+        else                                            \
+        {                                               \
+            FSP_ERROR_LOG(err);                         \
+            R_BSP_FspAssert();                          \
+            return return_value;                        \
+        }                                               \
+    }
 
 /** All FSP error codes are returned using this macro. Calls ::FSP_ERROR_LOG function if condition "a" is false. Used
  * to identify runtime errors in FSP functions. */
-
-#define FSP_ERROR_RETURN(a, err)                        \
-    {                                                   \
-        if ((a))                                        \
-        {                                               \
-            (void) 0;                  /* Do nothing */ \
-        }                                               \
-        else                                            \
-        {                                               \
-            FSP_ERROR_LOG(err);                         \
-            return err;                                 \
-        }                                               \
-    }
+#define FSP_ERROR_RETURN(a, err)                            FSP_ERROR_ACTION(a, err, err)
 
 /** This function performs the same operation as ::FSP_ERROR_RETURN, but can be applied to functions that do not return
  *  an error code. */
-
-#define FSP_ERROR_NOT_RETURN_VALUE(a, err)              \
-    {                                                   \
-        if ((a))                                        \
-        {                                               \
-            (void) 0;                  /* Do nothing */ \
-        }                                               \
-        else                                            \
-        {                                               \
-            FSP_ERROR_LOG(err);                         \
-            return;                                     \
-        }                                               \
-    }
+#define FSP_ERROR_NOT_RETURN_VALUE(a, err)                  FSP_ERROR_ACTION(a, err, )
 
 /* Function-like macro used to wait for a condition to be met, most often used to wait for hardware register updates.
  * This macro can be redefined to add a timeout if necessary. */
 #ifndef FSP_HARDWARE_REGISTER_WAIT
- #define FSP_HARDWARE_REGISTER_WAIT(reg, required_value)    while (reg != required_value) { /* Wait. */}
+ #define FSP_HARDWARE_REGISTER_WAIT(reg, required_value)    while (reg != required_value) {__asm volatile ("nop");}
 #endif
 
 /* Function-like macro used to wait for a condition to be met with timeout,
  * most often used to wait for hardware register updates. */
-#define BSP_HARDWARE_REGISTER_WAIT_WTIH_TIMEOUT(reg, required_value, timeout) \
+#define BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT(reg, required_value, timeout) \
     while ((timeout))                                                         \
     {                                                                         \
         if ((required_value) == (reg))                                        \
@@ -246,9 +243,9 @@ FSP_HEADER
 
 /* This macro Enable or Disable interrupts. */
 #if defined(BSP_CFG_CORE_CA55)
- #define BSP_INTERRUPT_ENABLE                   __enable_fiq()
+ #define BSP_INTERRUPT_ENABLE                   r_bsp_enable_fiq()
 
- #define BSP_INTERRUPT_DISABLE                  __disable_fiq()
+ #define BSP_INTERRUPT_DISABLE                  r_bsp_disable_fiq()
 
 #elif defined(BSP_CFG_CORE_CR52)
  #define BSP_INTERRUPT_ENABLE                   __asm volatile ("cpsie i"); \
@@ -738,6 +735,8 @@ void fsp_error_log(fsp_err_t err, const char * file, int32_t line);
 
 void * bsp_prv_malloc(size_t size);
 void   bsp_prv_free(void * ptr);
+
+__WEAK void R_BSP_FspAssert(void);
 
 /** Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

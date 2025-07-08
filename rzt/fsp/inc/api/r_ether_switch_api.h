@@ -37,12 +37,27 @@ FSP_HEADER
  * Typedef definitions
  **********************************************************************************************************************/
 
+#ifndef BSP_OVERRIDE_ETHER_SWITCH_EVENT_T
+
+/** Events that can trigger a callback function */
+typedef enum e_ether_switch_event
+{
+    ETHER_SWITCH_EVENT_RX_COMPLETE,     ///< A descriptor complete to receive a flame.
+    ETHER_SWITCH_EVENT_TX_COMPLETE,     ///< A descriptor complete to transmit a flame.
+    ETHER_SWITCH_EVENT_RX_QUEUE_FULL,   ///< A RX descriptor queue is full.
+    ETHER_SWITCH_EVENT_RX_MESSAGE_LOST, ///< Receive a frame when a RX descriptor queue is full.
+} ether_switch_event_t;
+#endif
+
 #ifndef BSP_OVERRIDE_ETHER_SWITCH_CALLBACK_ARGS_T
 
 /** Callback function parameter data */
 typedef struct st_ether_switch_callback_args
 {
-    uint32_t channel;                  ///< Device channel number
+    uint32_t             channel;      ///< Device channel number
+    uint32_t             ports;        ///< Bitmap of ports on which the interrupt occurred.
+    uint32_t             queue_index;  ///< Queue index where a interrupt occurs.
+    ether_switch_event_t event;        ///< The event can be used to identify what caused the callback.
 
     void const * p_context;            ///< Placeholder for user data.  Set in @ref ether_switch_api_t::open function in @ref ether_switch_cfg_t.
 } ether_switch_callback_args_t;

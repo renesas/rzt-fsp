@@ -46,11 +46,10 @@ static rsip_func_pki_cert_key_import_t select_func_cert_key_import(rsip_key_type
  * The certificate is last called function R_RSIP_PKI_ECDSA_CertVerify(), R_RSIP_PKI_RSASSA_PKCS1_V1_5_CertVerify(),
  * R_RSIP_PKI_RSASSA_PSS_CertVerify(), or R_RSIP_PKI_VerifiedCertInfoImport().
  *
+ * Implements @ref rsip_api_t::pkiVerifiedCertInfoExport.
+ *
  * @par State transition
  * This API can be executed in **any state** including STATE_INITIAL, and does not cause any state transitions.
- *
- * @param[in,out] p_ctrl               Pointer to control block.
- * @param[out]    p_verified_cert_info Pointer to certificate to be signed
  *
  * @retval FSP_SUCCESS       Normal termination.
  * @retval FSP_ERR_ASSERTION A required parameter is NULL.
@@ -73,11 +72,10 @@ fsp_err_t R_RSIP_PKI_VerifiedCertInfoExport (rsip_ctrl_t * const               p
 /*******************************************************************************************************************//**
  * Imports verified certificate information.
  *
+ * Implements @ref rsip_api_t::pkiVerifiedCertInfoImport.
+ *
  * @par State transition
  * This API can be executed in **any state** including STATE_INITIAL, and does not cause any state transitions.
- *
- * @param[in,out] p_ctrl               Pointer to control block.
- * @param[in]     p_verified_cert_info Pointer to certificate to be signed
  *
  * @retval FSP_SUCCESS       Normal termination.
  * @retval FSP_ERR_ASSERTION A required parameter is NULL.
@@ -98,26 +96,20 @@ fsp_err_t R_RSIP_PKI_VerifiedCertInfoImport (rsip_ctrl_t * const                
 }
 
 /*******************************************************************************************************************//**
- * Wraps the public key in the verified certificate.
+ * Wraps the public key in the verified public key certificate.
+ *
+ * Implements @ref rsip_api_t::pkiCertKeyImport.
+ *
+ * @par Conditions
+ * @parblock
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ * @endparblock
  *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
- *
- * @param[in,out] p_ctrl               Pointer to control block.
- * @param[in]     p_cert               Pointer to certificate to be signed
- *                                     (corresponds to TBSCertificate in RFC5280/X.509).
- * @param[in]     cert_length          Certificate length to be signed.
- * @param[in]     key_type             Key type of the public key in certificate.
- * @param[in]     p_key_param1         Pointer to start address of the public key parameter in certificate.
- *                                     - [ECC] Qx
- *                                     - [RSA] n
- * @param[in]     key_param1_length    Length of key_param1 stored in the certificate.
- * @param[in]     p_key_param2         Pointer to start address of the public key parameter in certificate.
- *                                     - [ECC] Qy
- *                                     - [RSA] e
- * @param[in]     key_param2_length    Length of key_param2 stored in the certificate.
- * @param[in]     hash_function        The hash function used when verifying certificate signature.
- * @param[out]    p_wrapped_public_key Pointer to wrapped key of public key in the certificate.
  *
  * @retval FSP_SUCCESS                           Normal termination.
  * @retval FSP_ERR_ASSERTION                     A required parameter is NULL.
@@ -139,7 +131,6 @@ fsp_err_t R_RSIP_PKI_VerifiedCertInfoImport (rsip_ctrl_t * const                
 fsp_err_t R_RSIP_PKI_CertKeyImport (rsip_ctrl_t * const        p_ctrl,
                                     uint8_t const * const      p_cert,
                                     uint32_t const             cert_length,
-                                    rsip_key_type_t const      key_type,
                                     uint8_t const * const      p_key_param1,
                                     uint32_t const             key_param1_length,
                                     uint8_t const * const      p_key_param2,
@@ -155,17 +146,14 @@ fsp_err_t R_RSIP_PKI_CertKeyImport (rsip_ctrl_t * const        p_ctrl,
     FSP_ASSERT(p_key_param1);
     FSP_ASSERT(p_key_param2);
     FSP_ASSERT(p_wrapped_public_key);
-
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-    /* Set function */
-    rsip_func_pki_cert_key_import_t p_func = select_func_cert_key_import(key_type);
+    rsip_func_pki_cert_key_import_t p_func = select_func_cert_key_import(p_wrapped_public_key->type); // Set function
 
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
-
-    /* Check configuration */
-    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                    // Check configuration
 #endif
 
     /* Check state */
@@ -195,7 +183,7 @@ fsp_err_t R_RSIP_PKI_CertKeyImport (rsip_ctrl_t * const        p_ctrl,
                                  certificate_length,
                                  (uint32_t const *) certificate_pubkey,
                                  (uint32_t *) &p_instance_ctrl->pki_verified_cert_info,
-                                 (uint32_t *) p_wrapped_public_key->value);
+                                 (uint32_t *) p_wrapped_public_key->p_value);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -203,9 +191,6 @@ fsp_err_t R_RSIP_PKI_CertKeyImport (rsip_ctrl_t * const        p_ctrl,
     {
         case RSIP_RET_PASS:
         {
-            p_wrapped_public_key->alg     = r_rsip_key_type_to_alg(key_type);
-            p_wrapped_public_key->subtype = r_rsip_key_type_to_subtype(key_type);
-
             err = FSP_SUCCESS;
             break;
         }
@@ -246,19 +231,20 @@ fsp_err_t R_RSIP_PKI_CertKeyImport (rsip_ctrl_t * const        p_ctrl,
  ***********************************************************************************************************************/
 static rsip_func_pki_cert_key_import_t select_func_cert_key_import (rsip_key_type_t key_type)
 {
-    rsip_func_pki_cert_key_import_t ret = NULL;
+    rsip_func_pki_cert_key_import_t ret          = NULL;
+    rsip_key_type_extend_t          key_type_ext = r_rsip_key_type_parse(key_type);
 
-    switch (key_type)
+    switch (key_type_ext.alg)
     {
-        case RSIP_KEY_TYPE_ECC_SECP256R1_PUBLIC:
+        case RSIP_PRV_ALG_ECC_PUBLIC:
         {
-            ret = gp_func_pki_cert_key_import_ecc[RSIP_KEY_ECC_SECP256R1];
+            ret = gp_func_pki_cert_key_import_ecc[key_type_ext.subtype];
             break;
         }
 
-        case RSIP_KEY_TYPE_RSA_2048_PUBLIC:
+        case RSIP_PRV_ALG_RSA_PUBLIC:
         {
-            ret = gp_func_pki_cert_key_import_rsa[RSIP_KEY_RSA_2048];
+            ret = gp_func_pki_cert_key_import_rsa[key_type_ext.subtype];
             break;
         }
 

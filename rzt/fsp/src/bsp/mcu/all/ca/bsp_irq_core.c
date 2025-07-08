@@ -107,7 +107,7 @@ void bsp_irq_core_cfg (void)
     }
 
     /* Enable Interrupts */
-    __enable_all_exception();
+    r_bsp_enable_all_exception();
 
     R_BSP_GICR_SetClass(BSP_GICD_ICLAR_CLASS1);
 }

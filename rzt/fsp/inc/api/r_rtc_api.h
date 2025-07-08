@@ -136,6 +136,8 @@ typedef enum e_rtc_periodic_irq_select
 } rtc_periodic_irq_select_t;
 #endif
 
+#ifndef BSP_OVERRIDE_RTC_TIME_CAPTURE_SOURCE_T
+
 /** Time capture trigger source */
 typedef enum e_rtc_time_capture_source
 {
@@ -143,7 +145,17 @@ typedef enum e_rtc_time_capture_source
     RTC_TIME_CAPTURE_SOURCE_PIN_RISING  = 1, ///< Rising edge pin trigger
     RTC_TIME_CAPTURE_SOURCE_PIN_FALLING = 2, ///< Falling edge pin trigger
     RTC_TIME_CAPTURE_SOURCE_PIN_BOTH    = 3, ///< Both edges pin trigger
+    RTC_TIME_CAPTURE_SOURCE_SOFTWARE    = 4, ///< Software trigger
+    RTC_TIME_CAPTURE_SOURCE_ELC_EVENT   = 5, ///< ELC event trigger
 } rtc_time_capture_source_t;
+#endif
+
+/** Time capture trigger mode */
+typedef enum e_rtc_time_capture_mode
+{
+    RTC_TIME_CAPTURE_MODE_CONTINUOUS = 0, ///< Continuous capturing to all capturing channels
+    RTC_TIME_CAPTURE_MODE_ONE_SHOT   = 1, ///< Single capture to a particular channel
+} rtc_time_capture_mode_t;
 
 /** Time capture noise filter control */
 typedef enum e_rtc_time_capture_noise_filter
@@ -157,6 +169,8 @@ typedef enum e_rtc_time_capture_noise_filter
 
 /** Date and time structure defined in C standard library <time.h> */
 typedef struct tm rtc_time_t;
+
+#ifndef BSP_OVERRIDE_RTC_ALARM_TIME_T
 
 /** Alarm time setting structure */
 typedef struct st_rtc_alarm_time
@@ -178,6 +192,7 @@ typedef struct st_rtc_alarm_time
     bool                saturday_match;  ///< Enable the alarm on Saturday
     rtc_alarm_channel_t channel;         ///< Select alarm 0 or alarm 1
 } rtc_alarm_time_t;
+#endif
 
 /** Time capture configuration structure */
 typedef struct st_rtc_time_capture
@@ -186,6 +201,7 @@ typedef struct st_rtc_time_capture
     uint8_t                         channel;      ///< Capture channel
     rtc_time_capture_source_t       source;       ///< Trigger source
     rtc_time_capture_noise_filter_t noise_filter; ///< Noise filter
+    rtc_time_capture_mode_t         mode;         ///< Capture mode
 } rtc_time_capture_t;
 
 /** RTC Information Structure for information returned by  infoGet() */

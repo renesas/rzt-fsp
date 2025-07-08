@@ -128,16 +128,16 @@ typedef struct st_hyper_address_space
 /* Extended configuration */
 typedef struct st_xspi_hyper_extended_cfg
 {
-    uint8_t unit;                                                ///< Unit number
-    xspi_hyper_chip_select_t       chip_select;                  ///< Device number to be used for memory device
-    xspi_hyper_memory_size_t       memory_size;                  ///< Size of memory device
-    xspi_hyper_device_type_t       memory_type;                  ///< Type of memory device
-    xspi_hyper_prefetch_function_t prefetch_en;                  ///< Prefetch function settings
-    xspi_hyper_io_voltage_t        io_voltage;                   ///< Voltage setting of xSPI IO domains
-    uint32_t  data_latching_delay_clock;                         ///< Specify delay between DQ and RWDS. Set to 0 to auto-callibrate.
-    uint8_t * p_autocalibration_preamble_pattern_addr;           ///< HyperBus memory address holding the preamble pattern
-    xspi_hyper_cs_timing_setting_t const * p_cs_timing_settings; ///< Chip select bus timing settings
-    xspi_hyper_address_space_t const     * p_address_space;      ///< Address space settings when custom address space enabled
+    uint8_t unit;                                                                   ///< Unit number
+    xspi_hyper_chip_select_t               chip_select;                             ///< Device number to be used for memory device
+    uint32_t                               memory_size;                             ///< Size of memory device
+    xspi_hyper_device_type_t               memory_type;                             ///< Type of memory device
+    xspi_hyper_prefetch_function_t         prefetch_en;                             ///< Prefetch function settings
+    xspi_hyper_io_voltage_t                io_voltage;                              ///< Voltage setting of xSPI IO domains
+    uint32_t                               data_latching_delay_clock;               ///< Specify delay between DQ and RWDS. Set to 0 to auto-callibrate.
+    uint8_t                              * p_autocalibration_preamble_pattern_addr; ///< HyperBus memory address holding the preamble pattern
+    xspi_hyper_cs_timing_setting_t const * p_cs_timing_settings;                    ///< Chip select bus timing settings
+    xspi_hyper_address_space_t const     * p_address_space;                         ///< Memory mapped address space settings
 } xspi_hyper_extended_cfg_t;
 
 /** Instance control block. DO NOT INITIALIZE. Initialization occurs when @ref hyperbus_api_t::open is called */
@@ -163,6 +163,7 @@ fsp_err_t R_XSPI_HYPER_Open(hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * con
 fsp_err_t R_XSPI_HYPER_Close(hyperbus_ctrl_t * p_ctrl);
 fsp_err_t R_XSPI_HYPER_BurstTypeSet(hyperbus_ctrl_t * p_ctrl, hyperbus_burst_type_t burst_type);
 fsp_err_t R_XSPI_HYPER_AccessSpaceSet(hyperbus_ctrl_t * p_ctrl, hyperbus_space_select_t access_space);
+fsp_err_t R_XSPI_HYPER_DirectTransfer(hyperbus_ctrl_t * const p_ctrl, hyperbus_direct_transfer_t * const p_transfer);
 fsp_err_t R_XSPI_HYPER_Write(hyperbus_ctrl_t     * p_ctrl,
                              uint8_t const * const p_src,
                              uint8_t * const       p_dest,

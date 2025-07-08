@@ -194,11 +194,27 @@ fsp_err_t R_POE3_Open (poe3_ctrl_t * const p_ctrl, poe3_cfg_t const * const p_cf
     p_instance_ctrl->p_reg->M7SELR2 = (uint8_t) (
         ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[2].negative_pwm_pin_select) << 4) |
         ((p_cfg->p_complementary_pwm_pin_setting[1].pin_setting[2].positive_pwm_pin_select)));
-
-    p_instance_ctrl->p_reg->POECR5 = (uint16_t) (p_extend->mtu0_control_channel_mask);
-    p_instance_ctrl->p_reg->POECR4 = (uint16_t) (p_extend->mtu3_4_control_channel_mask) |
-                                     (uint16_t) (p_extend->mtu6_7_control_channel_mask);
-#if 3U == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE
+#if 1U == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE
+    p_instance_ctrl->p_reg->POECR5 = (uint16_t) (p_extend->mtu0_control_channel_mask_trigger_pin) |
+                                     (uint16_t) (p_extend->mtu0_control_channel_mask_dsmif_error0);
+    p_instance_ctrl->p_reg->POECR4 = (uint16_t) (p_extend->mtu3_4_control_channel_mask_trigger_pin) |
+                                     (uint16_t) (p_extend->mtu6_7_control_channel_mask_trigger_pin) |
+                                     (uint16_t) (p_extend->mtu3_4_control_channel_mask_dsmif_error0) |
+                                     (uint16_t) (p_extend->mtu6_7_control_channel_mask_dsmif_error0);
+#elif 2U == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE
+    p_instance_ctrl->p_reg->POECR5 = (uint16_t) (p_extend->mtu0_control_channel_mask_trigger_pin) |
+                                     (uint16_t) (p_extend->mtu0_control_channel_mask_dsmif_error0) |
+                                     (uint16_t) (p_extend->mtu0_control_channel_mask_dsmif_error1);
+    p_instance_ctrl->p_reg->POECR4 = (uint16_t) (p_extend->mtu3_4_control_channel_mask_trigger_pin) |
+                                     (uint16_t) (p_extend->mtu6_7_control_channel_mask_trigger_pin) |
+                                     (uint16_t) (p_extend->mtu3_4_control_channel_mask_dsmif_error0) |
+                                     (uint16_t) (p_extend->mtu6_7_control_channel_mask_dsmif_error0) |
+                                     (uint16_t) (p_extend->mtu3_4_control_channel_mask_dsmif_error1) |
+                                     (uint16_t) (p_extend->mtu6_7_control_channel_mask_dsmif_error1);
+#elif 3U == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE
+    p_instance_ctrl->p_reg->POECR5 = (uint16_t) (p_extend->mtu0_control_channel_mask_trigger_pin);
+    p_instance_ctrl->p_reg->POECR4 = (uint16_t) (p_extend->mtu3_4_control_channel_mask_trigger_pin) |
+                                     (uint16_t) (p_extend->mtu6_7_control_channel_mask_trigger_pin);
     p_instance_ctrl->p_reg->POECR7  = (uint16_t) (p_extend->mtu0_control_channel_mask_dsmif_error0);
     p_instance_ctrl->p_reg->POECR8  = (uint16_t) (p_extend->mtu0_control_channel_mask_dsmif_error1);
     p_instance_ctrl->p_reg->POECR9  = (uint16_t) (p_extend->mtu3_4_control_channel_mask_dsmif_error0);

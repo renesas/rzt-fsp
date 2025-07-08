@@ -63,11 +63,14 @@ static fsp_err_t r_adc_sample_state_cfg_check(adc_instance_ctrl_t * p_instance_c
 
 static fsp_err_t r_adc_scan_cfg_check_sample_hold(adc_instance_ctrl_t * const     p_instance_ctrl,
                                                   adc_channel_cfg_t const * const p_channel_cfg);
-static fsp_err_t r_adc_scan_cfg_check_window_compare(adc_window_cfg_t const * const p_window_cfg);
+
+static fsp_err_t r_adc_scan_cfg_check_window_compare(adc_instance_ctrl_t * const    p_instance_ctrl,
+                                                     adc_window_cfg_t const * const p_window_cfg);
 
 #endif
 
 static fsp_err_t r_adc_open_sub(adc_instance_ctrl_t * const p_instance_ctrl, adc_cfg_t const * const p_cfg);
+static void      r_adc_stop_sub(adc_instance_ctrl_t * const p_instance_ctrl);
 
 #if ADC_CFG_PARAM_CHECKING_ENABLE
 
@@ -82,8 +85,10 @@ void        adc_scan_end_c_isr(void);
 void        adc_scan_end_isr(void);
 void        adc_window_compare_isr(void);
 
-static int32_t r_adc_lowest_channel_get(uint32_t adc_mask);
-static void    r_adc_scan_end_common_isr(adc_event_t event);
+static void     r_adc_irq_enable(IRQn_Type irq, uint8_t ipl, void * p_context);
+static void     r_adc_irq_disable(IRQn_Type irq);
+static uint32_t r_adc_lowest_channel_get(uint32_t adc_mask);
+static void     r_adc_scan_end_common_isr(adc_event_t event);
 
 #if ADC_CFG_PARAM_CHECKING_ENABLE
 
@@ -219,31 +224,12 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
     err = r_adc_open_sub(p_instance_ctrl, p_cfg);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
-    /* Set the interrupt priorities. */
-    if (p_instance_ctrl->p_cfg->scan_end_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->scan_end_irq, p_cfg->scan_end_ipl, p_instance_ctrl);
-    }
-
-    if (p_instance_ctrl->p_cfg->scan_end_b_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->scan_end_b_irq, p_cfg->scan_end_b_ipl, p_instance_ctrl);
-    }
-
-    if (p_instance_ctrl->p_cfg->scan_end_c_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->scan_end_c_irq, p_cfg->scan_end_c_ipl, p_instance_ctrl);
-    }
-
-    if (p_extend->window_a_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_extend->window_a_irq, p_extend->window_a_ipl, p_instance_ctrl);
-    }
-
-    if (p_extend->window_b_irq >= 0)
-    {
-        R_BSP_IrqCfgEnable(p_extend->window_b_irq, p_extend->window_b_ipl, p_instance_ctrl);
-    }
+    /* Enable interrupts */
+    r_adc_irq_enable(p_cfg->scan_end_irq, p_cfg->scan_end_ipl, p_instance_ctrl);
+    r_adc_irq_enable(p_cfg->scan_end_b_irq, p_cfg->scan_end_b_ipl, p_instance_ctrl);
+    r_adc_irq_enable(p_cfg->scan_end_c_irq, p_cfg->scan_end_c_ipl, p_instance_ctrl);
+    r_adc_irq_enable(p_extend->window_a_irq, p_extend->window_a_ipl, p_instance_ctrl);
+    r_adc_irq_enable(p_extend->window_b_irq, p_extend->window_b_ipl, p_instance_ctrl);
 
     /* Invalid scan mask (initialized for later). */
     p_instance_ctrl->scan_mask = 0U;
@@ -330,6 +316,7 @@ fsp_err_t R_ADC_CallbackSet (adc_ctrl_t * const          p_ctrl,
  * @retval FSP_SUCCESS                 Scan started (software trigger) or hardware triggers enabled.
  * @retval FSP_ERR_ASSERTION           An input argument is invalid.
  * @retval FSP_ERR_NOT_OPEN            Unit is not open.
+ * @retval FSP_ERR_NOT_INITIALIZED     Unit is not initialized.
  * @retval FSP_ERR_IN_USE              Another scan is still in progress (software trigger).
  **********************************************************************************************************************/
 fsp_err_t R_ADC_ScanStart (adc_ctrl_t * p_ctrl)
@@ -342,6 +329,7 @@ fsp_err_t R_ADC_ScanStart (adc_ctrl_t * p_ctrl)
     /* Verify the pointers are valid */
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->opened, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->initialized, FSP_ERR_NOT_INITIALIZED);
     if (ADC_GROUP_A_GROUP_B_CONTINUOUS_SCAN != p_instance_ctrl->p_reg->ADGSPCR)
     {
         FSP_ERROR_RETURN(0U == p_instance_ctrl->p_reg->ADCSR_b.ADST, FSP_ERR_IN_USE);
@@ -377,6 +365,7 @@ fsp_err_t R_ADC_ScanGroupStart (adc_ctrl_t * p_ctrl, adc_group_mask_t group_mask
  * @retval FSP_SUCCESS                 Scan stopped (software trigger) or hardware triggers disabled.
  * @retval FSP_ERR_ASSERTION           An input argument is invalid.
  * @retval FSP_ERR_NOT_OPEN            Unit is not open.
+ * @retval FSP_ERR_NOT_INITIALIZED     Unit is not initialized.
  **********************************************************************************************************************/
 fsp_err_t R_ADC_ScanStop (adc_ctrl_t * p_ctrl)
 {
@@ -388,7 +377,15 @@ fsp_err_t R_ADC_ScanStop (adc_ctrl_t * p_ctrl)
     /* Verify the pointers are valid */
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->opened, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->initialized, FSP_ERR_NOT_INITIALIZED);
 #endif
+
+    /* When using an external or internal trigger as the A/D conversion start condition, follow the procedure. */
+    if (ADC_TRIGGER_SOFTWARE != p_instance_ctrl->p_cfg->trigger)
+    {
+        /* A/D conversion stop procedure. */
+        r_adc_stop_sub(p_instance_ctrl);
+    }
 
     /* Disable hardware trigger or stop software scan depending on mode. */
     p_instance_ctrl->p_reg->ADCSR = 0U;
@@ -426,6 +423,7 @@ fsp_err_t R_ADC_StatusGet (adc_ctrl_t * p_ctrl, adc_status_t * p_status)
  * @retval FSP_SUCCESS                 Data read into provided p_data.
  * @retval FSP_ERR_ASSERTION           An input argument is invalid.
  * @retval FSP_ERR_NOT_OPEN            Unit is not open.
+ * @retval FSP_ERR_NOT_INITIALIZED     Unit is not initialized.
  **********************************************************************************************************************/
 fsp_err_t R_ADC_Read (adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint16_t * const p_data)
 {
@@ -438,6 +436,7 @@ fsp_err_t R_ADC_Read (adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint16_t 
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_data);
     FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->opened, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->initialized, FSP_ERR_NOT_INITIALIZED);
 
     /* Verify that the channel is valid for this MCU */
     if ((reg_id >= ADC_CHANNEL_0) && ((uint32_t) reg_id <= 31U))
@@ -465,6 +464,7 @@ fsp_err_t R_ADC_Read (adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint16_t 
  * @retval FSP_SUCCESS                 Data read into provided p_data.
  * @retval FSP_ERR_ASSERTION           An input argument is invalid.
  * @retval FSP_ERR_NOT_OPEN            Unit is not open.
+ * @retval FSP_ERR_NOT_INITIALIZED     Unit is not initialized.
  **********************************************************************************************************************/
 fsp_err_t R_ADC_Read32 (adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint32_t * const p_data)
 {
@@ -501,6 +501,7 @@ fsp_err_t R_ADC_Read32 (adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint32_
  * @retval FSP_SUCCESS                 Sample state count updated.
  * @retval FSP_ERR_ASSERTION           An input argument is invalid.
  * @retval FSP_ERR_NOT_OPEN            Unit is not open.
+ * @retval FSP_ERR_NOT_INITIALIZED     Unit is not initialized.
  **********************************************************************************************************************/
 fsp_err_t R_ADC_SampleStateCountSet (adc_ctrl_t * p_ctrl, adc_sample_state_t * p_sample)
 {
@@ -514,6 +515,7 @@ fsp_err_t R_ADC_SampleStateCountSet (adc_ctrl_t * p_ctrl, adc_sample_state_t * p
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ASSERT(NULL != p_sample);
     FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->opened, FSP_ERR_NOT_OPEN);
+    FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->initialized, FSP_ERR_NOT_INITIALIZED);
 
     /* Verify arguments are legal */
     err = r_adc_sample_state_cfg_check(p_instance_ctrl, p_sample);
@@ -560,11 +562,11 @@ fsp_err_t R_ADC_InfoGet (adc_ctrl_t * p_ctrl, adc_info_t * p_adc_info)
     /* If at least one channel is configured, determine the highest and lowest configured channels. */
     if (adc_mask != 0U)
     {
-        int32_t lowest_channel = r_adc_lowest_channel_get(adc_mask);
+        uint32_t lowest_channel = r_adc_lowest_channel_get(adc_mask);
         p_adc_info->p_address = &p_instance_ctrl->p_reg->ADDR[lowest_channel];
 
         /* Determine the highest channel that is configured. */
-        int32_t highest_channel = 31 - __CLZ(adc_mask);
+        uint32_t highest_channel = (uint32_t) (31 - __CLZ(adc_mask));
 
         /* Determine the size of data that must be read to read all the channels between and including the
          * highest and lowest channels.*/
@@ -614,44 +616,19 @@ fsp_err_t R_ADC_Close (adc_ctrl_t * p_ctrl)
 #endif
 
     /* Mark driver as closed   */
-    p_instance_ctrl->opened = 0U;
+    p_instance_ctrl->opened      = 0U;
+    p_instance_ctrl->initialized = 0U;
+
+    /* A/D conversion stop procedure. */
+    r_adc_stop_sub(p_instance_ctrl);
 
     /* Disable interrupts. */
     adc_extended_cfg_t const * p_extend = (adc_extended_cfg_t const *) p_instance_ctrl->p_cfg->p_extend;
-
-    if (p_instance_ctrl->p_cfg->scan_end_irq >= 0)
-    {
-        R_BSP_IrqDisable(p_instance_ctrl->p_cfg->scan_end_irq);
-        R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->scan_end_irq, NULL);
-    }
-
-    if (p_instance_ctrl->p_cfg->scan_end_b_irq >= 0)
-    {
-        R_BSP_IrqDisable(p_instance_ctrl->p_cfg->scan_end_b_irq);
-        R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->scan_end_b_irq, NULL);
-    }
-
-    if (p_instance_ctrl->p_cfg->scan_end_c_irq >= 0)
-    {
-        R_BSP_IrqDisable(p_instance_ctrl->p_cfg->scan_end_c_irq);
-        R_FSP_IsrContextSet(p_instance_ctrl->p_cfg->scan_end_c_irq, NULL);
-    }
-
-    if (p_extend->window_a_irq >= 0)
-    {
-        R_BSP_IrqDisable(p_extend->window_a_irq);
-        R_FSP_IsrContextSet(p_extend->window_a_irq, NULL);
-    }
-
-    if (p_extend->window_b_irq >= 0)
-    {
-        R_BSP_IrqDisable(p_extend->window_b_irq);
-        R_FSP_IsrContextSet(p_extend->window_b_irq, NULL);
-    }
-
-    /* Disable triggers. */
-    p_instance_ctrl->p_reg->ADSTRGR  = 0U;
-    p_instance_ctrl->p_reg->ADGCTRGR = 0U;
+    r_adc_irq_disable(p_instance_ctrl->p_cfg->scan_end_irq);
+    r_adc_irq_disable(p_instance_ctrl->p_cfg->scan_end_b_irq);
+    r_adc_irq_disable(p_instance_ctrl->p_cfg->scan_end_c_irq);
+    r_adc_irq_disable(p_extend->window_a_irq);
+    r_adc_irq_disable(p_extend->window_b_irq);
 
     /* Stop the ADC. */
     p_instance_ctrl->p_reg->ADCSR = 0U;
@@ -790,6 +767,30 @@ static fsp_err_t r_adc_open_cfg_check (adc_cfg_t const * const p_cfg)
         }
     }
 
+    /* Check for valid argument values for trigger source from MTU3. Reference section "A/D Conversion Start Trigger
+     * Select Register (ADSTRGR)", "A/D Group C Trigger Select Register (ADGCTRGR)" in the RZ microprocessor User's
+     * Manual for details. */
+    if (ADC_TRIGGER_SYNC_ELC == p_cfg->trigger)
+    {
+        if (!((BSP_FEATURE_ADC_MTU3_TRIGGER_SUPPORTED_UNIT_MASK >> p_cfg->unit) & 0x1U))
+        {
+            FSP_ASSERT((ADC_ACTIVE_TRIGGER_ELC_TRIGGER == p_cfg_extend->adc_start_trigger_a) ||
+                       (ADC_ACTIVE_TRIGGER_ELC_TRIGGER_GROUP_B == p_cfg_extend->adc_start_trigger_a) ||
+                       (ADC_ACTIVE_TRIGGER_DISABLED == p_cfg_extend->adc_start_trigger_a))
+
+            FSP_ASSERT((ADC_ACTIVE_TRIGGER_ELC_TRIGGER == p_cfg_extend->adc_start_trigger_b) ||
+                       (ADC_ACTIVE_TRIGGER_ELC_TRIGGER_GROUP_B == p_cfg_extend->adc_start_trigger_b) ||
+                       (ADC_ACTIVE_TRIGGER_DISABLED == p_cfg_extend->adc_start_trigger_b))
+
+            if (true == p_cfg_extend->adc_start_trigger_c_enabled)
+            {
+                FSP_ASSERT((ADC_ACTIVE_TRIGGER_ELC_TRIGGER == p_cfg_extend->adc_start_trigger_c) ||
+                           (ADC_ACTIVE_TRIGGER_ELC_TRIGGER_GROUP_B == p_cfg_extend->adc_start_trigger_c) ||
+                           (ADC_ACTIVE_TRIGGER_DISABLED == p_cfg_extend->adc_start_trigger_c))
+            }
+        }
+    }
+
     return FSP_SUCCESS;
 }
 
@@ -857,18 +858,46 @@ static fsp_err_t r_adc_scan_cfg_check_sample_hold (adc_instance_ctrl_t * const  
  * Enforces constraints on Window Compare function usage. Reference section "Compare function constraint"
  * in the RZ microprocessor User's Manual for details.
  *
+ * @param[in]  p_instance_ctrl         Pointer to instance control block
  * @param[in]  p_window_cfg            Pointer to window compare configuration
  *
  * @retval FSP_SUCCESS                 No configuration errors detected
  * @retval FSP_ERR_ASSERTION           An input argument is invalid.
  **********************************************************************************************************************/
-static fsp_err_t r_adc_scan_cfg_check_window_compare (adc_window_cfg_t const * const p_window_cfg)
+static fsp_err_t r_adc_scan_cfg_check_window_compare (adc_instance_ctrl_t * const    p_instance_ctrl,
+                                                      adc_window_cfg_t const * const p_window_cfg)
 {
     if (p_window_cfg)
     {
-        uint32_t compare_cfg = p_window_cfg->compare_cfg;
+        uint32_t compare_cfg       = p_window_cfg->compare_cfg;
+        uint32_t compare_a_channel = p_window_cfg->compare_mask;
+        uint32_t compare_a_mode    = p_window_cfg->compare_mode_mask;
+        uint32_t compare_b_ch      = p_window_cfg->compare_b_channel;
+        uint32_t valid_channels    = g_adc_valid_channels[p_instance_ctrl->p_cfg->unit];
+
         if (0U != compare_cfg)
         {
+ #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+            if (compare_cfg & R_ADC121_ADCMPCR_CMPAE_Msk)
+ #elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+            if (compare_cfg & R_ADC120_ADCMPCR_CMPAE_Msk)
+ #endif
+            {
+                /* Ensure channels selected for Window A is supported by the Unit */
+                FSP_ASSERT(0 == (compare_a_channel & (~valid_channels)));
+                FSP_ASSERT(0 == (compare_a_mode & (~valid_channels)));
+            }
+
+ #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+            if (compare_cfg & R_ADC121_ADCMPCR_CMPBE_Msk)
+ #elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+            if (compare_cfg & R_ADC120_ADCMPCR_CMPBE_Msk)
+ #endif
+            {
+                /* Ensure channels selected for Window B is supported by the Unit */
+                FSP_ASSERT(0 == ((uint32_t) (1 << compare_b_ch) & (~valid_channels)));
+            }
+
  #if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
             if ((compare_cfg & R_ADC121_ADCMPCR_CMPAE_Msk) && (compare_cfg & R_ADC121_ADCMPCR_CMPBE_Msk))
  #elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
@@ -876,7 +905,6 @@ static fsp_err_t r_adc_scan_cfg_check_window_compare (adc_window_cfg_t const * c
  #endif
             {
                 /* Ensure channels selected for Window A do not conflict with Window B */
-                uint32_t compare_b_ch = p_window_cfg->compare_b_channel;
                 FSP_ASSERT(!(p_window_cfg->compare_mask & (uint32_t) (1 << compare_b_ch)));
             }
 
@@ -956,6 +984,15 @@ static fsp_err_t r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, ad
 
     p_instance_ctrl->scan_start_adcsr = (uint16_t) adcsr;
 
+    /* Set ADSTRGR */
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+    uint32_t adstrgr = (uint32_t) ((p_cfg_extend->adc_start_trigger_a << R_ADC121_ADSTRGR_TRSA_Pos) |
+                                   (p_cfg_extend->adc_start_trigger_b << R_ADC121_ADSTRGR_TRSB_Pos));
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+    uint32_t adstrgr = (uint32_t) ((p_cfg_extend->adc_start_trigger_a << R_ADC120_ADSTRGR_TRSA_Pos) |
+                                   (p_cfg_extend->adc_start_trigger_b << R_ADC120_ADSTRGR_TRSB_Pos));
+#endif
+
     /* Determine the value for ADCER:
      *   * The resolution is set as configured in ADCER.ADPRC (on MCUs that have this bitfield).
      *   * The alignment is set as configured in ADCER.ADFMT (on MCUs that have this bitfield).
@@ -1020,14 +1057,8 @@ static fsp_err_t r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, ad
 
     /* Set the predetermined values for ADCSR, ADSTRGR, ADGCTRGR, ADCER, and ADADC without setting ADCSR.ADST or ADCSR.TRGE.
      * ADCSR.ADST or ADCSR.TRGE are set as configured in R_ADC_ScanStart. */
-    p_instance_ctrl->p_reg->ADCSR = (uint16_t) (adcsr & ADC_PRV_ADCSR_CLEAR_ADST_TRGE);
-#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
-    p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) ((p_cfg_extend->adc_start_trigger_a << R_ADC121_ADSTRGR_TRSA_Pos) |
-                                                  (p_cfg_extend->adc_start_trigger_b << R_ADC121_ADSTRGR_TRSB_Pos));
-#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
-    p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) ((p_cfg_extend->adc_start_trigger_a << R_ADC120_ADSTRGR_TRSA_Pos) |
-                                                  (p_cfg_extend->adc_start_trigger_b << R_ADC120_ADSTRGR_TRSB_Pos));
-#endif
+    p_instance_ctrl->p_reg->ADCSR   = (uint16_t) (adcsr & ADC_PRV_ADCSR_CLEAR_ADST_TRGE);
+    p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) adstrgr;
     p_instance_ctrl->p_reg->ADCER   = (uint16_t) adcer;
     p_instance_ctrl->p_reg->ADADC   = (uint8_t) adadc;
     p_instance_ctrl->p_reg->ADELCCR = (uint8_t) p_cfg_extend->adc_elc_ctrl;
@@ -1048,6 +1079,55 @@ static fsp_err_t r_adc_open_sub (adc_instance_ctrl_t * const p_instance_ctrl, ad
     }
 
     return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
+ * A/D conversion stop procedure.
+ *
+ * @param[in]  p_instance_ctrl         Pointer to instance control block
+ **********************************************************************************************************************/
+static void r_adc_stop_sub (adc_instance_ctrl_t * const p_instance_ctrl)
+{
+    adc_extended_cfg_t * p_extend = (adc_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
+
+    p_instance_ctrl->p_reg->ADGSPCR_b.PGS = 0;
+
+    /* Disable triggers. */
+    if (ADC_MODE_GROUP_SCAN == p_instance_ctrl->p_cfg->mode)
+    {
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+        p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) (R_ADC121_ADSTRGR_TRSA_Msk | R_ADC121_ADSTRGR_TRSB_Msk);
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+        p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) (R_ADC120_ADSTRGR_TRSA_Msk | R_ADC120_ADSTRGR_TRSB_Msk);
+#endif
+        if (true == p_extend->adc_start_trigger_c_enabled)
+        {
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+            p_instance_ctrl->p_reg->ADGCTRGR_b.TRSC = (uint8_t) R_ADC121_ADGCTRGR_TRSC_Msk;
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+            p_instance_ctrl->p_reg->ADGCTRGR_b.TRSC = (uint8_t) R_ADC120_ADGCTRGR_TRSC_Msk;
+#endif
+            p_instance_ctrl->p_reg->ADGCTRGR_b.GCADIE = 0U;
+            p_instance_ctrl->p_reg->ADGCTRGR_b.GRCE   = 0U;
+        }
+        else
+        {
+            /* Do nothing. */
+        }
+
+        p_instance_ctrl->p_reg->ADCSR_b.GBADIE = 0U;
+    }
+    else
+    {
+#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+        p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) R_ADC121_ADSTRGR_TRSA_Msk;
+#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
+        p_instance_ctrl->p_reg->ADSTRGR = (uint16_t) R_ADC120_ADSTRGR_TRSA_Msk;
+#endif
+    }
+
+    /* Disable interrupts. */
+    p_instance_ctrl->p_reg->ADCSR_b.ADIE = 0U;
 }
 
 #if ADC_CFG_PARAM_CHECKING_ENABLE
@@ -1119,7 +1199,7 @@ static fsp_err_t r_adc_scan_cfg_check (adc_instance_ctrl_t * const     p_instanc
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
     /* Check window compare settings. */
-    err = r_adc_scan_cfg_check_window_compare(p_channel_cfg->p_window_cfg);
+    err = r_adc_scan_cfg_check_window_compare(p_instance_ctrl, p_channel_cfg->p_window_cfg);
 
     return err;
 }
@@ -1215,6 +1295,37 @@ static void r_adc_scan_cfg (adc_instance_ctrl_t * const p_instance_ctrl, adc_cha
         p_instance_ctrl->p_reg->ADCSR      = (uint16_t) adcsr;
         p_instance_ctrl->scan_start_adcsr |= (uint16_t) adcsr;
     }
+
+    p_instance_ctrl->initialized = ADC_OPEN;
+}
+
+/*******************************************************************************************************************//**
+ *  Enable context for the requested IRQ.
+ *
+ * @param[in]  irq        IRQ to enable
+ * @param[in]  ipl        Interrupt priority
+ * @param[in]  p_context  Pointer to interrupt context
+ **********************************************************************************************************************/
+static void r_adc_irq_enable (IRQn_Type irq, uint8_t ipl, void * p_context)
+{
+    if (irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(irq, ipl, p_context);
+    }
+}
+
+/*******************************************************************************************************************//**
+ * Disables and clears context for the requested IRQ.
+ *
+ * @param[in]  irq  IRQ to disable
+ **********************************************************************************************************************/
+static void r_adc_irq_disable (IRQn_Type irq)
+{
+    if (irq >= 0)
+    {
+        R_BSP_IrqDisable(irq);
+        R_FSP_IsrContextSet(irq, NULL);
+    }
 }
 
 /*******************************************************************************************************************//**
@@ -1224,7 +1335,7 @@ static void r_adc_scan_cfg (adc_instance_ctrl_t * const p_instance_ctrl, adc_cha
  *
  * @retval  adc_mask_count  index value of lowest channel
  **********************************************************************************************************************/
-static int32_t r_adc_lowest_channel_get (uint32_t adc_mask)
+static uint32_t r_adc_lowest_channel_get (uint32_t adc_mask)
 {
     /* Initialize the mask result */
     uint32_t adc_mask_result = 0U;
@@ -1236,7 +1347,44 @@ static int32_t r_adc_lowest_channel_get (uint32_t adc_mask)
         adc_mask_result = (uint32_t) (adc_mask & (1U << adc_mask_count));
     }
 
-    return adc_mask_count;
+    return (uint32_t) adc_mask_count;
+}
+
+/*******************************************************************************************************************//**
+ * Calls user callback.
+ *
+ * @param[in]     p_ctrl     Pointer to ADC instance control block
+ * @param[in]     p_args     Pointer to arguments on stack
+ **********************************************************************************************************************/
+static void r_adc_call_callback (adc_instance_ctrl_t * p_ctrl, adc_callback_args_t * p_args)
+{
+    adc_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available.  This allows callback arguments to be
+     * stored in non-secure memory so they can be accessed by a non-secure callback function. */
+    adc_callback_args_t * p_args_memory = p_ctrl->p_callback_memory;
+    if (NULL == p_args_memory)
+    {
+        /* Use provided args struct on stack */
+        p_args_memory = p_args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args_memory;
+
+        /* Copy the stacked args to callback memory */
+        *p_args_memory = *p_args;
+    }
+
+    /* The project is not Trustzone Secure, so it will never need to change security state in order to call the callback. */
+    p_ctrl->p_callback(p_args_memory);
+
+    if (NULL != p_ctrl->p_callback_memory)
+    {
+        /* Restore callback memory in case this is a nested interrupt. */
+        *p_ctrl->p_callback_memory = args;
+    }
 }
 
 /*******************************************************************************************************************//**
@@ -1252,44 +1400,23 @@ static void r_adc_scan_end_common_isr (adc_event_t event)
     FSP_CONTEXT_SAVE;
 
     adc_instance_ctrl_t * p_instance_ctrl = (adc_instance_ctrl_t *) R_FSP_IsrContextGet(R_FSP_CurrentIrqGet());
-    adc_callback_args_t   args;
 
-    /* Store callback arguments in memory provided by user if available.  This allows callback arguments to be
-     * stored in non-secure memory so they can be accessed by a non-secure callback function. */
-    adc_callback_args_t * p_args = p_instance_ctrl->p_callback_memory;
-    if (NULL == p_args)
-    {
-        /* Store on stack */
-        p_args = &args;
-    }
-    else
-    {
-        /* Save current arguments on the stack in case this is a nested interrupt. */
-        args = *p_args;
-    }
-
-    p_args->event = event;
+    adc_callback_args_t args;
+    args.event = event;
 
     /* Store the unit number into the callback argument */
-    p_args->unit = p_instance_ctrl->p_cfg->unit;
+    args.unit = p_instance_ctrl->p_cfg->unit;
 
     /* Initialize the channel to 0.  It is not used in this implementation. */
-    p_args->channel = ADC_CHANNEL_0;
+    args.channel = ADC_CHANNEL_0;
 
     /* Populate the context field. */
-    p_args->p_context = p_instance_ctrl->p_context;
+    args.p_context = p_instance_ctrl->p_context;
 
     /* If a callback was provided, call it with the argument */
     if (NULL != p_instance_ctrl->p_callback)
     {
-        /* If the project is not Trustzone Secure, then it will never need to change security state in order to call the callback. */
-        p_instance_ctrl->p_callback(p_args);
-    }
-
-    if (NULL != p_instance_ctrl->p_callback_memory)
-    {
-        /* Restore callback memory in case this is a nested interrupt. */
-        *p_instance_ctrl->p_callback_memory = args;
+        r_adc_call_callback(p_instance_ctrl, &args);
     }
 
     /* Restore context if RTOS is used */

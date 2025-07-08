@@ -54,10 +54,20 @@ FSP_HEADER
 /** Input/Output pins, used to select which duty cycle to update in R_GPT_DutyCycleSet(). */
 typedef enum e_gpt_io_pin
 {
-    GPT_IO_PIN_GTIOCA            = 0,  ///< GTIOCA
-    GPT_IO_PIN_GTIOCB            = 1,  ///< GTIOCB
-    GPT_IO_PIN_GTIOCA_AND_GTIOCB = 2,  ///< GTIOCA and GTIOCB
+    GPT_IO_PIN_GTIOCA                 = 0, ///< GTIOCA
+    GPT_IO_PIN_GTIOCB                 = 1, ///< GTIOCB
+    GPT_IO_PIN_GTIOCA_AND_GTIOCB      = 2, ///< GTIOCA and GTIOCB
+    GPT_IO_PIN_TROUGH                 = 4, ///< Used in @ref R_GPT_DutyCycleSet when Triangle-wave PWM Mode 3 is selected.
+    GPT_IO_PIN_CREST                  = 8, ///< Used in @ref R_GPT_DutyCycleSet when Triangle-wave PWM Mode 3 is selected.
+    GPT_IO_PIN_ONE_SHOT_LEADING_EDGE  = 4, ///< Used in @ref R_GPT_DutyCycleSet to set GTCCRC and GTCCRE registers when One-Shot Pulse mode is selected.
+    GPT_IO_PIN_ONE_SHOT_TRAILING_EDGE = 8, ///< Used in @ref R_GPT_DutyCycleSet to set GTCCRD and GTCCRF registers when One-Shot Pulse mode is selected.
 } gpt_io_pin_t;
+
+/** Forced buffer push operation used in One-Shot Pulse mode with R_GPT_DutyCycleSet(). */
+typedef enum e_gpt_buffer_force_push
+{
+    GPT_BUFFER_FORCE_PUSH = 64,        ///< Used in @ref R_GPT_DutyCycleSet to force push the data from GTCCRn registers to temporary buffer A or B when One-Shot Pulse mode is selected.
+} gpt_buffer_force_push_t;
 
 /** Level of GPT pin */
 typedef enum e_gpt_pin_level
@@ -236,6 +246,39 @@ typedef struct s_gpt_output_pin
     bool            output_enabled;    ///< Set to true to enable output, false to disable output
     gpt_pin_level_t stop_level;        ///< Select a stop level from ::gpt_pin_level_t
 } gpt_output_pin_t;
+
+/** Custom GTIOR settings used for configuring GTIOCxA and GTIOCxB pins. */
+typedef struct s_gpt_gtior_setting
+{
+    union
+    {
+        uint32_t gtior;
+        struct
+        {
+            /* Settings for GTIOCxA pin. */
+            uint32_t gtioa  : 5;       ///< GTIOCA Pin Function Select.
+            uint32_t        : 1;       // Reserved
+            uint32_t oadflt : 1;       ///< GTIOCA Pin Output Value Setting at the Count Stop.
+            uint32_t oahld  : 1;       ///< GTIOCA Pin Output Setting at the Start/Stop Count.
+            uint32_t oae    : 1;       ///< GTIOCA Pin Output Enable
+            uint32_t oadf   : 2;       ///< GTIOCA Pin Disable Value Setting.
+            uint32_t        : 2;       /// Reserved
+            uint32_t nfaen  : 1;       ///< Noise Filter A Enable.
+            uint32_t nfcsa  : 2;       ///< Noise Filter A Sampling Clock Select.
+
+            /* Settings for GTIOCxB pin. */
+            uint32_t gtiob  : 5;       ///< GTIOCB Pin Function Select.
+            uint32_t        : 1;       // Reserved
+            uint32_t obdflt : 1;       ///< GTIOCB Pin Output Value Setting at the Count Stop.
+            uint32_t obhld  : 1;       ///< GTIOCB Pin Output Setting at the Start/Stop Count.
+            uint32_t obe    : 1;       ///< GTIOCB Pin Output Enable
+            uint32_t obdf   : 2;       ///< GTIOCB Pin Disable Value Setting.
+            uint32_t        : 2;       // Reserved
+            uint32_t nfben  : 1;       ///< Noise Filter B Enable.
+            uint32_t nfcsb  : 2;       ///< Noise Filter B Sampling Clock Select.
+        } gtior_b;
+    };
+} gpt_gtior_setting_t;
 
 /** Input capture signal noise filter (debounce) setting. Only available for input signals GTIOCxA and GTIOCxB.
  *   The noise filter samples the external signal at intervals of the PCLK divided by one of the values.
@@ -450,28 +493,31 @@ typedef struct st_gpt_extended_cfg
      * and count_down_source, then the timer count source is PCLK.  */
     gpt_source_t count_down_source;
 
-    gpt_capture_filter_t capture_filter_gtioca; ///< Debounce filter for GTIOCxA input signal pin.
+    gpt_capture_filter_t capture_filter_gtioca;        ///< Debounce filter for GTIOCxA input signal pin.
 
-    gpt_capture_filter_t capture_filter_gtiocb; ///< Debounce filter for GTIOCxB input signal pin.
+    gpt_capture_filter_t capture_filter_gtiocb;        ///< Debounce filter for GTIOCxB input signal pin.
 
-    uint8_t capture_a_ipl;                      ///< Capture A interrupt priority
-    uint8_t capture_b_ipl;                      ///< Capture B interrupt priority
-    uint8_t dead_time_ipl;                      ///< Dead time error interrupt priority
+    uint8_t capture_a_ipl;                             ///< Capture A interrupt priority
+    uint8_t capture_b_ipl;                             ///< Capture B interrupt priority
+    uint8_t dead_time_ipl;                             ///< Dead time error interrupt priority
 
-    uint8_t icds;                               ///< Input Capture Operation Select at Count Stop
+    uint8_t icds;                                      ///< Input Capture Operation Select at Count Stop
 #if 1U == BSP_FEATURE_GPT_INPUT_CAPTURE_SIGNAL_SELECTABLE
-    gpt_input_signal_select_t gtioc_isel;       ///< Input Capture Signal Select
+    gpt_input_signal_select_t gtioc_isel;              ///< Input Capture Signal Select
 #endif
-    IRQn_Type capture_a_irq;                    ///< Capture A interrupt
-    IRQn_Type capture_b_irq;                    ///< Capture B interrupt
-    IRQn_Type dead_time_irq;                    ///< Dead time error interrupt
+    IRQn_Type capture_a_irq;                           ///< Capture A interrupt
+    IRQn_Type capture_b_irq;                           ///< Capture B interrupt
+    uint32_t  compare_match_value[2];                  ///< Storing compare match value for channels
+    uint8_t   compare_match_status;                    ///< Storing the compare match register status
+    IRQn_Type dead_time_irq;                           ///< Dead time error interrupt
 
-    gpt_extended_pwm_cfg_t const * p_pwm_cfg;   ///< Advanced PWM features, optional
-    uint8_t capture_a_source_select;            ///< Capture A interrupt source select
-    uint8_t capture_b_source_select;            ///< Capture B interrupt source select
-    uint8_t cycle_end_source_select;            ///< Cycle end interrupt source select
-    uint8_t dead_time_error_source_select;      ///< Dead time error interrupt source select
-    uint8_t trough_source_select;               ///< Trough interrupt source select
+    gpt_extended_pwm_cfg_t const * p_pwm_cfg;          ///< Advanced PWM features, optional
+    uint8_t             capture_a_source_select;       ///< Capture A interrupt source select
+    uint8_t             capture_b_source_select;       ///< Capture B interrupt source select
+    uint8_t             cycle_end_source_select;       ///< Cycle end interrupt source select
+    uint8_t             dead_time_error_source_select; ///< Dead time error interrupt source select
+    uint8_t             trough_source_select;          ///< Trough interrupt source select
+    gpt_gtior_setting_t gtior_setting;                 ///< Custom GTIOR settings used for configuring GTIOCxA and GTIOCxB pins.
 } gpt_extended_cfg_t;
 
 /**********************************************************************************************************************
@@ -508,6 +554,9 @@ fsp_err_t R_GPT_CallbackSet(timer_ctrl_t * const          p_ctrl,
                             void const * const            p_context,
                             timer_callback_args_t * const p_callback_memory);
 fsp_err_t R_GPT_Close(timer_ctrl_t * const p_ctrl);
+fsp_err_t R_GPT_CompareMatchSet(timer_ctrl_t * const        p_ctrl,
+                                uint32_t const              compare_match_value,
+                                timer_compare_match_t const match_channel);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup GPT)

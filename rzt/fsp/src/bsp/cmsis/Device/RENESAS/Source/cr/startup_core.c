@@ -35,13 +35,17 @@
 
 #endif
 
-#if (0 == BSP_CFG_CORE_CR52)
+#if (0 == BSP_CFG_CORE_CR52) || (1 == BSP_FEATURE_BSP_HAS_CR52_CPU1_TCM)
  #define BSP_IMP_BTCMREGIONR_MASK_L         (0x1FFC) /* Masked out BASEADDRESS and ENABLEELx bits(L) */
  #define BSP_IMP_BTCMREGIONR_ENABLEEL_L     (0x0003) /* Set base address and enable EL2, EL1, EL0 access(L) */
  #define BSP_IMP_BTCMREGIONR_ENABLEEL_H     (0x0010) /* Set base address and enable EL2, EL1, EL0 access(H) */
 
+#endif
+
+#if (0 == BSP_CFG_CORE_CR52)
+
 /* Cortex-A55 Core0 access permission control. */
- #define BSP_CA550_CTRL_ENABLE              (0x00000100)
+ #define BSP_CA550_CTRL_ENABLE    (0x00000100)
 #endif
 
 /***********************************************************************************************************************
@@ -77,7 +81,7 @@ extern void bsp_fpu_advancedsimd_init(void);
 
 #endif
 
-#if (0 == BSP_CFG_CORE_CR52)
+#if (0 == BSP_CFG_CORE_CR52) || (1 == BSP_FEATURE_BSP_HAS_CR52_CPU1_TCM)
 extern void bsp_slavetcm_enable(void);
 
 #endif
@@ -91,7 +95,8 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init(void) BSP_PLACE_IN_SECTI
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init(void);
 BSP_TARGET_ARM void                         fpu_slavetcm_init(void);
 
-BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void        __Vectors(void) BSP_PLACE_IN_SECTION(".intvec");
+BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void __Vectors(void) BSP_PLACE_IN_SECTION(".intvec");
+
 __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void IRQ_Handler(void);
 __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void Reset_Handler(void) BSP_PLACE_IN_SECTION(".reset_handler");
 
@@ -273,7 +278,7 @@ BSP_TARGET_ARM void fpu_slavetcm_init (void)
     bsp_fpu_advancedsimd_init();
 #endif
 
-#if (0 == BSP_CFG_CORE_CR52)
+#if (0 == BSP_CFG_CORE_CR52) || (1 == BSP_FEATURE_BSP_HAS_CR52_CPU1_TCM)
 
     /* Enable SLAVEPCTLR TCM access lvl slaves */
     bsp_slavetcm_enable();
@@ -339,7 +344,7 @@ __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void IRQ_Handler (void)
 
 __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void Reset_Handler (void)
 {
-#if (0 == BSP_CFG_CORE_CR52)
+#if (0 == BSP_CFG_CORE_CR52) || (1 == BSP_FEATURE_BSP_HAS_CR52_CPU1_TCM)
 
     /* Enable access to BTCM */
     __asm volatile (

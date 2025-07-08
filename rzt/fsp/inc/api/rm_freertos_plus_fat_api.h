@@ -49,6 +49,7 @@ typedef enum e_rm_freertos_plus_fat_event
     RM_FREERTOS_PLUS_FAT_EVENT_MEDIA_RESUME   = RM_BLOCK_MEDIA_EVENT_MEDIA_RESUME,   ///< Media resumed event.
 } rm_freertos_plus_fat_event_t;
 
+/** FAT filesystem types. */
 typedef enum e_rm_freertos_plus_fat_type
 {
     RM_FREERTOS_PLUS_FAT_TYPE_FAT32 = FF_T_FAT32, ///< FAT32 disk
@@ -70,6 +71,7 @@ typedef struct st_rm_freertos_plus_fat_device
     uint32_t sector_size_bytes;        ///< Sector size in bytes
 } rm_freertos_plus_fat_device_t;
 
+/** Basic information about a FAT volume. */
 typedef struct st_rm_freertos_plus_fat_info
 {
     uint32_t  sector_size;             ///< Sector size
@@ -81,6 +83,7 @@ typedef struct st_rm_freertos_plus_fat_info
     uint8_t partition_number;          ///< Partition number for this disk
 } rm_freertos_plus_fat_info_t;
 
+/** FreeRTOS+FAT configuration structure. */
 typedef struct st_rm_freertos_plus_fat_cfg
 {
     rm_block_media_instance_t const * p_block_media;
@@ -97,6 +100,7 @@ typedef struct st_rm_freertos_plus_fat_cfg
     void const * p_extend;                                              ///< Extension parameter for hardware specific settings.
 } rm_freertos_plus_fat_cfg_t;
 
+/** Initializing a FAT disk. */
 typedef struct st_rm_freertos_plus_fat_disk_cfg
 {
     rm_freertos_plus_fat_device_t device; ///< Device sector data
@@ -105,9 +109,10 @@ typedef struct st_rm_freertos_plus_fat_disk_cfg
     uint8_t   partition_number;           ///< Partition number for this disk
 } rm_freertos_plus_fat_disk_cfg_t;
 
+/** FreeRTOS+FAT control structure */
 typedef void rm_freertos_plus_fat_ctrl_t;
 
-/** FreeRTOS plus Fat functions implemented at the HAL layer will follow this API. */
+/** FreeRTOS+FAT functions implemented at the HAL layer will follow this API. */
 typedef struct st_rm_freertos_plus_fat_api
 {
     /** Open media device.

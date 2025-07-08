@@ -54,5 +54,5 @@ void r_bsp_cache_l3_power_ctrl (void)
 
     __set_CLUSTERPWRCTLR(clusterpwrctlr);
 
-    __asm volatile ("ISB SY");
+    __ISB();
 }

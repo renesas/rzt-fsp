@@ -1059,7 +1059,7 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
         if (0 != remaining_length)
         {
 #if defined(BSP_CFG_CORE_CA55)
-            td->hc_td.cbp = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer);
+            td->hc_td.cbp = (uint32_t) usb_hstd_ohci_physical_address_of((void *)(uint64_t)p_current_buffer_pointer);
 #else
             td->hc_td.cbp = (uint32_t) p_current_buffer_pointer;
  #endif
@@ -1074,7 +1074,7 @@ static uint32_t usb_hstd_ohci_queue_general_request (st_usb_ohci_hcd_endpoint_p_
 
             p_current_buffer_pointer += count - 1;
 #if defined(BSP_CFG_CORE_CA55)
-            td->hc_td.be = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer++);
+            td->hc_td.be = (uint32_t) usb_hstd_ohci_physical_address_of((void *)(uint64_t)p_current_buffer_pointer++);
 #else
             td->hc_td.be = (uint32_t) p_current_buffer_pointer++;
  #endif
@@ -1381,16 +1381,16 @@ static uint32_t usb_hstd_ohci_queue_iso_request_in (usb_utr_t                  *
 #endif
 
 #if defined(BSP_CFG_CORE_CA55)
-        hc_iso_td->bp0 = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer);
+        hc_iso_td->bp0 = (uint32_t) usb_hstd_ohci_physical_address_of((void *)(uint64_t)p_current_buffer_pointer);
         if (remaining_length > endpoint->max_packet)
         {
             hc_iso_td->be = (uint32_t) usb_hstd_ohci_physical_address_of(
-                (void *)(p_current_buffer_pointer + endpoint->max_packet - 1));
+                (void *)(uint64_t)(p_current_buffer_pointer + endpoint->max_packet - 1));
         }
         else
         {
             hc_iso_td->be =
-                (uint32_t) usb_hstd_ohci_physical_address_of((void *)(p_current_buffer_pointer + remaining_length - 1));
+                (uint32_t) usb_hstd_ohci_physical_address_of((void *)(uint64_t)(p_current_buffer_pointer + remaining_length - 1));
         }
         buffer_pointer_tmp = p_current_buffer_pointer & USB_VAL_X0FFF;
  #else
@@ -1613,7 +1613,7 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
 
         tmp_ohci_req_buffer += iso_tr_info->size;
  #if defined(BSP_CFG_CORE_CA55)
-        ohci_req->buffer = (uint32_t) usb_hstd_ohci_physical_address_of((void *)tmp_ohci_req_buffer);
+        ohci_req->buffer = (uint32_t) usb_hstd_ohci_physical_address_of((void *)(uint64_t)tmp_ohci_req_buffer);
  #else
         ohci_req->buffer = tmp_ohci_req_buffer;
  #endif
@@ -1717,8 +1717,8 @@ static uint32_t usb_hstd_ohci_queue_iso_request_out (usb_utr_t                  
         temp->start_cnt++;
         temp->start_p++;
         temp->start_p &= USB_OHCI_ISO_MAX_FRAME - 1;
-        hc_iso_td->bp0 = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer);
-        hc_iso_td->be  = (uint32_t) usb_hstd_ohci_physical_address_of((void *)p_current_buffer_pointer + iso_tr_info->size - 1);
+        hc_iso_td->bp0 = (uint32_t) usb_hstd_ohci_physical_address_of((void *)(uint64_t)p_current_buffer_pointer);
+        hc_iso_td->be  = (uint32_t) usb_hstd_ohci_physical_address_of((void *)(uint64_t)(p_current_buffer_pointer + iso_tr_info->size - 1));
  #else
         iso_tr_info = &endpoint->iso_info->transfer_info[endpoint->iso_info->start_p];
         p_current_buffer_pointer = &iso_tr_info->buffer[0];

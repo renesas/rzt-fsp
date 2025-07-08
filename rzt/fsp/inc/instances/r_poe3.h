@@ -55,18 +55,17 @@ typedef struct st_poe3_extended_cfg
     poe3_poe_input_setting_t poe10;                    ///< Settings for the POE10# pin input
     poe3_poe_input_setting_t poe11;                    ///< Settings for the POE11# pin input
 
-    uint32_t mtu0_control_channel_mask;                ///< Additional MTU0 pin control request condition
-    uint32_t mtu3_4_control_channel_mask;              ///< Additional MTU3/4 pin control request condition
-    uint32_t mtu6_7_control_channel_mask;              ///< Additional MTU6/7 pin control request condition
+    uint32_t mtu0_control_channel_mask_trigger_pin;    ///< Additional MTU0 pin control request condition
+    uint32_t mtu3_4_control_channel_mask_trigger_pin;  ///< Additional MTU3/4 pin control request condition
+    uint32_t mtu6_7_control_channel_mask_trigger_pin;  ///< Additional MTU6/7 pin control request condition
 
-#if 3 == BSP_FEATURE_POE3_ERROR_SIGNAL_TYPE
     uint32_t mtu0_control_channel_mask_dsmif_error0;   ///< Additional MTU0 pin control dsmif error 0 request condition
     uint32_t mtu3_4_control_channel_mask_dsmif_error0; ///< Additional MTU3/4 pin control dsmif error 0 request condition
     uint32_t mtu6_7_control_channel_mask_dsmif_error0; ///< Additional MTU6/7 pin control dsmif error 0 request condition
+
     uint32_t mtu0_control_channel_mask_dsmif_error1;   ///< Additional MTU0 pin control dsmif error 1 request condition
     uint32_t mtu3_4_control_channel_mask_dsmif_error1; ///< Additional MTU3/4 pin control dsmif error 1 request condition
     uint32_t mtu6_7_control_channel_mask_dsmif_error1; ///< Additional MTU6/7 pin control dsmif error 1 request condition
-#endif
 
     bool dsmif0_error;                                 ///< High impedance output when the DSMIF0 is error
     bool dsmif1_error;                                 ///< High impedance output when the DSMIF1 is error

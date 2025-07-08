@@ -39,6 +39,7 @@ RSIP_PRV_PRIMITIVE_FUNC
 
 rsip_ret_t r_rsip_p75s (uint32_t OutData_State[])
 {
+    RSIP_PRV_PRIMITIVE_ENTRY;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;
@@ -58,10 +59,10 @@ rsip_ret_t r_rsip_p75s (uint32_t OutData_State[])
 
     RD1_ADDR(REG_2014H, &OutData_State[18]);
     RD1_ADDR(REG_2010H, &OutData_State[19]);
-    r_rsip_func102(bswap_32big(0x453f02fcU),
-                   bswap_32big(0xab2b13e5U),
-                   bswap_32big(0xf192053fU),
-                   bswap_32big(0x248a9f56U));
+    r_rsip_func102(bswap_32big(0x462f3917U),
+                   bswap_32big(0x56908037U),
+                   bswap_32big(0xf54788baU),
+                   bswap_32big(0x624f9ca1U));
     WR1_PROG(REG_14BCH, 0x00000040U);
     WAIT_STS(REG_142CH, 12U, 0U);
 

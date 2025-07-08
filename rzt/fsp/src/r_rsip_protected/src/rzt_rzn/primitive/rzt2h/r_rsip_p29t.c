@@ -39,6 +39,7 @@ RSIP_PRV_PRIMITIVE_FUNC
 
 void r_rsip_p29t (void)
 {
+    RSIP_PRV_PRIMITIVE_ENTRY_NO_RETVAL;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;
@@ -51,15 +52,6 @@ void r_rsip_p29t (void)
     (void) oLoop;
     (void) oLoop1;
     (void) OFS_ADR;
-    WR1_PROG(REG_1824H, 0x08000045U);
-    WR1_PROG(REG_1608H, 0x81040080U);
-    WR1_PROG(REG_1458H, 0x00000000U);
-    WR1_PROG(REG_1400H, 0x00490011U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
-    WR1_PROG(REG_1444H, 0x000000a1U);
     WR1_PROG(REG_182CH, 0x00000020U);
-    WR1_PROG(REG_1824H, 0x07008c04U);
-    WAIT_STS(REG_1444H, 31U, 1U);
-    WR1_PROG(REG_1420H, bswap_32big(0x00000000U));
+    r_rsip_func432();
 }

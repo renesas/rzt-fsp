@@ -44,20 +44,20 @@
 
 /** Declare a task handler for the created tasks. **/
   #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
-static TaskHandle_t g_hci_tsk_hdl;
-static TaskHandle_t g_mgr_tsk_hdl;
+static rtos_task_id_t g_hci_tsk_hdl;
+static rtos_task_id_t g_mgr_tsk_hdl;
    #if USB_CFG_HUB == USB_CFG_ENABLE
-static TaskHandle_t g_hub_tsk_hdl;
+static rtos_task_id_t g_hub_tsk_hdl;
    #endif                              /* USB_CFG_HUB == USB_CFG_ENABLE */
   #endif                               /* ( (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST ) */
 
  #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-static TaskHandle_t g_pcd_tsk_hdl;
+static rtos_task_id_t g_pcd_tsk_hdl;
  #endif                                /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 
  #if defined(USB_CFG_PMSC_USE)
   #if (USB_UT_MODE == 0)
-static TaskHandle_t g_pmsc_tsk_hdl;
+static rtos_task_id_t g_pmsc_tsk_hdl;
   #endif                               /* (USB_UT_MODE == 0) */
  #endif                                /* defined(USB_CFG_PMSC_USE) */
 
@@ -66,33 +66,33 @@ SemaphoreHandle_t SemaphoreHandleRead;
  #endif                                /* defined(USB_CFG_HMSC_USE) */
 
 /** Declare a mailbox handler for the created tasks **/
-static QueueHandle_t g_hci_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_mgr_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hub_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_pcd_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_cls_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hmsc_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hmsc_req_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hcdc_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hhid_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_pmsc_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_hci_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_mgr_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_hub_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_pcd_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_cls_mbx_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_hmsc_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_hmsc_req_mbx_hdl USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_hcdc_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_hhid_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mbx_id_t g_pmsc_mbx_hdl     USB_BUFFER_PLACE_IN_SECTION;
 
-static QueueHandle_t g_pipe0_hdl[USB_NUM_USBIP][USB_MAXDEVADDR + 1] USB_BUFFER_PLACE_IN_SECTION; /* USB Transfer MBX for PIPE0 wait que */
-static QueueHandle_t g_pipe_hdl[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1] USB_BUFFER_PLACE_IN_SECTION; /* USB Transfer MBX for PIPE1-9 wait que */
+static rtos_mbx_id_t g_pipe0_hdl[USB_NUM_USBIP][USB_MAXDEVADDR + 1] USB_BUFFER_PLACE_IN_SECTION; /* USB Transfer MBX for PIPE0 wait que */
+static rtos_mbx_id_t g_pipe_hdl[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1] USB_BUFFER_PLACE_IN_SECTION; /* USB Transfer MBX for PIPE1-9 wait que */
 
 /** Declare an array of mailbox handlers. **/
-QueueHandle_t * g_mbx_table[12] USB_BUFFER_PLACE_IN_SECTION;
+rtos_mbx_id_t * g_mbx_table[12] USB_BUFFER_PLACE_IN_SECTION;
 
 /** Declare a memory handler for the created tasks **/
-static QueueHandle_t g_hci_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_mgr_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hub_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_cls_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hmsc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hmsc_req_mpl_hdl USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hcdc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_hhid_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
-static QueueHandle_t g_pmsc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_hci_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_mgr_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_hub_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_cls_mpl_hdl      USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_hmsc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_hmsc_req_mpl_hdl USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_hcdc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_hhid_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
+static rtos_mem_id_t g_pmsc_mpl_hdl     USB_BUFFER_PLACE_IN_SECTION;
 
   #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
 static void * g_p_hci_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
@@ -112,7 +112,7 @@ static void * g_p_hhid_mpl[QUEUE_SIZE] USB_BUFFER_PLACE_IN_SECTION;
   #endif                               /* ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST) */
 
 /** Declare an array of memory pool handlers. **/
-QueueHandle_t * g_mpl_table[] =
+rtos_mem_id_t * g_mpl_table[] =
 {
     &g_hci_mpl_hdl,                    /* A memory pool handler of USB HCI task */
     &g_mgr_mpl_hdl,                    /* A memory pool handler of USB MGR task */
@@ -868,7 +868,6 @@ usb_rtos_err_t usb_rtos_delete (void)
 usb_er_t usb_cstd_rec_msg (uint8_t id, usb_msg_t ** mess, usb_tm_t tm)
 {
     BaseType_t    err;
-    QueueHandle_t handle;
     usb_er_t      result;
 
     if (NULL == mess)
@@ -876,7 +875,6 @@ usb_er_t usb_cstd_rec_msg (uint8_t id, usb_msg_t ** mess, usb_tm_t tm)
         return USB_ERROR;
     }
 
-    handle = (*(g_mbx_table[id]));
     *mess  = NULL;
 
     if (0 == tm)
@@ -885,7 +883,7 @@ usb_er_t usb_cstd_rec_msg (uint8_t id, usb_msg_t ** mess, usb_tm_t tm)
     }
 
     /** Receive message from queue specified by *(mbx_table[id]) **/
-    err = xQueueReceive(handle, (void *) mess, (TickType_t) tm);
+    err = xQueueReceive(*(g_mbx_table[id]), (void *) mess, (TickType_t) tm);
     if ((pdTRUE == err) && (NULL != (*mess)))
     {
         result = USB_OK;
@@ -912,7 +910,6 @@ usb_er_t usb_cstd_rec_msg (uint8_t id, usb_msg_t ** mess, usb_tm_t tm)
 usb_er_t usb_cstd_snd_msg (uint8_t id, usb_msg_t * mess)
 {
     BaseType_t    err;
-    QueueHandle_t handle;
     usb_er_t      result;
 
     if (NULL == mess)
@@ -920,10 +917,9 @@ usb_er_t usb_cstd_snd_msg (uint8_t id, usb_msg_t * mess)
         return USB_ERROR;
     }
 
-    handle = (*(g_mbx_table[id]));
 
     /** Send message to queue specified by *(mbx_table[id]) **/
-    err = xQueueSend(handle, (const void *) &mess, (TickType_t) (0));
+    err = xQueueSend(*(g_mbx_table[id]), (const void *) &mess, (TickType_t) (0));
     if (pdTRUE == err)
     {
         result = USB_OK;
@@ -951,7 +947,6 @@ usb_er_t usb_cstd_snd_msg (uint8_t id, usb_msg_t * mess)
 usb_er_t usb_cstd_isnd_msg (uint8_t id, usb_msg_t * mess)
 {
     BaseType_t    err;
-    QueueHandle_t handle;
     BaseType_t    xHigherPriorityTaskWoken = pdFALSE;
     usb_er_t      result;
 
@@ -960,10 +955,9 @@ usb_er_t usb_cstd_isnd_msg (uint8_t id, usb_msg_t * mess)
         return USB_ERROR;
     }
 
-    handle = (*(g_mbx_table[id]));
 
     /** Send message to queue specified by *(mbx_table[id]) from ISR **/
-    err = xQueueSendFromISR(handle, (const void *) &mess, &xHigherPriorityTaskWoken);
+    err = xQueueSendFromISR(*(g_mbx_table[id]), (const void *) &mess, &xHigherPriorityTaskWoken);
     if (pdTRUE == err)
     {
         portYIELD_FROM_ISR(xHigherPriorityTaskWoken);

@@ -39,6 +39,7 @@ RSIP_PRV_PRIMITIVE_FUNC
 
 rsip_ret_t r_rsip_p01 (void)
 {
+    RSIP_PRV_PRIMITIVE_ENTRY;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;
@@ -134,9 +135,7 @@ rsip_ret_t r_rsip_p01 (void)
             WR1_PROG(REG_1458H, 0x00000000U);
             WR1_PROG(REG_1608H, 0x80840000U);
             WR1_PROG(REG_1458H, 0x00000000U);
-            WR1_PROG(REG_1400H, 0x03420011U);
-            WAIT_STS(REG_1404H, 30U, 0U);
-            WR1_PROG(REG_143CH, 0x00001800U);
+            r_rsip_subfunc003(0x03420011U);
             WR1_PROG(REG_1444H, 0x000001a2U);
             WR1_PROG(REG_1A24H, 0x0a0700c4U);
             WAIT_STS(REG_1444H, 31U, 1U);
@@ -152,9 +151,7 @@ rsip_ret_t r_rsip_p01 (void)
             WR1_PROG(REG_1458H, 0x00000000U);
             WR1_PROG(REG_1608H, 0x80840000U);
             WR1_PROG(REG_1458H, 0x00000000U);
-            WR1_PROG(REG_1400H, 0x03420011U);
-            WAIT_STS(REG_1404H, 30U, 0U);
-            WR1_PROG(REG_143CH, 0x00001800U);
+            r_rsip_subfunc003(0x03420011U);
             WR1_PROG(REG_1B08H, 0x00000201U);
             WR1_PROG(REG_1A24H, 0x0a0701d5U);
             WAIT_STS(REG_1444H, 31U, 1U);

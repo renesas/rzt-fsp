@@ -44,6 +44,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
                         const uint32_t InData_SaltLength[],
                         uint32_t       OutData_EncCertificateInfo[])
 {
+    RSIP_PRV_PRIMITIVE_ENTRY;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;
@@ -101,9 +102,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
     WR1_PROG(REG_1458H, 0x00000000U);
     WR1_PROG(REG_1608H, 0x80b10000U);
     WR1_PROG(REG_1458H, 0x00000000U);
-    WR1_PROG(REG_1400H, 0x034000c5U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
+    r_rsip_subfunc003(0x034000c5U);
     WR1_PROG(REG_1600H, 0x00007c06U);
     WR1_PROG(REG_1458H, 0x00000000U);
     WR1_PROG(REG_143CH, 0x00600000U);
@@ -211,9 +210,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
         WR1_PROG(REG_1404H, 0x17f80000U);
         WR1_PROG(REG_1608H, 0x80900001U);
         WR1_PROG(REG_1458H, 0x00000000U);
-        WR1_PROG(REG_1400H, 0x03430041U);
-        WAIT_STS(REG_1404H, 30U, 0U);
-        WR1_PROG(REG_143CH, 0x00001800U);
+        r_rsip_subfunc003(0x03430041U);
         WR1_PROG(REG_1600H, 0x00000842U);
         WR1_PROG(REG_1458H, 0x00000000U);
         r_rsip_func101(bswap_32big(0xfa882c8fU), bswap_32big(0x04a48e8aU), bswap_32big(0x87518de0U),
@@ -263,17 +260,11 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
             r_rsip_func100(bswap_32big(0x3a1ca17eU), bswap_32big(0x145b87f3U), bswap_32big(0x4ba67cf1U),
                            bswap_32big(0xa3ef7cb9U));
             WR1_PROG(REG_1404H, 0x17f00000U);
-            WR1_PROG(REG_1400H, 0x1003001dU);
-            WAIT_STS(REG_1404H, 30U, 0U);
-            WR1_PROG(REG_143CH, 0x00001800U);
+            r_rsip_subfunc003(0x1003001dU);
             WR1_PROG(REG_1608H, 0x80900001U);
             WR1_PROG(REG_1458H, 0x00000000U);
-            WR1_PROG(REG_1400H, 0x13430101U);
-            WAIT_STS(REG_1404H, 30U, 0U);
-            WR1_PROG(REG_143CH, 0x00001800U);
-            WR1_PROG(REG_1400H, 0x10030005U);
-            WAIT_STS(REG_1404H, 30U, 0U);
-            WR1_PROG(REG_143CH, 0x00001800U);
+            r_rsip_subfunc003(0x13430101U);
+            r_rsip_subfunc003(0x10030005U);
             WR1_PROG(REG_1600H, 0x0000b440U);
             WR1_PROG(REG_1458H, 0x00000000U);
             WR1_PROG(REG_1600H, 0x00000040U);
@@ -357,9 +348,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
             WR1_ADDR(REG_2014H, &S_RAM[0]);
             WR1_PROG(REG_1444H, 0x00000040U);
             WR1_ADDR(REG_2010H, &S_RAM[1]);
-            WR1_PROG(REG_1400H, 0x01400009U);
-            WAIT_STS(REG_1404H, 30U, 0U);
-            WR1_PROG(REG_143CH, 0x00001800U);
+            r_rsip_subfunc003(0x01400009U);
             WR1_PROG(REG_1600H, 0x00000800U);
             WR1_PROG(REG_1458H, 0x00000000U);
             WR1_PROG(REG_1600H, 0x0000094aU);
@@ -373,9 +362,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
             {
                 WR1_PROG(REG_1608H, 0x81810000U);
                 WR1_PROG(REG_1458H, 0x00000000U);
-                WR1_PROG(REG_1400H, 0x01490005U);
-                WAIT_STS(REG_1404H, 30U, 0U);
-                WR1_PROG(REG_143CH, 0x00001800U);
+                r_rsip_subfunc003(0x01490005U);
                 WR1_PROG(REG_1600H, 0x0000a400U);
                 WR1_PROG(REG_1458H, 0x00000000U);
                 WR1_PROG(REG_1600H, 0x00000004U);
@@ -437,9 +424,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
             {
                 WR1_PROG(REG_1608H, 0x80810002U);
                 WR1_PROG(REG_1458H, 0x00000000U);
-                WR1_PROG(REG_1400H, 0x03450005U);
-                WAIT_STS(REG_1404H, 30U, 0U);
-                WR1_PROG(REG_143CH, 0x00001800U);
+                r_rsip_subfunc003(0x03450005U);
                 WR1_PROG(REG_1600H, 0x0000a440U);
                 WR1_PROG(REG_1458H, 0x00000000U);
                 WR1_PROG(REG_1600H, 0x00000004U);
@@ -489,15 +474,11 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
         WR1_PROG(REG_1824H, 0x08000045U);
         WR1_PROG(REG_1608H, 0x81840002U);
         WR1_PROG(REG_1458H, 0x00000000U);
-        WR1_PROG(REG_1400H, 0x00490011U);
-        WAIT_STS(REG_1404H, 30U, 0U);
-        WR1_PROG(REG_143CH, 0x00001800U);
+        r_rsip_subfunc003(0x00490011U);
         WR1_PROG(REG_1608H, 0x8184000cU);
         WR1_PROG(REG_1458H, 0x00000000U);
         WR1_PROG(REG_1824H, 0x9c000005U);
-        WR1_PROG(REG_1400H, 0x00490011U);
-        WAIT_STS(REG_1404H, 30U, 0U);
-        WR1_PROG(REG_143CH, 0x00001800U);
+        r_rsip_subfunc003(0x00490011U);
         r_rsip_func100(bswap_32big(0x9d6e3e10U), bswap_32big(0x543c6c23U), bswap_32big(0xdf05f99eU),
                        bswap_32big(0x3096a1b9U));
         WR1_PROG(REG_143CH, 0x00400000U);
@@ -565,15 +546,8 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
         WR1_PROG(REG_1420H, bswap_32big(0x00000000U));
         WR1_PROG(REG_1608H, 0x80040000U);
         WR1_PROG(REG_1458H, 0x00000000U);
-        WR1_PROG(REG_1400H, 0x03420011U);
-        WAIT_STS(REG_1404H, 30U, 0U);
-        WR1_PROG(REG_143CH, 0x00001800U);
-        WR1_PROG(REG_1444H, 0x000000a7U);
-        WR1_PROG(REG_1608H, 0x800103a0U);
-        WR1_PROG(REG_1458H, 0x00000000U);
-        WAIT_STS(REG_1444H, 31U, 1U);
-        WR1_PROG(REG_1420H, bswap_32big(0x0000ed02U));
-        WR1_PROG(REG_1458H, 0x00000000U);
+        r_rsip_subfunc003(0x03420011U);
+        r_rsip_subfunc009(bswap_32big(0x0000ed02U));
         r_rsip_func101(bswap_32big(0xb958b3b6U), bswap_32big(0x0691743aU), bswap_32big(0x46690408U),
                        bswap_32big(0x33e32b51U));
         r_rsip_func045();
@@ -581,12 +555,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
         WR1_PROG(REG_1458H, 0x00000000U);
         WR1_PROG(REG_1600H, 0x010f6caaU);
         WR1_PROG(REG_1458H, 0x00000000U);
-        WR1_PROG(REG_1444H, 0x000000a7U);
-        WR1_PROG(REG_1608H, 0x800103a0U);
-        WR1_PROG(REG_1458H, 0x00000000U);
-        WAIT_STS(REG_1444H, 31U, 1U);
-        WR1_PROG(REG_1420H, bswap_32big(0x0000ed02U));
-        WR1_PROG(REG_1458H, 0x00000000U);
+        r_rsip_subfunc009(bswap_32big(0x0000ed02U));
         r_rsip_func101(bswap_32big(0x9600d221U), bswap_32big(0xb04c8bf8U), bswap_32big(0x7b878ecaU),
                        bswap_32big(0xd9b5cce1U));
         r_rsip_func046();
@@ -598,9 +567,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
         WR1_PROG(REG_1A24H, 0xe7009d07U);
         WR1_PROG(REG_1608H, 0x81880004U);
         WR1_PROG(REG_1458H, 0x00000000U);
-        WR1_PROG(REG_1400H, 0x00890021U);
-        WAIT_STS(REG_1404H, 30U, 0U);
-        WR1_PROG(REG_143CH, 0x00001800U);
+        r_rsip_subfunc003(0x00890021U);
         WR1_PROG(REG_1408H, 0x00002022U);
         WAIT_STS(REG_1408H, 30U, 1U);
         RD1_ADDR(REG_1420H, &OutData_EncCertificateInfo[4]);
@@ -620,9 +587,7 @@ rsip_ret_t r_rsip_pedf (const uint32_t InData_SignatureType[],
         WR1_PROG(REG_1420H, bswap_32big(0x00000000U));
         WR1_PROG(REG_1A2CH, 0x40000000U);
         WR1_PROG(REG_1A24H, 0x09108105U);
-        WR1_PROG(REG_1400H, 0x00820011U);
-        WAIT_STS(REG_1404H, 30U, 0U);
-        WR1_PROG(REG_143CH, 0x00001800U);
+        r_rsip_subfunc003(0x00820011U);
         WR1_PROG(REG_1408H, 0x00002012U);
         WAIT_STS(REG_1408H, 30U, 1U);
         RD1_ADDR(REG_1420H, &OutData_EncCertificateInfo[12]);

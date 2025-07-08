@@ -832,13 +832,13 @@ static fsp_err_t r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t
         chcfg |= DMAC_PRV_CHCFG_DEM_MASK;
     }
 
-    if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operaion)
+    if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operation)
     {
         /* Set DMA transfer end interrupt mask */
         chcfg |= DMAC_PRV_CHCFG_DEM_MASK;
 
         /* Configure Register Set Reverse Select */
-        chcfg |= ((p_extend->next_register_operaion & DMAC_PRV_NEXT_REG_VALUE_MASK) << DMAC_PRV_CHCFG_RSW_OFFSET);
+        chcfg |= ((p_extend->next_register_operation & DMAC_PRV_NEXT_REG_VALUE_MASK) << DMAC_PRV_CHCFG_RSW_OFFSET);
     }
 
     uint32_t rssel_register_num = p_extend->channel / 3;
@@ -999,7 +999,7 @@ static fsp_err_t r_dmac_config_transfer_info_register_mode (dmac_instance_ctrl_t
         chext |= r_dmac_config_chext(src_address, dest_address);
     }
 
-    if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operaion)
+    if (DMAC_REGISTER_SELECT_REVERSE_DISABLE != p_extend->next_register_operation)
     {
         p_src_cast  = (uint32_t *) p_info->p_next1_src;
         p_dest_cast = (uint32_t *) p_info->p_next1_dest;

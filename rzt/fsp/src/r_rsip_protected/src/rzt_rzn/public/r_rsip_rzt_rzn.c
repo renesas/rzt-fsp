@@ -48,12 +48,33 @@
  #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP256R1_PUBLIC              NULL
  #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP256R1_PRIVATE             NULL
 #endif
+#if RSIP_CFG_ECC_SECP384R1_ENABLE
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP384R1_PUBLIC              r_rsip_wrapper_pf7_secp384r1
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP384R1_PRIVATE             r_rsip_wrapper_pf8_secp384r1
+#else
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP384R1_PUBLIC              NULL
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP384R1_PRIVATE             NULL
+#endif
 #if RSIP_CFG_ECC_BRAINPOOLP256R1_ENABLE
  #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP256R1_PUBLIC        r_rsip_wrapper_pfa_brainpoolp256r1
  #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP256R1_PRIVATE       r_rsip_wrapper_pf3_brainpoolp256r1
 #else
  #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP256R1_PUBLIC        NULL
  #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP256R1_PRIVATE       NULL
+#endif
+#if RSIP_CFG_ECC_BRAINPOOLP384R1_ENABLE
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP384R1_PUBLIC        r_rsip_wrapper_pf7_brainpoolp384r1
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP384R1_PRIVATE       r_rsip_wrapper_pf8_brainpoolp384r1
+#else
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP384R1_PUBLIC        NULL
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP384R1_PRIVATE       NULL
+#endif
+#if RSIP_CFG_ECC_EDWARDS25519_ENABLE
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_EDWARDS25519_PUBLIC           r_rsip_pb1
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_EDWARDS25519_PRIVATE          r_rsip_pb2
+#else
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_EDWARDS25519_PUBLIC           NULL
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_EDWARDS25519_PRIVATE          NULL
 #endif
 
 #if RSIP_CFG_RSA_1024_ENABLE
@@ -116,6 +137,24 @@
 #else
  #define RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA256                       NULL
 #endif
+#if RSIP_CFG_HMAC_SHA384_ENABLE
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA384                       r_rsip_p92
+#else
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA384                       NULL
+#endif
+#if RSIP_CFG_HMAC_SHA512_ENABLE
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA512                       r_rsip_p93
+#else
+ #define RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA512                       NULL
+#endif
+
+#if RSIP_CFG_KDF_HMAC_SHA256_ENABLE
+ #define RSIP_PRV_FUNC_KDF_TLS12_PRF_VERIFY_DATA_CLIENT_SHA256         r_rsip_wrapper_pe9_sha256_client
+ #define RSIP_PRV_FUNC_KDF_TLS12_PRF_VERIFY_DATA_SERVER_SHA256         r_rsip_wrapper_pe9_sha256_server
+#else
+ #define RSIP_PRV_FUNC_KDF_TLS12_PRF_VERIFY_DATA_CLIENT_SHA256         NULL
+ #define RSIP_PRV_FUNC_KDF_TLS12_PRF_VERIFY_DATA_SERVER_SHA256         NULL
+#endif
 
 #if BSP_FEATURE_RSIP_JTAG_DEBUG_AUTH_LEVEL1
  #define RSIP_PRV_FUNC_AUTH_PASSWORD_HASH_COMPUTE_JTAG_DEBUG_LEVEL1    r_rsip_wrapper_p15_jtag_level1
@@ -151,6 +190,11 @@ typedef rsip_ret_t (* rsip_func_root_cert_key_import_t)(const uint32_t InData_Ro
                                                         const uint32_t InData_RootCertificatePubKey[],
                                                         uint32_t       OutData_KeyIndex[]);
 
+/* TLS1.2 PRF verify_data compute */
+typedef rsip_ret_t (* rsip_func_kdf_tls12_prf_verify_data_compute_t)(const uint32_t InData_Hash[],
+                                                                     const uint32_t InData_KeyIndex[],
+                                                                     uint32_t       OutData_Verify_data[]);
+
 /* TLS1.2 RSA premaster secret */
 typedef rsip_ret_t (* rsip_func_tls12_rsa_premaster_secret_encrypt_t)(const uint32_t InData_KeyIndex[],
                                                                       const uint32_t InData_EncPreMasterSecret[],
@@ -163,64 +207,77 @@ typedef rsip_ret_t (* rsip_func_tls12_rsa_premaster_secret_decrypt_t)(const uint
  * Private function prototypes
  **********************************************************************************************************************/
 
-static rsip_func_initial_key_wrap_t     select_func_initial_key_wrap(rsip_key_type_t key_type);
-static rsip_func_root_cert_key_import_t select_func_root_cert_key_import(rsip_key_type_t key_type);
+static rsip_func_initial_key_wrap_t     select_func_initial_key_wrap(rsip_key_type_extend_t key_type_ext);
+static rsip_func_root_cert_key_import_t select_func_root_cert_key_import(rsip_key_type_extend_t key_type_ext);
 RSIP_PRV_STATIC_INLINE uint32_t         r_rsip_ceil(const uint32_t num, const uint32_t significance);
 
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
 
-static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_aes[RSIP_KEY_AES_NUM] =
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_aes[RSIP_PRV_KEY_SUBTYPE_AES_NUM] =
 {
-    [RSIP_KEY_AES_128] = RSIP_PRV_FUNC_INIT_KEY_WRAP_AES_128,
-    [RSIP_KEY_AES_256] = RSIP_PRV_FUNC_INIT_KEY_WRAP_AES_256
+    [RSIP_PRV_KEY_SUBTYPE_AES_128] = RSIP_PRV_FUNC_INIT_KEY_WRAP_AES_128,
+    [RSIP_PRV_KEY_SUBTYPE_AES_256] = RSIP_PRV_FUNC_INIT_KEY_WRAP_AES_256
 };
 
-static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_xts_aes[RSIP_KEY_AES_NUM] =
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_xts_aes[RSIP_PRV_KEY_SUBTYPE_AES_NUM] =
 {
-    [RSIP_KEY_AES_128] = RSIP_PRV_FUNC_INIT_KEY_WRAP_XTS_AES_128,
-    [RSIP_KEY_AES_256] = RSIP_PRV_FUNC_INIT_KEY_WRAP_XTS_AES_256
+    [RSIP_PRV_KEY_SUBTYPE_AES_128] = RSIP_PRV_FUNC_INIT_KEY_WRAP_XTS_AES_128,
+    [RSIP_PRV_KEY_SUBTYPE_AES_256] = RSIP_PRV_FUNC_INIT_KEY_WRAP_XTS_AES_256
 };
 
-static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_chacha[RSIP_KEY_CHACHA_NUM] =
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_chacha[RSIP_PRV_KEY_SUBTYPE_CHACHA_NUM] =
 {
     NULL
 };
 
-static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_ecc_pub[RSIP_KEY_ECC_NUM] =
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_ecc_pub[RSIP_PRV_KEY_SUBTYPE_ECC_NUM] =
 {
-    [RSIP_KEY_ECC_SECP256R1]       = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP256R1_PUBLIC,
-    [RSIP_KEY_ECC_BRAINPOOLP256R1] = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP256R1_PUBLIC
+    [RSIP_PRV_KEY_SUBTYPE_ECC_SECP256R1]       = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP256R1_PUBLIC,
+    [RSIP_PRV_KEY_SUBTYPE_ECC_SECP384R1]       = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP384R1_PUBLIC,
+    [RSIP_PRV_KEY_SUBTYPE_ECC_BRAINPOOLP256R1] = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP256R1_PUBLIC,
+    [RSIP_PRV_KEY_SUBTYPE_ECC_BRAINPOOLP384R1] = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP384R1_PUBLIC,
+    [RSIP_PRV_KEY_SUBTYPE_ECC_EDWARDS25519]    = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_EDWARDS25519_PUBLIC
 };
 
-static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_ecc_priv[RSIP_KEY_ECC_NUM] =
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_ecc_priv[RSIP_PRV_KEY_SUBTYPE_ECC_NUM] =
 {
-    [RSIP_KEY_ECC_SECP256R1]       = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP256R1_PRIVATE,
-    [RSIP_KEY_ECC_BRAINPOOLP256R1] = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP256R1_PRIVATE
+    [RSIP_PRV_KEY_SUBTYPE_ECC_SECP256R1]       = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP256R1_PRIVATE,
+    [RSIP_PRV_KEY_SUBTYPE_ECC_SECP384R1]       = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_SECP384R1_PRIVATE,
+    [RSIP_PRV_KEY_SUBTYPE_ECC_BRAINPOOLP256R1] = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP256R1_PRIVATE,
+    [RSIP_PRV_KEY_SUBTYPE_ECC_BRAINPOOLP384R1] = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_BRAINPOOLP384R1_PRIVATE,
+    [RSIP_PRV_KEY_SUBTYPE_ECC_EDWARDS25519]    = RSIP_PRV_FUNC_INIT_KEY_WRAP_ECC_EDWARDS25519_PRIVATE
 };
 
-static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_rsa_pub[RSIP_KEY_RSA_NUM] =
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_rsa_pub[RSIP_PRV_KEY_SUBTYPE_RSA_NUM] =
 {
-    [RSIP_KEY_RSA_1024] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_1024_PUBLIC,
-    [RSIP_KEY_RSA_2048] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_2048_PUBLIC,
-    [RSIP_KEY_RSA_3072] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_3072_PUBLIC,
-    [RSIP_KEY_RSA_4096] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_4096_PUBLIC
+    [RSIP_PRV_KEY_SUBTYPE_RSA_1024] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_1024_PUBLIC,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_2048] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_2048_PUBLIC,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_3072] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_3072_PUBLIC,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_4096] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_4096_PUBLIC
 };
 
-static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_rsa_priv[RSIP_KEY_RSA_NUM] =
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_rsa_priv[RSIP_PRV_KEY_SUBTYPE_RSA_NUM] =
 {
-    [RSIP_KEY_RSA_1024] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_1024_PRIVATE,
-    [RSIP_KEY_RSA_2048] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_2048_PRIVATE,
-    [RSIP_KEY_RSA_3072] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_3072_PRIVATE,
-    [RSIP_KEY_RSA_4096] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_4096_PRIVATE
+    [RSIP_PRV_KEY_SUBTYPE_RSA_1024] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_1024_PRIVATE,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_2048] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_2048_PRIVATE,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_3072] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_3072_PRIVATE,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_4096] = RSIP_PRV_FUNC_INIT_KEY_WRAP_RSA_4096_PRIVATE
 };
 
-static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_hmac[RSIP_KEY_HMAC_NUM] =
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_hmac[RSIP_PRV_KEY_SUBTYPE_HMAC_NUM] =
 {
-    [RSIP_KEY_HMAC_SHA1]   = RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA1,
-    [RSIP_KEY_HMAC_SHA224] = RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA224,
-    [RSIP_KEY_HMAC_SHA256] = RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA256
+    [RSIP_PRV_KEY_SUBTYPE_HMAC_SHA1]   = RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA1,
+    [RSIP_PRV_KEY_SUBTYPE_HMAC_SHA224] = RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA224,
+    [RSIP_PRV_KEY_SUBTYPE_HMAC_SHA256] = RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA256,
+    [RSIP_PRV_KEY_SUBTYPE_HMAC_SHA384] = RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA384,
+    [RSIP_PRV_KEY_SUBTYPE_HMAC_SHA512] = RSIP_PRV_FUNC_INIT_KEY_WRAP_HMAC_SHA512
+};
+
+static const rsip_func_initial_key_wrap_t gsp_func_initial_key_wrap_misc[RSIP_PRV_KEY_SUBTYPE_MISC_NUM] =
+{
+    [RSIP_PRV_KEY_SUBTYPE_MISC_KUK] = r_rsip_p1f
 };
 
 static const rsip_func_initial_key_wrap_t gsp_func_auth_password_hash_compute[3] =
@@ -230,22 +287,33 @@ static const rsip_func_initial_key_wrap_t gsp_func_auth_password_hash_compute[3]
     [RSIP_AUTH_TYPE_SCI_USB_BOOT]      = RSIP_PRV_FUNC_AUTH_PASSWORD_HASH_COMPUTE_SCI_USB_BOOT
 };
 
-static const rsip_func_tls12_rsa_premaster_secret_encrypt_t gsp_func_tls12_rsa_premaster_secret_encrypt[RSIP_KEY_RSA_NUM
-] =
+static const rsip_func_kdf_tls12_prf_verify_data_compute_t gsp_func_kdf_tls12_prf_verify_data_compute
+[RSIP_PRV_KEY_SUBTYPE_HMAC_NUM][2] =
 {
-    [RSIP_KEY_RSA_1024] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_ENCRYPT_1024,
-    [RSIP_KEY_RSA_2048] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_ENCRYPT_2048,
-    [RSIP_KEY_RSA_3072] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_ENCRYPT_3072,
-    [RSIP_KEY_RSA_4096] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_ENCRYPT_4096
+    [RSIP_PRV_KEY_SUBTYPE_HMAC_SHA256][RSIP_TLS12_PRF_LABEL_CLIENT_FINISHED] =
+        RSIP_PRV_FUNC_KDF_TLS12_PRF_VERIFY_DATA_CLIENT_SHA256,
+    [RSIP_PRV_KEY_SUBTYPE_HMAC_SHA256][RSIP_TLS12_PRF_LABEL_SERVER_FINISHED] =
+        RSIP_PRV_FUNC_KDF_TLS12_PRF_VERIFY_DATA_SERVER_SHA256
 };
 
-static const rsip_func_tls12_rsa_premaster_secret_decrypt_t gsp_func_tls12_rsa_premaster_secret_decrypt[RSIP_KEY_RSA_NUM
+static const rsip_func_tls12_rsa_premaster_secret_encrypt_t gsp_func_tls12_rsa_premaster_secret_encrypt[
+    RSIP_PRV_KEY_SUBTYPE_RSA_NUM
 ] =
 {
-    [RSIP_KEY_RSA_1024] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_DECRYPT_1024,
-    [RSIP_KEY_RSA_2048] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_DECRYPT_2048,
-    [RSIP_KEY_RSA_3072] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_DECRYPT_3072,
-    [RSIP_KEY_RSA_4096] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_DECRYPT_4096
+    [RSIP_PRV_KEY_SUBTYPE_RSA_1024] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_ENCRYPT_1024,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_2048] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_ENCRYPT_2048,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_3072] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_ENCRYPT_3072,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_4096] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_ENCRYPT_4096
+};
+
+static const rsip_func_tls12_rsa_premaster_secret_decrypt_t gsp_func_tls12_rsa_premaster_secret_decrypt[
+    RSIP_PRV_KEY_SUBTYPE_RSA_NUM
+] =
+{
+    [RSIP_PRV_KEY_SUBTYPE_RSA_1024] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_DECRYPT_1024,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_2048] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_DECRYPT_2048,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_3072] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_DECRYPT_3072,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_4096] = RSIP_PRV_FUNC_TLS12_RSA_PREMASTER_SECRET_DECRYPT_4096
 };
 
 /***********************************************************************************************************************
@@ -264,6 +332,12 @@ static const rsip_func_tls12_rsa_premaster_secret_decrypt_t gsp_func_tls12_rsa_p
 /*******************************************************************************************************************//**
  * Decrypts an encrypted user key with User Factory Programming Key (UFPK) and wrap it with the Hardware Unique Key (HUK).
  *
+ * @par Conditions
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
  *
@@ -272,9 +346,8 @@ static const rsip_func_tls12_rsa_premaster_secret_decrypt_t gsp_func_tls12_rsa_p
  *                                                       The length is 32 bytes.
  * @param[in]     p_initial_vector                       Initialization vector when generating encrypted_key.
  *                                                       The length is 16 bytes.
- * @param[in]     key_type                               Inputs/Outputs key type.
  * @param[in]     p_encrypted_key                        Encrypted user key. The length depends on the key type.
- * @param[out]    p_injected_key                         Pointer to destination of injected key.
+ * @param[in,out] p_wrapped_key                          Pointer to destination of wrapped key.
  *                                                       The length depends on the key type.
  *
  * @retval FSP_SUCCESS                           Normal termination.
@@ -291,28 +364,29 @@ static const rsip_func_tls12_rsa_premaster_secret_decrypt_t gsp_func_tls12_rsa_p
  * @note See also Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_InitialKeyWrap (rsip_ctrl_t * const        p_ctrl,
-                                 rsip_wufpk_t const * const p_wrapped_user_factory_programming_key,
-                                 uint8_t const * const      p_initial_vector,
-                                 rsip_key_type_t const      key_type,
-                                 uint8_t const * const      p_encrypted_key,
-                                 uint8_t * const            p_injected_key)
+                                 void const * const         p_wrapped_user_factory_programming_key,
+                                 void const * const         p_initial_vector,
+                                 void const * const         p_encrypted_key,
+                                 rsip_wrapped_key_t * const p_wrapped_key)
 
 {
     rsip_instance_ctrl_t * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
-
-    /* Set primitive */
-    rsip_func_initial_key_wrap_t p_func = select_func_initial_key_wrap(key_type);
 
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_user_factory_programming_key);
     FSP_ASSERT(p_initial_vector);
     FSP_ASSERT(p_encrypted_key);
-    FSP_ASSERT(p_injected_key);
+    FSP_ASSERT(p_wrapped_key);
+    FSP_ASSERT(p_wrapped_key->p_value);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check if the key type is enabled on configuration */
-    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);
+    rsip_key_type_extend_t       key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type); // Parse key type
+    rsip_func_initial_key_wrap_t p_func       = select_func_initial_key_wrap(key_type_ext); // Set function
+
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                          // Check configuration
 #endif
 
     /* Check state */
@@ -325,13 +399,13 @@ fsp_err_t R_RSIP_InitialKeyWrap (rsip_ctrl_t * const        p_ctrl,
 
     if (RSIP_RET_PASS == rsip_ret)
     {
-        /* Call primitive (cast to match the argument type with the primitive function) */
+        /* Call function (cast to match the argument type with the primitive function) */
         rsip_ret = p_func((uint32_t const *) whrk_num,
                           (uint32_t const *) whrk,
                           (uint32_t const *) p_wrapped_user_factory_programming_key,
                           (uint32_t const *) p_initial_vector,
                           (uint32_t const *) p_encrypted_key,
-                          (uint32_t *) p_injected_key);
+                          (uint32_t *) p_wrapped_key->p_value);
     }
 
     /* Check error */
@@ -366,98 +440,7 @@ fsp_err_t R_RSIP_InitialKeyWrap (rsip_ctrl_t * const        p_ctrl,
 }
 
 /*******************************************************************************************************************//**
- * Decrypts an encrypted Key Update Key (KUK) with User Factory Programming Key (UFPK) and wrap it with the Hardware Unique Key (HUK).
- *
- * @par State transition
- * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
- *
- * @param[in,out] p_ctrl                                 Pointer to control block.
- * @param[in]     p_wrapped_user_factory_programming_key Wrapped User Factory Programming Key (W-UFPK).
- *                                                       The length is 32 bytes.
- * @param[in]     p_initial_vector                       Initialization vector when generating encrypted_key.
- *                                                       The length is 16 bytes.
- * @param[in]     p_encrypted_key                        Encrypted key update key.
- * @param[out]    p_injected_key                         Pointer to destination of injected key update key.
- *
- * @retval FSP_SUCCESS                           Normal termination.
- * @retval FSP_ERR_ASSERTION                     A required parameter is NULL.
- * @retval FSP_ERR_NOT_OPEN                      Module is not open.
- * @retval FSP_ERR_INVALID_STATE                 Internal state is illegal.
- * @retval FSP_ERR_CRYPTO_RSIP_FAIL              Input parameter is invalid.
- *
- * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
- *                                               by the processing is in use by other processing.
- * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- **********************************************************************************************************************/
-fsp_err_t R_RSIP_InitialKeyUpdateKeyWrap (rsip_ctrl_t * const           p_ctrl,
-                                          rsip_wufpk_t const * const    p_wrapped_user_factory_programming_key,
-                                          uint8_t const * const         p_initial_vector,
-                                          uint8_t const * const         p_encrypted_key,
-                                          rsip_key_update_key_t * const p_injected_key)
-{
-    rsip_instance_ctrl_t * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
-
-#if RSIP_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_instance_ctrl);
-    FSP_ASSERT(p_wrapped_user_factory_programming_key);
-    FSP_ASSERT(p_initial_vector);
-    FSP_ASSERT(p_encrypted_key);
-    FSP_ASSERT(p_injected_key);
-    FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
-#endif
-
-    /* Check state */
-    FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
-
-    /* Read W-HRK from OTP */
-    uint32_t   whrk_num[RSIP_PRV_WORD_SIZE_WHRK_NUM];
-    uint32_t   whrk[RSIP_PRV_WORD_SIZE_WHRK];
-    rsip_ret_t rsip_ret = r_rsip_whrk_read(whrk_num, whrk);
-
-    if (RSIP_RET_PASS == rsip_ret)
-    {
-        /* Call primitive (cast to match the argument type with the primitive function) */
-        rsip_ret = r_rsip_p1f((uint32_t const *) whrk_num,
-                              (uint32_t const *) whrk,
-                              (uint32_t const *) p_wrapped_user_factory_programming_key,
-                              (uint32_t const *) p_initial_vector,
-                              (uint32_t const *) p_encrypted_key,
-                              (uint32_t *) p_injected_key);
-    }
-
-    /* Check error */
-    fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
-    switch (rsip_ret)
-    {
-        case RSIP_RET_PASS:
-        {
-            err = FSP_SUCCESS;
-            break;
-        }
-
-        case RSIP_RET_RESOURCE_CONFLICT:
-        {
-            err = FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT;
-            break;
-        }
-
-        case RSIP_RET_FAIL:
-        {
-            err = FSP_ERR_CRYPTO_RSIP_FAIL;
-            break;
-        }
-
-        default:
-        {
-            err = FSP_ERR_CRYPTO_RSIP_FATAL;
-        }
-    }
-
-    return err;
-}
-
-/*******************************************************************************************************************//**
- * Decrypts the decryption key for secure boot with User Factory Programming Key (UFPK) and wrap it with the Hardware Unique Key (HUK).
+ * Decrypts a common key for secure boot with User Factory Programming Key (UFPK) and wrap it with the Hardware Unique Key (HUK).
  *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
@@ -481,11 +464,11 @@ fsp_err_t R_RSIP_InitialKeyUpdateKeyWrap (rsip_ctrl_t * const           p_ctrl,
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
  **********************************************************************************************************************/
-fsp_err_t R_RSIP_SB_InitialDecryptionKeyWrap (rsip_ctrl_t * const        p_ctrl,
-                                              rsip_wufpk_t const * const p_wrapped_user_factory_programming_key,
-                                              uint8_t const * const      p_initial_vector,
-                                              uint8_t const * const      p_encrypted_key,
-                                              uint8_t * const            p_injected_key)
+fsp_err_t R_RSIP_SB_InitialCommonKeyWrap (rsip_ctrl_t * const          p_ctrl,
+                                          void const * const           p_wrapped_user_factory_programming_key,
+                                          void const * const           p_initial_vector,
+                                          void const * const           p_encrypted_key,
+                                          rsip_sb_common_key_t * const p_injected_key)
 {
     rsip_instance_ctrl_t * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
 
@@ -575,12 +558,12 @@ fsp_err_t R_RSIP_SB_InitialDecryptionKeyWrap (rsip_ctrl_t * const        p_ctrl,
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
  **********************************************************************************************************************/
-fsp_err_t R_RSIP_AuthPasswordHashCompute (rsip_ctrl_t * const    p_ctrl,
-                                          rsip_wufpk_t * const   p_wrapped_user_factory_programming_key,
-                                          uint8_t const * const  p_initial_vector,
-                                          rsip_auth_type_t const authentication_type,
-                                          uint8_t const * const  p_encrypted_password,
-                                          uint8_t * const        p_hashed_password)
+fsp_err_t R_RSIP_AuthPasswordHashCompute (rsip_ctrl_t * const                 p_ctrl,
+                                          void const * const                  p_wrapped_user_factory_programming_key,
+                                          void const * const                  p_initial_vector,
+                                          rsip_auth_type_t const              authentication_type,
+                                          void const * const                  p_encrypted_password,
+                                          rsip_hashed_auth_password_t * const p_hashed_password)
 {
     rsip_instance_ctrl_t * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
 
@@ -678,9 +661,9 @@ fsp_err_t R_RSIP_AuthPasswordHashCompute (rsip_ctrl_t * const    p_ctrl,
  * @note p_cert is output with 16-byte padding. The certificate with padding is input to R_RSIP_PKI_RootCertKeyImport().
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_PKI_InitialRootCertWrap (rsip_ctrl_t * const          p_ctrl,
-                                          rsip_wufpk_t const * const   p_wrapped_user_factory_programming_key,
-                                          uint8_t const * const        p_initial_vector,
-                                          uint8_t const * const        p_encrypted_cert,
+                                          void const * const           p_wrapped_user_factory_programming_key,
+                                          void const * const           p_initial_vector,
+                                          void const * const           p_encrypted_cert,
                                           uint32_t const               cert_length,
                                           uint8_t * const              p_cert,
                                           rsip_root_cert_mac_t * const p_cert_mac)
@@ -721,7 +704,7 @@ fsp_err_t R_RSIP_PKI_InitialRootCertWrap (rsip_ctrl_t * const          p_ctrl,
                               (uint32_t const *) p_encrypted_cert,
                               root_certificate_length,
                               (uint32_t *) p_cert,
-                              (uint32_t *) p_cert_mac->mac,
+                              (uint32_t *) p_cert_mac->value,
                               r_rsip_byte_to_word_convert(r_rsip_ceil(cert_length, RSIP_PRV_BYTE_SIZE_AES_BLOCK) +
                                                           RSIP_PRV_BYTE_SIZE_ENC_ROOT_CERT_MAC));
     }
@@ -760,13 +743,18 @@ fsp_err_t R_RSIP_PKI_InitialRootCertWrap (rsip_ctrl_t * const          p_ctrl,
 /*******************************************************************************************************************//**
  * Verifies wrapped root certificate and wraps public key included in it.
  *
+ * @par Conditions
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
  *
  * @param[in,out] p_ctrl               Pointer to control block.
  * @param[in]     p_cert               Raw certificate.
  * @param[in]     p_cert_mac           Pointer to certificate MAC.
- * @param[in]     key_type             Key type of the public key in certificate.
  * @param[in]     p_key_param1         Pointer to start address of the public key parameter in certificate.
  *                                     - [ECC] Qx
  *                                     - [RSA] n
@@ -775,7 +763,7 @@ fsp_err_t R_RSIP_PKI_InitialRootCertWrap (rsip_ctrl_t * const          p_ctrl,
  *                                     - [ECC] Qy
  *                                     - [RSA] e
  * @param[in]     key_param2_length    Length of key_param2 stored in the certificate.
- * @param[out]    p_wrapped_public_key Pointer to destination of wrapped public key. The length depends on key type.
+ * @param[in,out] p_wrapped_public_key Pointer to destination of wrapped public key. The length depends on key type.
  *
  * @retval FSP_SUCCESS                           Normal termination.
  * @retval FSP_ERR_ASSERTION                     A required parameter is NULL.
@@ -796,7 +784,6 @@ fsp_err_t R_RSIP_PKI_InitialRootCertWrap (rsip_ctrl_t * const          p_ctrl,
 fsp_err_t R_RSIP_PKI_RootCertKeyImport (rsip_ctrl_t * const                p_ctrl,
                                         uint8_t const * const              p_cert,
                                         rsip_root_cert_mac_t const * const p_cert_mac,
-                                        rsip_key_type_t const              key_type,
                                         uint8_t const * const              p_key_param1,
                                         uint32_t const                     key_param1_length,
                                         uint8_t const * const              p_key_param2,
@@ -805,10 +792,6 @@ fsp_err_t R_RSIP_PKI_RootCertKeyImport (rsip_ctrl_t * const                p_ctr
 {
     rsip_instance_ctrl_t * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
 
-    /* Set function */
-    rsip_func_root_cert_key_import_t p_func =
-        select_func_root_cert_key_import(key_type);
-
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_cert);
@@ -816,11 +799,15 @@ fsp_err_t R_RSIP_PKI_RootCertKeyImport (rsip_ctrl_t * const                p_ctr
     FSP_ASSERT(p_key_param1);
     FSP_ASSERT(p_key_param2);
     FSP_ASSERT(p_wrapped_public_key);
-
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);
+    rsip_key_type_extend_t           key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type); // Parse key type
+    rsip_func_root_cert_key_import_t p_func       = select_func_root_cert_key_import(key_type_ext);    // Set function
+
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                     // Check configuration
 #endif
 
     /* Check state */
@@ -836,9 +823,9 @@ fsp_err_t R_RSIP_PKI_RootCertKeyImport (rsip_ctrl_t * const                p_ctr
 
     /* Call primitive (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret = p_func((uint32_t const *) p_cert,
-                                 (uint32_t const *) p_cert_mac->mac,
+                                 (uint32_t const *) p_cert_mac->value,
                                  (uint32_t const *) root_certificate_pubkey,
-                                 (uint32_t *) p_wrapped_public_key->value);
+                                 (uint32_t *) p_wrapped_public_key->p_value);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -846,9 +833,6 @@ fsp_err_t R_RSIP_PKI_RootCertKeyImport (rsip_ctrl_t * const                p_ctr
     {
         case RSIP_RET_PASS:
         {
-            p_wrapped_public_key->alg     = r_rsip_key_type_to_alg(key_type);
-            p_wrapped_public_key->subtype = r_rsip_key_type_to_subtype(key_type);
-
             err = FSP_SUCCESS;
             break;
         }
@@ -875,7 +859,114 @@ fsp_err_t R_RSIP_PKI_RootCertKeyImport (rsip_ctrl_t * const                p_ctr
 }
 
 /*******************************************************************************************************************//**
+ * Computes plain verify_data of TLS1.2 from KDF output (TLS1.2 master secret).
+ *
+ * @par Conditions
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ *
+ * @par State transition
+ * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
+ *
+ * @param[in,out] p_ctrl        Pointer to control block.
+ * @param[in]     p_wrapped_key Pointer to wrapped key derived by Derived Keying Material (DKM).
+ * @param[in]     label         Label string. [Client] "client finished". [Server] "server finished".
+ * @param[in]     p_hash        Hashed handshake message.
+ * @param[out]    p_verify_data Pointer to destination of plain verify_data.
+ *
+ * @retval FSP_SUCCESS                           Normal termination.
+ * @retval FSP_ERR_ASSERTION                     A required parameter is NULL.
+ * @retval FSP_ERR_NOT_OPEN                      Module is not open.
+ * @retval FSP_ERR_INVALID_STATE                 Internal state is illegal.
+ * @retval FSP_ERR_NOT_ENABLED                   Input key type is disabled in this function by configuration.
+ * @retval FSP_ERR_CRYPTO_RSIP_FAIL              Input parameter is invalid.
+ * @retval FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL      Input key value is illegal.
+ *
+ * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
+ *                                               by the processing is in use by other processing.
+ * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
+ **********************************************************************************************************************/
+fsp_err_t R_RSIP_KDF_TLS12PRFVerifyDataCompute (rsip_ctrl_t * const              p_ctrl,
+                                                rsip_wrapped_key_t const * const p_wrapped_key,
+                                                rsip_tls12_prf_label_t const     label,
+                                                uint8_t const * const            p_hash,
+                                                uint8_t * const                  p_verify_data)
+{
+    rsip_instance_ctrl_t * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
+
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_instance_ctrl);
+    FSP_ASSERT(p_wrapped_key);
+    FSP_ASSERT(p_wrapped_key->p_value);
+    FSP_ASSERT(p_hash);
+    FSP_ASSERT(p_verify_data);
+    FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type);              // Parse key type
+    rsip_func_kdf_tls12_prf_verify_data_compute_t p_func =
+        gsp_func_kdf_tls12_prf_verify_data_compute[key_type_ext.subtype][label];                   // Set function
+
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_KDF_HMAC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                 // Check configuration
+#endif
+
+    /* Check state */
+    FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
+
+    /* Call function (cast to match the argument type with the primitive function) */
+    rsip_ret_t rsip_ret = p_func((const uint32_t *) p_hash,
+                                 (const uint32_t *) p_wrapped_key->p_value,
+                                 (uint32_t *) p_verify_data);
+
+    /* Check error */
+    fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
+    switch (rsip_ret)
+    {
+        case RSIP_RET_PASS:
+        {
+            err = FSP_SUCCESS;
+            break;
+        }
+
+        case RSIP_RET_RESOURCE_CONFLICT:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT;
+            break;
+        }
+
+        case RSIP_RET_KEY_FAIL:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL;
+            break;
+        }
+
+        case RSIP_RET_FAIL:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_FAIL;
+            break;
+        }
+
+        default:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_FATAL;
+        }
+    }
+
+    return err;
+}
+
+/*******************************************************************************************************************//**
  * Generates TLS1.2 premaster secret for RSA key exchange.
+ *
+ * @par Conditions
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
@@ -910,7 +1001,7 @@ fsp_err_t R_RSIP_TLS12_RSAPremasterSecretGenerate (rsip_ctrl_t * const        p_
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
     /* Call primitive (cast to match the argument type with the primitive function) */
-    rsip_ret_t rsip_ret = r_rsip_pea((uint32_t *) p_wrapped_premaster_secret->value);
+    rsip_ret_t rsip_ret = r_rsip_pea((uint32_t *) p_wrapped_premaster_secret->p_value);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -918,8 +1009,8 @@ fsp_err_t R_RSIP_TLS12_RSAPremasterSecretGenerate (rsip_ctrl_t * const        p_
     {
         case RSIP_RET_PASS:
         {
-            p_wrapped_premaster_secret->alg     = RSIP_ALG_KDF_HMAC;
-            p_wrapped_premaster_secret->subtype = RSIP_KEY_KDF_HMAC_SHA256;
+            p_wrapped_premaster_secret->type = RSIP_KEY_TYPE_KDF_HMAC_SHA256;
+
             err = FSP_SUCCESS;
             break;
         }
@@ -941,6 +1032,12 @@ fsp_err_t R_RSIP_TLS12_RSAPremasterSecretGenerate (rsip_ctrl_t * const        p_
 
 /*******************************************************************************************************************//**
  * Encrypts TLS1.2 premaster secret for RSA key exchange with RSAES-PKCS1-v1_5.
+ *
+ * @par Conditions
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
@@ -977,27 +1074,23 @@ fsp_err_t R_RSIP_TLS12_RSAPremasterSecretEncrypt (rsip_ctrl_t * const           
     FSP_ASSERT(p_wrapped_premaster_secret);
     FSP_ASSERT(p_encrypted_premaster_secret);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
-
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PUBLIC == p_wrapped_public_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
 #endif
 
-    /* Set function */
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type);         // Parse key type
     rsip_func_tls12_rsa_premaster_secret_encrypt_t p_func =
-        gsp_func_tls12_rsa_premaster_secret_encrypt[p_wrapped_public_key->subtype];
+        gsp_func_tls12_rsa_premaster_secret_encrypt[key_type_ext.subtype];                           // Set function
 
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
-
-    /* Check if the key type is enabled on configuration */
-    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PUBLIC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                   // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
     /* Call primitive (cast to match the argument type with the primitive function) */
-    rsip_ret_t rsip_ret = p_func((uint32_t const *) p_wrapped_public_key->value,
-                                 (uint32_t const *) p_wrapped_premaster_secret->value,
+    rsip_ret_t rsip_ret = p_func((uint32_t const *) p_wrapped_public_key->p_value,
+                                 (uint32_t const *) p_wrapped_premaster_secret->p_value,
                                  (uint32_t *) p_encrypted_premaster_secret);
 
     /* Check error */
@@ -1040,6 +1133,12 @@ fsp_err_t R_RSIP_TLS12_RSAPremasterSecretEncrypt (rsip_ctrl_t * const           
 /*******************************************************************************************************************//**
  * Decrypts TLS1.2 premaster secret for RSA key exchange with RSAES-PKCS1-v1_5.
  *
+ * @par Conditions
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
  *
@@ -1075,28 +1174,24 @@ fsp_err_t R_RSIP_TLS12_RSAPremasterSecretDecrypt (rsip_ctrl_t * const           
     FSP_ASSERT(p_encrypted_premaster_secret);
     FSP_ASSERT(p_wrapped_premaster_secret);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
-
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PRIVATE == p_wrapped_private_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
 #endif
 
-    /* Set function */
-    rsip_func_tls12_rsa_premaster_secret_encrypt_t p_func =
-        gsp_func_tls12_rsa_premaster_secret_decrypt[p_wrapped_private_key->subtype];
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_private_key->type);         // Parse key type
+    rsip_func_tls12_rsa_premaster_secret_decrypt_t p_func =
+        gsp_func_tls12_rsa_premaster_secret_decrypt[key_type_ext.subtype];                            // Set function
 
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
-
-    /* Check if the key type is enabled on configuration */
-    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PRIVATE == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                    // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
     /* Call primitive (cast to match the argument type with the primitive function) */
-    rsip_ret_t rsip_ret = p_func((uint32_t const *) p_wrapped_private_key->value,
+    rsip_ret_t rsip_ret = p_func((uint32_t const *) p_wrapped_private_key->p_value,
                                  (uint32_t const *) p_encrypted_premaster_secret,
-                                 (uint32_t *) p_wrapped_premaster_secret->value);
+                                 (uint32_t *) p_wrapped_premaster_secret->p_value);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -1104,8 +1199,7 @@ fsp_err_t R_RSIP_TLS12_RSAPremasterSecretDecrypt (rsip_ctrl_t * const           
     {
         case RSIP_RET_PASS:
         {
-            p_wrapped_premaster_secret->alg     = RSIP_ALG_KDF_HMAC;
-            p_wrapped_premaster_secret->subtype = RSIP_KEY_KDF_HMAC_SHA256;
+            p_wrapped_premaster_secret->type = RSIP_KEY_TYPE_KDF_HMAC_SHA256;
 
             err = FSP_SUCCESS;
             break;
@@ -1330,63 +1424,67 @@ fsp_err_t R_RSIP_SB_ManifestVerify (rsip_ctrl_t * const   p_ctrl,
 /*******************************************************************************************************************//**
  * Select primitive function of initial key wrapping from key type.
  *
- * @param[in] key_type Key type.
+ * @param[in] key_type_ext Extended key type.
  *
  * @return Pointer to function.
  ***********************************************************************************************************************/
-static rsip_func_initial_key_wrap_t select_func_initial_key_wrap (rsip_key_type_t key_type)
+static rsip_func_initial_key_wrap_t select_func_initial_key_wrap (rsip_key_type_extend_t key_type_ext)
 {
     rsip_func_initial_key_wrap_t ret = NULL;
-    uint8_t alg     = r_rsip_key_type_to_alg(key_type);
-    uint8_t subtype = r_rsip_key_type_to_subtype(key_type);
 
-    switch (alg)
+    switch (key_type_ext.alg)
     {
-        case RSIP_ALG_AES:
+        case RSIP_PRV_ALG_AES:
         {
-            ret = gsp_func_initial_key_wrap_aes[subtype];
+            ret = gsp_func_initial_key_wrap_aes[key_type_ext.subtype];
             break;
         }
 
-        case RSIP_ALG_XTS_AES:
+        case RSIP_PRV_ALG_XTS_AES:
         {
-            ret = gsp_func_initial_key_wrap_xts_aes[subtype];
+            ret = gsp_func_initial_key_wrap_xts_aes[key_type_ext.subtype];
             break;
         }
 
-        case RSIP_ALG_CHACHA:
+        case RSIP_PRV_ALG_CHACHA:
         {
-            ret = gsp_func_initial_key_wrap_chacha[subtype];
+            ret = gsp_func_initial_key_wrap_chacha[key_type_ext.subtype];
             break;
         }
 
-        case RSIP_ALG_ECC_PUBLIC:
+        case RSIP_PRV_ALG_ECC_PUBLIC:
         {
-            ret = gsp_func_initial_key_wrap_ecc_pub[subtype];
+            ret = gsp_func_initial_key_wrap_ecc_pub[key_type_ext.subtype];
             break;
         }
 
-        case RSIP_ALG_ECC_PRIVATE:
+        case RSIP_PRV_ALG_ECC_PRIVATE:
         {
-            ret = gsp_func_initial_key_wrap_ecc_priv[subtype];
+            ret = gsp_func_initial_key_wrap_ecc_priv[key_type_ext.subtype];
             break;
         }
 
-        case RSIP_ALG_RSA_PUBLIC:
+        case RSIP_PRV_ALG_RSA_PUBLIC:
         {
-            ret = gsp_func_initial_key_wrap_rsa_pub[subtype];
+            ret = gsp_func_initial_key_wrap_rsa_pub[key_type_ext.subtype];
             break;
         }
 
-        case RSIP_ALG_RSA_PRIVATE:
+        case RSIP_PRV_ALG_RSA_PRIVATE:
         {
-            ret = gsp_func_initial_key_wrap_rsa_priv[subtype];
+            ret = gsp_func_initial_key_wrap_rsa_priv[key_type_ext.subtype];
             break;
         }
 
-        case RSIP_ALG_HMAC:
+        case RSIP_PRV_ALG_HMAC:
         {
-            ret = gsp_func_initial_key_wrap_hmac[subtype];
+            ret = gsp_func_initial_key_wrap_hmac[key_type_ext.subtype];
+            break;
+        }
+
+        case RSIP_PRV_ALG_MISC:
+        {
+            ret = gsp_func_initial_key_wrap_misc[key_type_ext.subtype];
             break;
         }
 
@@ -1402,25 +1500,33 @@ static rsip_func_initial_key_wrap_t select_func_initial_key_wrap (rsip_key_type_
 /*******************************************************************************************************************//**
  * Select primitive function of root certificate key import from key type.
  *
- * @param[in]  key_type      Key type.
+ * @param[in] key_type_ext Extended Key type.
  *
  * @return Pointer to function.
  ***********************************************************************************************************************/
-static rsip_func_root_cert_key_import_t select_func_root_cert_key_import (rsip_key_type_t key_type)
+static rsip_func_root_cert_key_import_t select_func_root_cert_key_import (rsip_key_type_extend_t key_type_ext)
 {
     rsip_func_kdf_derived_key_import_t ret = NULL;
 
-    switch (key_type)
+    switch (key_type_ext.alg)
     {
-        case RSIP_KEY_TYPE_ECC_SECP256R1_PUBLIC:
+        case RSIP_PRV_ALG_ECC_PUBLIC:
         {
-            ret = r_rsip_wrapper_pe0_secp256r1;
+            if (RSIP_PRV_KEY_SUBTYPE_ECC_SECP256R1 == key_type_ext.subtype)
+            {
+                ret = r_rsip_wrapper_pe0_secp256r1;
+            }
+
             break;
         }
 
-        case RSIP_KEY_TYPE_RSA_2048_PUBLIC:
+        case RSIP_PRV_ALG_RSA_PUBLIC:
         {
-            ret = r_rsip_wrapper_pe0_rsa2048;
+            if (RSIP_PRV_KEY_SUBTYPE_RSA_2048 == key_type_ext.subtype)
+            {
+                ret = r_rsip_wrapper_pe0_rsa2048;
+            }
+
             break;
         }
 

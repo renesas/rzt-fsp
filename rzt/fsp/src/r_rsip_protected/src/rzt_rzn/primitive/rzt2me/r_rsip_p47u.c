@@ -39,6 +39,7 @@ RSIP_PRV_PRIMITIVE_FUNC
 
 void r_rsip_p47u (const uint32_t InData_Text[], uint32_t OutData_Text[], const uint32_t MAX_CNT)
 {
+    RSIP_PRV_PRIMITIVE_ENTRY_NO_RETVAL;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;

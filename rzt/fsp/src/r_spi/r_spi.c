@@ -10,7 +10,7 @@
 #include "r_spi.h"
 #include "r_spi_cfg.h"
 
-#if SPI_DMAC_SUPPORT_ENABLE == 1
+#if SPI_DMA_SUPPORT_ENABLE == 1
  #include "r_dmac.h"
 #endif
 
@@ -156,8 +156,6 @@ fsp_err_t R_SPI_Open (spi_ctrl_t * p_ctrl, spi_cfg_t const * const p_cfg)
     FSP_ASSERT(NULL != p_cfg->p_callback);
     FSP_ASSERT(NULL != p_cfg->p_extend);
     FSP_ERROR_RETURN(BSP_FEATURE_SPI_MAX_CHANNEL > p_cfg->channel, FSP_ERR_IP_CHANNEL_NOT_PRESENT);
-    FSP_ASSERT(p_cfg->rxi_irq >= 0);
-    FSP_ASSERT(p_cfg->txi_irq >= 0);
     FSP_ASSERT(p_cfg->tei_irq >= 0);
     FSP_ASSERT(p_cfg->eri_irq >= 0);
 
@@ -168,8 +166,7 @@ fsp_err_t R_SPI_Open (spi_ctrl_t * p_ctrl, spi_cfg_t const * const p_cfg)
         FSP_ERROR_RETURN(SPI_CLK_PHASE_EDGE_EVEN == p_cfg->clk_phase, FSP_ERR_UNSUPPORTED);
     }
 
- #if BSP_FEATURE_SPI_HAS_SSL_LEVEL_KEEP == 0 || BSP_FEATURE_SPI_HAS_BYTE_SWAP == 0 || SPI_TRANSMIT_FROM_RXI_ISR == 1 || \
-    SPI_DMAC_SUPPORT_ENABLE == 1
+ #if BSP_FEATURE_SPI_HAS_SSL_LEVEL_KEEP == 0 || SPI_TRANSMIT_FROM_RXI_ISR == 1 || SPI_DMA_SUPPORT_ENABLE == 1
     spi_extended_cfg_t * p_extend = (spi_extended_cfg_t *) p_cfg->p_extend;
  #endif
  #if SPI_TRANSMIT_FROM_RXI_ISR == 1
@@ -185,9 +182,6 @@ fsp_err_t R_SPI_Open (spi_ctrl_t * p_ctrl, spi_cfg_t const * const p_cfg)
     }
  #endif
 
- #if BSP_FEATURE_SPI_HAS_BYTE_SWAP == 0
-    FSP_ERROR_RETURN(SPI_BYTE_SWAP_DISABLE == p_extend->byte_swap, FSP_ERR_UNSUPPORTED);
- #endif
  #if BSP_FEATURE_SPI_HAS_SSL_LEVEL_KEEP == 0
     if ((SPI_MODE_MASTER == p_cfg->operating_mode))
     {
@@ -196,7 +190,7 @@ fsp_err_t R_SPI_Open (spi_ctrl_t * p_ctrl, spi_cfg_t const * const p_cfg)
     }
  #endif
 
- #if SPI_DMAC_SUPPORT_ENABLE == 1
+ #if SPI_DMA_SUPPORT_ENABLE == 1
     if ((NULL != p_cfg->p_transfer_rx) || (NULL != p_cfg->p_transfer_tx))
     {
         /* DMAC activation is not available for safety channel. */
@@ -356,7 +350,7 @@ fsp_err_t R_SPI_Close (spi_ctrl_t * const p_ctrl)
     FSP_ERROR_RETURN(SPI_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 #endif
 
-#if SPI_DMAC_SUPPORT_ENABLE == 1
+#if SPI_DMA_SUPPORT_ENABLE == 1
     if (NULL != p_instance_ctrl->p_cfg->p_transfer_rx)
     {
         p_instance_ctrl->p_cfg->p_transfer_rx->p_api->close(p_instance_ctrl->p_cfg->p_transfer_rx->p_ctrl);
@@ -369,8 +363,16 @@ fsp_err_t R_SPI_Close (spi_ctrl_t * const p_ctrl)
 #endif
 
     /* Disable interrupts in GIC. */
-    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->txi_irq);
-    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->rxi_irq);
+    if (p_instance_ctrl->p_cfg->txi_irq >= 0)
+    {
+        R_BSP_IrqDisable(p_instance_ctrl->p_cfg->txi_irq);
+    }
+
+    if (p_instance_ctrl->p_cfg->rxi_irq >= 0)
+    {
+        R_BSP_IrqDisable(p_instance_ctrl->p_cfg->rxi_irq);
+    }
+
     R_BSP_IrqDisable(p_instance_ctrl->p_cfg->tei_irq);
     R_BSP_IrqDisable(p_instance_ctrl->p_cfg->eri_irq);
 
@@ -414,8 +416,14 @@ fsp_err_t R_SPI_CalculateBitrate (uint32_t bitrate, spi_clock_source_t clock_sou
     }
     else
     {
+#if BSP_FEATURE_BSP_HAS_SCISPI_CLOCK
+        desired_divider = R_FSP_SciSpiClockHzGet();
+#elif BSP_FEATURE_BSP_HAS_SPI_CLOCK
+        desired_divider = R_FSP_SpiClockHzGet();
+#else
         desired_divider =
             R_FSP_SystemClockHzGet((fsp_priv_clock_t) ((uint8_t) FSP_PRIV_CLOCK_PCLKSPI0 + (uint8_t) clock_source));
+#endif
     }
 
     desired_divider = (desired_divider + bitrate - 1) / bitrate;
@@ -495,7 +503,7 @@ static fsp_err_t r_spi_transfer_config (spi_cfg_t const * const p_cfg)
 {
     fsp_err_t err = FSP_SUCCESS;
 
-#if SPI_DMAC_SUPPORT_ENABLE == 1
+#if SPI_DMA_SUPPORT_ENABLE == 1
     const transfer_instance_t * p_transfer_tx = p_cfg->p_transfer_tx;
     void * p_spdr = (void *) &(SPI_REG(p_cfg->channel)->SPDR);
     if (p_transfer_tx)
@@ -602,7 +610,7 @@ static void r_spi_hw_config (spi_instance_ctrl_t * p_instance_ctrl)
 #if BSP_FEATURE_SPI_HAS_SSL_LEVEL_KEEP == 1
 
         /* Configure SSL Level Keep Setting. */
-        spcmd0 |= R_SPI0_SPCMD_SSLKP_Msk;
+        spcmd0 |= (uint32_t) (!p_instance_ctrl->p_cfg->operating_mode << R_SPI0_SPCMD_SSLKP_Pos);
 #endif
 
         /* Configure 4-Wire Mode Setting. */
@@ -723,8 +731,16 @@ static void r_spi_hw_config (spi_instance_ctrl_t * p_instance_ctrl)
  **********************************************************************************************************************/
 static void r_spi_gic_config (spi_instance_ctrl_t * p_instance_ctrl)
 {
-    R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->txi_irq, p_instance_ctrl->p_cfg->txi_ipl, p_instance_ctrl);
-    R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->rxi_irq, p_instance_ctrl->p_cfg->rxi_ipl, p_instance_ctrl);
+    if (p_instance_ctrl->p_cfg->txi_irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->txi_irq, p_instance_ctrl->p_cfg->txi_ipl, p_instance_ctrl);
+    }
+
+    if (p_instance_ctrl->p_cfg->rxi_irq >= 0)
+    {
+        R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->rxi_irq, p_instance_ctrl->p_cfg->rxi_ipl, p_instance_ctrl);
+    }
+
     R_BSP_IrqCfgEnable(p_instance_ctrl->p_cfg->eri_irq, p_instance_ctrl->p_cfg->eri_ipl, p_instance_ctrl);
 
     R_BSP_IrqCfg(p_instance_ctrl->p_cfg->tei_irq, p_instance_ctrl->p_cfg->tei_ipl, p_instance_ctrl);
@@ -807,8 +823,8 @@ static void r_spi_start_transfer (spi_instance_ctrl_t * p_instance_ctrl)
         /* Disable the transmit end interrupt */
         p_instance_ctrl->p_regs->SPCR_b.CENDIE = 0;
 
-        /* Enable the SPI Transfer. */
-        p_instance_ctrl->p_regs->SPCR_b.SPE = 1;
+        /* Enable the SPI Transfer and TX buffer empty interrupt */
+        p_instance_ctrl->p_regs->SPCR |= R_SPI0_SPCR_SPTIE_Msk | R_SPI0_SPCR_SPE_Msk;
     }
 
 #else
@@ -823,8 +839,8 @@ static void r_spi_start_transfer (spi_instance_ctrl_t * p_instance_ctrl)
     /* Disable the transmit end interrupt */
     p_instance_ctrl->p_regs->SPCR_b.CENDIE = 0;
 
-    /* Enable the SPI Transfer. */
-    p_instance_ctrl->p_regs->SPCR_b.SPE = 1;
+    /* Enable the SPI Transfer and TX buffer empty interrupt */
+    p_instance_ctrl->p_regs->SPCR |= R_SPI0_SPCR_SPTIE_Msk | R_SPI0_SPCR_SPE_Msk;
 #endif
 }
 
@@ -857,6 +873,28 @@ static fsp_err_t r_spi_write_read_common (spi_ctrl_t * const    p_ctrl,
     FSP_ERROR_RETURN(SPI_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     FSP_ASSERT(p_src || p_dest);
     FSP_ASSERT(0 != length);
+
+ #if SPI_DMA_SUPPORT_ENABLE
+    if (NULL != p_instance_ctrl->p_cfg->p_transfer_rx)
+    {
+        transfer_properties_t transfer_info;
+        fsp_err_t             err = p_instance_ctrl->p_cfg->p_transfer_rx->p_api->infoGet(
+            p_instance_ctrl->p_cfg->p_transfer_rx->p_ctrl,
+            &transfer_info);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+        FSP_ASSERT(length <= transfer_info.transfer_length_max);
+    }
+
+    if (NULL != p_instance_ctrl->p_cfg->p_transfer_tx)
+    {
+        transfer_properties_t transfer_info;
+        fsp_err_t             err = p_instance_ctrl->p_cfg->p_transfer_tx->p_api->infoGet(
+            p_instance_ctrl->p_cfg->p_transfer_tx->p_ctrl,
+            &transfer_info);
+        FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+        FSP_ASSERT(length <= transfer_info.transfer_length_max);
+    }
+ #endif
 #endif
 
     FSP_ERROR_RETURN(0 == (p_instance_ctrl->p_regs->SPCR & R_SPI0_SPCR_SPE_Msk), FSP_ERR_IN_USE);
@@ -868,7 +906,7 @@ static fsp_err_t r_spi_write_read_common (spi_ctrl_t * const    p_ctrl,
     p_instance_ctrl->count     = length;
     p_instance_ctrl->bit_width = bit_width;
 
-#if SPI_DMAC_SUPPORT_ENABLE == 1
+#if SPI_DMA_SUPPORT_ENABLE == 1
 
     /* Determine DMAC transfer size */
     transfer_size_t size;
@@ -908,9 +946,6 @@ static fsp_err_t r_spi_write_read_common (spi_ctrl_t * const    p_ctrl,
             p_instance_ctrl->p_cfg->p_transfer_rx->p_cfg->p_info->p_dest         = &dummy_rx;
         }
 
-        /* Disable the corresponding IRQ when transferring using DMAC. */
-        R_BSP_IrqDisable(p_instance_ctrl->p_cfg->rxi_irq);
-
         fsp_err_t err = p_instance_ctrl->p_cfg->p_transfer_rx->p_api->reconfigure(
             p_instance_ctrl->p_cfg->p_transfer_rx->p_ctrl,
             p_instance_ctrl->p_cfg->p_transfer_rx->p_cfg->p_info);
@@ -936,8 +971,8 @@ static fsp_err_t r_spi_write_read_common (spi_ctrl_t * const    p_ctrl,
             p_instance_ctrl->p_cfg->p_transfer_tx->p_cfg->p_info->p_src         = &dummy_tx;
         }
 
-        /* Disable the corresponding IRQ when transferring using DMAC. */
-        R_BSP_IrqDisable(p_instance_ctrl->p_cfg->txi_irq);
+        /* Disable the TX buffer empty interrupt before enabling transfer. */
+        p_instance_ctrl->p_regs->SPCR_b.SPTIE = 0;
 
         fsp_err_t err = p_instance_ctrl->p_cfg->p_transfer_tx->p_api->reconfigure(
             p_instance_ctrl->p_cfg->p_transfer_tx->p_ctrl,
@@ -1147,9 +1182,6 @@ void spi_rx_dmac_callback (spi_instance_ctrl_t * p_instance_ctrl)
 {
     SPI_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 
-    /* Now that the transfer using DMAC is finished, enable the corresponding IRQ. */
-    R_BSP_IrqEnable(p_instance_ctrl->p_cfg->rxi_irq);
-
     spi_rxi_common(p_instance_ctrl);
 
     SPI_CFG_MULTIPLEX_INTERRUPT_DISABLE;
@@ -1240,10 +1272,6 @@ void spi_tx_dmac_callback (spi_instance_ctrl_t * p_instance_ctrl)
     SPI_CFG_MULTIPLEX_INTERRUPT_ENABLE;
 
 #if SPI_TRANSMIT_FROM_RXI_ISR == 0
-
-    /* Now that the transfer using DMAC is finished, enable the corresponding IRQ. */
-    R_BSP_IrqEnable(p_instance_ctrl->p_cfg->txi_irq);
-
     spi_txi_common(p_instance_ctrl);
 #else
     FSP_PARAMETER_NOT_USED(p_instance_ctrl);

@@ -39,14 +39,14 @@ void R_BSP_RegisterProtectEnable(bsp_reg_protect_t regs_to_protect);
 void R_BSP_RegisterProtectDisable(bsp_reg_protect_t regs_to_unprotect);
 void R_BSP_SoftwareDelay(uint32_t delay, bsp_delay_units_t units);
 void R_BSP_SystemReset(void);
-void R_BSP_CPUReset(bsp_reset_t cpu);
-void R_BSP_CPUResetAutoRelease(bsp_reset_t cpu);
-void R_BSP_CPUResetRelease(bsp_reset_t cpu);
+void R_BSP_CpuReset(bsp_reset_t cpu);
+void R_BSP_CpuResetAutoRelease(bsp_reset_t cpu);
+void R_BSP_CpuResetRelease(bsp_reset_t cpu);
 void R_BSP_ModuleResetEnable(bsp_module_reset_t module_to_enable);
 void R_BSP_ModuleResetDisable(bsp_module_reset_t module_to_disable);
 
 #if (1U < BSP_FEATURE_BSP_CA55_CORE_NUM)
-void R_BSP_CPUClusterResetAutoReleaseControl(bsp_reset_t cpu, bsp_cluster_reset_auto_release_t release);
+void R_BSP_CpuClusterResetAutoReleaseControl(bsp_reset_t cpu, bsp_cluster_reset_auto_release_t release);
 
 #endif
 

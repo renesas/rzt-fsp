@@ -274,8 +274,15 @@ fsp_err_t R_CMTW_Enable (timer_ctrl_t * const p_ctrl)
 
     uint32_t cmwior = p_instance_ctrl->p_reg->CMWIOR;
 
-    cmwior |= (p_extend->ic0_control & CMTW_PRV_CMWIOR_IC0E_VALUE_MASK) << CMTW_PRV_CMWIOR_IC0E_OFFSET;
-    cmwior |= (p_extend->ic1_control & CMTW_PRV_CMWIOR_IC1E_VALUE_MASK) << CMTW_PRV_CMWIOR_IC1E_OFFSET;
+    /* Select input capture operation (edge setting). */
+    cmwior |=
+        ((p_extend->capture_ic0_source & CMTW_PRV_CMWIOR_IC0_VALUE_MASK) << CMTW_PRV_CMWIOR_IC0_OFFSET) |
+        ((p_extend->capture_ic1_source & CMTW_PRV_CMWIOR_IC1_VALUE_MASK) << CMTW_PRV_CMWIOR_IC1_OFFSET);
+
+    /* Enable input capture operation */
+    cmwior |=
+        ((p_extend->ic0_control & CMTW_PRV_CMWIOR_IC0E_VALUE_MASK) << CMTW_PRV_CMWIOR_IC0E_OFFSET) |
+        ((p_extend->ic1_control & CMTW_PRV_CMWIOR_IC1E_VALUE_MASK) << CMTW_PRV_CMWIOR_IC1E_OFFSET);
 
     p_instance_ctrl->p_reg->CMWIOR = (uint16_t) cmwior & CMTW_PRV_CMWIOR_MASK;
 
@@ -303,10 +310,16 @@ fsp_err_t R_CMTW_Disable (timer_ctrl_t * const p_ctrl)
 
     uint32_t cmwior = p_instance_ctrl->p_reg->CMWIOR;
 
-    cmwior &= (uint32_t) ~(1 << CMTW_PRV_CMWIOR_IC0E_OFFSET);
-    cmwior &= (uint32_t) ~(1 << CMTW_PRV_CMWIOR_IC1E_OFFSET);
+    /* Disable input capture operation */
+    cmwior &= (uint32_t) ~((CMTW_PRV_CMWIOR_IC0_VALUE_MASK << CMTW_PRV_CMWIOR_IC0_OFFSET) |
+                           (CMTW_PRV_CMWIOR_IC1_VALUE_MASK << CMTW_PRV_CMWIOR_IC1_OFFSET) |
+                           (1 << CMTW_PRV_CMWIOR_IC0E_OFFSET) |
+                           (1 << CMTW_PRV_CMWIOR_IC1E_OFFSET));
 
     p_instance_ctrl->p_reg->CMWIOR = (uint16_t) cmwior & CMTW_PRV_CMWIOR_MASK;
+
+    /* Stop timer */
+    p_instance_ctrl->p_reg->CMWSTR = CMTW_PRV_CMWSTR_STOP_TIMER;
 
     return FSP_SUCCESS;
 }
@@ -682,16 +695,6 @@ static void r_cmtw_hardware_cfg (cmtw_instance_ctrl_t * const p_instance_ctrl, t
 
     r_cmtw_enable_irq(p_extend->compare_oc0_irq, p_extend->compare_oc0_ipl, p_instance_ctrl);
     r_cmtw_enable_irq(p_extend->compare_oc1_irq, p_extend->compare_oc1_ipl, p_instance_ctrl);
-
-    /* Set input capture if requested */
-    cmwior |=
-        ((p_extend->capture_ic0_source & CMTW_PRV_CMWIOR_IC0_VALUE_MASK) << CMTW_PRV_CMWIOR_IC0_OFFSET) |
-        ((p_extend->capture_ic1_source & CMTW_PRV_CMWIOR_IC1_VALUE_MASK) << CMTW_PRV_CMWIOR_IC1_OFFSET);
-
-    cmwior |=
-        ((p_extend->ic0_control & CMTW_PRV_CMWIOR_IC0E_VALUE_MASK) << CMTW_PRV_CMWIOR_IC0E_OFFSET) |
-        ((p_extend->ic1_control & CMTW_PRV_CMWIOR_IC1E_VALUE_MASK) << CMTW_PRV_CMWIOR_IC1E_OFFSET);
-
     r_cmtw_enable_irq(p_extend->capture_ic0_irq, p_extend->capture_ic0_ipl, p_instance_ctrl);
     r_cmtw_enable_irq(p_extend->capture_ic1_irq, p_extend->capture_ic1_ipl, p_instance_ctrl);
 

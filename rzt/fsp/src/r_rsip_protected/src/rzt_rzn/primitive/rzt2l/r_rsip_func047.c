@@ -66,12 +66,7 @@ void r_rsip_func047 (void)
     WAIT_STS(REG_1444H, 31U, 1U);
     WR1_ADDR(REG_1420H, &S_INST2[3]);
     WR1_PROG(REG_1458H, 0x00000000U);
-    WR1_PROG(REG_1444H, 0x000000a7U);
-    WR1_PROG(REG_1608H, 0x800103a0U);
-    WR1_PROG(REG_1458H, 0x00000000U);
-    WAIT_STS(REG_1444H, 31U, 1U);
-    WR1_PROG(REG_1420H, bswap_32big(0x0000f047U));
-    WR1_PROG(REG_1458H, 0x00000000U);
+    r_rsip_subfunc009(bswap_32big(0x0000f047U));
     r_rsip_func101(bswap_32big(0xe99f55b8U),
                    bswap_32big(0x0811818dU),
                    bswap_32big(0x55acb1bcU),
@@ -81,12 +76,7 @@ void r_rsip_func047 (void)
     WR1_PROG(REG_1458H, 0x00000000U);
     WR1_PROG(REG_1600H, 0x018a294eU);
     WR1_PROG(REG_1458H, 0x00000000U);
-    WR1_PROG(REG_1444H, 0x000000a7U);
-    WR1_PROG(REG_1608H, 0x800103a0U);
-    WR1_PROG(REG_1458H, 0x00000000U);
-    WAIT_STS(REG_1444H, 31U, 1U);
-    WR1_PROG(REG_1420H, bswap_32big(0x0000f047U));
-    WR1_PROG(REG_1458H, 0x00000000U);
+    r_rsip_subfunc009(bswap_32big(0x0000f047U));
     r_rsip_func101(bswap_32big(0x0a08d0c3U),
                    bswap_32big(0x5a373340U),
                    bswap_32big(0x86d6ac4bU),
@@ -110,9 +100,7 @@ void r_rsip_func047 (void)
     WR1_ADDR(REG_1420H, &S_INST2[10]);
     WR1_ADDR(REG_1420H, &S_INST2[11]);
     WR1_PROG(REG_1824H, 0x08000085U);
-    WR1_PROG(REG_1400H, 0x00420011U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
+    r_rsip_subfunc003(0x00420011U);
     WAIT_STS(REG_1828H, 6U, 0U);
     WR1_PROG(REG_143CH, 0x00000500U);
     r_rsip_func100(bswap_32big(0x801240f0U),
@@ -120,9 +108,7 @@ void r_rsip_func047 (void)
                    bswap_32big(0x1be13c25U),
                    bswap_32big(0xfff87653U));
     WR1_PROG(REG_1824H, 0x08000095U);
-    WR1_PROG(REG_1400H, 0x00420011U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
+    r_rsip_subfunc003(0x00420011U);
     WAIT_STS(REG_1828H, 6U, 0U);
     WR1_PROG(REG_143CH, 0x00000500U);
     WR1_PROG(REG_1444H, 0x000003c2U);
@@ -134,9 +120,7 @@ void r_rsip_func047 (void)
     WR1_ADDR(REG_1420H, &S_INST2[14]);
     WR1_ADDR(REG_1420H, &S_INST2[15]);
     WR1_PROG(REG_1A24H, 0x8c100005U);
-    WR1_PROG(REG_1400H, 0x00820011U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
+    r_rsip_subfunc003(0x00820011U);
     WR1_PROG(REG_1600H, 0x00007c1cU);
     WR1_PROG(REG_1458H, 0x00000000U);
     WR1_PROG(REG_143CH, 0x00602000U);

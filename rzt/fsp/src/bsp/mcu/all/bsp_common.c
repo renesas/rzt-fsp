@@ -271,3 +271,22 @@ void bsp_prv_free (void * ptr)
     free(ptr);
 #endif
 }
+
+/*******************************************************************************************************************//**
+ * @addtogroup BSP_MCU
+ * @{
+ **********************************************************************************************************************/
+
+/*******************************************************************************************************************//**
+ * This function is called within the following macros when assertion or error conditions occur: ::FSP_ASSERT,
+ * ::FSP_ASSERT_NOT_RETURN_VALUE, ::FSP_ERROR_RETURN, ::FSP_ERROR_NOT_RETURN_VALUE
+ *
+ * This function is declared as a weak symbol because it is meant to be overridden by the user. To use this function
+ * just copy this function into your own code and modify it to meet your needs.
+ **********************************************************************************************************************/
+__WEAK void R_BSP_FspAssert (void)
+{
+    /* Do nothing. */
+}
+
+/** @} (end addtogroup BSP_MCU) */

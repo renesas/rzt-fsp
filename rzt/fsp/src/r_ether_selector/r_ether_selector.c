@@ -129,6 +129,7 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     FSP_ASSERT(NULL != p_cfg);
 #endif
 
+    p_instance_ctrl->p_cfg = p_cfg;
     port = p_cfg->channel;
 
 #if ETHER_SELECTOR_CFG_PARAM_CHECKING_ENABLE
@@ -143,7 +144,6 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     FSP_ERROR_RETURN(ETHER_SELECTOR_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
 
     p_instance_ctrl->p_reg = p_reg_ethss;
-    p_instance_ctrl->p_cfg = p_cfg;
 
     /* One time initialization for all ETHER_SELECTOR instances. */
     r_ether_selector_state_initialize();
@@ -256,7 +256,7 @@ fsp_err_t R_ETHER_SELECTOR_Open (ether_selector_ctrl_t * const p_ctrl, ether_sel
     /* The SWLINK goes Active-High with a value of 0. */
     phylink  = p_reg_ethss->PHYLNK_b.SWLINK;
     phylink &= ~(uint32_t) (1 << port);
-    phylink |= ((uint32_t) (~(p_instance_ctrl->p_cfg->phylink) << port));
+    phylink |= ((uint32_t) ((~(p_instance_ctrl->p_cfg->phylink) << port) & (1 << port)));
     p_reg_ethss->PHYLNK_b.SWLINK = phylink & ETHER_SELECTOR_PHYLNK_BIT_SWLINK_MASK;
 #endif                                 /* (BSP_FEATURE_ETHSW_SUPPORTED == 1) */
 

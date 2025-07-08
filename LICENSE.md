@@ -6,10 +6,12 @@
 | RZ/T MPU HAL Drivers                                    | Renesas Electronics Corporation    | [BSD-3-Clause](#bsd-3-clause-license)                                                       |
 | Renesas Middleware (Generic)                            | Renesas Electronics Corporation    | [BSD-3-Clause](#bsd-3-clause-license)                                                       |
 |<tr> <td colspan="3"><strong>Third-Party components included in the packs<strong></td></tr>                                                                                               |||
-| [CMSIS](https://github.com/ARM-software/CMSIS_5)        | ARM Limited                        | Apache-2.0 License                                                                          |
-| [FreeRTOS Kernel](https://github.com/renesas/FreeRTOS)  | Amazon.com, Inc. or its affiliates | MIT                                                                                         |
+| [CMSIS](https://github.com/ARM-software/CMSIS_6)        | ARM Limited                        | Apache-2.0 License                                                                          |
+| [FreeRTOS-Kernel](https://github.com/FreeRTOS/FreeRTOS-Kernel)                               | Amazon.com, Inc. or its affiliates | MIT                                                    |
+| [FreeRTOS-Plus-TCP](https://github.com/FreeRTOS/FreeRTOS-Plus-TCP)                           | Amazon.com, Inc. or its affiliates | MIT                                                    |
+| [Lab-Project-FreeRTOS-FAT](https://github.com/FreeRTOS/Lab-Project-FreeRTOS-FAT)             | Amazon.com, Inc. or its affiliates | MIT                                                    |
 | [OpenAMP/open-amp](https://github.com/OpenAMP/open-amp) | Mentor Graphics Corporation, Xilinx Inc., FreeScale Semiconductor, Inc. | BSD-3-Clause                                           |
-| [OpenAMP/libmetal](https://github.com/OpenAMP/open-amp) | Xilinx Inc.                                                             | BSD-3-Clause                                           |
+| [OpenAMP/libmetal](https://github.com/OpenAMP/libmetal) | Xilinx Inc.                                                             | BSD-3-Clause                                           |
 
 ## BSD 3-Clause License
 

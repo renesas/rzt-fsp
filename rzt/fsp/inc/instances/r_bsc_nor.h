@@ -73,6 +73,13 @@ typedef enum e_bsc_nor_cs_wait_cycle_t
     BSC_NOR_CS_WAIT_CYCLE_3_5,         ///< CS wait 3.5 cycle insertion
 } bsc_nor_cs_wait_cycle_t;
 
+/** External address space */
+typedef enum e_bsc_nor_memory_space
+{
+    BSC_NOR_MEMORY_SPACE_CS,           ///< External address space CSn
+    BSC_NOR_MEMORY_SPACE_CS_MIRROR,    ///< Mirror area of External address space CSn
+} bsc_nor_memory_space_t;
+
 /** Extended configuration. */
 typedef struct st_bsc_nor_extended_cfg
 {
@@ -96,6 +103,8 @@ typedef struct st_bsc_nor_extended_cfg
 
     bsc_nor_cs_wait_cycle_t cs_pullup_lag;               ///< Duration to de-assert CS line after RD#,WE# de-assert
     bsc_nor_cs_wait_cycle_t cs_pulldown_lead;            ///< Duration to assert CS line before RD#,WE# assert
+
+    bsc_nor_memory_space_t initial_access_memory_space;  ///< Initial access memory space in nor_flash_api_t::open.
 } bsc_nor_extended_cfg_t;
 
 /** Instance control block. DO NOT INITIALIZE.  Initialization occurs when @ref nor_flash_api_t::open is called */

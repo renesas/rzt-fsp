@@ -60,6 +60,8 @@ typedef enum e_poe3_state
 
 #endif
 
+#ifndef BSP_OVERRIDE_POE3_ACTIVE_LEVEL_T
+
 /** Active level for short circuit detection. */
 typedef enum e_poe3_active_level
 {
@@ -67,6 +69,8 @@ typedef enum e_poe3_active_level
     POE3_ACTIVE_LEVEL_LOW          = 1U,    ///< Low level is set as the active level to detect a short circuit.
     POE3_ACTIVE_LEVEL_SETTING_NONE = 0xFFU, ///< The active level of the pin is set by the timer peripheral side, not by POE3.
 } poe3_active_level_t;
+
+#endif
 
 /** Timer Control Pin selection */
 typedef enum e_poe3_pin_select

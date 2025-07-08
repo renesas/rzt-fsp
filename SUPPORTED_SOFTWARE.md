@@ -12,6 +12,7 @@
     * [OpenAMP](https://github.com/OpenAMP)
     * [PCI (r_pcie_ep)](https://renesas.github.io/rzt-fsp/group___p_c_i_e___e_p.html)
     * [PCI (r_pcie_rc)](https://renesas.github.io/rzt-fsp/group___p_c_i_e___r_c.html)
+    * [SMCI (r_sci_smci)](https://renesas.github.io/rzt-fsp/group___s_c_i___s_m_c_i.html)
     * [SPI (r_sci_spi)](https://renesas.github.io/rzt-fsp/group___s_c_i___s_p_i.html)
     * [SPI (r_spi)](https://renesas.github.io/rzt-fsp/group___s_p_i.html)
     * [UART (r_sci_uart)](https://renesas.github.io/rzt-fsp/group___s_c_i___u_a_r_t.html)
@@ -45,6 +46,7 @@
     * [FreeRTOS Heap 3](https://www.freertos.org/a00111.html#heap_3)
     * [FreeRTOS Heap 4](https://www.freertos.org/a00111.html#heap_4)
     * [FreeRTOS Heap 5](https://www.freertos.org/a00111.html#heap_5)
+    * [FreeRTOS Port (rm_freertos_port)](https://renesas.github.io/rzt-fsp/group___r_m___f_r_e_e_r_t_o_s___p_o_r_t.html)
   * Security
     * [Renesas Secure IP Driver (r_rsip)](https://renesas.github.io/rzt-fsp/group___r_s_i_p___p_r_o_t_e_c_t_e_d.html)
   * Sensor
@@ -107,4 +109,4 @@
     * [Block Media Custom Implementation](https://renesas.github.io/rzt-fsp/group___r_m___b_l_o_c_k___m_e_d_i_a___u_s_e_r.html)
     * [FreeRTOS+FAT Port for RZT (rm_freertos_plus_fat)](https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_FAT/index.html)
   * System
-    * [Arm CMSIS5 Core](https://renesas.github.io/rzt-fsp/)
+    * [Arm CMSIS6 Core](https://renesas.github.io/rzt-fsp/)

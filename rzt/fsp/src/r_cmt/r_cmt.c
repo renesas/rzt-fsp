@@ -578,9 +578,6 @@ void cmt_cm_int_isr (void)
     /* Recover ISR context saved in open. */
     cmt_instance_ctrl_t * p_instance_ctrl = (cmt_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
 
-    /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
-    R_BSP_IrqClearPending(irq);
-
     /* If timer mode is one-shot mode, stop and reset timer here. */
     if (TIMER_MODE_ONE_SHOT == p_instance_ctrl->p_cfg->mode)
     {
@@ -593,6 +590,9 @@ void cmt_cm_int_isr (void)
 
         /* Reset counter. */
         p_instance_ctrl->p_reg->UNT[unit].CM[channel].CNT = 0;
+
+        /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
+        R_BSP_IrqClearPending(irq);
     }
 
     if (NULL != p_instance_ctrl->p_callback)

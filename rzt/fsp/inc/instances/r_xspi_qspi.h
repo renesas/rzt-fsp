@@ -149,11 +149,11 @@ typedef struct st_xspi_qspi_extended_cfg
 {
     uint8_t                            unit;              ///< Unit number of xSPI
     xspi_qspi_chip_select_t            chip_select;       ///< Device number to be used for memory device
-    xspi_qspi_memory_size_t            memory_size;       ///< Size of memory device
+    uint32_t                           memory_size;       ///< Size of memory device
     xspi_qspi_timing_setting_t const * p_timing_settings; ///< Memory mapped timing settings
     xspi_qspi_prefetch_function_t      prefetch_en;       ///< Prefetch function settings
     xspi_qspi_io_voltage_t             io_voltage;        ///< Voltage setting of xSPI IO domain
-    xspi_qspi_address_space_t const  * p_address_space;   ///< Address space settings when custom address space enabled
+    xspi_qspi_address_space_t const  * p_address_space;   ///< Memory mapped address space settings
 
 #if XSPI_QSPI_CFG_DMAC_SUPPORT_ENABLE
     transfer_instance_t const * p_lower_lvl_transfer;     ///< DMAC Transfer instance used for data transmission

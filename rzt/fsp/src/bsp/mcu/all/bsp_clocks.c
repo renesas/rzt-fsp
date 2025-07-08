@@ -15,8 +15,10 @@
 
 /* Key code for writing PRCR register. */
 #define BSP_PRV_PRCR_KEY                                     (0xA500U)
-#define BSP_PRV_PRCR_CGC_UNLOCK                              ((BSP_PRV_PRCR_KEY) | 0x3U)
+#define BSP_PRV_PRCR_CGC                                     (0x3U)
+#define BSP_PRV_PRCR_CGC_UNLOCK                              ((BSP_PRV_PRCR_KEY) | BSP_PRV_PRCR_CGC)
 #define BSP_PRV_PRCR_LOCK                                    ((BSP_PRV_PRCR_KEY) | 0x0U)
+#define BSP_PRV_PRCR_TIMEOUT                                 (10000)
 
 /* Key code for writing  PCMD register. */
 #define BSP_PRV_PCMD_KEY                                     (0xA5U)
@@ -505,6 +507,11 @@ static void bsp_prv_clock_set_hard_reset (void)
 void bsp_clock_init (void)
 {
     volatile uint32_t dummy = 0;
+
+    /* If protection is already disabled, wait until protection is enabled on other cores */
+    uintptr_t timeout = BSP_PRV_PRCR_TIMEOUT;
+    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_NS->PRCRN & BSP_PRV_PRCR_CGC), 0, timeout);
+    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_S->PRCRS & BSP_PRV_PRCR_CGC), 0, timeout);
 
     /* Unlock CGC protection registers. */
     R_RWP_NS->PRCRN = (uint16_t) BSP_PRV_PRCR_CGC_UNLOCK;

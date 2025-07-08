@@ -657,7 +657,7 @@ static fsp_err_t r_mtu3_three_phase_regset (mtu3_three_phase_instance_ctrl_t * p
  **********************************************************************************************************************/
 static inline void r_mtu3_write_protect_enable (mtu3_three_phase_instance_ctrl_t * const p_instance_ctrl)
 {
-#if MTU3_CFG_WRITE_PROTECT_ENABLE
+#if MTU3_THREE_PHASE_CFG_WRITE_PROTECT_ENABLE
     if (MTU3_THREE_TRWER_ACCESS == p_instance_ctrl->p_reg_com->TRWERA)
     {
         p_instance_ctrl->p_reg_com->TRWERA = MTU3_THREE_TRWER_PROTECT;
@@ -675,7 +675,7 @@ static inline void r_mtu3_write_protect_enable (mtu3_three_phase_instance_ctrl_t
  **********************************************************************************************************************/
 static inline void r_mtu3_write_protect_disable (mtu3_three_phase_instance_ctrl_t * const p_instance_ctrl)
 {
-#if MTU3_CFG_WRITE_PROTECT_ENABLE
+#if MTU3_THREE_PHASE_CFG_WRITE_PROTECT_ENABLE
     p_instance_ctrl->p_reg_com->TRWERA = MTU3_THREE_TRWER_ACCESS;
 #else
     FSP_PARAMETER_NOT_USED(p_instance_ctrl);

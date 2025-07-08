@@ -39,6 +39,7 @@ RSIP_PRV_PRIMITIVE_FUNC
 
 void r_rsip_p00 (void)
 {
+    RSIP_PRV_PRIMITIVE_ENTRY_NO_RETVAL;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;

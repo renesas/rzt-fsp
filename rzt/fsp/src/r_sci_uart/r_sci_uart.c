@@ -25,26 +25,26 @@
  #define SCI_UART_CFG_TX_ENABLE             1
 #endif
 
-/** Number of divisors in the data table used for baud rate calculation. */
+/* Number of divisors in the data table used for baud rate calculation. */
 #define SCI_UART_NUM_DIVISORS_ASYNC         (13U)
 
-/** Valid range of values for the modulation duty register is 128 - 256 (256 = modulation disabled). */
+/* Valid range of values for the modulation duty register is 128 - 256 (256 = modulation disabled). */
 #define SCI_UART_MDDR_MIN                   (128U)
 #define SCI_UART_MDDR_MAX                   (256U)
 
-/** The bit rate register is 8-bits, so the maximum value is 255. */
+/* The bit rate register is 8-bits, so the maximum value is 255. */
 #define SCI_UART_BRR_MAX                    (255U)
 
-/** No limit to the number of bytes to read or write if DMAC is not used. */
+/* No limit to the number of bytes to read or write if DMAC is not used. */
 #define SCI_UART_MAX_READ_WRITE_NO_DMAC     (0xFFFFFFFFU)
 
-/** Mask of invalid data bits in 9-bit mode. */
+/* Mask of invalid data bits in 9-bit mode. */
 #define SCI_UART_ALIGN_2_BYTES              (0x1U)
 
-/** Clock frequency 96MHz. */
+/* Clock frequency 96MHz. */
 #define SCI_UART_CLOCK_96MHZ                (96000000)
 
-/** "SCIU" in ASCII.  Used to determine if the control block is open. */
+/* "SCIU" in ASCII.  Used to determine if the control block is open. */
 #define SCI_UART_OPEN                       (0x53434955U)
 
 #define SCI_UART_BRR_DEFAULT_VALUE          (0xFFU)
@@ -60,7 +60,7 @@
 #define SCI_UART_CFCLR_ALL_FLAG_CLEAR       (0xBD070010)
 #define SCI_UART_FFCLR_ALL_FLAG_CLEAR       (0x00000001)
 
-/** SCI CCR0 register bit masks */
+/* SCI CCR0 register bit masks */
 #define SCI_UART_CCR0_IDSEL_MASK            (0x00000400)
 #define SCI_UART_CCR0_TEIE_MASK             (0x00200000)
 #define SCI_UART_CCR0_RE_MASK               (0x00000001)
@@ -68,7 +68,7 @@
 #define SCI_UART_CCR0_RIE_MASK              (0x00010000)
 #define SCI_UART_CCR0_TIE_MASK              (0x00100000)
 
-/** SCI CCR1 register bit offsets */
+/* SCI CCR1 register bit offsets */
 #define SCI_UART_CCR1_CTSE_OFFSET           (0U)
 #define SCI_UART_CCR1_SPB2DT_BIT            (4U)
 #define SCI_UART_CCR1_OUTPUT_ENABLE_MASK    (0x00000020)
@@ -79,7 +79,7 @@
 #define SCI_UART_CCR1_NFCS_VALUE_MASK       (0x07U)
 #define SCI_UART_CCR1_NFEN_OFFSET           (28U)
 
-/** SCI CCR2 register bit offsets */
+/* SCI CCR2 register bit offsets */
 #define SCI_UART_CCR2_BRME_OFFSET           (16U)
 #define SCI_UART_CCR2_ABCSE_OFFSET          (6U)
 #define SCI_UART_CCR2_ABCS_OFFSET           (5U)
@@ -99,7 +99,7 @@
                                              (SCI_UART_CCR2_BRR_VALUE_MASK << SCI_UART_CCR2_BRR_OFFSET) | \
                                              (SCI_UART_CCR2_MDDR_VALUE_MASK << SCI_UART_CCR2_MDDR_OFFSET))
 
-/** SCI CCR3 register bit masks */
+/* SCI CCR3 register bit masks */
 #define SCI_UART_CCR3_BPEN_OFFSET           (7U)
 #define SCI_UART_CCR3_CHR_OFFSET            (8U)
 #define SCI_UART_CCR3_STP_OFFSET            (14U)
@@ -109,13 +109,13 @@
 #define SCI_UART_CCR3_CKE_MASK              (0x03000000U)
 #define SCI_UART_CCR3_CKE_VALUE_MASK        (0x03U)
 
-/** SCI CSR register receiver error bit masks */
+/* SCI CSR register receiver error bit masks */
 #define SCI_UART_CSR_ORER_MASK              (0x01000000)
 #define SCI_UART_CSR_FER_MASK               (0x10000000)
 #define SCI_UART_CSR_PER_MASK               (0x08000000)
 #define SCI_UART_RCVR_ERR_MASK              (SCI_UART_CSR_ORER_MASK | SCI_UART_CSR_FER_MASK | SCI_UART_CSR_PER_MASK)
 
-/** SCI CFCLR register receiver clear error bit masks */
+/* SCI CFCLR register receiver clear error bit masks */
 #define SCI_UART_CFCLR_ORERC_MASK           (0x01000000)
 #define SCI_UART_CFCLR_FERC_MASK            (0x10000000)
 #define SCI_UART_CFCLE_PERC_MASK            (0x08000000)
@@ -232,12 +232,12 @@ void sci_uart_tei_isr(void);
  * Private global variables
  **********************************************************************************************************************/
 
-/** Name of module used by error logger macro */
+/* Name of module used by error logger macro */
 #if BSP_CFG_ERROR_LOG != 0
 static const char g_module_name[] = "sci_uart";
 #endif
 
-/** Baud rate divisor information (UART mode) */
+/* Baud rate divisor information (UART mode) */
 static const baud_setting_const_t g_async_baud[SCI_UART_NUM_DIVISORS_ASYNC] =
 {
     {0U, 0U, 1U, 0U},                  /* BGDM, ABCS, ABCSE, n */
@@ -272,7 +272,7 @@ static const uint16_t g_div_coefficient[SCI_UART_NUM_DIVISORS_ASYNC] =
     2048U,
 };
 
-/** UART on SCI HAL API mapping for UART interface */
+/* UART on SCI HAL API mapping for UART interface */
 const uart_api_t g_uart_on_sci =
 {
     .open               = R_SCI_UART_Open,
@@ -302,9 +302,11 @@ const uart_api_t g_uart_on_sci =
  * @retval  FSP_SUCCESS                    Channel opened successfully.
  * @retval  FSP_ERR_ASSERTION              Pointer to UART control block or configuration structure is NULL.
  * @retval  FSP_ERR_IP_CHANNEL_NOT_PRESENT The requested channel does not exist on this MCU.
+ * @retval  FSP_ERR_INVALID_ARGUMENT       Flow control is enabled but flow control pin is not defined or selected channel
+ *                                         does not support "Hardware CTS and Hardware RTS" flow control.
+ *                                         (or) restricted channel is selected.
  * @retval  FSP_ERR_ALREADY_OPEN           Control block has already been opened or channel is being used by another
  *                                         instance. Call close() then open() to reconfigure.
- * @retval  FSP_ERR_INVALID_ARGUMENT       Invalid input parameter.
  *
  * @return                       See @ref RENESAS_ERROR_CODES or functions called by this function for other possible
  *                               return codes. This function calls:
@@ -319,7 +321,7 @@ fsp_err_t R_SCI_UART_Open (uart_ctrl_t * const p_ctrl, uart_cfg_t const * const 
     /* Check parameters. */
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_cfg);
-    FSP_ASSERT(p_cfg->p_callback);
+
     FSP_ASSERT(p_cfg->p_extend);
     FSP_ASSERT(((sci_uart_extended_cfg_t *) p_cfg->p_extend)->p_baud_setting);
     FSP_ERROR_RETURN(SCI_UART_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
@@ -390,7 +392,7 @@ fsp_err_t R_SCI_UART_Open (uart_ctrl_t * const p_ctrl, uart_cfg_t const * const 
     /* Configure the interrupts. */
     r_sci_irqs_cfg(p_instance_ctrl, p_cfg);
 
-    /* Enable the SCI channel and reset the registers to their initial state. */
+    /* Enable the SCI channel */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_START(FSP_IP_SCI, p_cfg->channel);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
@@ -986,9 +988,14 @@ fsp_err_t R_SCI_UART_BaudCalculate (sci_uart_baud_calculation_t const * const p_
      *  BRR = (PCLK / (div_coefficient * baud)) - 1
      */
     int32_t  hit_bit_err = SCI_UART_100_PERCENT_X_1000;
-    uint32_t hit_mddr    = 0U;
+    uint8_t  hit_mddr    = 0U;
     uint32_t divisor     = 0U;
 
+#if (BSP_FEATURE_BSP_HAS_SCISPI_CLOCK)
+    uint32_t freq_hz = R_FSP_SciSpiClockHzGet();
+#elif (BSP_FEATURE_BSP_HAS_SCI_CLOCK)
+    uint32_t freq_hz = R_FSP_SciClockHzGet();
+#else
     uint32_t freq_hz = 0U;
     if (SCI_UART_CLOCK_SOURCE_PCLKM == clock_source)
     {
@@ -999,8 +1006,8 @@ fsp_err_t R_SCI_UART_BaudCalculate (sci_uart_baud_calculation_t const * const p_
         freq_hz =
             R_FSP_SystemClockHzGet((fsp_priv_clock_t) ((uint8_t) FSP_PRIV_CLOCK_PCLKSCI0 + (uint8_t) clock_source));
     }
-
     FSP_ERROR_RETURN(0U != freq_hz, FSP_ERR_INVALID_ARGUMENT);
+#endif
 
     for (uint32_t select_16_base_clk_cycles = 0U;
          select_16_base_clk_cycles <= 1U && (hit_bit_err > ((int32_t) p_baud_target->baud_rate_error_x_1000));
@@ -1051,17 +1058,16 @@ fsp_err_t R_SCI_UART_BaudCalculate (sci_uart_baud_calculation_t const * const p_
                     int32_t bit_err = (int32_t) (((((int64_t) freq_hz) * SCI_UART_100_PERCENT_X_1000) /
                                                   err_divisor) - SCI_UART_100_PERCENT_X_1000);
 
-                    uint32_t mddr = 0U;
+                    uint8_t mddr = 0U;
                     if (p_baud_target->bitrate_modulation)
                     {
                         /* Calculate the MDDR (M) value if bit rate modulation is enabled,
                          * The formula to calculate MBBR (from the M and N relationship given in the hardware manual) is as follows
-                         * and it must be between 128 and 256.
+                         * and it must be between 128 and 255.
                          * MDDR = ((div_coefficient * baud * 256) * (BRR + 1)) / PCLK */
-                        mddr = (uint32_t) err_divisor / (freq_hz / SCI_UART_MDDR_MAX);
+                        mddr = (uint8_t) ((uint32_t) err_divisor / (freq_hz / SCI_UART_MDDR_MAX));
 
-                        /* The maximum value that could result from the calculation above is 256, which is a valid MDDR
-                         * value, so only the lower bound is checked. */
+                        /* MDDR value must be greater than or equal to SCI_UART_MDDR_MIN. */
                         if (mddr < SCI_UART_MDDR_MIN)
                         {
                             break;
@@ -1097,7 +1103,7 @@ fsp_err_t R_SCI_UART_BaudCalculate (sci_uart_baud_calculation_t const * const p_
                     if (p_baud_target->bitrate_modulation)
                     {
                         p_baud_setting->baudrate_bits_b.brme = 1U;
-                        p_baud_setting->baudrate_bits_b.mddr = (uint8_t) hit_mddr;
+                        p_baud_setting->baudrate_bits_b.mddr = hit_mddr;
                     }
                     else
                     {
@@ -1573,20 +1579,6 @@ static void sci_uart_txi_common (sci_uart_instance_ctrl_t * p_instance_ctrl)
 {
     if ((NULL == p_instance_ctrl->p_cfg->p_transfer_tx) && (0U != p_instance_ctrl->tx_src_bytes))
     {
-        if (2U == p_instance_ctrl->data_bytes)
-        {
-            p_instance_ctrl->p_reg->TDR_b.TDAT = (*(uint16_t *) (p_instance_ctrl->p_tx_src)) & SCI_UART_TDR_9BIT_MASK;
-        }
-        else
-        {
-            p_instance_ctrl->p_reg->TDR_b.TDAT = *(p_instance_ctrl->p_tx_src);
-        }
-
-        /* Update pointer to the next data and number of remaining bytes in the control block. */
-        p_instance_ctrl->tx_src_bytes -= p_instance_ctrl->data_bytes;
-        p_instance_ctrl->p_tx_src     += p_instance_ctrl->data_bytes;
-
-        /* If transfer is not used, write data until FIFO is full. */
  #if SCI_UART_CFG_FIFO_SUPPORT
         if (0U != p_instance_ctrl->fifo_depth)
         {
@@ -1610,7 +1602,23 @@ static void sci_uart_txi_common (sci_uart_instance_ctrl_t * p_instance_ctrl)
             /* Clear TDRE flag */
             p_instance_ctrl->p_reg->CFCLR_b.TDREC = 1;
         }
+        else
  #endif
+        {
+            if (2U == p_instance_ctrl->data_bytes)
+            {
+                p_instance_ctrl->p_reg->TDR_b.TDAT = (*(uint16_t *) (p_instance_ctrl->p_tx_src)) &
+                                                     SCI_UART_TDR_9BIT_MASK;
+            }
+            else
+            {
+                p_instance_ctrl->p_reg->TDR_b.TDAT = *(p_instance_ctrl->p_tx_src);
+            }
+
+            /* Update pointer to the next data and number of remaining bytes in the control block. */
+            p_instance_ctrl->tx_src_bytes -= p_instance_ctrl->data_bytes;
+            p_instance_ctrl->p_tx_src     += p_instance_ctrl->data_bytes;
+        }
     }
 
     if (0U == p_instance_ctrl->tx_src_bytes)
@@ -1622,7 +1630,12 @@ static void sci_uart_txi_common (sci_uart_instance_ctrl_t * p_instance_ctrl)
         p_instance_ctrl->p_reg->CCR0 = ccr0_temp;
 
         p_instance_ctrl->p_tx_src = NULL;
-        r_sci_uart_call_callback(p_instance_ctrl, 0U, UART_EVENT_TX_DATA_EMPTY);
+
+        /* If a callback was provided, call it with the argument */
+        if (NULL != p_instance_ctrl->p_callback)
+        {
+            r_sci_uart_call_callback(p_instance_ctrl, 0U, UART_EVENT_TX_DATA_EMPTY);
+        }
     }
 }
 
@@ -1726,8 +1739,12 @@ static void sci_uart_rxi_common (sci_uart_instance_ctrl_t * p_instance_ctrl)
  #endif
             if (0 == p_instance_ctrl->rx_dest_bytes)
             {
-                /* Call user callback with the data. */
-                r_sci_uart_call_callback(p_instance_ctrl, data, UART_EVENT_RX_CHAR);
+                /* If a callback was provided, call it with the argument */
+                if (NULL != p_instance_ctrl->p_callback)
+                {
+                    /* Call user callback with the data. */
+                    r_sci_uart_call_callback(p_instance_ctrl, data, UART_EVENT_RX_CHAR);
+                }
             }
             else
             {
@@ -1737,7 +1754,11 @@ static void sci_uart_rxi_common (sci_uart_instance_ctrl_t * p_instance_ctrl)
 
                 if (0 == p_instance_ctrl->rx_dest_bytes)
                 {
-                    r_sci_uart_call_callback(p_instance_ctrl, 0U, UART_EVENT_RX_COMPLETE);
+                    /* If a callback was provided, call it with the argument */
+                    if (NULL != p_instance_ctrl->p_callback)
+                    {
+                        r_sci_uart_call_callback(p_instance_ctrl, 0U, UART_EVENT_RX_COMPLETE);
+                    }
                 }
             }
 
@@ -1768,8 +1789,12 @@ static void sci_uart_rxi_common (sci_uart_instance_ctrl_t * p_instance_ctrl)
         p_instance_ctrl->rx_dest_bytes = 0;
         p_instance_ctrl->p_rx_dest     = NULL;
 
-        /* Call callback */
-        r_sci_uart_call_callback(p_instance_ctrl, 0U, UART_EVENT_RX_COMPLETE);
+        /* If a callback was provided, call it with the argument */
+        if (NULL != p_instance_ctrl->p_callback)
+        {
+            /* Call callback */
+            r_sci_uart_call_callback(p_instance_ctrl, 0U, UART_EVENT_RX_COMPLETE);
+        }
     }
  #endif
 }
@@ -1843,7 +1868,12 @@ void sci_uart_tei_isr (void)
     volatile uint32_t dummy = p_instance_ctrl->p_reg->CCR0;
     FSP_PARAMETER_NOT_USED(dummy);
 
-    r_sci_uart_call_callback(p_instance_ctrl, 0U, UART_EVENT_TX_COMPLETE);
+    /* If a callback was provided, call it with the argument */
+    if (NULL != p_instance_ctrl->p_callback)
+    {
+        /* Receiving TEI(transmit end interrupt) means the completion of transmission, so call callback function here. */
+        r_sci_uart_call_callback(p_instance_ctrl, 0U, UART_EVENT_TX_COMPLETE);
+    }
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;
@@ -1908,8 +1938,12 @@ void sci_uart_eri_isr (void)
     volatile uint32_t dummy = p_instance_ctrl->p_reg->CSR;
     FSP_PARAMETER_NOT_USED(dummy);
 
-    /* Call callback. */
-    r_sci_uart_call_callback(p_instance_ctrl, data, event);
+    /* If a callback was provided, call it with the argument */
+    if (NULL != p_instance_ctrl->p_callback)
+    {
+        /* Call callback. */
+        r_sci_uart_call_callback(p_instance_ctrl, data, event);
+    }
 
     /* Restore context if RTOS is used */
     FSP_CONTEXT_RESTORE;

@@ -84,16 +84,27 @@
 #define XSPI_QSPI_PRV_WORD_ACCESS_SIZE                   (4U)
 #define XSPI_QSPI_PRV_HALF_WORD_ACCESS_SIZE              (2U)
 
-#define XSPI_QSPI_PRV_1MB_MEMORY_SPACE                   (0xFFFFFU)
-#define XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT                  (20U)
+#define XSPI_QSPI_PRV_1MB_MEMORY_SIZE                    (0x100000)
+#define XSPI_QSPI_PRV_2MB_MEMORY_SIZE                    (0x200000)
+#define XSPI_QSPI_PRV_4MB_MEMORY_SIZE                    (0x400000)
+#define XSPI_QSPI_PRV_8MB_MEMORY_SIZE                    (0x800000)
+#define XSPI_QSPI_PRV_16MB_MEMORY_SIZE                   (0x1000000)
+#define XSPI_QSPI_PRV_32MB_MEMORY_SIZE                   (0x2000000)
+#define XSPI_QSPI_PRV_64MB_MEMORY_SIZE                   (0x4000000)
+
 #define XSPI_QSPI_PRV_DIRECT_TRANSFER_MAX_BYTES          (8U)
+#define XSPI_QSPI_PRV_BYTE_SIZE_SHIFT                    (8U)
 
 #define XSPI_QSPI_PRV_UINT32_BITS                        (32U)
 #define XSPI_QSPI_UNIT_FLAG_MASK                         (3U)
 
 #define XSPI_QSPI_BUFFER_WRITE_WAIT_CYCLE                (5U)
 
-#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+#ifndef XSPI_QSPI_MAX_WRITE_ENABLE_LOOPS
+ #define XSPI_QSPI_MAX_WRITE_ENABLE_LOOPS                (5U)
+#endif
+
+#if BSP_FEATURE_XSPI_HAS_XSPI_MISC2
  #define XSPI_QSPI_PRV_MSTP_CTRL_UNIT_OFFSET             (16U)
  #define XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_MASK           (0x01U)
  #define XSPI_QSPI_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK       (0x02U)
@@ -115,8 +126,8 @@
 /***********************************************************************************************************************
  * Private function prototypes
  **********************************************************************************************************************/
-static void      r_xspi_qspi_write_enable(xspi_qspi_instance_ctrl_t * p_instance_ctrl);
-static bool      r_xspi_qspi_status_sub(xspi_qspi_instance_ctrl_t * p_instance_ctrl);
+static fsp_err_t r_xspi_qspi_write_enable(xspi_qspi_instance_ctrl_t * p_instance_ctrl);
+static bool      r_xspi_qspi_status_sub(xspi_qspi_instance_ctrl_t * p_instance_ctrl, uint8_t bit_pos);
 static fsp_err_t r_xspi_qspi_xip(xspi_qspi_instance_ctrl_t * p_instance_ctrl, uint8_t code, bool enter_mode);
 static void      r_xspi_qspi_direct_transfer(xspi_qspi_instance_ctrl_t         * p_instance_ctrl,
                                              spi_flash_direct_transfer_t * const p_transfer,
@@ -181,8 +192,7 @@ const spi_flash_api_t g_spi_flash_on_xspi_qspi =
  **********************************************************************************************************************/
 
 /*******************************************************************************************************************//**
- * Open the QSPI driver module. After the driver is open, the QSPI can be accessed like internal flash memory starting
- * at address 0x60000000 or 0x40000000.
+ * Open the QSPI driver module. After the driver is open, the QSPI can be accessed like internal flash memory.
  *
  * Implements @ref spi_flash_api_t::open.
  *
@@ -260,7 +270,7 @@ fsp_err_t R_XSPI_QSPI_Open (spi_flash_ctrl_t * p_ctrl, spi_flash_cfg_t const * c
     }
 #endif
 
-#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+#if BSP_FEATURE_XSPI_HAS_XSPI_MISC2
 
     /* Bus release request */
     R_XSPI_MISC2->MSTP_CTRL_XSPI &=
@@ -298,7 +308,7 @@ fsp_err_t R_XSPI_QSPI_Open (spi_flash_ctrl_t * p_ctrl, spi_flash_cfg_t const * c
         {
             R_RSIP_Close(&g_xspi_qspi_rsip_ctrl);
 
- #if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+ #if BSP_FEATURE_XSPI_HAS_XSPI_MISC2
             R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
 
             /* Module stop request */
@@ -359,7 +369,69 @@ fsp_err_t R_XSPI_QSPI_Open (spi_flash_ctrl_t * p_ctrl, spi_flash_cfg_t const * c
 #endif
 
     /* Set xSPI CSn address space. */
-#if XSPI_QSPI_CFG_CUSTOM_ADDR_SPACE_ENABLE
+#if 1 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
+    xspi_qspi_memory_size_t memory_size_reg = XSPI_QSPI_MEMORY_SIZE_1MB;
+
+    switch (p_cfg_extend->memory_size)
+    {
+        case XSPI_QSPI_PRV_1MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_QSPI_MEMORY_SIZE_1MB;
+            break;
+        }
+
+        case XSPI_QSPI_PRV_2MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_QSPI_MEMORY_SIZE_2MB;
+            break;
+        }
+
+        case XSPI_QSPI_PRV_4MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_QSPI_MEMORY_SIZE_4MB;
+            break;
+        }
+
+        case XSPI_QSPI_PRV_8MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_QSPI_MEMORY_SIZE_8MB;
+            break;
+        }
+
+        case XSPI_QSPI_PRV_16MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_QSPI_MEMORY_SIZE_16MB;
+            break;
+        }
+
+        case XSPI_QSPI_PRV_32MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_QSPI_MEMORY_SIZE_32MB;
+            break;
+        }
+
+        case XSPI_QSPI_PRV_64MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_QSPI_MEMORY_SIZE_64MB;
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    if (XSPI_QSPI_CHIP_SELECT_0 == p_cfg_extend->chip_select)
+    {
+        p_instance_ctrl->p_reg->CSSCTL_b.CS0SIZE = memory_size_reg;
+    }
+    else
+    {
+        p_instance_ctrl->p_reg->CSSCTL_b.CS1SIZE = memory_size_reg;
+    }
+
+#else
     uint32_t mirror_address_delta;
  #if 0 == BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS
     mirror_address_delta = 0;
@@ -372,66 +444,6 @@ fsp_err_t R_XSPI_QSPI_Open (spi_flash_ctrl_t * p_ctrl, spi_flash_cfg_t const * c
     R_XSPI1_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit1_cs0_end_address - mirror_address_delta;
     R_XSPI1_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit1_cs1_start_address - mirror_address_delta;
     R_XSPI1_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit1_cs1_end_address - mirror_address_delta;
-#else
- #if 1 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
-
-    /* Set xSPI CSn slave memory size. */
-    if (XSPI_QSPI_CHIP_SELECT_0 == p_cfg_extend->chip_select)
-    {
-        p_instance_ctrl->p_reg->CSSCTL_b.CS0SIZE = p_cfg_extend->memory_size;
-    }
-    else
-    {
-        p_instance_ctrl->p_reg->CSSCTL_b.CS1SIZE = p_cfg_extend->memory_size;
-    }
-
- #elif 2 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
-    uint32_t mirror_address_delta;
-  #if 0 == BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS
-    mirror_address_delta = 0U;
-  #else
-    mirror_address_delta = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS;
-  #endif
-
-    if (XSPI_QSPI_CHIP_SELECT_0 == p_cfg_extend->chip_select)
-    {
-        if (0 == p_cfg_extend->unit)
-        {
-            R_XSPI0_MISC->CS0ENDAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - mirror_address_delta +
-                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT) +
-                                     XSPI_QSPI_PRV_1MB_MEMORY_SPACE;
-        }
-        else
-        {
-            R_XSPI1_MISC->CS0ENDAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS - mirror_address_delta +
-                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT) +
-                                     XSPI_QSPI_PRV_1MB_MEMORY_SPACE;
-        }
-    }
-    else
-    {
-        if (0 == p_cfg_extend->unit)
-        {
-            R_XSPI0_MISC->CS1STRAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS +
-                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta;
-
-            R_XSPI0_MISC->CS1ENDAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS +
-                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta +
-                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT) +
-                                     XSPI_QSPI_PRV_1MB_MEMORY_SPACE;
-        }
-        else
-        {
-            R_XSPI1_MISC->CS1STRAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS +
-                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta;
-
-            R_XSPI1_MISC->CS1ENDAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS +
-                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta +
-                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_QSPI_PRV_MEMORY_SIZE_SHIFT) +
-                                     XSPI_QSPI_PRV_1MB_MEMORY_SPACE;
-        }
-    }
- #endif
 #endif
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 
@@ -607,6 +619,7 @@ fsp_err_t R_XSPI_QSPI_XipExit (spi_flash_ctrl_t * p_ctrl)
  * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
  * @retval FSP_ERR_INVALID_MODE        This function can't be called when XIP mode is enabled.
  * @retval FSP_ERR_DEVICE_BUSY         The device is busy.
+ * @retval FSP_ERR_WRITE_FAILED        Write operation failed.
  *
  * @note In this API, data can be written up to 64 bytes at a time if DMAC support is enabled.
  * Otherwise, the number of bytes that can be written at one time depends on the MCU :
@@ -625,7 +638,8 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     fsp_err_t err = r_xspi_qspi_program_param_check(p_instance_ctrl, p_src, p_dest, byte_count);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 #endif
-    FSP_ERROR_RETURN(false == r_xspi_qspi_status_sub(p_instance_ctrl), FSP_ERR_DEVICE_BUSY);
+    FSP_ERROR_RETURN(false == r_xspi_qspi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit),
+                     FSP_ERR_DEVICE_BUSY);
 
     r_xspi_qspi_write_enable(p_instance_ctrl);
 
@@ -689,8 +703,9 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
     mirror_address_delta = 0U;
  #else
     mirror_address_delta = ((uintptr_t) p_dest < BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS) ?
-                           0U :
-                           BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS;
+                           BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS -
+                           BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS :
+                           0U;
  #endif
 
     chip_address = (0 == chip_select) ?
@@ -713,7 +728,13 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
  #endif
 
     spi_flash_direct_transfer_t write_transfer;
-    write_transfer.data_u64       = *(uint64_t *) p_src;
+
+    write_transfer.data_u64 = 0;
+    for (uint32_t bytes = 0; bytes < byte_count; bytes++)
+    {
+        write_transfer.data_u64 |= ((uint64_t) *(uint8_t *) (p_src + bytes)) << (bytes * XSPI_QSPI_PRV_BYTE_SIZE_SHIFT);
+    }
+
     write_transfer.data_length    = (uint8_t) byte_count;
     write_transfer.address        = chip_address;
     write_transfer.address_length = (p_instance_ctrl->p_cfg->address_bytes == SPI_FLASH_ADDRESS_BYTES_4) ? 4U : 3U;
@@ -811,6 +832,7 @@ fsp_err_t R_XSPI_QSPI_Write (spi_flash_ctrl_t    * p_ctrl,
  * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
  * @retval FSP_ERR_INVALID_MODE        This function can't be called when XIP mode is enabled.
  * @retval FSP_ERR_DEVICE_BUSY         The device is busy.
+ * @retval FSP_ERR_WRITE_FAILED        Write operation failed.
  **********************************************************************************************************************/
 fsp_err_t R_XSPI_QSPI_Erase (spi_flash_ctrl_t * p_ctrl, uint8_t * const p_device_address, uint32_t byte_count)
 {
@@ -852,8 +874,9 @@ fsp_err_t R_XSPI_QSPI_Erase (spi_flash_ctrl_t * p_ctrl, uint8_t * const p_device
         mirror_address_delta = 0U;
 #else
         mirror_address_delta = (device_address_pa < BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS) ?
-                               0U :
-                               BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS;
+                               BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS -
+                               BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS :
+                               0U;
 #endif
 
         chip_address = (0 == chip_select) ?
@@ -953,7 +976,7 @@ fsp_err_t R_XSPI_QSPI_StatusGet (spi_flash_ctrl_t * p_ctrl, spi_flash_status_t *
     else
     {
         /* Read device status. */
-        p_status->write_in_progress = r_xspi_qspi_status_sub(p_instance_ctrl);
+        p_status->write_in_progress = r_xspi_qspi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit);
     }
 
     return FSP_SUCCESS;
@@ -1057,7 +1080,7 @@ fsp_err_t R_XSPI_QSPI_Close (spi_flash_ctrl_t * p_ctrl)
     {
         R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
 
-#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+#if BSP_FEATURE_XSPI_HAS_XSPI_MISC2
 
         /* Module stop request */
         R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_QSPI_PRV_MSTP_CTRL_MODULE_STOP_MASK <<
@@ -1118,8 +1141,11 @@ fsp_err_t R_XSPI_QSPI_Close (spi_flash_ctrl_t * p_ctrl)
  * Send Write enable command to the SerialFlash
  *
  * @param[in]   p_instance_ctrl    Pointer to QSPI specific control structure
+ *
+ * @retval      FSP_SUCCESS                Write operation completed.
+ * @retval      FSP_ERR_WRITE_FAILED       Write operation failed.
  **********************************************************************************************************************/
-static void r_xspi_qspi_write_enable (xspi_qspi_instance_ctrl_t * p_instance_ctrl)
+static fsp_err_t r_xspi_qspi_write_enable (xspi_qspi_instance_ctrl_t * p_instance_ctrl)
 {
     spi_flash_direct_transfer_t direct_command = {0};
     spi_flash_cfg_t const     * p_cfg          = p_instance_ctrl->p_cfg;
@@ -1127,7 +1153,33 @@ static void r_xspi_qspi_write_enable (xspi_qspi_instance_ctrl_t * p_instance_ctr
     direct_command.command        = p_cfg->write_enable_command;
     direct_command.command_length = 1U;
 
+    /* If the command is 0x00, then skip sending the write enable. */
+    if (0 == p_cfg->write_enable_command)
+    {
+        return FSP_SUCCESS;
+    }
+
     r_xspi_qspi_direct_transfer(p_instance_ctrl, &direct_command, SPI_FLASH_DIRECT_TRANSFER_DIR_WRITE);
+
+    /* In case write enable is not checked, assume write is enabled. */
+    bool write_enabled = true;
+
+#if XSPI_QSPI_MAX_WRITE_ENABLE_LOOPS > 0U
+
+    /* Verify write is enabled. */
+    for (uint32_t i = 0U; i < XSPI_QSPI_MAX_WRITE_ENABLE_LOOPS; i++)
+    {
+        write_enabled = r_xspi_qspi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_enable_bit);
+        if (write_enabled)
+        {
+            break;
+        }
+    }
+#endif
+
+    FSP_ERROR_RETURN(write_enabled, FSP_ERR_WRITE_FAILED);
+
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**
@@ -1234,10 +1286,11 @@ static fsp_err_t r_xspi_qspi_xip (xspi_qspi_instance_ctrl_t * p_instance_ctrl, u
  * Gets device status.
  *
  * @param[in]  p_instance_ctrl         Pointer to a driver handle
+ * @param[in]  bit_pos                 Write-in-progress bit position
  *
  * @return True if busy, false if not.
  **********************************************************************************************************************/
-static bool r_xspi_qspi_status_sub (xspi_qspi_instance_ctrl_t * p_instance_ctrl)
+static bool r_xspi_qspi_status_sub (xspi_qspi_instance_ctrl_t * p_instance_ctrl, uint8_t bit_pos)
 {
     spi_flash_cfg_t const    * p_cfg        = p_instance_ctrl->p_cfg;
     xspi_qspi_extended_cfg_t * p_cfg_extend = (xspi_qspi_extended_cfg_t *) p_cfg->p_extend;
@@ -1272,8 +1325,7 @@ static bool r_xspi_qspi_status_sub (xspi_qspi_instance_ctrl_t * p_instance_ctrl)
         p_instance_ctrl->spi_protocol = setting_protocol;
     }
 
-    return (bool) ((direct_command.data >> p_instance_ctrl->p_cfg->write_status_bit) &
-                   XSPI_QSPI_PRV_DEVICE_WRITE_STATUS_BIT_MASK);
+    return (direct_command.data >> bit_pos) & 1U;
 }
 
 /*******************************************************************************************************************//**
@@ -1355,7 +1407,8 @@ static fsp_err_t r_xspi_qspi_param_checking_dcom (xspi_qspi_instance_ctrl_t * p_
     FSP_ERROR_RETURN(0U == p_instance_ctrl->p_reg->CMCTL_b.XIPEN, FSP_ERR_INVALID_MODE);
 
     /* Verify device is not busy. */
-    FSP_ERROR_RETURN(!r_xspi_qspi_status_sub(p_instance_ctrl), FSP_ERR_DEVICE_BUSY);
+    FSP_ERROR_RETURN(!r_xspi_qspi_status_sub(p_instance_ctrl, p_instance_ctrl->p_cfg->write_status_bit),
+                     FSP_ERR_DEVICE_BUSY);
 
     return FSP_SUCCESS;
 }
@@ -1448,7 +1501,6 @@ static fsp_err_t r_xspi_qspi_otfd_setup (xspi_qspi_instance_ctrl_t * p_instance_
     uint32_t  mirror_address_delta = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS -
                                      BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS;
     uint32_t seed[2] = {0};
-    uint8_t  wrapped_key[RSIP_BYTE_SIZE_WRAPPED_KEY_AES_256] = {0};
 
     xspi_qspi_extended_cfg_t * p_cfg_extend = (xspi_qspi_extended_cfg_t *) p_instance_ctrl->p_cfg->p_extend;
     xspi_qspi_otfd_cfg_t     * p_otfd_cfg   = (xspi_qspi_otfd_cfg_t *) p_cfg_extend->p_otfd_cfg;
@@ -1493,14 +1545,8 @@ static fsp_err_t r_xspi_qspi_otfd_setup (xspi_qspi_instance_ctrl_t * p_instance_
     rsip_ret = R_RSIP_Open(&g_xspi_qspi_rsip_ctrl, &g_xspi_qspi_rsip_cfg);
     FSP_ERROR_RETURN(FSP_SUCCESS == rsip_ret, rsip_ret);
 
-    rsip_wrapped_key_t * p_wrapped_key = (rsip_wrapped_key_t *) wrapped_key;
-
     /* Generates structure data "rsip_wrapped_key_t". */
-    rsip_ret = R_RSIP_InjectedKeyImport(key_type,
-                                        (uint8_t *) p_otfd_cfg->p_key,
-                                        p_wrapped_key,
-                                        RSIP_BYTE_SIZE_WRAPPED_KEY_AES_256);
-    FSP_ERROR_RETURN(FSP_SUCCESS == rsip_ret, rsip_ret);
+    rsip_wrapped_key_t wrapped_key = {.type = key_type, .p_value = p_otfd_cfg->p_key};
 
     rsip_ret = r_xspi_qspi_otfd_side_channal_seed_init(seed);
     FSP_ERROR_RETURN(FSP_SUCCESS == rsip_ret, rsip_ret);
@@ -1509,7 +1555,7 @@ static fsp_err_t r_xspi_qspi_otfd_setup (xspi_qspi_instance_ctrl_t * p_instance_
     rsip_ret =
         R_RSIP_OTF_Init(&g_xspi_qspi_rsip_ctrl,
                         (rsip_otf_channel_t) p_cfg_extend->unit,
-                        p_wrapped_key,
+                        &wrapped_key,
                         (uint8_t *) &seed[0]);
     FSP_ERROR_RETURN(FSP_SUCCESS == rsip_ret, rsip_ret);
 

@@ -62,7 +62,7 @@ extern "C" {
   #include "core_cm33.h"               /*!< Cortex-M33 processor and core peripherals                             */
  #elif defined(RENESAS_CORTEX_R52)
   #define __FPU_PRESENT             1  /*!< FPU present or not                                                    */
-  #include "core_cr52.h"               /*!< Cortex-R52 processor and core peripherals                              */
+  #include "cr/core_cr52.h"            /*!< Cortex-R52 processor and core peripherals                              */
  #endif
 
  #include "system.h"                   /*!< System                                                                */
@@ -719,7 +719,7 @@ typedef struct
         union
         {
             __IOM uint8_t DF[64];       /*!< (@ 0x0000000C) TX Message Buffer Data Field p Register n (p
-                                         *                  = 0 to 63, n = 0 to 5)                                     */
+                                         *                  = 0 to 63, n = 0 to 127)                                     */
 
             struct
             {
@@ -933,7 +933,7 @@ typedef struct
 } R_DMAC0_GRP_CH_Type;                 /*!< Size = 64 (0x40)                                                          */
 
 /**
- * @brief R_DMAC0_GRP [GRP] (8 channel Registers)
+ * @brief R_DMAC0_GRP [GRP] (Channels 0 to 7 select Group 0, and Channels 8 to 15 select Group 1)
  */
 typedef struct
 {
@@ -3363,19 +3363,9 @@ typedef struct                         /*!< (@ 0x80003000) R_SPI0 Structure     
 {
     union
     {
-        union
-        {
-            __IOM uint32_t SPDR;         /*!< (@ 0x00000000) SPI Data Register                                          */
-
-            struct
-            {
-                __IOM uint32_t SPD : 32; /*!< [31..0] The SPI data register (SPDR) is used to store SPI's
-                                          *   transmit data and receive data. Transmit buffers and receive
-                                          *   buffers independently function.                                           */
-            } SPDR_b;
-        };
-        __IOM uint16_t SPDR_HA;          /*!< (@ 0x00000000) SPI Data Register                                          */
-        __IOM uint8_t  SPDR_BY;          /*!< (@ 0x00000000) SPI Data Register                                          */
+        __IOM uint32_t SPDR;           /*!< (@ 0x00000000) SPI Data Register                                          */
+        __IOM uint16_t SPDR_HA;        /*!< (@ 0x00000000) SPI Data Register                                          */
+        __IOM uint8_t  SPDR_BY;        /*!< (@ 0x00000000) SPI Data Register                                          */
     };
 
     union
@@ -5799,7 +5789,8 @@ typedef struct                         /*!< (@ 0x80047000) R_POEG1 Structure    
 
 typedef struct                         /*!< (@ 0x80080000) R_DMAC0 Structure                                          */
 {
-    __IOM R_DMAC0_GRP_Type GRP[2];     /*!< (@ 0x00000000) 8 channel Registers                                        */
+    __IOM R_DMAC0_GRP_Type GRP[2];     /*!< (@ 0x00000000) Channels 0 to 7 select Group 0, and Channels
+                                        *                  8 to 15 select Group 1                                     */
 } R_DMAC0_Type;                        /*!< Size = 2048 (0x800)                                                       */
 
 /* =========================================================================================================================== */
@@ -18356,15 +18347,7 @@ typedef struct                         /*!< (@ 0x80201000) R_USBF Structure     
 
     union
     {
-        union
-        {
-            __IOM uint32_t CFIFO;             /*!< (@ 0x00000014) FIFO Port Register                                         */
-
-            struct
-            {
-                __IOM uint32_t FIFOPORT : 32; /*!< [31..0] FIFO Port                                                         */
-            } CFIFO_b;
-        };
+        __IOM uint32_t CFIFO;          /*!< (@ 0x00000014) FIFO Port Register                                         */
 
         struct
         {
@@ -18376,29 +18359,12 @@ typedef struct                         /*!< (@ 0x80201000) R_USBF Structure     
 
             union
             {
-                union
-                {
-                    __IOM uint16_t CFIFOH;            /*!< (@ 0x00000016) FIFO Port Register                                         */
-
-                    struct
-                    {
-                        __IOM uint16_t FIFOPORT : 16; /*!< [15..0] FIFO Port                                                         */
-                    } CFIFOH_b;
-                };
+                __IOM uint16_t CFIFOH; /*!< (@ 0x00000016) FIFO Port Register                                         */
 
                 struct
                 {
-                    __IM uint8_t RESERVED4;
-
-                    union
-                    {
-                        __IOM uint8_t CFIFOHH;          /*!< (@ 0x00000017) FIFO Port Register                                         */
-
-                        struct
-                        {
-                            __IOM uint8_t FIFOPORT : 8; /*!< [7..0] FIFO Port                                                          */
-                        } CFIFOHH_b;
-                    };
+                    __IM uint8_t  RESERVED4;
+                    __IOM uint8_t CFIFOHH; /*!< (@ 0x00000017) FIFO Port Register                                         */
                 };
             };
         };
@@ -18406,15 +18372,7 @@ typedef struct                         /*!< (@ 0x80201000) R_USBF Structure     
 
     union
     {
-        union
-        {
-            __IOM uint32_t D0FIFO;            /*!< (@ 0x00000018) FIFO Port Register                                         */
-
-            struct
-            {
-                __IOM uint32_t FIFOPORT : 32; /*!< [31..0] FIFO Port                                                         */
-            } D0FIFO_b;
-        };
+        __IOM uint32_t D0FIFO;         /*!< (@ 0x00000018) FIFO Port Register                                         */
 
         struct
         {
@@ -18426,29 +18384,12 @@ typedef struct                         /*!< (@ 0x80201000) R_USBF Structure     
 
             union
             {
-                union
-                {
-                    __IOM uint16_t D0FIFOH;           /*!< (@ 0x0000001A) FIFO Port Register                                         */
-
-                    struct
-                    {
-                        __IOM uint16_t FIFOPORT : 16; /*!< [15..0] FIFO Port                                                         */
-                    } D0FIFOH_b;
-                };
+                __IOM uint16_t D0FIFOH; /*!< (@ 0x0000001A) FIFO Port Register                                         */
 
                 struct
                 {
-                    __IM uint8_t RESERVED5;
-
-                    union
-                    {
-                        __IOM uint8_t D0FIFOHH;         /*!< (@ 0x0000001B) FIFO Port Register                                         */
-
-                        struct
-                        {
-                            __IOM uint8_t FIFOPORT : 8; /*!< [7..0] FIFO Port                                                          */
-                        } D0FIFOHH_b;
-                    };
+                    __IM uint8_t  RESERVED5;
+                    __IOM uint8_t D0FIFOHH; /*!< (@ 0x0000001B) FIFO Port Register                                         */
                 };
             };
         };
@@ -18456,15 +18397,7 @@ typedef struct                         /*!< (@ 0x80201000) R_USBF Structure     
 
     union
     {
-        union
-        {
-            __IOM uint32_t D1FIFO;            /*!< (@ 0x0000001C) FIFO Port Register                                         */
-
-            struct
-            {
-                __IOM uint32_t FIFOPORT : 32; /*!< [31..0] FIFO Port                                                         */
-            } D1FIFO_b;
-        };
+        __IOM uint32_t D1FIFO;         /*!< (@ 0x0000001C) FIFO Port Register                                         */
 
         struct
         {
@@ -18476,29 +18409,12 @@ typedef struct                         /*!< (@ 0x80201000) R_USBF Structure     
 
             union
             {
-                union
-                {
-                    __IOM uint16_t D1FIFOH;           /*!< (@ 0x0000001E) FIFO Port Register                                         */
-
-                    struct
-                    {
-                        __IOM uint16_t FIFOPORT : 16; /*!< [15..0] FIFO Port                                                         */
-                    } D1FIFOH_b;
-                };
+                __IOM uint16_t D1FIFOH; /*!< (@ 0x0000001E) FIFO Port Register                                         */
 
                 struct
                 {
-                    __IM uint8_t RESERVED6;
-
-                    union
-                    {
-                        __IOM uint8_t D1FIFOHH;         /*!< (@ 0x0000001F) FIFO Port Register                                         */
-
-                        struct
-                        {
-                            __IOM uint8_t FIFOPORT : 8; /*!< [7..0] FIFO Port                                                          */
-                        } D1FIFOHH_b;
-                    };
+                    __IM uint8_t  RESERVED6;
+                    __IOM uint8_t D1FIFOHH; /*!< (@ 0x0000001F) FIFO Port Register                                         */
                 };
             };
         };
@@ -27440,8 +27356,6 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
 /* =========================================================================================================================== */
 
 /* =========================================================  SPDR  ========================================================== */
- #define R_SPI0_SPDR_SPD_Pos         (0UL)          /*!< SPD (Bit 0)                                           */
- #define R_SPI0_SPDR_SPD_Msk         (0xffffffffUL) /*!< SPD (Bitfield-Mask: 0xffffffff)                       */
 /* ========================================================  SPDR_HA  ======================================================== */
 /* ========================================================  SPDR_BY  ======================================================== */
 /* =========================================================  SPCKD  ========================================================= */
@@ -34269,346 +34183,328 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
 /* =========================================================================================================================== */
 
 /* ========================================================  SYSCFG0  ======================================================== */
- #define R_USBF_SYSCFG0_USBE_Pos            (0UL)          /*!< USBE (Bit 0)                                          */
- #define R_USBF_SYSCFG0_USBE_Msk            (0x1UL)        /*!< USBE (Bitfield-Mask: 0x01)                            */
- #define R_USBF_SYSCFG0_DPRPU_Pos           (4UL)          /*!< DPRPU (Bit 4)                                         */
- #define R_USBF_SYSCFG0_DPRPU_Msk           (0x10UL)       /*!< DPRPU (Bitfield-Mask: 0x01)                           */
- #define R_USBF_SYSCFG0_DRPD_Pos            (5UL)          /*!< DRPD (Bit 5)                                          */
- #define R_USBF_SYSCFG0_DRPD_Msk            (0x20UL)       /*!< DRPD (Bitfield-Mask: 0x01)                            */
- #define R_USBF_SYSCFG0_HSE_Pos             (7UL)          /*!< HSE (Bit 7)                                           */
- #define R_USBF_SYSCFG0_HSE_Msk             (0x80UL)       /*!< HSE (Bitfield-Mask: 0x01)                             */
- #define R_USBF_SYSCFG0_CNEN_Pos            (8UL)          /*!< CNEN (Bit 8)                                          */
- #define R_USBF_SYSCFG0_CNEN_Msk            (0x100UL)      /*!< CNEN (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_SYSCFG0_USBE_Pos     (0UL)      /*!< USBE (Bit 0)                                          */
+ #define R_USBF_SYSCFG0_USBE_Msk     (0x1UL)    /*!< USBE (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_SYSCFG0_DPRPU_Pos    (4UL)      /*!< DPRPU (Bit 4)                                         */
+ #define R_USBF_SYSCFG0_DPRPU_Msk    (0x10UL)   /*!< DPRPU (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_SYSCFG0_DRPD_Pos     (5UL)      /*!< DRPD (Bit 5)                                          */
+ #define R_USBF_SYSCFG0_DRPD_Msk     (0x20UL)   /*!< DRPD (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_SYSCFG0_HSE_Pos      (7UL)      /*!< HSE (Bit 7)                                           */
+ #define R_USBF_SYSCFG0_HSE_Msk      (0x80UL)   /*!< HSE (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_SYSCFG0_CNEN_Pos     (8UL)      /*!< CNEN (Bit 8)                                          */
+ #define R_USBF_SYSCFG0_CNEN_Msk     (0x100UL)  /*!< CNEN (Bitfield-Mask: 0x01)                            */
 /* ========================================================  SYSCFG1  ======================================================== */
- #define R_USBF_SYSCFG1_BWAIT_Pos           (0UL)          /*!< BWAIT (Bit 0)                                         */
- #define R_USBF_SYSCFG1_BWAIT_Msk           (0x3fUL)       /*!< BWAIT (Bitfield-Mask: 0x3f)                           */
- #define R_USBF_SYSCFG1_AWAIT_Pos           (8UL)          /*!< AWAIT (Bit 8)                                         */
- #define R_USBF_SYSCFG1_AWAIT_Msk           (0x3f00UL)     /*!< AWAIT (Bitfield-Mask: 0x3f)                           */
+ #define R_USBF_SYSCFG1_BWAIT_Pos    (0UL)      /*!< BWAIT (Bit 0)                                         */
+ #define R_USBF_SYSCFG1_BWAIT_Msk    (0x3fUL)   /*!< BWAIT (Bitfield-Mask: 0x3f)                           */
+ #define R_USBF_SYSCFG1_AWAIT_Pos    (8UL)      /*!< AWAIT (Bit 8)                                         */
+ #define R_USBF_SYSCFG1_AWAIT_Msk    (0x3f00UL) /*!< AWAIT (Bitfield-Mask: 0x3f)                           */
 /* ========================================================  SYSSTS0  ======================================================== */
- #define R_USBF_SYSSTS0_LNST_Pos            (0UL)          /*!< LNST (Bit 0)                                          */
- #define R_USBF_SYSSTS0_LNST_Msk            (0x3UL)        /*!< LNST (Bitfield-Mask: 0x03)                            */
+ #define R_USBF_SYSSTS0_LNST_Pos     (0UL)      /*!< LNST (Bit 0)                                          */
+ #define R_USBF_SYSSTS0_LNST_Msk     (0x3UL)    /*!< LNST (Bitfield-Mask: 0x03)                            */
 /* =======================================================  DVSTCTR0  ======================================================== */
- #define R_USBF_DVSTCTR0_RHST_Pos           (0UL)          /*!< RHST (Bit 0)                                          */
- #define R_USBF_DVSTCTR0_RHST_Msk           (0x7UL)        /*!< RHST (Bitfield-Mask: 0x07)                            */
- #define R_USBF_DVSTCTR0_WKUP_Pos           (8UL)          /*!< WKUP (Bit 8)                                          */
- #define R_USBF_DVSTCTR0_WKUP_Msk           (0x100UL)      /*!< WKUP (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_DVSTCTR0_RHST_Pos    (0UL)      /*!< RHST (Bit 0)                                          */
+ #define R_USBF_DVSTCTR0_RHST_Msk    (0x7UL)    /*!< RHST (Bitfield-Mask: 0x07)                            */
+ #define R_USBF_DVSTCTR0_WKUP_Pos    (8UL)      /*!< WKUP (Bit 8)                                          */
+ #define R_USBF_DVSTCTR0_WKUP_Msk    (0x100UL)  /*!< WKUP (Bitfield-Mask: 0x01)                            */
 /* =======================================================  TESTMODE  ======================================================== */
- #define R_USBF_TESTMODE_UTST_Pos           (0UL)          /*!< UTST (Bit 0)                                          */
- #define R_USBF_TESTMODE_UTST_Msk           (0xfUL)        /*!< UTST (Bitfield-Mask: 0x0f)                            */
+ #define R_USBF_TESTMODE_UTST_Pos    (0UL)      /*!< UTST (Bit 0)                                          */
+ #define R_USBF_TESTMODE_UTST_Msk    (0xfUL)    /*!< UTST (Bitfield-Mask: 0x0f)                            */
 /* =========================================================  CFIFO  ========================================================= */
- #define R_USBF_CFIFO_FIFOPORT_Pos          (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_CFIFO_FIFOPORT_Msk          (0xffffffffUL) /*!< FIFOPORT (Bitfield-Mask: 0xffffffff)                  */
 /* ========================================================  CFIFOL  ========================================================= */
 /* ========================================================  CFIFOLL  ======================================================== */
 /* ========================================================  CFIFOH  ========================================================= */
- #define R_USBF_CFIFOH_FIFOPORT_Pos         (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_CFIFOH_FIFOPORT_Msk         (0xffffUL)     /*!< FIFOPORT (Bitfield-Mask: 0xffff)                      */
 /* ========================================================  CFIFOHH  ======================================================== */
- #define R_USBF_CFIFOHH_FIFOPORT_Pos        (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_CFIFOHH_FIFOPORT_Msk        (0xffUL)       /*!< FIFOPORT (Bitfield-Mask: 0xff)                        */
 /* ========================================================  D0FIFO  ========================================================= */
- #define R_USBF_D0FIFO_FIFOPORT_Pos         (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_D0FIFO_FIFOPORT_Msk         (0xffffffffUL) /*!< FIFOPORT (Bitfield-Mask: 0xffffffff)                  */
 /* ========================================================  D0FIFOL  ======================================================== */
 /* =======================================================  D0FIFOLL  ======================================================== */
 /* ========================================================  D0FIFOH  ======================================================== */
- #define R_USBF_D0FIFOH_FIFOPORT_Pos        (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_D0FIFOH_FIFOPORT_Msk        (0xffffUL)     /*!< FIFOPORT (Bitfield-Mask: 0xffff)                      */
 /* =======================================================  D0FIFOHH  ======================================================== */
- #define R_USBF_D0FIFOHH_FIFOPORT_Pos       (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_D0FIFOHH_FIFOPORT_Msk       (0xffUL)       /*!< FIFOPORT (Bitfield-Mask: 0xff)                        */
 /* ========================================================  D1FIFO  ========================================================= */
- #define R_USBF_D1FIFO_FIFOPORT_Pos         (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_D1FIFO_FIFOPORT_Msk         (0xffffffffUL) /*!< FIFOPORT (Bitfield-Mask: 0xffffffff)                  */
 /* ========================================================  D1FIFOL  ======================================================== */
 /* =======================================================  D1FIFOLL  ======================================================== */
 /* ========================================================  D1FIFOH  ======================================================== */
- #define R_USBF_D1FIFOH_FIFOPORT_Pos        (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_D1FIFOH_FIFOPORT_Msk        (0xffffUL)     /*!< FIFOPORT (Bitfield-Mask: 0xffff)                      */
 /* =======================================================  D1FIFOHH  ======================================================== */
- #define R_USBF_D1FIFOHH_FIFOPORT_Pos       (0UL)          /*!< FIFOPORT (Bit 0)                                      */
- #define R_USBF_D1FIFOHH_FIFOPORT_Msk       (0xffUL)       /*!< FIFOPORT (Bitfield-Mask: 0xff)                        */
 /* =======================================================  CFIFOSEL  ======================================================== */
- #define R_USBF_CFIFOSEL_CURPIPE_Pos        (0UL)          /*!< CURPIPE (Bit 0)                                       */
- #define R_USBF_CFIFOSEL_CURPIPE_Msk        (0xfUL)        /*!< CURPIPE (Bitfield-Mask: 0x0f)                         */
- #define R_USBF_CFIFOSEL_ISEL_Pos           (5UL)          /*!< ISEL (Bit 5)                                          */
- #define R_USBF_CFIFOSEL_ISEL_Msk           (0x20UL)       /*!< ISEL (Bitfield-Mask: 0x01)                            */
- #define R_USBF_CFIFOSEL_BIGEND_Pos         (8UL)          /*!< BIGEND (Bit 8)                                        */
- #define R_USBF_CFIFOSEL_BIGEND_Msk         (0x100UL)      /*!< BIGEND (Bitfield-Mask: 0x01)                          */
- #define R_USBF_CFIFOSEL_MBW_Pos            (10UL)         /*!< MBW (Bit 10)                                          */
- #define R_USBF_CFIFOSEL_MBW_Msk            (0xc00UL)      /*!< MBW (Bitfield-Mask: 0x03)                             */
- #define R_USBF_CFIFOSEL_REW_Pos            (14UL)         /*!< REW (Bit 14)                                          */
- #define R_USBF_CFIFOSEL_REW_Msk            (0x4000UL)     /*!< REW (Bitfield-Mask: 0x01)                             */
- #define R_USBF_CFIFOSEL_RCNT_Pos           (15UL)         /*!< RCNT (Bit 15)                                         */
- #define R_USBF_CFIFOSEL_RCNT_Msk           (0x8000UL)     /*!< RCNT (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_CFIFOSEL_CURPIPE_Pos        (0UL)         /*!< CURPIPE (Bit 0)                                       */
+ #define R_USBF_CFIFOSEL_CURPIPE_Msk        (0xfUL)       /*!< CURPIPE (Bitfield-Mask: 0x0f)                         */
+ #define R_USBF_CFIFOSEL_ISEL_Pos           (5UL)         /*!< ISEL (Bit 5)                                          */
+ #define R_USBF_CFIFOSEL_ISEL_Msk           (0x20UL)      /*!< ISEL (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_CFIFOSEL_BIGEND_Pos         (8UL)         /*!< BIGEND (Bit 8)                                        */
+ #define R_USBF_CFIFOSEL_BIGEND_Msk         (0x100UL)     /*!< BIGEND (Bitfield-Mask: 0x01)                          */
+ #define R_USBF_CFIFOSEL_MBW_Pos            (10UL)        /*!< MBW (Bit 10)                                          */
+ #define R_USBF_CFIFOSEL_MBW_Msk            (0xc00UL)     /*!< MBW (Bitfield-Mask: 0x03)                             */
+ #define R_USBF_CFIFOSEL_REW_Pos            (14UL)        /*!< REW (Bit 14)                                          */
+ #define R_USBF_CFIFOSEL_REW_Msk            (0x4000UL)    /*!< REW (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_CFIFOSEL_RCNT_Pos           (15UL)        /*!< RCNT (Bit 15)                                         */
+ #define R_USBF_CFIFOSEL_RCNT_Msk           (0x8000UL)    /*!< RCNT (Bitfield-Mask: 0x01)                            */
 /* =======================================================  CFIFOCTR  ======================================================== */
- #define R_USBF_CFIFOCTR_DTLN_Pos           (0UL)          /*!< DTLN (Bit 0)                                          */
- #define R_USBF_CFIFOCTR_DTLN_Msk           (0xfffUL)      /*!< DTLN (Bitfield-Mask: 0xfff)                           */
- #define R_USBF_CFIFOCTR_FRDY_Pos           (13UL)         /*!< FRDY (Bit 13)                                         */
- #define R_USBF_CFIFOCTR_FRDY_Msk           (0x2000UL)     /*!< FRDY (Bitfield-Mask: 0x01)                            */
- #define R_USBF_CFIFOCTR_BCLR_Pos           (14UL)         /*!< BCLR (Bit 14)                                         */
- #define R_USBF_CFIFOCTR_BCLR_Msk           (0x4000UL)     /*!< BCLR (Bitfield-Mask: 0x01)                            */
- #define R_USBF_CFIFOCTR_BVAL_Pos           (15UL)         /*!< BVAL (Bit 15)                                         */
- #define R_USBF_CFIFOCTR_BVAL_Msk           (0x8000UL)     /*!< BVAL (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_CFIFOCTR_DTLN_Pos           (0UL)         /*!< DTLN (Bit 0)                                          */
+ #define R_USBF_CFIFOCTR_DTLN_Msk           (0xfffUL)     /*!< DTLN (Bitfield-Mask: 0xfff)                           */
+ #define R_USBF_CFIFOCTR_FRDY_Pos           (13UL)        /*!< FRDY (Bit 13)                                         */
+ #define R_USBF_CFIFOCTR_FRDY_Msk           (0x2000UL)    /*!< FRDY (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_CFIFOCTR_BCLR_Pos           (14UL)        /*!< BCLR (Bit 14)                                         */
+ #define R_USBF_CFIFOCTR_BCLR_Msk           (0x4000UL)    /*!< BCLR (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_CFIFOCTR_BVAL_Pos           (15UL)        /*!< BVAL (Bit 15)                                         */
+ #define R_USBF_CFIFOCTR_BVAL_Msk           (0x8000UL)    /*!< BVAL (Bitfield-Mask: 0x01)                            */
 /* =======================================================  D0FIFOSEL  ======================================================= */
- #define R_USBF_D0FIFOSEL_CURPIPE_Pos       (0UL)          /*!< CURPIPE (Bit 0)                                       */
- #define R_USBF_D0FIFOSEL_CURPIPE_Msk       (0xfUL)        /*!< CURPIPE (Bitfield-Mask: 0x0f)                         */
- #define R_USBF_D0FIFOSEL_BIGEND_Pos        (8UL)          /*!< BIGEND (Bit 8)                                        */
- #define R_USBF_D0FIFOSEL_BIGEND_Msk        (0x100UL)      /*!< BIGEND (Bitfield-Mask: 0x01)                          */
- #define R_USBF_D0FIFOSEL_MBW_Pos           (10UL)         /*!< MBW (Bit 10)                                          */
- #define R_USBF_D0FIFOSEL_MBW_Msk           (0xc00UL)      /*!< MBW (Bitfield-Mask: 0x03)                             */
- #define R_USBF_D0FIFOSEL_DREQE_Pos         (12UL)         /*!< DREQE (Bit 12)                                        */
- #define R_USBF_D0FIFOSEL_DREQE_Msk         (0x1000UL)     /*!< DREQE (Bitfield-Mask: 0x01)                           */
- #define R_USBF_D0FIFOSEL_DCLRM_Pos         (13UL)         /*!< DCLRM (Bit 13)                                        */
- #define R_USBF_D0FIFOSEL_DCLRM_Msk         (0x2000UL)     /*!< DCLRM (Bitfield-Mask: 0x01)                           */
- #define R_USBF_D0FIFOSEL_REW_Pos           (14UL)         /*!< REW (Bit 14)                                          */
- #define R_USBF_D0FIFOSEL_REW_Msk           (0x4000UL)     /*!< REW (Bitfield-Mask: 0x01)                             */
- #define R_USBF_D0FIFOSEL_RCNT_Pos          (15UL)         /*!< RCNT (Bit 15)                                         */
- #define R_USBF_D0FIFOSEL_RCNT_Msk          (0x8000UL)     /*!< RCNT (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_D0FIFOSEL_CURPIPE_Pos       (0UL)         /*!< CURPIPE (Bit 0)                                       */
+ #define R_USBF_D0FIFOSEL_CURPIPE_Msk       (0xfUL)       /*!< CURPIPE (Bitfield-Mask: 0x0f)                         */
+ #define R_USBF_D0FIFOSEL_BIGEND_Pos        (8UL)         /*!< BIGEND (Bit 8)                                        */
+ #define R_USBF_D0FIFOSEL_BIGEND_Msk        (0x100UL)     /*!< BIGEND (Bitfield-Mask: 0x01)                          */
+ #define R_USBF_D0FIFOSEL_MBW_Pos           (10UL)        /*!< MBW (Bit 10)                                          */
+ #define R_USBF_D0FIFOSEL_MBW_Msk           (0xc00UL)     /*!< MBW (Bitfield-Mask: 0x03)                             */
+ #define R_USBF_D0FIFOSEL_DREQE_Pos         (12UL)        /*!< DREQE (Bit 12)                                        */
+ #define R_USBF_D0FIFOSEL_DREQE_Msk         (0x1000UL)    /*!< DREQE (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_D0FIFOSEL_DCLRM_Pos         (13UL)        /*!< DCLRM (Bit 13)                                        */
+ #define R_USBF_D0FIFOSEL_DCLRM_Msk         (0x2000UL)    /*!< DCLRM (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_D0FIFOSEL_REW_Pos           (14UL)        /*!< REW (Bit 14)                                          */
+ #define R_USBF_D0FIFOSEL_REW_Msk           (0x4000UL)    /*!< REW (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_D0FIFOSEL_RCNT_Pos          (15UL)        /*!< RCNT (Bit 15)                                         */
+ #define R_USBF_D0FIFOSEL_RCNT_Msk          (0x8000UL)    /*!< RCNT (Bitfield-Mask: 0x01)                            */
 /* =======================================================  D1FIFOSEL  ======================================================= */
- #define R_USBF_D1FIFOSEL_CURPIPE_Pos       (0UL)          /*!< CURPIPE (Bit 0)                                       */
- #define R_USBF_D1FIFOSEL_CURPIPE_Msk       (0xfUL)        /*!< CURPIPE (Bitfield-Mask: 0x0f)                         */
- #define R_USBF_D1FIFOSEL_BIGEND_Pos        (8UL)          /*!< BIGEND (Bit 8)                                        */
- #define R_USBF_D1FIFOSEL_BIGEND_Msk        (0x100UL)      /*!< BIGEND (Bitfield-Mask: 0x01)                          */
- #define R_USBF_D1FIFOSEL_MBW_Pos           (10UL)         /*!< MBW (Bit 10)                                          */
- #define R_USBF_D1FIFOSEL_MBW_Msk           (0xc00UL)      /*!< MBW (Bitfield-Mask: 0x03)                             */
- #define R_USBF_D1FIFOSEL_DREQE_Pos         (12UL)         /*!< DREQE (Bit 12)                                        */
- #define R_USBF_D1FIFOSEL_DREQE_Msk         (0x1000UL)     /*!< DREQE (Bitfield-Mask: 0x01)                           */
- #define R_USBF_D1FIFOSEL_DCLRM_Pos         (13UL)         /*!< DCLRM (Bit 13)                                        */
- #define R_USBF_D1FIFOSEL_DCLRM_Msk         (0x2000UL)     /*!< DCLRM (Bitfield-Mask: 0x01)                           */
- #define R_USBF_D1FIFOSEL_REW_Pos           (14UL)         /*!< REW (Bit 14)                                          */
- #define R_USBF_D1FIFOSEL_REW_Msk           (0x4000UL)     /*!< REW (Bitfield-Mask: 0x01)                             */
- #define R_USBF_D1FIFOSEL_RCNT_Pos          (15UL)         /*!< RCNT (Bit 15)                                         */
- #define R_USBF_D1FIFOSEL_RCNT_Msk          (0x8000UL)     /*!< RCNT (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_D1FIFOSEL_CURPIPE_Pos       (0UL)         /*!< CURPIPE (Bit 0)                                       */
+ #define R_USBF_D1FIFOSEL_CURPIPE_Msk       (0xfUL)       /*!< CURPIPE (Bitfield-Mask: 0x0f)                         */
+ #define R_USBF_D1FIFOSEL_BIGEND_Pos        (8UL)         /*!< BIGEND (Bit 8)                                        */
+ #define R_USBF_D1FIFOSEL_BIGEND_Msk        (0x100UL)     /*!< BIGEND (Bitfield-Mask: 0x01)                          */
+ #define R_USBF_D1FIFOSEL_MBW_Pos           (10UL)        /*!< MBW (Bit 10)                                          */
+ #define R_USBF_D1FIFOSEL_MBW_Msk           (0xc00UL)     /*!< MBW (Bitfield-Mask: 0x03)                             */
+ #define R_USBF_D1FIFOSEL_DREQE_Pos         (12UL)        /*!< DREQE (Bit 12)                                        */
+ #define R_USBF_D1FIFOSEL_DREQE_Msk         (0x1000UL)    /*!< DREQE (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_D1FIFOSEL_DCLRM_Pos         (13UL)        /*!< DCLRM (Bit 13)                                        */
+ #define R_USBF_D1FIFOSEL_DCLRM_Msk         (0x2000UL)    /*!< DCLRM (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_D1FIFOSEL_REW_Pos           (14UL)        /*!< REW (Bit 14)                                          */
+ #define R_USBF_D1FIFOSEL_REW_Msk           (0x4000UL)    /*!< REW (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_D1FIFOSEL_RCNT_Pos          (15UL)        /*!< RCNT (Bit 15)                                         */
+ #define R_USBF_D1FIFOSEL_RCNT_Msk          (0x8000UL)    /*!< RCNT (Bitfield-Mask: 0x01)                            */
 /* =======================================================  D0FIFOCTR  ======================================================= */
- #define R_USBF_D0FIFOCTR_DTLN_Pos          (0UL)          /*!< DTLN (Bit 0)                                          */
- #define R_USBF_D0FIFOCTR_DTLN_Msk          (0xfffUL)      /*!< DTLN (Bitfield-Mask: 0xfff)                           */
- #define R_USBF_D0FIFOCTR_FRDY_Pos          (13UL)         /*!< FRDY (Bit 13)                                         */
- #define R_USBF_D0FIFOCTR_FRDY_Msk          (0x2000UL)     /*!< FRDY (Bitfield-Mask: 0x01)                            */
- #define R_USBF_D0FIFOCTR_BCLR_Pos          (14UL)         /*!< BCLR (Bit 14)                                         */
- #define R_USBF_D0FIFOCTR_BCLR_Msk          (0x4000UL)     /*!< BCLR (Bitfield-Mask: 0x01)                            */
- #define R_USBF_D0FIFOCTR_BVAL_Pos          (15UL)         /*!< BVAL (Bit 15)                                         */
- #define R_USBF_D0FIFOCTR_BVAL_Msk          (0x8000UL)     /*!< BVAL (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_D0FIFOCTR_DTLN_Pos          (0UL)         /*!< DTLN (Bit 0)                                          */
+ #define R_USBF_D0FIFOCTR_DTLN_Msk          (0xfffUL)     /*!< DTLN (Bitfield-Mask: 0xfff)                           */
+ #define R_USBF_D0FIFOCTR_FRDY_Pos          (13UL)        /*!< FRDY (Bit 13)                                         */
+ #define R_USBF_D0FIFOCTR_FRDY_Msk          (0x2000UL)    /*!< FRDY (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_D0FIFOCTR_BCLR_Pos          (14UL)        /*!< BCLR (Bit 14)                                         */
+ #define R_USBF_D0FIFOCTR_BCLR_Msk          (0x4000UL)    /*!< BCLR (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_D0FIFOCTR_BVAL_Pos          (15UL)        /*!< BVAL (Bit 15)                                         */
+ #define R_USBF_D0FIFOCTR_BVAL_Msk          (0x8000UL)    /*!< BVAL (Bitfield-Mask: 0x01)                            */
 /* =======================================================  D1FIFOCTR  ======================================================= */
- #define R_USBF_D1FIFOCTR_DTLN_Pos          (0UL)          /*!< DTLN (Bit 0)                                          */
- #define R_USBF_D1FIFOCTR_DTLN_Msk          (0xfffUL)      /*!< DTLN (Bitfield-Mask: 0xfff)                           */
- #define R_USBF_D1FIFOCTR_FRDY_Pos          (13UL)         /*!< FRDY (Bit 13)                                         */
- #define R_USBF_D1FIFOCTR_FRDY_Msk          (0x2000UL)     /*!< FRDY (Bitfield-Mask: 0x01)                            */
- #define R_USBF_D1FIFOCTR_BCLR_Pos          (14UL)         /*!< BCLR (Bit 14)                                         */
- #define R_USBF_D1FIFOCTR_BCLR_Msk          (0x4000UL)     /*!< BCLR (Bitfield-Mask: 0x01)                            */
- #define R_USBF_D1FIFOCTR_BVAL_Pos          (15UL)         /*!< BVAL (Bit 15)                                         */
- #define R_USBF_D1FIFOCTR_BVAL_Msk          (0x8000UL)     /*!< BVAL (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_D1FIFOCTR_DTLN_Pos          (0UL)         /*!< DTLN (Bit 0)                                          */
+ #define R_USBF_D1FIFOCTR_DTLN_Msk          (0xfffUL)     /*!< DTLN (Bitfield-Mask: 0xfff)                           */
+ #define R_USBF_D1FIFOCTR_FRDY_Pos          (13UL)        /*!< FRDY (Bit 13)                                         */
+ #define R_USBF_D1FIFOCTR_FRDY_Msk          (0x2000UL)    /*!< FRDY (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_D1FIFOCTR_BCLR_Pos          (14UL)        /*!< BCLR (Bit 14)                                         */
+ #define R_USBF_D1FIFOCTR_BCLR_Msk          (0x4000UL)    /*!< BCLR (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_D1FIFOCTR_BVAL_Pos          (15UL)        /*!< BVAL (Bit 15)                                         */
+ #define R_USBF_D1FIFOCTR_BVAL_Msk          (0x8000UL)    /*!< BVAL (Bitfield-Mask: 0x01)                            */
 /* ========================================================  INTENB0  ======================================================== */
- #define R_USBF_INTENB0_BRDYE_Pos           (8UL)          /*!< BRDYE (Bit 8)                                         */
- #define R_USBF_INTENB0_BRDYE_Msk           (0x100UL)      /*!< BRDYE (Bitfield-Mask: 0x01)                           */
- #define R_USBF_INTENB0_NRDYE_Pos           (9UL)          /*!< NRDYE (Bit 9)                                         */
- #define R_USBF_INTENB0_NRDYE_Msk           (0x200UL)      /*!< NRDYE (Bitfield-Mask: 0x01)                           */
- #define R_USBF_INTENB0_BEMPE_Pos           (10UL)         /*!< BEMPE (Bit 10)                                        */
- #define R_USBF_INTENB0_BEMPE_Msk           (0x400UL)      /*!< BEMPE (Bitfield-Mask: 0x01)                           */
- #define R_USBF_INTENB0_CTRE_Pos            (11UL)         /*!< CTRE (Bit 11)                                         */
- #define R_USBF_INTENB0_CTRE_Msk            (0x800UL)      /*!< CTRE (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTENB0_DVSE_Pos            (12UL)         /*!< DVSE (Bit 12)                                         */
- #define R_USBF_INTENB0_DVSE_Msk            (0x1000UL)     /*!< DVSE (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTENB0_SOFE_Pos            (13UL)         /*!< SOFE (Bit 13)                                         */
- #define R_USBF_INTENB0_SOFE_Msk            (0x2000UL)     /*!< SOFE (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTENB0_RSME_Pos            (14UL)         /*!< RSME (Bit 14)                                         */
- #define R_USBF_INTENB0_RSME_Msk            (0x4000UL)     /*!< RSME (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTENB0_VBSE_Pos            (15UL)         /*!< VBSE (Bit 15)                                         */
- #define R_USBF_INTENB0_VBSE_Msk            (0x8000UL)     /*!< VBSE (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTENB0_BRDYE_Pos           (8UL)         /*!< BRDYE (Bit 8)                                         */
+ #define R_USBF_INTENB0_BRDYE_Msk           (0x100UL)     /*!< BRDYE (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_INTENB0_NRDYE_Pos           (9UL)         /*!< NRDYE (Bit 9)                                         */
+ #define R_USBF_INTENB0_NRDYE_Msk           (0x200UL)     /*!< NRDYE (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_INTENB0_BEMPE_Pos           (10UL)        /*!< BEMPE (Bit 10)                                        */
+ #define R_USBF_INTENB0_BEMPE_Msk           (0x400UL)     /*!< BEMPE (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_INTENB0_CTRE_Pos            (11UL)        /*!< CTRE (Bit 11)                                         */
+ #define R_USBF_INTENB0_CTRE_Msk            (0x800UL)     /*!< CTRE (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTENB0_DVSE_Pos            (12UL)        /*!< DVSE (Bit 12)                                         */
+ #define R_USBF_INTENB0_DVSE_Msk            (0x1000UL)    /*!< DVSE (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTENB0_SOFE_Pos            (13UL)        /*!< SOFE (Bit 13)                                         */
+ #define R_USBF_INTENB0_SOFE_Msk            (0x2000UL)    /*!< SOFE (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTENB0_RSME_Pos            (14UL)        /*!< RSME (Bit 14)                                         */
+ #define R_USBF_INTENB0_RSME_Msk            (0x4000UL)    /*!< RSME (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTENB0_VBSE_Pos            (15UL)        /*!< VBSE (Bit 15)                                         */
+ #define R_USBF_INTENB0_VBSE_Msk            (0x8000UL)    /*!< VBSE (Bitfield-Mask: 0x01)                            */
 /* ========================================================  INTENB1  ======================================================== */
- #define R_USBF_INTENB1_PDDETINTE_Pos       (0UL)          /*!< PDDETINTE (Bit 0)                                     */
- #define R_USBF_INTENB1_PDDETINTE_Msk       (0x1UL)        /*!< PDDETINTE (Bitfield-Mask: 0x01)                       */
+ #define R_USBF_INTENB1_PDDETINTE_Pos       (0UL)         /*!< PDDETINTE (Bit 0)                                     */
+ #define R_USBF_INTENB1_PDDETINTE_Msk       (0x1UL)       /*!< PDDETINTE (Bitfield-Mask: 0x01)                       */
 /* ========================================================  BRDYENB  ======================================================== */
- #define R_USBF_BRDYENB_PIPEBRDYE_Pos       (0UL)          /*!< PIPEBRDYE (Bit 0)                                     */
- #define R_USBF_BRDYENB_PIPEBRDYE_Msk       (0x3ffUL)      /*!< PIPEBRDYE (Bitfield-Mask: 0x3ff)                      */
+ #define R_USBF_BRDYENB_PIPEBRDYE_Pos       (0UL)         /*!< PIPEBRDYE (Bit 0)                                     */
+ #define R_USBF_BRDYENB_PIPEBRDYE_Msk       (0x3ffUL)     /*!< PIPEBRDYE (Bitfield-Mask: 0x3ff)                      */
 /* ========================================================  NRDYENB  ======================================================== */
- #define R_USBF_NRDYENB_PIPENRDYE_Pos       (0UL)          /*!< PIPENRDYE (Bit 0)                                     */
- #define R_USBF_NRDYENB_PIPENRDYE_Msk       (0x3ffUL)      /*!< PIPENRDYE (Bitfield-Mask: 0x3ff)                      */
+ #define R_USBF_NRDYENB_PIPENRDYE_Pos       (0UL)         /*!< PIPENRDYE (Bit 0)                                     */
+ #define R_USBF_NRDYENB_PIPENRDYE_Msk       (0x3ffUL)     /*!< PIPENRDYE (Bitfield-Mask: 0x3ff)                      */
 /* ========================================================  BEMPENB  ======================================================== */
- #define R_USBF_BEMPENB_PIPEBEMPE_Pos       (0UL)          /*!< PIPEBEMPE (Bit 0)                                     */
- #define R_USBF_BEMPENB_PIPEBEMPE_Msk       (0x3ffUL)      /*!< PIPEBEMPE (Bitfield-Mask: 0x3ff)                      */
+ #define R_USBF_BEMPENB_PIPEBEMPE_Pos       (0UL)         /*!< PIPEBEMPE (Bit 0)                                     */
+ #define R_USBF_BEMPENB_PIPEBEMPE_Msk       (0x3ffUL)     /*!< PIPEBEMPE (Bitfield-Mask: 0x3ff)                      */
 /* ========================================================  SOFCFG  ========================================================= */
- #define R_USBF_SOFCFG_EDGESTS_Pos          (4UL)          /*!< EDGESTS (Bit 4)                                       */
- #define R_USBF_SOFCFG_EDGESTS_Msk          (0x10UL)       /*!< EDGESTS (Bitfield-Mask: 0x01)                         */
- #define R_USBF_SOFCFG_INTL_Pos             (5UL)          /*!< INTL (Bit 5)                                          */
- #define R_USBF_SOFCFG_INTL_Msk             (0x20UL)       /*!< INTL (Bitfield-Mask: 0x01)                            */
- #define R_USBF_SOFCFG_BRDYM_Pos            (6UL)          /*!< BRDYM (Bit 6)                                         */
- #define R_USBF_SOFCFG_BRDYM_Msk            (0x40UL)       /*!< BRDYM (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_SOFCFG_EDGESTS_Pos          (4UL)         /*!< EDGESTS (Bit 4)                                       */
+ #define R_USBF_SOFCFG_EDGESTS_Msk          (0x10UL)      /*!< EDGESTS (Bitfield-Mask: 0x01)                         */
+ #define R_USBF_SOFCFG_INTL_Pos             (5UL)         /*!< INTL (Bit 5)                                          */
+ #define R_USBF_SOFCFG_INTL_Msk             (0x20UL)      /*!< INTL (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_SOFCFG_BRDYM_Pos            (6UL)         /*!< BRDYM (Bit 6)                                         */
+ #define R_USBF_SOFCFG_BRDYM_Msk            (0x40UL)      /*!< BRDYM (Bitfield-Mask: 0x01)                           */
 /* ========================================================  INTSTS0  ======================================================== */
- #define R_USBF_INTSTS0_CTSQ_Pos            (0UL)          /*!< CTSQ (Bit 0)                                          */
- #define R_USBF_INTSTS0_CTSQ_Msk            (0x7UL)        /*!< CTSQ (Bitfield-Mask: 0x07)                            */
- #define R_USBF_INTSTS0_VALID_Pos           (3UL)          /*!< VALID (Bit 3)                                         */
- #define R_USBF_INTSTS0_VALID_Msk           (0x8UL)        /*!< VALID (Bitfield-Mask: 0x01)                           */
- #define R_USBF_INTSTS0_DVSQ_Pos            (4UL)          /*!< DVSQ (Bit 4)                                          */
- #define R_USBF_INTSTS0_DVSQ_Msk            (0x70UL)       /*!< DVSQ (Bitfield-Mask: 0x07)                            */
- #define R_USBF_INTSTS0_VBSTS_Pos           (7UL)          /*!< VBSTS (Bit 7)                                         */
- #define R_USBF_INTSTS0_VBSTS_Msk           (0x80UL)       /*!< VBSTS (Bitfield-Mask: 0x01)                           */
- #define R_USBF_INTSTS0_BRDY_Pos            (8UL)          /*!< BRDY (Bit 8)                                          */
- #define R_USBF_INTSTS0_BRDY_Msk            (0x100UL)      /*!< BRDY (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTSTS0_NRDY_Pos            (9UL)          /*!< NRDY (Bit 9)                                          */
- #define R_USBF_INTSTS0_NRDY_Msk            (0x200UL)      /*!< NRDY (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTSTS0_BEMP_Pos            (10UL)         /*!< BEMP (Bit 10)                                         */
- #define R_USBF_INTSTS0_BEMP_Msk            (0x400UL)      /*!< BEMP (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTSTS0_CTRT_Pos            (11UL)         /*!< CTRT (Bit 11)                                         */
- #define R_USBF_INTSTS0_CTRT_Msk            (0x800UL)      /*!< CTRT (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTSTS0_DVST_Pos            (12UL)         /*!< DVST (Bit 12)                                         */
- #define R_USBF_INTSTS0_DVST_Msk            (0x1000UL)     /*!< DVST (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTSTS0_SOFR_Pos            (13UL)         /*!< SOFR (Bit 13)                                         */
- #define R_USBF_INTSTS0_SOFR_Msk            (0x2000UL)     /*!< SOFR (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTSTS0_RESM_Pos            (14UL)         /*!< RESM (Bit 14)                                         */
- #define R_USBF_INTSTS0_RESM_Msk            (0x4000UL)     /*!< RESM (Bitfield-Mask: 0x01)                            */
- #define R_USBF_INTSTS0_VBINT_Pos           (15UL)         /*!< VBINT (Bit 15)                                        */
- #define R_USBF_INTSTS0_VBINT_Msk           (0x8000UL)     /*!< VBINT (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_INTSTS0_CTSQ_Pos            (0UL)         /*!< CTSQ (Bit 0)                                          */
+ #define R_USBF_INTSTS0_CTSQ_Msk            (0x7UL)       /*!< CTSQ (Bitfield-Mask: 0x07)                            */
+ #define R_USBF_INTSTS0_VALID_Pos           (3UL)         /*!< VALID (Bit 3)                                         */
+ #define R_USBF_INTSTS0_VALID_Msk           (0x8UL)       /*!< VALID (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_INTSTS0_DVSQ_Pos            (4UL)         /*!< DVSQ (Bit 4)                                          */
+ #define R_USBF_INTSTS0_DVSQ_Msk            (0x70UL)      /*!< DVSQ (Bitfield-Mask: 0x07)                            */
+ #define R_USBF_INTSTS0_VBSTS_Pos           (7UL)         /*!< VBSTS (Bit 7)                                         */
+ #define R_USBF_INTSTS0_VBSTS_Msk           (0x80UL)      /*!< VBSTS (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_INTSTS0_BRDY_Pos            (8UL)         /*!< BRDY (Bit 8)                                          */
+ #define R_USBF_INTSTS0_BRDY_Msk            (0x100UL)     /*!< BRDY (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTSTS0_NRDY_Pos            (9UL)         /*!< NRDY (Bit 9)                                          */
+ #define R_USBF_INTSTS0_NRDY_Msk            (0x200UL)     /*!< NRDY (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTSTS0_BEMP_Pos            (10UL)        /*!< BEMP (Bit 10)                                         */
+ #define R_USBF_INTSTS0_BEMP_Msk            (0x400UL)     /*!< BEMP (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTSTS0_CTRT_Pos            (11UL)        /*!< CTRT (Bit 11)                                         */
+ #define R_USBF_INTSTS0_CTRT_Msk            (0x800UL)     /*!< CTRT (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTSTS0_DVST_Pos            (12UL)        /*!< DVST (Bit 12)                                         */
+ #define R_USBF_INTSTS0_DVST_Msk            (0x1000UL)    /*!< DVST (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTSTS0_SOFR_Pos            (13UL)        /*!< SOFR (Bit 13)                                         */
+ #define R_USBF_INTSTS0_SOFR_Msk            (0x2000UL)    /*!< SOFR (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTSTS0_RESM_Pos            (14UL)        /*!< RESM (Bit 14)                                         */
+ #define R_USBF_INTSTS0_RESM_Msk            (0x4000UL)    /*!< RESM (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_INTSTS0_VBINT_Pos           (15UL)        /*!< VBINT (Bit 15)                                        */
+ #define R_USBF_INTSTS0_VBINT_Msk           (0x8000UL)    /*!< VBINT (Bitfield-Mask: 0x01)                           */
 /* ========================================================  INTSTS1  ======================================================== */
- #define R_USBF_INTSTS1_PDDETINT_Pos        (0UL)          /*!< PDDETINT (Bit 0)                                      */
- #define R_USBF_INTSTS1_PDDETINT_Msk        (0x1UL)        /*!< PDDETINT (Bitfield-Mask: 0x01)                        */
+ #define R_USBF_INTSTS1_PDDETINT_Pos        (0UL)         /*!< PDDETINT (Bit 0)                                      */
+ #define R_USBF_INTSTS1_PDDETINT_Msk        (0x1UL)       /*!< PDDETINT (Bitfield-Mask: 0x01)                        */
 /* ========================================================  BRDYSTS  ======================================================== */
- #define R_USBF_BRDYSTS_PIPEBRDY_Pos        (0UL)          /*!< PIPEBRDY (Bit 0)                                      */
- #define R_USBF_BRDYSTS_PIPEBRDY_Msk        (0x3ffUL)      /*!< PIPEBRDY (Bitfield-Mask: 0x3ff)                       */
+ #define R_USBF_BRDYSTS_PIPEBRDY_Pos        (0UL)         /*!< PIPEBRDY (Bit 0)                                      */
+ #define R_USBF_BRDYSTS_PIPEBRDY_Msk        (0x3ffUL)     /*!< PIPEBRDY (Bitfield-Mask: 0x3ff)                       */
 /* ========================================================  NRDYSTS  ======================================================== */
- #define R_USBF_NRDYSTS_PIPENRDY_Pos        (0UL)          /*!< PIPENRDY (Bit 0)                                      */
- #define R_USBF_NRDYSTS_PIPENRDY_Msk        (0x3ffUL)      /*!< PIPENRDY (Bitfield-Mask: 0x3ff)                       */
+ #define R_USBF_NRDYSTS_PIPENRDY_Pos        (0UL)         /*!< PIPENRDY (Bit 0)                                      */
+ #define R_USBF_NRDYSTS_PIPENRDY_Msk        (0x3ffUL)     /*!< PIPENRDY (Bitfield-Mask: 0x3ff)                       */
 /* ========================================================  BEMPSTS  ======================================================== */
- #define R_USBF_BEMPSTS_PIPEBEMP_Pos        (0UL)          /*!< PIPEBEMP (Bit 0)                                      */
- #define R_USBF_BEMPSTS_PIPEBEMP_Msk        (0x3ffUL)      /*!< PIPEBEMP (Bitfield-Mask: 0x3ff)                       */
+ #define R_USBF_BEMPSTS_PIPEBEMP_Pos        (0UL)         /*!< PIPEBEMP (Bit 0)                                      */
+ #define R_USBF_BEMPSTS_PIPEBEMP_Msk        (0x3ffUL)     /*!< PIPEBEMP (Bitfield-Mask: 0x3ff)                       */
 /* ========================================================  FRMNUM  ========================================================= */
- #define R_USBF_FRMNUM_FRNM_Pos             (0UL)          /*!< FRNM (Bit 0)                                          */
- #define R_USBF_FRMNUM_FRNM_Msk             (0x7ffUL)      /*!< FRNM (Bitfield-Mask: 0x7ff)                           */
- #define R_USBF_FRMNUM_CRCE_Pos             (14UL)         /*!< CRCE (Bit 14)                                         */
- #define R_USBF_FRMNUM_CRCE_Msk             (0x4000UL)     /*!< CRCE (Bitfield-Mask: 0x01)                            */
- #define R_USBF_FRMNUM_OVRN_Pos             (15UL)         /*!< OVRN (Bit 15)                                         */
- #define R_USBF_FRMNUM_OVRN_Msk             (0x8000UL)     /*!< OVRN (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_FRMNUM_FRNM_Pos             (0UL)         /*!< FRNM (Bit 0)                                          */
+ #define R_USBF_FRMNUM_FRNM_Msk             (0x7ffUL)     /*!< FRNM (Bitfield-Mask: 0x7ff)                           */
+ #define R_USBF_FRMNUM_CRCE_Pos             (14UL)        /*!< CRCE (Bit 14)                                         */
+ #define R_USBF_FRMNUM_CRCE_Msk             (0x4000UL)    /*!< CRCE (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_FRMNUM_OVRN_Pos             (15UL)        /*!< OVRN (Bit 15)                                         */
+ #define R_USBF_FRMNUM_OVRN_Msk             (0x8000UL)    /*!< OVRN (Bitfield-Mask: 0x01)                            */
 /* ========================================================  UFRMNUM  ======================================================== */
- #define R_USBF_UFRMNUM_UFRNM_Pos           (0UL)          /*!< UFRNM (Bit 0)                                         */
- #define R_USBF_UFRMNUM_UFRNM_Msk           (0x7UL)        /*!< UFRNM (Bitfield-Mask: 0x07)                           */
+ #define R_USBF_UFRMNUM_UFRNM_Pos           (0UL)         /*!< UFRNM (Bit 0)                                         */
+ #define R_USBF_UFRMNUM_UFRNM_Msk           (0x7UL)       /*!< UFRNM (Bitfield-Mask: 0x07)                           */
 /* ========================================================  USBADDR  ======================================================== */
- #define R_USBF_USBADDR_USBADDR_Pos         (0UL)          /*!< USBADDR (Bit 0)                                       */
- #define R_USBF_USBADDR_USBADDR_Msk         (0x7fUL)       /*!< USBADDR (Bitfield-Mask: 0x7f)                         */
+ #define R_USBF_USBADDR_USBADDR_Pos         (0UL)         /*!< USBADDR (Bit 0)                                       */
+ #define R_USBF_USBADDR_USBADDR_Msk         (0x7fUL)      /*!< USBADDR (Bitfield-Mask: 0x7f)                         */
 /* ========================================================  USBREQ  ========================================================= */
- #define R_USBF_USBREQ_BMREQUESTTYPE_Pos    (0UL)          /*!< BMREQUESTTYPE (Bit 0)                                 */
- #define R_USBF_USBREQ_BMREQUESTTYPE_Msk    (0xffUL)       /*!< BMREQUESTTYPE (Bitfield-Mask: 0xff)                   */
- #define R_USBF_USBREQ_BREQUEST_Pos         (8UL)          /*!< BREQUEST (Bit 8)                                      */
- #define R_USBF_USBREQ_BREQUEST_Msk         (0xff00UL)     /*!< BREQUEST (Bitfield-Mask: 0xff)                        */
+ #define R_USBF_USBREQ_BMREQUESTTYPE_Pos    (0UL)         /*!< BMREQUESTTYPE (Bit 0)                                 */
+ #define R_USBF_USBREQ_BMREQUESTTYPE_Msk    (0xffUL)      /*!< BMREQUESTTYPE (Bitfield-Mask: 0xff)                   */
+ #define R_USBF_USBREQ_BREQUEST_Pos         (8UL)         /*!< BREQUEST (Bit 8)                                      */
+ #define R_USBF_USBREQ_BREQUEST_Msk         (0xff00UL)    /*!< BREQUEST (Bitfield-Mask: 0xff)                        */
 /* ========================================================  USBVAL  ========================================================= */
- #define R_USBF_USBVAL_WVALUE_Pos           (0UL)          /*!< WVALUE (Bit 0)                                        */
- #define R_USBF_USBVAL_WVALUE_Msk           (0xffffUL)     /*!< WVALUE (Bitfield-Mask: 0xffff)                        */
+ #define R_USBF_USBVAL_WVALUE_Pos           (0UL)         /*!< WVALUE (Bit 0)                                        */
+ #define R_USBF_USBVAL_WVALUE_Msk           (0xffffUL)    /*!< WVALUE (Bitfield-Mask: 0xffff)                        */
 /* ========================================================  USBINDX  ======================================================== */
- #define R_USBF_USBINDX_WINDEX_Pos          (0UL)          /*!< WINDEX (Bit 0)                                        */
- #define R_USBF_USBINDX_WINDEX_Msk          (0xffffUL)     /*!< WINDEX (Bitfield-Mask: 0xffff)                        */
+ #define R_USBF_USBINDX_WINDEX_Pos          (0UL)         /*!< WINDEX (Bit 0)                                        */
+ #define R_USBF_USBINDX_WINDEX_Msk          (0xffffUL)    /*!< WINDEX (Bitfield-Mask: 0xffff)                        */
 /* ========================================================  USBLENG  ======================================================== */
- #define R_USBF_USBLENG_WLENGTH_Pos         (0UL)          /*!< WLENGTH (Bit 0)                                       */
- #define R_USBF_USBLENG_WLENGTH_Msk         (0xffffUL)     /*!< WLENGTH (Bitfield-Mask: 0xffff)                       */
+ #define R_USBF_USBLENG_WLENGTH_Pos         (0UL)         /*!< WLENGTH (Bit 0)                                       */
+ #define R_USBF_USBLENG_WLENGTH_Msk         (0xffffUL)    /*!< WLENGTH (Bitfield-Mask: 0xffff)                       */
 /* ========================================================  DCPCFG  ========================================================= */
- #define R_USBF_DCPCFG_SHTNAK_Pos           (7UL)          /*!< SHTNAK (Bit 7)                                        */
- #define R_USBF_DCPCFG_SHTNAK_Msk           (0x80UL)       /*!< SHTNAK (Bitfield-Mask: 0x01)                          */
- #define R_USBF_DCPCFG_CNTMD_Pos            (8UL)          /*!< CNTMD (Bit 8)                                         */
- #define R_USBF_DCPCFG_CNTMD_Msk            (0x100UL)      /*!< CNTMD (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_DCPCFG_SHTNAK_Pos           (7UL)         /*!< SHTNAK (Bit 7)                                        */
+ #define R_USBF_DCPCFG_SHTNAK_Msk           (0x80UL)      /*!< SHTNAK (Bitfield-Mask: 0x01)                          */
+ #define R_USBF_DCPCFG_CNTMD_Pos            (8UL)         /*!< CNTMD (Bit 8)                                         */
+ #define R_USBF_DCPCFG_CNTMD_Msk            (0x100UL)     /*!< CNTMD (Bitfield-Mask: 0x01)                           */
 /* ========================================================  DCPMAXP  ======================================================== */
- #define R_USBF_DCPMAXP_MXPS_Pos            (0UL)          /*!< MXPS (Bit 0)                                          */
- #define R_USBF_DCPMAXP_MXPS_Msk            (0x7fUL)       /*!< MXPS (Bitfield-Mask: 0x7f)                            */
+ #define R_USBF_DCPMAXP_MXPS_Pos            (0UL)         /*!< MXPS (Bit 0)                                          */
+ #define R_USBF_DCPMAXP_MXPS_Msk            (0x7fUL)      /*!< MXPS (Bitfield-Mask: 0x7f)                            */
 /* ========================================================  DCPCTR  ========================================================= */
- #define R_USBF_DCPCTR_PID_Pos              (0UL)          /*!< PID (Bit 0)                                           */
- #define R_USBF_DCPCTR_PID_Msk              (0x3UL)        /*!< PID (Bitfield-Mask: 0x03)                             */
- #define R_USBF_DCPCTR_CCPL_Pos             (2UL)          /*!< CCPL (Bit 2)                                          */
- #define R_USBF_DCPCTR_CCPL_Msk             (0x4UL)        /*!< CCPL (Bitfield-Mask: 0x01)                            */
- #define R_USBF_DCPCTR_PBUSY_Pos            (5UL)          /*!< PBUSY (Bit 5)                                         */
- #define R_USBF_DCPCTR_PBUSY_Msk            (0x20UL)       /*!< PBUSY (Bitfield-Mask: 0x01)                           */
- #define R_USBF_DCPCTR_SQMON_Pos            (6UL)          /*!< SQMON (Bit 6)                                         */
- #define R_USBF_DCPCTR_SQMON_Msk            (0x40UL)       /*!< SQMON (Bitfield-Mask: 0x01)                           */
- #define R_USBF_DCPCTR_SQSET_Pos            (7UL)          /*!< SQSET (Bit 7)                                         */
- #define R_USBF_DCPCTR_SQSET_Msk            (0x80UL)       /*!< SQSET (Bitfield-Mask: 0x01)                           */
- #define R_USBF_DCPCTR_SQCLR_Pos            (8UL)          /*!< SQCLR (Bit 8)                                         */
- #define R_USBF_DCPCTR_SQCLR_Msk            (0x100UL)      /*!< SQCLR (Bitfield-Mask: 0x01)                           */
- #define R_USBF_DCPCTR_BSTS_Pos             (15UL)         /*!< BSTS (Bit 15)                                         */
- #define R_USBF_DCPCTR_BSTS_Msk             (0x8000UL)     /*!< BSTS (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_DCPCTR_PID_Pos              (0UL)         /*!< PID (Bit 0)                                           */
+ #define R_USBF_DCPCTR_PID_Msk              (0x3UL)       /*!< PID (Bitfield-Mask: 0x03)                             */
+ #define R_USBF_DCPCTR_CCPL_Pos             (2UL)         /*!< CCPL (Bit 2)                                          */
+ #define R_USBF_DCPCTR_CCPL_Msk             (0x4UL)       /*!< CCPL (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_DCPCTR_PBUSY_Pos            (5UL)         /*!< PBUSY (Bit 5)                                         */
+ #define R_USBF_DCPCTR_PBUSY_Msk            (0x20UL)      /*!< PBUSY (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_DCPCTR_SQMON_Pos            (6UL)         /*!< SQMON (Bit 6)                                         */
+ #define R_USBF_DCPCTR_SQMON_Msk            (0x40UL)      /*!< SQMON (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_DCPCTR_SQSET_Pos            (7UL)         /*!< SQSET (Bit 7)                                         */
+ #define R_USBF_DCPCTR_SQSET_Msk            (0x80UL)      /*!< SQSET (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_DCPCTR_SQCLR_Pos            (8UL)         /*!< SQCLR (Bit 8)                                         */
+ #define R_USBF_DCPCTR_SQCLR_Msk            (0x100UL)     /*!< SQCLR (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_DCPCTR_BSTS_Pos             (15UL)        /*!< BSTS (Bit 15)                                         */
+ #define R_USBF_DCPCTR_BSTS_Msk             (0x8000UL)    /*!< BSTS (Bitfield-Mask: 0x01)                            */
 /* ========================================================  PIPESEL  ======================================================== */
- #define R_USBF_PIPESEL_PIPESEL_Pos         (0UL)          /*!< PIPESEL (Bit 0)                                       */
- #define R_USBF_PIPESEL_PIPESEL_Msk         (0xfUL)        /*!< PIPESEL (Bitfield-Mask: 0x0f)                         */
+ #define R_USBF_PIPESEL_PIPESEL_Pos         (0UL)         /*!< PIPESEL (Bit 0)                                       */
+ #define R_USBF_PIPESEL_PIPESEL_Msk         (0xfUL)       /*!< PIPESEL (Bitfield-Mask: 0x0f)                         */
 /* ========================================================  PIPECFG  ======================================================== */
- #define R_USBF_PIPECFG_EPNUM_Pos           (0UL)          /*!< EPNUM (Bit 0)                                         */
- #define R_USBF_PIPECFG_EPNUM_Msk           (0xfUL)        /*!< EPNUM (Bitfield-Mask: 0x0f)                           */
- #define R_USBF_PIPECFG_DIR_Pos             (4UL)          /*!< DIR (Bit 4)                                           */
- #define R_USBF_PIPECFG_DIR_Msk             (0x10UL)       /*!< DIR (Bitfield-Mask: 0x01)                             */
- #define R_USBF_PIPECFG_SHTNAK_Pos          (7UL)          /*!< SHTNAK (Bit 7)                                        */
- #define R_USBF_PIPECFG_SHTNAK_Msk          (0x80UL)       /*!< SHTNAK (Bitfield-Mask: 0x01)                          */
- #define R_USBF_PIPECFG_CNTMD_Pos           (8UL)          /*!< CNTMD (Bit 8)                                         */
- #define R_USBF_PIPECFG_CNTMD_Msk           (0x100UL)      /*!< CNTMD (Bitfield-Mask: 0x01)                           */
- #define R_USBF_PIPECFG_DBLB_Pos            (9UL)          /*!< DBLB (Bit 9)                                          */
- #define R_USBF_PIPECFG_DBLB_Msk            (0x200UL)      /*!< DBLB (Bitfield-Mask: 0x01)                            */
- #define R_USBF_PIPECFG_BFRE_Pos            (10UL)         /*!< BFRE (Bit 10)                                         */
- #define R_USBF_PIPECFG_BFRE_Msk            (0x400UL)      /*!< BFRE (Bitfield-Mask: 0x01)                            */
- #define R_USBF_PIPECFG_TYPE_Pos            (14UL)         /*!< TYPE (Bit 14)                                         */
- #define R_USBF_PIPECFG_TYPE_Msk            (0xc000UL)     /*!< TYPE (Bitfield-Mask: 0x03)                            */
+ #define R_USBF_PIPECFG_EPNUM_Pos           (0UL)         /*!< EPNUM (Bit 0)                                         */
+ #define R_USBF_PIPECFG_EPNUM_Msk           (0xfUL)       /*!< EPNUM (Bitfield-Mask: 0x0f)                           */
+ #define R_USBF_PIPECFG_DIR_Pos             (4UL)         /*!< DIR (Bit 4)                                           */
+ #define R_USBF_PIPECFG_DIR_Msk             (0x10UL)      /*!< DIR (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_PIPECFG_SHTNAK_Pos          (7UL)         /*!< SHTNAK (Bit 7)                                        */
+ #define R_USBF_PIPECFG_SHTNAK_Msk          (0x80UL)      /*!< SHTNAK (Bitfield-Mask: 0x01)                          */
+ #define R_USBF_PIPECFG_CNTMD_Pos           (8UL)         /*!< CNTMD (Bit 8)                                         */
+ #define R_USBF_PIPECFG_CNTMD_Msk           (0x100UL)     /*!< CNTMD (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_PIPECFG_DBLB_Pos            (9UL)         /*!< DBLB (Bit 9)                                          */
+ #define R_USBF_PIPECFG_DBLB_Msk            (0x200UL)     /*!< DBLB (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_PIPECFG_BFRE_Pos            (10UL)        /*!< BFRE (Bit 10)                                         */
+ #define R_USBF_PIPECFG_BFRE_Msk            (0x400UL)     /*!< BFRE (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_PIPECFG_TYPE_Pos            (14UL)        /*!< TYPE (Bit 14)                                         */
+ #define R_USBF_PIPECFG_TYPE_Msk            (0xc000UL)    /*!< TYPE (Bitfield-Mask: 0x03)                            */
 /* ========================================================  PIPEBUF  ======================================================== */
- #define R_USBF_PIPEBUF_BUFNMB_Pos          (0UL)          /*!< BUFNMB (Bit 0)                                        */
- #define R_USBF_PIPEBUF_BUFNMB_Msk          (0xffUL)       /*!< BUFNMB (Bitfield-Mask: 0xff)                          */
- #define R_USBF_PIPEBUF_BUFSIZE_Pos         (10UL)         /*!< BUFSIZE (Bit 10)                                      */
- #define R_USBF_PIPEBUF_BUFSIZE_Msk         (0x7c00UL)     /*!< BUFSIZE (Bitfield-Mask: 0x1f)                         */
+ #define R_USBF_PIPEBUF_BUFNMB_Pos          (0UL)         /*!< BUFNMB (Bit 0)                                        */
+ #define R_USBF_PIPEBUF_BUFNMB_Msk          (0xffUL)      /*!< BUFNMB (Bitfield-Mask: 0xff)                          */
+ #define R_USBF_PIPEBUF_BUFSIZE_Pos         (10UL)        /*!< BUFSIZE (Bit 10)                                      */
+ #define R_USBF_PIPEBUF_BUFSIZE_Msk         (0x7c00UL)    /*!< BUFSIZE (Bitfield-Mask: 0x1f)                         */
 /* =======================================================  PIPEMAXP  ======================================================== */
- #define R_USBF_PIPEMAXP_MXPS_Pos           (0UL)          /*!< MXPS (Bit 0)                                          */
- #define R_USBF_PIPEMAXP_MXPS_Msk           (0x7ffUL)      /*!< MXPS (Bitfield-Mask: 0x7ff)                           */
+ #define R_USBF_PIPEMAXP_MXPS_Pos           (0UL)         /*!< MXPS (Bit 0)                                          */
+ #define R_USBF_PIPEMAXP_MXPS_Msk           (0x7ffUL)     /*!< MXPS (Bitfield-Mask: 0x7ff)                           */
 /* =======================================================  PIPEPERI  ======================================================== */
- #define R_USBF_PIPEPERI_IITV_Pos           (0UL)          /*!< IITV (Bit 0)                                          */
- #define R_USBF_PIPEPERI_IITV_Msk           (0x7UL)        /*!< IITV (Bitfield-Mask: 0x07)                            */
- #define R_USBF_PIPEPERI_IFIS_Pos           (12UL)         /*!< IFIS (Bit 12)                                         */
- #define R_USBF_PIPEPERI_IFIS_Msk           (0x1000UL)     /*!< IFIS (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_PIPEPERI_IITV_Pos           (0UL)         /*!< IITV (Bit 0)                                          */
+ #define R_USBF_PIPEPERI_IITV_Msk           (0x7UL)       /*!< IITV (Bitfield-Mask: 0x07)                            */
+ #define R_USBF_PIPEPERI_IFIS_Pos           (12UL)        /*!< IFIS (Bit 12)                                         */
+ #define R_USBF_PIPEPERI_IFIS_Msk           (0x1000UL)    /*!< IFIS (Bitfield-Mask: 0x01)                            */
 /* =======================================================  PIPE_CTR  ======================================================== */
- #define R_USBF_PIPE_CTR_PID_Pos            (0UL)          /*!< PID (Bit 0)                                           */
- #define R_USBF_PIPE_CTR_PID_Msk            (0x3UL)        /*!< PID (Bitfield-Mask: 0x03)                             */
- #define R_USBF_PIPE_CTR_PBUSY_Pos          (5UL)          /*!< PBUSY (Bit 5)                                         */
- #define R_USBF_PIPE_CTR_PBUSY_Msk          (0x20UL)       /*!< PBUSY (Bitfield-Mask: 0x01)                           */
- #define R_USBF_PIPE_CTR_SQMON_Pos          (6UL)          /*!< SQMON (Bit 6)                                         */
- #define R_USBF_PIPE_CTR_SQMON_Msk          (0x40UL)       /*!< SQMON (Bitfield-Mask: 0x01)                           */
- #define R_USBF_PIPE_CTR_SQSET_Pos          (7UL)          /*!< SQSET (Bit 7)                                         */
- #define R_USBF_PIPE_CTR_SQSET_Msk          (0x80UL)       /*!< SQSET (Bitfield-Mask: 0x01)                           */
- #define R_USBF_PIPE_CTR_SQCLR_Pos          (8UL)          /*!< SQCLR (Bit 8)                                         */
- #define R_USBF_PIPE_CTR_SQCLR_Msk          (0x100UL)      /*!< SQCLR (Bitfield-Mask: 0x01)                           */
- #define R_USBF_PIPE_CTR_ACLRM_Pos          (9UL)          /*!< ACLRM (Bit 9)                                         */
- #define R_USBF_PIPE_CTR_ACLRM_Msk          (0x200UL)      /*!< ACLRM (Bitfield-Mask: 0x01)                           */
- #define R_USBF_PIPE_CTR_ATREPM_Pos         (10UL)         /*!< ATREPM (Bit 10)                                       */
- #define R_USBF_PIPE_CTR_ATREPM_Msk         (0x400UL)      /*!< ATREPM (Bitfield-Mask: 0x01)                          */
- #define R_USBF_PIPE_CTR_INBUFM_Pos         (14UL)         /*!< INBUFM (Bit 14)                                       */
- #define R_USBF_PIPE_CTR_INBUFM_Msk         (0x4000UL)     /*!< INBUFM (Bitfield-Mask: 0x01)                          */
- #define R_USBF_PIPE_CTR_BSTS_Pos           (15UL)         /*!< BSTS (Bit 15)                                         */
- #define R_USBF_PIPE_CTR_BSTS_Msk           (0x8000UL)     /*!< BSTS (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_PIPE_CTR_PID_Pos            (0UL)         /*!< PID (Bit 0)                                           */
+ #define R_USBF_PIPE_CTR_PID_Msk            (0x3UL)       /*!< PID (Bitfield-Mask: 0x03)                             */
+ #define R_USBF_PIPE_CTR_PBUSY_Pos          (5UL)         /*!< PBUSY (Bit 5)                                         */
+ #define R_USBF_PIPE_CTR_PBUSY_Msk          (0x20UL)      /*!< PBUSY (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_PIPE_CTR_SQMON_Pos          (6UL)         /*!< SQMON (Bit 6)                                         */
+ #define R_USBF_PIPE_CTR_SQMON_Msk          (0x40UL)      /*!< SQMON (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_PIPE_CTR_SQSET_Pos          (7UL)         /*!< SQSET (Bit 7)                                         */
+ #define R_USBF_PIPE_CTR_SQSET_Msk          (0x80UL)      /*!< SQSET (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_PIPE_CTR_SQCLR_Pos          (8UL)         /*!< SQCLR (Bit 8)                                         */
+ #define R_USBF_PIPE_CTR_SQCLR_Msk          (0x100UL)     /*!< SQCLR (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_PIPE_CTR_ACLRM_Pos          (9UL)         /*!< ACLRM (Bit 9)                                         */
+ #define R_USBF_PIPE_CTR_ACLRM_Msk          (0x200UL)     /*!< ACLRM (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_PIPE_CTR_ATREPM_Pos         (10UL)        /*!< ATREPM (Bit 10)                                       */
+ #define R_USBF_PIPE_CTR_ATREPM_Msk         (0x400UL)     /*!< ATREPM (Bitfield-Mask: 0x01)                          */
+ #define R_USBF_PIPE_CTR_INBUFM_Pos         (14UL)        /*!< INBUFM (Bit 14)                                       */
+ #define R_USBF_PIPE_CTR_INBUFM_Msk         (0x4000UL)    /*!< INBUFM (Bitfield-Mask: 0x01)                          */
+ #define R_USBF_PIPE_CTR_BSTS_Pos           (15UL)        /*!< BSTS (Bit 15)                                         */
+ #define R_USBF_PIPE_CTR_BSTS_Msk           (0x8000UL)    /*!< BSTS (Bitfield-Mask: 0x01)                            */
 /* =========================================================  LPSTS  ========================================================= */
- #define R_USBF_LPSTS_SUSPM_Pos             (14UL)         /*!< SUSPM (Bit 14)                                        */
- #define R_USBF_LPSTS_SUSPM_Msk             (0x4000UL)     /*!< SUSPM (Bitfield-Mask: 0x01)                           */
+ #define R_USBF_LPSTS_SUSPM_Pos             (14UL)        /*!< SUSPM (Bit 14)                                        */
+ #define R_USBF_LPSTS_SUSPM_Msk             (0x4000UL)    /*!< SUSPM (Bitfield-Mask: 0x01)                           */
 /* =========================================================  DCTRL  ========================================================= */
- #define R_USBF_DCTRL_PR_Pos                (0UL)          /*!< PR (Bit 0)                                            */
- #define R_USBF_DCTRL_PR_Msk                (0x1UL)        /*!< PR (Bitfield-Mask: 0x01)                              */
- #define R_USBF_DCTRL_LDPR_Pos              (16UL)         /*!< LDPR (Bit 16)                                         */
- #define R_USBF_DCTRL_LDPR_Msk              (0xf0000UL)    /*!< LDPR (Bitfield-Mask: 0x0f)                            */
- #define R_USBF_DCTRL_LWPR_Pos              (24UL)         /*!< LWPR (Bit 24)                                         */
- #define R_USBF_DCTRL_LWPR_Msk              (0xf000000UL)  /*!< LWPR (Bitfield-Mask: 0x0f)                            */
+ #define R_USBF_DCTRL_PR_Pos                (0UL)         /*!< PR (Bit 0)                                            */
+ #define R_USBF_DCTRL_PR_Msk                (0x1UL)       /*!< PR (Bitfield-Mask: 0x01)                              */
+ #define R_USBF_DCTRL_LDPR_Pos              (16UL)        /*!< LDPR (Bit 16)                                         */
+ #define R_USBF_DCTRL_LDPR_Msk              (0xf0000UL)   /*!< LDPR (Bitfield-Mask: 0x0f)                            */
+ #define R_USBF_DCTRL_LWPR_Pos              (24UL)        /*!< LWPR (Bit 24)                                         */
+ #define R_USBF_DCTRL_LWPR_Msk              (0xf000000UL) /*!< LWPR (Bitfield-Mask: 0x0f)                            */
 /* ========================================================  DSCITVL  ======================================================== */
- #define R_USBF_DSCITVL_DITVL_Pos           (8UL)          /*!< DITVL (Bit 8)                                         */
- #define R_USBF_DSCITVL_DITVL_Msk           (0xff00UL)     /*!< DITVL (Bitfield-Mask: 0xff)                           */
+ #define R_USBF_DSCITVL_DITVL_Pos           (8UL)         /*!< DITVL (Bit 8)                                         */
+ #define R_USBF_DSCITVL_DITVL_Msk           (0xff00UL)    /*!< DITVL (Bitfield-Mask: 0xff)                           */
 /* =======================================================  DSTAT_EN  ======================================================== */
- #define R_USBF_DSTAT_EN_EN0_Pos            (0UL)          /*!< EN0 (Bit 0)                                           */
- #define R_USBF_DSTAT_EN_EN0_Msk            (0x1UL)        /*!< EN0 (Bitfield-Mask: 0x01)                             */
- #define R_USBF_DSTAT_EN_EN1_Pos            (1UL)          /*!< EN1 (Bit 1)                                           */
- #define R_USBF_DSTAT_EN_EN1_Msk            (0x2UL)        /*!< EN1 (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_DSTAT_EN_EN0_Pos            (0UL)         /*!< EN0 (Bit 0)                                           */
+ #define R_USBF_DSTAT_EN_EN0_Msk            (0x1UL)       /*!< EN0 (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_DSTAT_EN_EN1_Pos            (1UL)         /*!< EN1 (Bit 1)                                           */
+ #define R_USBF_DSTAT_EN_EN1_Msk            (0x2UL)       /*!< EN1 (Bitfield-Mask: 0x01)                             */
 /* =======================================================  DSTAT_ER  ======================================================== */
- #define R_USBF_DSTAT_ER_ER0_Pos            (0UL)          /*!< ER0 (Bit 0)                                           */
- #define R_USBF_DSTAT_ER_ER0_Msk            (0x1UL)        /*!< ER0 (Bitfield-Mask: 0x01)                             */
- #define R_USBF_DSTAT_ER_ER1_Pos            (1UL)          /*!< ER1 (Bit 1)                                           */
- #define R_USBF_DSTAT_ER_ER1_Msk            (0x2UL)        /*!< ER1 (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_DSTAT_ER_ER0_Pos            (0UL)         /*!< ER0 (Bit 0)                                           */
+ #define R_USBF_DSTAT_ER_ER0_Msk            (0x1UL)       /*!< ER0 (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_DSTAT_ER_ER1_Pos            (1UL)         /*!< ER1 (Bit 1)                                           */
+ #define R_USBF_DSTAT_ER_ER1_Msk            (0x2UL)       /*!< ER1 (Bitfield-Mask: 0x01)                             */
 /* =======================================================  DSTAT_END  ======================================================= */
- #define R_USBF_DSTAT_END_END0_Pos          (0UL)          /*!< END0 (Bit 0)                                          */
- #define R_USBF_DSTAT_END_END0_Msk          (0x1UL)        /*!< END0 (Bitfield-Mask: 0x01)                            */
- #define R_USBF_DSTAT_END_END1_Pos          (1UL)          /*!< END1 (Bit 1)                                          */
- #define R_USBF_DSTAT_END_END1_Msk          (0x2UL)        /*!< END1 (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_DSTAT_END_END0_Pos          (0UL)         /*!< END0 (Bit 0)                                          */
+ #define R_USBF_DSTAT_END_END0_Msk          (0x1UL)       /*!< END0 (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_DSTAT_END_END1_Pos          (1UL)         /*!< END1 (Bit 1)                                          */
+ #define R_USBF_DSTAT_END_END1_Msk          (0x2UL)       /*!< END1 (Bitfield-Mask: 0x01)                            */
 /* =======================================================  DSTAT_TC  ======================================================== */
- #define R_USBF_DSTAT_TC_TC0_Pos            (0UL)          /*!< TC0 (Bit 0)                                           */
- #define R_USBF_DSTAT_TC_TC0_Msk            (0x1UL)        /*!< TC0 (Bitfield-Mask: 0x01)                             */
- #define R_USBF_DSTAT_TC_TC1_Pos            (1UL)          /*!< TC1 (Bit 1)                                           */
- #define R_USBF_DSTAT_TC_TC1_Msk            (0x2UL)        /*!< TC1 (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_DSTAT_TC_TC0_Pos            (0UL)         /*!< TC0 (Bit 0)                                           */
+ #define R_USBF_DSTAT_TC_TC0_Msk            (0x1UL)       /*!< TC0 (Bitfield-Mask: 0x01)                             */
+ #define R_USBF_DSTAT_TC_TC1_Pos            (1UL)         /*!< TC1 (Bit 1)                                           */
+ #define R_USBF_DSTAT_TC_TC1_Msk            (0x2UL)       /*!< TC1 (Bitfield-Mask: 0x01)                             */
 /* =======================================================  DSTAT_SUS  ======================================================= */
- #define R_USBF_DSTAT_SUS_SUS0_Pos          (0UL)          /*!< SUS0 (Bit 0)                                          */
- #define R_USBF_DSTAT_SUS_SUS0_Msk          (0x1UL)        /*!< SUS0 (Bitfield-Mask: 0x01)                            */
- #define R_USBF_DSTAT_SUS_SUS1_Pos          (1UL)          /*!< SUS1 (Bit 1)                                          */
- #define R_USBF_DSTAT_SUS_SUS1_Msk          (0x2UL)        /*!< SUS1 (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_DSTAT_SUS_SUS0_Pos          (0UL)         /*!< SUS0 (Bit 0)                                          */
+ #define R_USBF_DSTAT_SUS_SUS0_Msk          (0x1UL)       /*!< SUS0 (Bitfield-Mask: 0x01)                            */
+ #define R_USBF_DSTAT_SUS_SUS1_Pos          (1UL)         /*!< SUS1 (Bit 1)                                          */
+ #define R_USBF_DSTAT_SUS_SUS1_Msk          (0x2UL)       /*!< SUS1 (Bitfield-Mask: 0x01)                            */
 
 /* =========================================================================================================================== */
 /* ================                                           R_BSC                                           ================ */

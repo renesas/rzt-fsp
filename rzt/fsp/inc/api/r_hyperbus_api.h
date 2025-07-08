@@ -88,6 +88,40 @@ typedef enum e_hyperbus_latency_count
     HYPERBUS_LATENCY_COUNT_31,         ///< Latency count 31
 } hyperbus_latency_count_t;
 
+/** Command-address bit information in HyperBus protocol */
+typedef struct st_hyperbus_command_address
+{
+    union
+    {
+        uint64_t command_address_info;                  ///< Command/Address bits in HyperBus protocol
+        struct
+        {
+            uint64_t lower_column_address         : 3;  ///< Lower Column Address
+            uint64_t reserved                     : 13; ///< Reserved
+            uint64_t row_and_upper_column_address : 29; ///< Row & Upper Column Address
+            uint64_t burst_type                   : 1;  ///< Burst Type
+            uint64_t address_space                : 1;  ///< Address Space (AS)
+            uint64_t read_operation               : 1;  ///< R/W#
+            uint64_t                              : 16;
+        } command_address_info_b;
+    };
+} hyperbus_command_address_t;
+
+/** Structure to define a direct transfer. */
+typedef struct st_hyperbus_direct_transfer
+{
+    hyperbus_command_address_t command_address; ///< Command/Address
+
+    union
+    {
+        uint64_t data_u64;                      ///< Data (64-bit)
+        uint32_t data;                          ///< Data
+    };
+
+    uint8_t dummy_cycles;                       ///< Number of dummy cycles
+    uint8_t data_length;                        ///< Data length
+} hyperbus_direct_transfer_t;
+
 /** Status */
 typedef struct st_hyperbus_status
 {
@@ -132,7 +166,14 @@ typedef struct st_hyperbus_api
      * @param[in] p_ctrl               Pointer to a driver handle
      * @param[in] access_space         Access space
      **/
-    fsp_err_t (* accessSpaceSet)(hyperbus_ctrl_t * p_ctrl, hyperbus_space_select_t access_space);
+    fsp_err_t (* accessSpaceSet)(hyperbus_ctrl_t * const p_ctrl, hyperbus_space_select_t access_space);
+
+    /** Direct Read/Write raw data from/to the HyperBus.
+     *
+     * @param[in] p_ctrl               Pointer to a driver handle
+     * @param[in] p_transfer           Pointer to command-address, data values and lengths
+     **/
+    fsp_err_t (* directTransfer)(hyperbus_ctrl_t * const p_ctrl, hyperbus_direct_transfer_t * const p_transfer);
 
     /** Program any number of bytes of data within a boundary into the flash.
      *
@@ -141,7 +182,7 @@ typedef struct st_hyperbus_api
      * @param[in] p_dest               The location in the flash device address space to write the data to. Refer to the accessible address in the data sheet of the connected device and set it within this range.
      * @param[in] byte_count           The number of bytes to write. Refer to the write data size and boundaries in the data sheet of the connected device and specify within a range that does not exceed these.
      **/
-    fsp_err_t (* write)(hyperbus_ctrl_t * p_ctrl, uint8_t const * const p_src, uint8_t * const p_dest,
+    fsp_err_t (* write)(hyperbus_ctrl_t * const p_ctrl, uint8_t const * const p_src, uint8_t * const p_dest,
                         uint32_t byte_count);
 
     /** Erase a certain number of bytes of the flash.
@@ -151,26 +192,26 @@ typedef struct st_hyperbus_api
      * @param[in] byte_count           The number of bytes to erase. Set to HYPERBUS_ERASE_SIZE_CHIP_ERASE to erase entire
      *                                 chip.
      **/
-    fsp_err_t (* erase)(hyperbus_ctrl_t * p_ctrl, uint8_t * const p_device_address, uint32_t byte_count);
+    fsp_err_t (* erase)(hyperbus_ctrl_t * const p_ctrl, uint8_t * const p_device_address, uint32_t byte_count);
 
     /** Get the write or erase status of the flash.
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      * @param[out] p_status            Current status of the HyperBus flash device stored here.
      **/
-    fsp_err_t (* statusGet)(hyperbus_ctrl_t * ctrl_t, hyperbus_status_t * const p_status);
+    fsp_err_t (* statusGet)(hyperbus_ctrl_t * const ctrl_t, hyperbus_status_t * const p_status);
 
     /** AutoCalibrate the HyperBus driver module. Expected to be used when auto-calibrating HyperRAM device.
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
-    fsp_err_t (* autoCalibrate)(hyperbus_ctrl_t * p_ctrl);
+    fsp_err_t (* autoCalibrate)(hyperbus_ctrl_t * const p_ctrl);
 
     /** Close the HyperBus driver module.
      *
      * @param[in] p_ctrl               Pointer to a driver handle
      **/
-    fsp_err_t (* close)(hyperbus_ctrl_t * ctrl_t);
+    fsp_err_t (* close)(hyperbus_ctrl_t * const ctrl_t);
 } hyperbus_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */

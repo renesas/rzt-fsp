@@ -30,7 +30,6 @@
 #define USB_VAL_100       (100U)
 #define USB_VAL_256       (256U)
 #define USB_VAL_512       (512U)
-#define USB_VAL_1024      (1024U)
 #define USB_VAL_X20       (0x00000020U)
 #define USB_VAL_INTR      (0x00000037U)
 #define USB_VAL_X1000     (0x00001000U)

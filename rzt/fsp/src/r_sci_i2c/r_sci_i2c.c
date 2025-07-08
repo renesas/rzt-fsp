@@ -129,16 +129,17 @@ i2c_master_api_t const g_i2c_master_on_sci =
 /******************************************************************************************************************//**
  * Opens the I2C device.
  *
- * @retval  FSP_SUCCESS               Device opened without issue.
- * @retval  FSP_ERR_ALREADY_OPEN      Module is already open.
- * @retval  FSP_ERR_ASSERTION         Parameter check failure due to one or more reasons below:
- *                                    1. p_ctrl or p_cfg is NULL.
- *                                    2. extended parameter is NULL.
- *                                    3. Clock rate requested is greater than 400KHz.
- *                                    4. Invalid IRQ number assigned.
- *                                    5. Invalid clock setting assigned.
- *                                    6. If p_transfer_rx is not NULL, p_transfer_tx is NULL.
- * @retval  FSP_ERR_INVALID_ARGUMENT  Invalid input parameter.
+ * @retval  FSP_SUCCESS                       Device opened without issue.
+ * @retval  FSP_ERR_ALREADY_OPEN              Module is already open.
+ * @retval  FSP_ERR_IP_CHANNEL_NOT_PRESENT    Channel is not available on this MCU.
+ * @retval  FSP_ERR_ASSERTION                 Parameter check failure due to one or more reasons below:
+ *                                            1. p_ctrl or p_cfg is NULL.
+ *                                            2. extended parameter is NULL.
+ *                                            3. Clock rate requested is greater than 400KHz.
+ *                                            4. Invalid IRQ number assigned.
+ *                                            5. Invalid clock setting assigned.
+ *                                            6. If p_transfer_rx is not NULL, p_transfer_tx is NULL.
+ * @retval  FSP_ERR_INVALID_ARGUMENT          Invalid input parameter.
  **********************************************************************************************************************/
 fsp_err_t R_SCI_I2C_Open (i2c_master_ctrl_t * const p_ctrl, i2c_master_cfg_t const * const p_cfg)
 {
@@ -151,6 +152,8 @@ fsp_err_t R_SCI_I2C_Open (i2c_master_ctrl_t * const p_ctrl, i2c_master_cfg_t con
     FSP_ASSERT(p_cfg->txi_irq >= (IRQn_Type) 0);
     FSP_ASSERT(p_cfg->tei_irq >= (IRQn_Type) 0);
     FSP_ERROR_RETURN(SCI_I2C_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
+    FSP_ERROR_RETURN((p_cfg->channel < 8 * sizeof(unsigned int)) && (BSP_FEATURE_SCI_CHANNELS & (1U << p_cfg->channel)),
+                     FSP_ERR_IP_CHANNEL_NOT_PRESENT);
     sci_i2c_extended_cfg_t * pextend = (sci_i2c_extended_cfg_t *) p_cfg->p_extend;
     if (true == pextend->clock_settings.bitrate_modulation)
     {
@@ -597,6 +600,7 @@ static void sci_i2c_abort_seq_master (sci_i2c_instance_ctrl_t * const p_instance
     /* Update the transfer descriptor to show no longer in-progress and an error */
     p_instance_ctrl->remain    = 0U;
     p_instance_ctrl->restarted = false;
+    p_instance_ctrl->restart   = false;
 
     /* Update the transfer descriptor to make sure interrupts no longer process */
     p_instance_ctrl->addr_loaded = p_instance_ctrl->addr_total;
@@ -665,7 +669,7 @@ static void sci_i2c_open_hw_master (sci_i2c_instance_ctrl_t * const p_instance_c
      * - Write the Noise filter setting.
      * - Enable the Noise filter.
      */
-    p_instance_ctrl->p_reg->CCR1 = (uint32_t) pextend->clock_settings.snfr_value << R_SCI0_CCR1_NFCS_Pos |
+    p_instance_ctrl->p_reg->CCR1 = (uint32_t) (pextend->clock_settings.snfr_value << R_SCI0_CCR1_NFCS_Pos) |
                                    R_SCI0_CCR1_NFEN_Msk;
 
     /* Clear status flags. */
@@ -1124,7 +1128,6 @@ static void sci_i2c_reconfigure_interrupts_for_transfer (sci_i2c_instance_ctrl_t
         }
 
         /* Set the interrupt source to RXI/TXI */
-        p_instance_ctrl->p_reg->ICR |= R_SCI0_ICR_IICACKT_Msk;
         p_instance_ctrl->p_reg->CCR0 =
             (R_SCI0_CCR0_TE_Msk | R_SCI0_CCR0_RE_Msk | R_SCI0_CCR0_TEIE_Msk | R_SCI0_CCR0_TIE_Msk);
         FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->CCR0_b.RE, 1);

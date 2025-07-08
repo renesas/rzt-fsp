@@ -228,6 +228,7 @@ typedef enum e_usb_class
     USB_CLASS_PMSC,                    ///< PMSC Class
     USB_CLASS_HPRN,                    ///< HPRN Class
     USB_CLASS_HUVC,                    ///< HUVC Class
+    USB_CLASS_HAUD,                    ///< HAUD Class
     USB_CLASS_REQUEST,                 ///< USB Class Request
     USB_CLASS_HUB,                     ///< HUB Class
     USB_CLASS_END,                     ///< USB Class End Code
@@ -293,7 +294,7 @@ typedef enum e_usb_address
 
 /** USB control block.  Allocate an instance specific control block to pass into the USB API calls.
  */
-typedef void    usb_ctrl_t;
+typedef void usb_ctrl_t;
 typedef void (usb_compliance_cb_t)(void *);
 
 typedef struct st_usb_descriptor
@@ -364,7 +365,7 @@ typedef void        (usb_callback_t)(usb_event_info_t *, usb_hdl_t, usb_onoff_t)
 #if (BSP_CFG_RTOS == 2)
 typedef TaskHandle_t usb_hdl_t;
 typedef void         (usb_callback_t)(usb_event_info_t *, usb_hdl_t, usb_onoff_t);
-#endif /* #if (BSP_CFG_RTOS == 2) */
+#endif                                 /* #if (BSP_CFG_RTOS == 2) */
 
 #if (BSP_CFG_RTOS != 1)
 typedef uint32_t ULONG;
@@ -476,7 +477,7 @@ typedef struct st_usb_api
      * @param[in]  p_ctrl       Pointer to control structure.
      * @param[in]  p_buf        Pointer to area that stores read data.
      * @param[in]  size         Read request size.
-     * @param[in]  pipe_number      Pipe Number.
+     * @param[in]  pipe_number  Pipe Number.
      */
     fsp_err_t (* pipeRead)(usb_ctrl_t * const p_ctrl, uint8_t * p_buf, uint32_t size, uint8_t pipe_number);
 
@@ -485,14 +486,14 @@ typedef struct st_usb_api
      * @param[in]  p_ctrl       Pointer to control structure.
      * @param[in]  p_buf        Pointer to area that stores write data.
      * @param[in]  size         Read request size.
-     * @param[in]  pipe_number      Pipe Number.
+     * @param[in]  pipe_number  Pipe Number.
      */
     fsp_err_t (* pipeWrite)(usb_ctrl_t * const p_ctrl, uint8_t * p_buf, uint32_t size, uint8_t pipe_number);
 
     /** Stop USB data read/write processing to specified pipe
      *
      * @param[in]  p_ctrl       Pointer to control structure.
-     * @param[in]  pipe_number      Pipe Number.
+     * @param[in]  pipe_number  Pipe Number.
      */
     fsp_err_t (* pipeStop)(usb_ctrl_t * const p_ctrl, uint8_t pipe_number);
 
@@ -507,8 +508,8 @@ typedef struct st_usb_api
     /** Get pipe information
      *
      * @param[in]  p_ctrl       Pointer to control structure.
-     * @param[in]  p_info           Pointer to usb_pipe_t structure area.
-     * @param[in]  pipe_number      Pipe Number.
+     * @param[in]  p_info       Pointer to usb_pipe_t structure area.
+     * @param[in]  pipe_number  Pipe Number.
      */
     fsp_err_t (* pipeInfoGet)(usb_ctrl_t * const p_ctrl, usb_pipe_t * p_info, uint8_t pipe_number);
 
@@ -645,6 +646,7 @@ typedef struct st_usb_api
      * @param[in]  p_ctrl           USB control structure.
      */
     fsp_err_t (* otgSRP)(usb_ctrl_t * const p_ctrl);
+
 } usb_api_t;
 
 /** This structure encompasses everything that is needed to use an instance of this interface. */

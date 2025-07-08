@@ -43,9 +43,10 @@ FSP_HEADER
 /** Communication speed options */
 typedef enum e_i2c_slave_rate
 {
-    I2C_SLAVE_RATE_STANDARD = 100000,  ///< 100 kHz
-    I2C_SLAVE_RATE_FAST     = 400000,  ///< 400 kHz
-    I2C_SLAVE_RATE_FASTPLUS = 1000000  ///< 1 MHz
+    I2C_SLAVE_RATE_STANDARD  = 100000,  ///< 100 kHz
+    I2C_SLAVE_RATE_FAST      = 400000,  ///< 400 kHz
+    I2C_SLAVE_RATE_FASTPLUS  = 1000000, ///< 1 MHz
+    I2C_SLAVE_RATE_HIGHSPEED = 3400000  ///< 3.4 MHz
 } i2c_slave_rate_t;
 
 /** Addressing mode options */
@@ -94,9 +95,9 @@ typedef struct st_i2c_slave_cfg
     uint8_t   eri_ipl;                                       ///< Interrupt priority level for error interrupt
     bool      clock_stretching_enable;                       ///< Low Hold SCL during reception for the period between the 9th and the 1st clock cycle
 
-    /** DTC support */
-    transfer_instance_t const * p_transfer_tx;               ///< DTC instance for I2C transmit.Set to NULL if unused.
-    transfer_instance_t const * p_transfer_rx;               ///< DTC instance for I2C receive. Set to NULL if unused.
+    /** Transfer API support */
+    transfer_instance_t const * p_transfer_tx;               ///< Transfer instance for I2C transmit. Set to NULL if unused.
+    transfer_instance_t const * p_transfer_rx;               ///< Transfer instance for I2C receive. Set to NULL if unused.
 
     /** Parameters to control software behavior */
     void (* p_callback)(i2c_slave_callback_args_t * p_args); ///< Pointer to callback function

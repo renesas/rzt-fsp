@@ -65,6 +65,14 @@ typedef rsip_ret_t (* rsip_func_ecdsa_sign_t)(const uint32_t InData_KeyIndex[], 
 typedef rsip_ret_t (* rsip_func_ecdsa_verify_t)(const uint32_t InData_KeyIndex[], const uint32_t InData_MsgDgst[],
                                                 const uint32_t InData_Signature[]);
 
+/* EdDSA */
+typedef rsip_ret_t (* rsip_func_eddsa_sign_t)(const uint32_t InData_PrivKeyIndex[], const uint32_t InData_PubKeyIndex[],
+                                              const uint32_t InData_Msg[], const uint64_t InData_MsgLen,
+                                              uint32_t OutData_Signature[]);
+
+typedef rsip_ret_t (* rsip_func_eddsa_verify_t)(const uint32_t InData_KeyIndex[], const uint32_t InData_Msg[],
+                                                const uint64_t InData_MsgLen, const uint32_t InData_Signature[]);
+
 /* ECDH */
 typedef rsip_ret_t (* rsip_func_ecdh_t)(const uint32_t InData_PubKey[], const uint32_t InData_KeyIndex[],
                                         uint32_t OutData_EncSecret[]);
@@ -86,7 +94,7 @@ typedef rsip_ret_t (* rsip_func_kdf_ecdh_secret_key_import_t)(const uint32_t InD
                                                               uint32_t       OutData_KeyIndex[]);
 typedef rsip_ret_t (* rsip_func_kdf_ecdh_secret_msg_wrap_t)(const uint32_t InData_EncSecret[],
                                                             uint32_t       OutData_EncMsg[]);
-typedef rsip_ret_t (* rsip_func_kdf_mac_key_import_t)(const uint32_t InData_KDFInfo[],
+typedef rsip_ret_t (* rsip_func_kdf_dkm_key_import_t)(const uint32_t InData_KDFInfo[],
                                                       const uint32_t InData_KDFInfo_Count[],
                                                       const uint32_t InData_OutDataLength[],
                                                       uint32_t       OutData_KeyIndex[]);
@@ -99,9 +107,6 @@ typedef rsip_ret_t (* rsip_func_kdf_derived_iv_wrap_t)(const uint32_t InData_KDF
                                                        const uint32_t InData_OutDataLocation[],
                                                        const uint32_t InData_SeqNum[],
                                                        uint32_t       OutData_EncIV[]);
-typedef rsip_ret_t (* rsip_func_kdf_tls12_prf_verify_data_compute_t)(const uint32_t InData_Hash[],
-                                                                     const uint32_t InData_KeyIndex[],
-                                                                     uint32_t       OutData_Verify_data[]);
 
 /* OTF */
 typedef rsip_ret_t (* rsip_func_otf_t)(const uint32_t InData_KeyIndex[], const uint32_t InData_DOTFSEED[]);
@@ -191,73 +196,93 @@ typedef struct st_rsip_func_subsetpki_rsa_verify
                            uint32_t OutData_EncCertificateInfo[]);
 } rsip_func_subset_pki_rsa_verify_t;
 
+/** Parsed key type */
+typedef struct st_rsip_key_type_extend
+{
+    uint8_t alg;                       ///< Key algorithm
+    uint8_t subtype;                   ///< Key subtype
+} rsip_key_type_extend_t;
+
 /**********************************************************************************************************************
  * Exported global variables
  **********************************************************************************************************************/
 
 extern const bool g_sha_enabled[RSIP_HASH_TYPE_NUM];
-extern const bool g_hmac_enabled[RSIP_KEY_HMAC_NUM];
+extern const bool g_hmac_enabled[RSIP_PRV_KEY_SUBTYPE_HMAC_NUM];
+extern const bool g_kdf_sha_enabled[RSIP_HASH_TYPE_NUM];
+extern const bool g_kdf_hmac_enabled[RSIP_PRV_KEY_SUBTYPE_HMAC_NUM];
 
 extern const uint32_t g_pki_hash_type[RSIP_HASH_TYPE_NUM];
 
-extern const rsip_func_key_generate_t gp_func_key_generate_aes[RSIP_KEY_AES_NUM];
-extern const rsip_func_key_generate_t gp_func_key_generate_xts_aes[RSIP_KEY_AES_NUM];
-extern const rsip_func_key_generate_t gp_func_key_generate_chacha[RSIP_KEY_CHACHA_NUM];
-extern const rsip_func_key_generate_t gp_func_key_generate_hmac[RSIP_KEY_HMAC_NUM];
+extern const rsip_func_key_generate_t gp_func_key_generate_aes[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_key_generate_t gp_func_key_generate_xts_aes[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_key_generate_t gp_func_key_generate_chacha[RSIP_PRV_KEY_SUBTYPE_CHACHA_NUM];
+extern const rsip_func_key_generate_t gp_func_key_generate_hmac[RSIP_PRV_KEY_SUBTYPE_HMAC_NUM];
 
-extern const rsip_func_key_pair_generate_t gp_func_key_pair_generate_ecc[RSIP_KEY_ECC_NUM];
-extern const rsip_func_key_pair_generate_t gp_func_key_pair_generate_rsa[RSIP_KEY_RSA_NUM];
+extern const rsip_func_key_pair_generate_t gp_func_key_pair_generate_ecc[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
+extern const rsip_func_key_pair_generate_t gp_func_key_pair_generate_rsa[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
 
-extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_aes[RSIP_KEY_AES_NUM];
-extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_xts_aes[RSIP_KEY_AES_NUM];
-extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_chacha[RSIP_KEY_CHACHA_NUM];
-extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_ecc_pub[RSIP_KEY_ECC_NUM];
-extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_ecc_priv[RSIP_KEY_ECC_NUM];
-extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_rsa_pub[RSIP_KEY_RSA_NUM];
-extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_rsa_priv[RSIP_KEY_RSA_NUM];
-extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_hmac[RSIP_KEY_HMAC_NUM];
+extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_aes[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_xts_aes[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_chacha[RSIP_PRV_KEY_SUBTYPE_CHACHA_NUM];
+extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_ecc_pub[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
+extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_ecc_priv[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
+extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_rsa_pub[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
+extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_rsa_priv[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
+extern const rsip_func_encrypted_key_wrap_t gp_func_encrypted_key_wrap_hmac[RSIP_PRV_KEY_SUBTYPE_HMAC_NUM];
 
-extern const rsip_func_rfc3394_key_wrap_t   gp_func_rfc3394_key_wrap[RSIP_KEY_AES_NUM];
-extern const rsip_func_rfc3394_key_unwrap_t gp_func_rfc3394_key_unwrap[RSIP_KEY_AES_NUM];
+extern const rsip_func_rfc3394_key_wrap_t   gp_func_rfc3394_key_wrap[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_rfc3394_key_unwrap_t gp_func_rfc3394_key_unwrap[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
 
-extern const rsip_func_subset_aes_cipher_t gp_func_aes_cipher[RSIP_KEY_AES_NUM];
-extern const rsip_func_subset_aes_xts_t    gp_func_aes_xts_enc[RSIP_KEY_AES_NUM];
-extern const rsip_func_subset_aes_xts_t    gp_func_aes_xts_dec[RSIP_KEY_AES_NUM];
-extern const rsip_func_subset_aes_gcm_t    gp_func_aes_gcm_enc[RSIP_KEY_AES_NUM];
-extern const rsip_func_subset_aes_gcm_t    gp_func_aes_gcm_dec[RSIP_KEY_AES_NUM];
-extern const rsip_func_subset_aes_ccm_t    gp_func_aes_ccm_enc[RSIP_KEY_AES_NUM];
-extern const rsip_func_subset_aes_ccm_t    gp_func_aes_ccm_dec[RSIP_KEY_AES_NUM];
-extern const rsip_func_subset_aes_cmac_t   gp_func_aes_cmac[RSIP_KEY_AES_NUM];
+extern const rsip_func_subset_aes_cipher_t gp_func_aes_cipher[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_subset_aes_xts_t    gp_func_aes_xts_enc[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_subset_aes_xts_t    gp_func_aes_xts_dec[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_subset_aes_gcm_t    gp_func_aes_gcm_enc[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_subset_aes_gcm_t    gp_func_aes_gcm_dec[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_subset_aes_ccm_t    gp_func_aes_ccm_enc[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_subset_aes_ccm_t    gp_func_aes_ccm_dec[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_subset_aes_cmac_t   gp_func_aes_cmac[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
 
-extern const rsip_func_ecdsa_sign_t   gp_func_ecdsa_sign[RSIP_KEY_ECC_NUM];
-extern const rsip_func_ecdsa_verify_t gp_func_ecdsa_verify[RSIP_KEY_ECC_NUM];
+extern const rsip_func_ecdsa_sign_t   gp_func_ecdsa_sign[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
+extern const rsip_func_ecdsa_verify_t gp_func_ecdsa_verify[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
 
-extern const rsip_func_ecdh_t gp_func_ecdh_wrapped[RSIP_KEY_ECC_NUM];
-extern const rsip_func_ecdh_t gp_func_ecdh_plain[RSIP_KEY_ECC_NUM];
+extern const rsip_func_eddsa_sign_t   gp_func_eddsa_sign[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
+extern const rsip_func_eddsa_verify_t gp_func_eddsa_verify[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
 
-extern const rsip_func_rsa_t gp_func_rsa_public[RSIP_KEY_RSA_NUM];
-extern const rsip_func_rsa_t gp_func_rsa_private[RSIP_KEY_RSA_NUM];
+extern const rsip_func_ecdh_t gp_func_ecdh_wrapped[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
+extern const rsip_func_ecdh_t gp_func_ecdh_plain[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
 
-extern const rsip_func_subset_pki_ecdsa_verify_t gp_func_pki_ecdsa_verify[RSIP_KEY_ECC_NUM];
-extern const rsip_func_subset_pki_rsa_verify_t   gp_func_pki_rsa_verify[RSIP_KEY_RSA_NUM];
-extern const rsip_func_pki_cert_key_import_t     gp_func_pki_cert_key_import_ecc[RSIP_KEY_ECC_NUM];
-extern const rsip_func_pki_cert_key_import_t     gp_func_pki_cert_key_import_rsa[RSIP_KEY_RSA_NUM];
+extern const rsip_func_rsa_t gp_func_rsa_public[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
+extern const rsip_func_rsa_t gp_func_rsa_private[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
+
+extern const rsip_func_subset_pki_ecdsa_verify_t gp_func_pki_ecdsa_verify[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
+extern const rsip_func_subset_pki_rsa_verify_t   gp_func_pki_rsa_verify[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
+extern const rsip_func_pki_cert_key_import_t     gp_func_pki_cert_key_import_ecc[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
+extern const rsip_func_pki_cert_key_import_t     gp_func_pki_cert_key_import_rsa[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
 
 extern const rsip_func_rng_t   gp_func_rng;
 extern const rsip_func_ghash_t gp_func_ghash_compute;
 
-extern const rsip_func_kdf_ecdh_secret_key_import_t gp_func_kdf_ecdh_secret_key_import[RSIP_KEY_KDF_HMAC_NUM];
-extern const rsip_func_kdf_ecdh_secret_msg_wrap_t   gp_func_kdf_ecdh_secret_msg_wrap[RSIP_KEY_KDF_HMAC_NUM];
-extern const rsip_func_kdf_mac_key_import_t         gp_func_kdf_mac_key_import[RSIP_KEY_KDF_HMAC_NUM];
-extern const rsip_func_kdf_derived_key_import_t     gp_func_kdf_derived_key_import_aes
-[RSIP_KEY_KDF_HMAC_NUM][RSIP_KEY_AES_NUM];
-extern const rsip_func_kdf_derived_key_import_t gp_func_kdf_derived_key_import_hmac
-[RSIP_KEY_KDF_HMAC_NUM][RSIP_KEY_HMAC_NUM];
-extern const rsip_func_kdf_derived_iv_wrap_t               gp_func_kdf_derived_iv_wrap[RSIP_KEY_KDF_HMAC_NUM][3];
-extern const rsip_func_kdf_tls12_prf_verify_data_compute_t gp_func_kdf_tls12_prf_verify_data_compute
-[RSIP_KEY_KDF_HMAC_NUM][2];
+extern const rsip_func_kdf_ecdh_secret_msg_wrap_t gp_func_kdf_sha_ecdh_secret_msg_wrap[RSIP_PRV_DKM_SUBTYPE_SHA_NUM];
 
-extern const rsip_func_otf_t gp_func_otf[RSIP_OTF_CHANNEL_NUM][RSIP_KEY_AES_NUM];
+extern const rsip_func_kdf_derived_key_import_t gp_func_kdf_sha_derived_key_import_aes
+[RSIP_PRV_DKM_SUBTYPE_SHA_NUM][RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_kdf_derived_iv_wrap_t gp_func_kdf_sha_derived_iv_wrap[RSIP_PRV_DKM_SUBTYPE_SHA_NUM][2];
+
+extern const rsip_func_kdf_ecdh_secret_key_import_t gp_func_kdf_hmac_ecdh_secret_key_import[
+    RSIP_PRV_KEY_SUBTYPE_HMAC_NUM
+];
+extern const rsip_func_kdf_ecdh_secret_msg_wrap_t gp_func_kdf_hmac_ecdh_secret_msg_wrap[RSIP_PRV_KEY_SUBTYPE_HMAC_NUM];
+extern const rsip_func_kdf_dkm_key_import_t       gp_func_kdf_hmac_dkm_key_import[RSIP_PRV_KEY_SUBTYPE_HMAC_NUM];
+
+extern const rsip_func_kdf_derived_key_import_t gp_func_kdf_hmac_derived_key_import_aes
+[RSIP_PRV_DKM_SUBTYPE_HMAC_NUM][RSIP_PRV_KEY_SUBTYPE_AES_NUM];
+extern const rsip_func_kdf_derived_key_import_t gp_func_kdf_hmac_derived_key_import_hmac
+[RSIP_PRV_DKM_SUBTYPE_HMAC_NUM][RSIP_PRV_KEY_SUBTYPE_HMAC_NUM];
+extern const rsip_func_kdf_derived_iv_wrap_t gp_func_kdf_hmac_derived_iv_wrap[RSIP_PRV_DKM_SUBTYPE_HMAC_NUM
+][3];
+
+extern const rsip_func_otf_t gp_func_otf[RSIP_OTF_CHANNEL_NUM][RSIP_PRV_KEY_SUBTYPE_AES_NUM];
 
 /**********************************************************************************************************************
  * Public Function Prototypes
@@ -280,25 +305,20 @@ rsip_ret_t r_rsip_close(void);
 /*******************************************************************************************************************//**
  * Sets Key Update Key (KUK).
  *
- * @param[in] p_key_update_key_value KUK value.
+ * @param[in] p_key_update_key KUK.
  **********************************************************************************************************************/
-void r_rsip_kuk_set(const uint8_t * p_key_update_key_value);
+void r_rsip_kuk_set(const void * p_key_update_key);
 
 /*******************************************************************************************************************//**
- * Gets parameters for RFC3394 AES Key Wrap from target key type.
+ * Gets parameter for RFC3394 AES Key Wrap from target key type.
  *
  * @param[in]  key_type         Key type of target key.
  * @param[out] wrapped_key_type Key type number used for primitives.
- * @param[out] key_index_size   Word size of key index.
- * @param[out] wrapped_key_size Word size of AES-wrapped key.
  *
  * @retval FSP_SUCCESS              Normal termination.
  * @retval FSP_ERR_INVALID_ARGUMENT Invalid key type.
  **********************************************************************************************************************/
-fsp_err_t get_rfc3394_key_wrap_param(rsip_key_type_t key_type,
-                                     uint32_t      * wrapped_key_type,
-                                     uint32_t      * key_index_size,
-                                     uint32_t      * wrapped_key_size);
+fsp_err_t r_rsip_get_rfc3394_key_wrap_param(rsip_key_type_t key_type, uint32_t * wrapped_key_type);
 
 /*******************************************************************************************************************//**
  * 1. Initialize hash operation.
@@ -396,7 +416,7 @@ rsip_ret_t r_rsip_sha1sha2_init_final(rsip_hash_type_t hash_type,
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
 rsip_ret_t r_rsip_sha1sha2_resume_final(rsip_hash_type_t hash_type,
-                                        const uint8_t  * p_message,
+                                        uint8_t        * p_message,
                                         uint64_t         message_length,
                                         uint64_t         total_message_length,
                                         uint8_t        * p_digest,
@@ -417,7 +437,7 @@ rsip_ret_t r_rsip_sha1sha2_resume_final(rsip_hash_type_t hash_type,
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
 rsip_ret_t r_rsip_sha1sha2_final(rsip_hash_type_t hash_type,
-                                 const uint8_t  * p_message,
+                                 uint8_t        * p_message,
                                  uint64_t         message_length,
                                  uint64_t         total_message_length,
                                  uint8_t        * p_digest,
@@ -479,11 +499,11 @@ rsip_ret_t r_rsip_hmac_update(const rsip_wrapped_key_t * p_wrapped_key,
 /*******************************************************************************************************************//**
  * Suspend HMAC operation.
  *
- * @param[in,out] internal_state Buffer of internal state.
+ * @param[in,out] p_handle Pointer to handle.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_hmac_suspend(uint32_t * internal_state);
+rsip_ret_t r_rsip_hmac_suspend(rsip_hmac_handle_t * p_handle);
 
 /*******************************************************************************************************************//**
  * 1. Initialize HMAC operation.
@@ -543,7 +563,7 @@ rsip_ret_t r_rsip_hmac_resume_final(const rsip_wrapped_key_t * p_wrapped_key,
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
 rsip_ret_t r_rsip_hmac_final(const rsip_wrapped_key_t * p_wrapped_key,
-                             const uint8_t            * p_message,
+                             uint8_t                  * p_message,
                              uint64_t                   message_length,
                              uint64_t                   total_message_length,
                              uint8_t                  * p_mac,
@@ -612,12 +632,125 @@ rsip_ret_t r_rsip_hmac_resume_verify(const rsip_wrapped_key_t * p_wrapped_key,
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
 rsip_ret_t r_rsip_hmac_verify(const rsip_wrapped_key_t * p_wrapped_key,
-                              const uint8_t            * p_message,
+                              uint8_t                  * p_message,
                               uint64_t                   message_length,
                               uint64_t                   total_message_length,
                               const uint8_t            * p_mac,
                               uint32_t                   mac_length,
                               uint32_t                 * internal_state);
+
+/*******************************************************************************************************************//**
+ * 1. Initialize hash operation.
+ * 2. Input block message in block length.
+ *
+ * @note Message length must be at least 1 block.
+ *
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_message      Pointer to message. The length is message_length.
+ * @param[in]     message_length Byte length of message.
+ *
+ * @return The return value of the internally called primitive function.
+ **********************************************************************************************************************/
+rsip_ret_t r_rsip_kdf_sha_init_update(rsip_kdf_sha_handle_t * p_handle,
+                                      const uint8_t         * p_message,
+                                      uint64_t                message_length);
+
+/*******************************************************************************************************************//**
+ * 1. Resume hash operation.
+ * 2. Input block message in block length.
+ *
+ * @note Message length must be at least 1 block.
+ *
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_message      Pointer to message. The length is message_length.
+ * @param[in]     message_length Byte length of message.
+ *
+ * @return The return value of the internally called primitive function.
+ **********************************************************************************************************************/
+rsip_ret_t r_rsip_kdf_sha_resume_update(rsip_kdf_sha_handle_t * p_handle,
+                                        const uint8_t         * p_message,
+                                        uint64_t                message_length);
+
+/*******************************************************************************************************************//**
+ * Input block message in block length.
+ *
+ * @note Message length must be at least 1 block.
+ *
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_message      Pointer to message. The length is message_length.
+ * @param[in]     message_length Byte length of message.
+ *
+ * @return The return value of the internally called primitive function.
+ **********************************************************************************************************************/
+rsip_ret_t r_rsip_kdf_sha_update(rsip_kdf_sha_handle_t * p_handle, const uint8_t * p_message, uint64_t message_length);
+
+/*******************************************************************************************************************//**
+ * Suspend hash operation.
+ *
+ * @param[in,out] internal_state Buffer of internal state.
+ *
+ * @return The return value of the internally called primitive function.
+ **********************************************************************************************************************/
+rsip_ret_t r_rsip_kdf_sha_suspend(uint32_t * internal_state);
+
+/*******************************************************************************************************************//**
+ * 1. Initialize hash operation.
+ * 2. Input the remaining message and finalize hash operation.
+ *
+ * @note This function allows empty message.
+ *
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_message      Pointer to message. The length is message_length.
+ * @param[in]     message_length Byte length of message.
+ * @param[in]     total_message_length Byte length of total message length.
+ * @param[out]    p_digest       Pointer to destination of message digest. The length depends on hash type.
+ *
+ * @return The return value of the internally called primitive function.
+ **********************************************************************************************************************/
+rsip_ret_t r_rsip_kdf_sha_init_final(rsip_kdf_sha_handle_t * p_handle,
+                                     const uint8_t         * p_message,
+                                     uint64_t                message_length,
+                                     uint64_t                total_message_length,
+                                     uint8_t               * p_digest);
+
+/*******************************************************************************************************************//**
+ * 1. Resume hash operation.
+ * 2. Input the remaining message and finalize hash operation.
+ *
+ * @note Message length must be at least 1 byte.
+ *
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_message            Pointer to message. The length is message_length.
+ * @param[in]     message_length       Byte length of message.
+ * @param[in]     total_message_length Byte length of total message length.
+ * @param[out]    p_digest             Pointer to destination of message digest. The length depends on hash type.
+ *
+ * @return The return value of the internally called primitive function.
+ **********************************************************************************************************************/
+rsip_ret_t r_rsip_kdf_sha_resume_final(rsip_kdf_sha_handle_t * p_handle,
+                                       uint8_t               * p_message,
+                                       uint64_t                message_length,
+                                       uint64_t                total_message_length,
+                                       uint8_t               * p_digest);
+
+/*******************************************************************************************************************//**
+ * Input the remaining message and finalize hash operation.
+ *
+ * @note Message length must be at least 1 byte.
+ *
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_message            Pointer to message. The length is message_length.
+ * @param[in]     message_length       Byte length of message.
+ * @param[in]     total_message_length Byte length of total message length.
+ * @param[out]    p_digest             Pointer to destination of message digest. The length depends on hash type.
+ *
+ * @return The return value of the internally called primitive function.
+ **********************************************************************************************************************/
+rsip_ret_t r_rsip_kdf_sha_final(rsip_kdf_sha_handle_t * p_handle,
+                                uint8_t               * p_message,
+                                uint64_t                message_length,
+                                uint64_t                total_message_length,
+                                uint8_t               * p_digest);
 
 /*******************************************************************************************************************//**
  * 1. Initialize HMAC operation.
@@ -647,16 +780,20 @@ rsip_ret_t r_rsip_kdf_hmac_init_update(const rsip_wrapped_key_t * p_wrapped_key,
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     p_wrapped_key  Pointer to wrapped key of HMAC key.
- * @param[in]     p_message      Pointer to message. The length is message_length.
- * @param[in]     message_length Byte length of message.
- * @param[in,out] internal_state Buffer of internal state.
+ * @param[in]     p_wrapped_key      Pointer to wrapped key of HMAC key.
+ * @param[in]     p_message          Pointer to message. The length is message_length.
+ * @param[in]     message_length     Byte length of message.
+ * @param[in]     p_wrapped_msg      Pointer to wrapped message. The length is message_length.
+ * @param[in]     wrapped_msg_length Byte length of wrapped message.
+ * @param[in,out] internal_state     Buffer of internal state.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
 rsip_ret_t r_rsip_kdf_hmac_resume_update(const rsip_wrapped_key_t * p_wrapped_key,
                                          const uint8_t            * p_message,
                                          uint64_t                   message_length,
+                                         const uint8_t            * p_wrapped_msg,
+                                         uint64_t                   wrapped_msg_length,
                                          uint32_t                 * internal_state);
 
 /*******************************************************************************************************************//**
@@ -756,39 +893,20 @@ rsip_ret_t r_rsip_kdf_hmac_final(const rsip_wrapped_key_t * p_wrapped_key,
                                  uint32_t                 * internal_state);
 
 /*******************************************************************************************************************//**
- * Converts byte data to word (4-byte) and rounds up it.
+ * Parses key type.
  *
- * @param[in] bytes Byte length
+ * @param[in] key_type Key type.
  *
- * @return Word length
+ * @return Parsed key type.
  ***********************************************************************************************************************/
-RSIP_PRV_STATIC_INLINE uint32_t r_rsip_byte_to_word_convert (const uint32_t bytes)
+RSIP_PRV_STATIC_INLINE rsip_key_type_extend_t r_rsip_key_type_parse (rsip_key_type_t key_type)
 {
-    return (bytes + 3) >> 2;
-}
+    rsip_key_type_extend_t ret =
+    {
+        .alg = RSIP_PRV_KEY_TYPE_VAL_ALG(key_type), .subtype = RSIP_PRV_KEY_TYPE_VAL_SUBTYPE(key_type)
+    };
 
-/*******************************************************************************************************************//**
- * Converts byte data to bit data. This function returns upper 3 digits.
- *
- * @param[in] bytes Byte length
- *
- * @return Bit length (upper 3 digits)
- ***********************************************************************************************************************/
-RSIP_PRV_STATIC_INLINE uint32_t r_rsip_byte_to_bit_convert_upper (const uint64_t bytes)
-{
-    return (uint32_t) (bytes >> 29);
-}
-
-/*******************************************************************************************************************//**
- * Converts byte data to bit data. This function returns lower 32 digits.
- *
- * @param[in] bytes Byte length
- *
- * @return Bit length (lower 32 digits)
- ***********************************************************************************************************************/
-RSIP_PRV_STATIC_INLINE uint32_t r_rsip_byte_to_bit_convert_lower (const uint64_t bytes)
-{
-    return (uint32_t) (bytes << 3);
+    return ret;
 }
 
 #endif                                 /* R_RSIP_PRIVATE_H */

@@ -39,6 +39,7 @@ RSIP_PRV_PRIMITIVE_FUNC
 
 void r_rsip_p29a (const uint32_t InData_DataA[], uint32_t MAX_CNT)
 {
+    RSIP_PRV_PRIMITIVE_ENTRY_NO_RETVAL;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;
@@ -54,16 +55,7 @@ void r_rsip_p29a (const uint32_t InData_DataA[], uint32_t MAX_CNT)
     WR1_PROG(REG_1444H, 0x00020061U);
     WR1_PROG(REG_182CH, 0x00018000U);
     WR1_PROG(REG_1824H, 0x0a008006U);
-    for (iLoop = 0; iLoop < MAX_CNT; iLoop = iLoop + 4)
-    {
-        WAIT_STS(REG_1444H, 31U, 1U);
-        WR1_ADDR(REG_1420H, &InData_DataA[iLoop + 0]);
-        WR1_ADDR(REG_1420H, &InData_DataA[iLoop + 1]);
-        WR1_ADDR(REG_1420H, &InData_DataA[iLoop + 2]);
-        WR1_ADDR(REG_1420H, &InData_DataA[iLoop + 3]);
-    }
-
-    r_rsip_func205();
+    r_rsip_func221(InData_DataA, MAX_CNT);
     r_rsip_func101(bswap_32big(0xd39ebaf6U),
                    bswap_32big(0x16ac3954U),
                    bswap_32big(0xd72c4720U),

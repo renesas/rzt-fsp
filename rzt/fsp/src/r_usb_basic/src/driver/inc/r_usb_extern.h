@@ -9,9 +9,13 @@
 #include "r_usb_basic_api.h"
 #include "r_usb_hohci_typedef.h"       /* debug */
 #include "r_usb_basic_if.h"
- #if (USB_CFG_DMA == USB_CFG_ENABLE)
-#include "r_usb_dmac.h"
+#if (USB_CFG_DMA == USB_CFG_ENABLE)
+ #include "r_usb_dmac.h"
 #endif
+
+#if (BSP_CFG_RTOS == 2)
+#include "r_usb_cstd_rtos.h"
+#endif /* (BSP_CFG_RTOS == 2) */
 /*****************************************************************************
  * Public Variables
  ******************************************************************************/
@@ -49,11 +53,11 @@ extern usb_hcdreg_t      g_usb_hstd_device_drv[][USB_MAXDEVADDR + 1U];  /* Devic
 extern volatile uint16_t g_usb_hstd_device_info[][USB_MAXDEVADDR + 1U][8U];
 extern usb_ctrl_trans_t  g_usb_ctrl_request[USB_NUM_USBIP][USB_MAXDEVADDR + 1];
  #if USB_IP_EHCI_OHCI == 1
-#if defined(BSP_CFG_CORE_CA55)
+  #if defined(BSP_CFG_CORE_CA55)
 extern uintptr_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
-#else
+  #else
 extern uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
-#endif
+  #endif
  #endif                                                         /* USB_IP_EHCI_OHCI == 1 */
 extern uint8_t g_data_read_flag;
  #if (BSP_CFG_RTOS == 2)
@@ -79,7 +83,7 @@ extern uint8_t  g_usb_hstd_class_data[USB_NUM_USBIP][CLSDATASIZE];
 
 /* r_usb_hcontrolrw.c */
  #if USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE
-extern uint16_t g_usb_hstd_response_counter[];
+extern uint16_t         g_usb_hstd_response_counter[];
 extern volatile uint8_t g_usb_hstd_test_packet_parameter_flag;
  #endif                                /* USB_HOST_COMPLIANCE_MODE == USB_CFG_ENABLE */
 
@@ -115,16 +119,16 @@ extern usb_descriptor_t g_usb_descriptor;
 
  #if defined(USB_CFG_PMSC_USE)
 extern uint8_t g_usb_pmsc_usbip;
- #endif                                                /* defined(USB_CFG_PMSC_USE) */
+ #endif                                                    /* defined(USB_CFG_PMSC_USE) */
 
-#endif                                                 /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
+#endif                                                     /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
 
-extern uint16_t g_usb_pstd_remote_wakeup;              /* Remote Wake up Enable Flag */
-extern uint16_t g_usb_pstd_remote_wakeup_state;        /* Result for Remote wake up */
+extern uint16_t g_usb_pstd_remote_wakeup;                  /* Remote Wake up Enable Flag */
+extern uint16_t g_usb_pstd_remote_wakeup_state;            /* Result for Remote wake up */
 
 /* r_usb.c */
 
-extern volatile uint16_t g_usb_usbmode[USB_NUM_USBIP]; /* USB mode HOST/PERI */
+extern volatile uint16_t g_usb_usbmode[USB_NUM_USBIP + 1]; /* USB mode HOST/PERI */
 
 #if ((USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST)
 extern usb_utr_t g_usb_hdata[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1];
@@ -138,26 +142,26 @@ extern usb_utr_t g_usb_pdata[USB_MAXPIPE_NUM + 1];
 
 #if (BSP_CFG_RTOS == 2)
 extern usb_instance_ctrl_t g_usb_cstd_event[];
-extern usb_hdl_t           g_usb_cur_task_hdl[];
+extern rtos_task_id_t           g_usb_cur_task_hdl[];
 #else                                  /* #if (BSP_CFG_RTOS == 2) */
 extern usb_event_t g_usb_cstd_event;
 #endif                                 /*#if (BSP_CFG_RTOS == 2)*/
 
 #if ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI)
-  #if USB_CFG_DMA == USB_CFG_ENABLE
+ #if USB_CFG_DMA == USB_CFG_ENABLE
 uint8_t usb_cstd_dma_ref_ch_no(uint8_t ip_no, uint16_t use_port);
 void    usb_dma_set_ch_no(uint16_t ip_no, uint16_t use_port, uint8_t dma_ch_no);
 
 extern usb_dma_int_t gs_usb_cstd_dma_int;
 
-extern uint8_t g_usb_cstd_dma_ch[USB_NUM_USBIP][USB_FIFO_ACCESS_NUM_MAX];       /* DMA ch no. table */
-#if defined(BSP_CFG_CORE_CA55)
+extern uint8_t g_usb_cstd_dma_ch[USB_NUM_USBIP][USB_FIFO_ACCESS_NUM_MAX]; /* DMA ch no. table */
+  #if defined(BSP_CFG_CORE_CA55)
 extern uintptr_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
-#else
+  #else
 extern uint32_t g_data_buf_addr[USB_NUM_USBIP][USB_MAXDEVADDR * USB_OHCI_DEVICE_ENDPOINT_MAX + 1];
-#endif
-extern uint8_t  g_usb_cstd_dma_fraction_size[][USB_DMA_USE_CH_MAX];             /* fraction size(1-3) */
-extern uintptr_t g_usb_cstd_dma_fraction_adr[USB_NUM_USBIP][USB_DMA_USE_CH_MAX];                       /* fraction data address */
+  #endif
+extern uint8_t   g_usb_cstd_dma_fraction_size[][USB_DMA_USE_CH_MAX];             /* fraction size(1-3) */
+extern uintptr_t g_usb_cstd_dma_fraction_adr[USB_NUM_USBIP][USB_DMA_USE_CH_MAX]; /* fraction data address */
 
 /* DMACA DMAC0I */
 void r_usb_dmaca_intDMAC0I_isr(void);
@@ -165,8 +169,8 @@ void r_usb_dmaca_intDMAC0I_isr(void);
 /* DMACA DMAC1I */
 void r_usb_dmaca_intDMAC1I_isr(void);
 
-  #endif                               /* USB_CFG_DMA == USB_CFG_ENABLE */
- #endif  /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
+ #endif                                /* USB_CFG_DMA == USB_CFG_ENABLE */
+#endif                                 /* ((USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI) */
 
 extern usb_pipe_table_t g_usb_pipe_table[USB_NUM_USBIP][USB_MAXPIPE_NUM + 1];
 extern uint16_t         g_usb_cstd_bemp_skip[USB_NUM_USBIP][USB_MAX_PIPE_NO + 1U];
@@ -177,11 +181,13 @@ extern uint16_t g_usb_hstd_use_pipe[];
 #endif                                 /* (USB_CFG_MODE & USB_CFG_HOST) == USB_CFG_HOST */
 
 #if (BSP_CFG_RTOS == 2)
-extern SemaphoreHandle_t g_usb_semaphore_hdl[];
+extern rtos_sem_id_t g_usb_semaphore_hdl[];
 extern usb_utr_t * get_usb_int_buf(void);
 
-extern usb_callback_t * g_usb_apl_callback[USB_NUM_USBIP];
+
 #endif                                 /*#if (BSP_CFG_RTOS == 2)*/
+extern usb_callback_t * g_usb_apl_callback[USB_NUM_USBIP];
+extern usb_callback_args_t * g_usb_apl_callback_memory[USB_NUM_USBIP];
 
 /* r_usb_pbc.c */
 #if USB_CFG_BC == USB_CFG_ENABLE
@@ -244,7 +250,6 @@ void     usb_pstd_change_device_state(uint16_t state, uint16_t keyword, usb_cb_t
 void     usb_pstd_driver_registration(usb_pcdreg_t * registinfo);
 void     usb_pstd_driver_release(void);
 uint16_t usb_pstd_get_pipe_buf_value(uint16_t pipe_no);
-
 
 #endif                                 /* (USB_CFG_MODE & USB_CFG_PERI) == USB_CFG_PERI */
 
@@ -393,7 +398,6 @@ void      usb_hstd_mgr_snd_mbx(usb_utr_t * ptr, uint16_t msginfo, uint16_t dat, 
 
 void usb_hstd_hci_task(void);
 
-
 uint16_t usb_hstd_get_max_packet_size(uint16_t pipe_id);
 uint16_t usb_hstd_get_epnum(uint16_t pipe_id);
 uint16_t usb_hstd_get_pipe_dir(uint16_t pipe_id);
@@ -489,7 +493,7 @@ void usb_hstd_enum_dummy_request(usb_utr_t * ptr, uint16_t addr, uint16_t cnt_va
 void usb_hstd_electrical_test_mode(usb_utr_t * ptr, uint16_t product_id);
 
  #else
-void usb_hstd_electrical_test_mode (usb_utr_t * ptr, uint16_t product_id, uint16_t port);
+void usb_hstd_electrical_test_mode(usb_utr_t * ptr, uint16_t product_id, uint16_t port);
 
  #endif
 void usb_hstd_mgr_task(void * stacd);
@@ -760,6 +764,7 @@ void usb_cstd_pipe0_msg_forward(usb_utr_t * ptr, uint16_t dev_addr);
 #if defined(BSP_CFG_CORE_CA55)
 extern uint64_t r_usb_pa_to_va(uint64_t paddr);
 extern uint64_t r_usb_va_to_pa(uint64_t vaddr);
+
 #endif
 
 uint8_t  R_USB_HstdConvertEndpointNum(uint8_t pipe);

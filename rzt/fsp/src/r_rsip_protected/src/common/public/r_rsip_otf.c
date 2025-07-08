@@ -42,6 +42,14 @@
  * Initialize on-the-fly decryption on RSIP.
  * Implements @ref rsip_api_t::otfInit.
  *
+ * @par Conditions
+ * @parblock
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ * @endparblock
+ *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
  *
@@ -56,8 +64,6 @@
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
  *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms"
- *
  * @attention This function is only part of on-the-fly decryption activation process and intended to be called from
  *            a higher level FSP module. Even if a user calls this function directly, the feature will not be enabled.
  **********************************************************************************************************************/
@@ -71,22 +77,24 @@ fsp_err_t R_RSIP_OTF_Init (rsip_ctrl_t * const        p_ctrl,
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_key);
+    FSP_ASSERT(p_wrapped_key->p_value);
     FSP_ASSERT(p_seed);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_AES == p_wrapped_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type);         // Parse key type
+    rsip_func_otf_t        p_func       = gp_func_otf[channel][key_type_ext.subtype];         // Set function
 
-    /* Check if the key type is enabled on configuration and the channel is enabled */
-    FSP_ERROR_RETURN(gp_func_otf[channel][p_wrapped_key->subtype], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_AES == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                            // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
-    rsip_ret_t rsip_ret = gp_func_otf[channel][p_wrapped_key->subtype]
-                              ((const uint32_t *) p_wrapped_key->value, (const uint32_t *) p_seed);
+    /* Call function (cast to match the argument type with the primitive function) */
+    rsip_ret_t rsip_ret = p_func((const uint32_t *) p_wrapped_key->p_value, (const uint32_t *) p_seed);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;

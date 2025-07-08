@@ -126,14 +126,16 @@ static void ccm_format(const uint8_t * nonce,
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_AES_128, @ref RSIP_KEY_TYPE_AES_256
- * - @ref RSIP_KEY_TYPE_XTS_AES_128, @ref RSIP_KEY_TYPE_XTS_AES_256
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * Argument mode must be the following:
  * - AES key
  *   - @ref RSIP_AES_CIPHER_MODE_ECB_ENC, @ref RSIP_AES_CIPHER_MODE_ECB_DEC
  *   - @ref RSIP_AES_CIPHER_MODE_CBC_ENC, @ref RSIP_AES_CIPHER_MODE_CBC_DEC
+ *   - @ref RSIP_AES_CIPHER_MODE_CBC_ENC_WRAPPED_IV, @ref RSIP_AES_CIPHER_MODE_CBC_DEC_WRAPPED_IV
  *   - @ref RSIP_AES_CIPHER_MODE_CTR
  * - XTS-AES key
  *   - @ref RSIP_AES_CIPHER_MODE_XTS_ENC, @ref RSIP_AES_CIPHER_MODE_XTS_DEC
@@ -166,8 +168,6 @@ static void ccm_format(const uint8_t * nonce,
  * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_AES_Cipher_Init (rsip_ctrl_t * const              p_ctrl,
                                   rsip_aes_cipher_mode_t const     mode,
@@ -179,14 +179,15 @@ fsp_err_t R_RSIP_AES_Cipher_Init (rsip_ctrl_t * const              p_ctrl,
 
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_key);
+    FSP_ASSERT(p_wrapped_key->p_value);
     FSP_ASSERT(p_initial_vector || (RSIP_AES_CIPHER_MODE_ECB_ENC == mode) ||
                (RSIP_AES_CIPHER_MODE_ECB_DEC == mode));
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 
-    /* Check key type */
-    FSP_ERROR_RETURN((RSIP_ALG_AES == p_wrapped_key->alg) ||
-                     (RSIP_ALG_XTS_AES == p_wrapped_key->alg),
-                     FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type); // Parse key type
+
+    FSP_ERROR_RETURN((RSIP_PRV_ALG_AES == key_type_ext.alg) || (RSIP_PRV_ALG_XTS_AES == key_type_ext.alg),
+                     FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);                               // Check key type
 #endif
 
     /* Check argument */
@@ -365,9 +366,10 @@ fsp_err_t R_RSIP_AES_Cipher_Finish (rsip_ctrl_t * const p_ctrl)
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_AES_128
- * - @ref RSIP_KEY_TYPE_AES_256
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * Argument mode accepts any member of enumeration @ref rsip_aes_aead_mode_t.
  *
@@ -403,8 +405,6 @@ fsp_err_t R_RSIP_AES_Cipher_Finish (rsip_ctrl_t * const p_ctrl)
  * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_AES_AEAD_Init (rsip_ctrl_t * const              p_ctrl,
                                 rsip_aes_aead_mode_t             mode,
@@ -417,11 +417,13 @@ fsp_err_t R_RSIP_AES_AEAD_Init (rsip_ctrl_t * const              p_ctrl,
 
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_key);
+    FSP_ASSERT(p_wrapped_key->p_value);
     FSP_ASSERT(p_nonce);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_AES == p_wrapped_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type);         // Parse key type
+
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_AES == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
 #endif
 
     /* Check argument */
@@ -480,7 +482,7 @@ fsp_err_t R_RSIP_AES_AEAD_Init (rsip_ctrl_t * const              p_ctrl,
  * @retval FSP_SUCCESS                           Normal termination.
  * @retval FSP_ERR_ASSERTION                     A required parameter is NULL.
  * @retval FSP_ERR_NOT_OPEN                      Module is not open.
- * @retval FSP_ERR_INVALID_SIZE                  tag_length is illegal.
+ * @retval FSP_ERR_INVALID_SIZE                  Input length is illegal.
  * @retval FSP_ERR_INVALID_STATE                 Internal state is illegal.
  *
  * @note In GCM mode, this API must NOT be called. If called, FSP_ERR_INVALID_STATE will be returned.
@@ -825,9 +827,10 @@ fsp_err_t R_RSIP_AES_AEAD_Verify (rsip_ctrl_t * const   p_ctrl,
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_AES_128
- * - @ref RSIP_KEY_TYPE_AES_256
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * Argument mode accepts any member of enumeration @ref rsip_aes_aead_mode_t.
  * @endparblock
@@ -855,8 +858,6 @@ fsp_err_t R_RSIP_AES_AEAD_Verify (rsip_ctrl_t * const   p_ctrl,
  *
  * @note To calculate AES-GMAC, please use not R_RSIP_MAC_*() but R_RSIP_AEAD_*().
  *       For detailed usage, refer to example code.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_AES_MAC_Init (rsip_ctrl_t * const              p_ctrl,
                                rsip_aes_mac_mode_t const        mode,
@@ -869,13 +870,16 @@ fsp_err_t R_RSIP_AES_MAC_Init (rsip_ctrl_t * const              p_ctrl,
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_key);
+    FSP_ASSERT(p_wrapped_key->p_value);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_AES == p_wrapped_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t              key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type); // Parse key type
+    const rsip_func_subset_aes_cmac_t * p_func       = &gp_func_aes_cmac[key_type_ext.subtype];    // Set function
 
-    /* Check if the key type is enabled on configuration */
-    FSP_ERROR_RETURN(gp_func_aes_cmac[p_wrapped_key->subtype].p_init, FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_AES == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);      // Check key type
+    FSP_ERROR_RETURN(p_func->p_init, FSP_ERR_NOT_ENABLED);                                         // Check configuration
 #endif
 
     /* Check state */
@@ -884,12 +888,11 @@ fsp_err_t R_RSIP_AES_MAC_Init (rsip_ctrl_t * const              p_ctrl,
     /* Initialize handle */
     r_rsip_handle_reset(&p_instance_ctrl->handle);
 
-    /* Set primitive */
-    p_handle->p_func = &gp_func_aes_cmac[p_wrapped_key->subtype];
+    /* Set function to handle */
+    p_handle->p_func = p_func;
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
-    rsip_func_subset_aes_cmac_t * p_func = (rsip_func_subset_aes_cmac_t *) p_handle->p_func;
-    rsip_ret_t rsip_ret = p_func->p_init((const uint32_t *) p_wrapped_key->value);
+    /* Call function (cast to match the argument type with the primitive function) */
+    rsip_ret_t rsip_ret = p_func->p_init((const uint32_t *) p_wrapped_key->p_value);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -969,7 +972,7 @@ fsp_err_t R_RSIP_AES_MAC_Update (rsip_ctrl_t * const   p_ctrl,
                p_message,
                RSIP_PRV_BYTE_SIZE_AES_BLOCK - p_handle->buffered_length);
 
-        /* Call primitive (cast to match the argument type with the primitive function) */
+        /* Call function (cast to match the argument type with the primitive function) */
         p_func->p_update((const uint32_t *) (p_handle->buffer),
                          r_rsip_byte_to_word_convert(RSIP_PRV_BYTE_SIZE_AES_BLOCK));
         length_rest = message_length -
@@ -979,7 +982,7 @@ fsp_err_t R_RSIP_AES_MAC_Update (rsip_ctrl_t * const   p_ctrl,
         /* Input block data */
         if (length_rest > RSIP_PRV_BYTE_SIZE_AES_BLOCK)
         {
-            /* Call primitive (cast to match the argument type with the primitive function) */
+            /* Call function (cast to match the argument type with the primitive function) */
             p_func->p_update((const uint32_t *) (p_message +
                                                  (RSIP_PRV_BYTE_SIZE_AES_BLOCK -
                                                   p_handle->buffered_length)),
@@ -1060,7 +1063,7 @@ fsp_err_t R_RSIP_AES_MAC_SignFinish (rsip_ctrl_t * const p_ctrl, uint8_t * const
                RSIP_PRV_BYTE_SIZE_AES_BLOCK - (p_handle->buffered_length + 1));
     }
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
         p_func->p_generateFinal((const uint32_t *) p_handle->buffer, (uint32_t *) p_mac, p_handle->total_length);
 
@@ -1170,7 +1173,7 @@ fsp_err_t R_RSIP_AES_MAC_VerifyFinish (rsip_ctrl_t * const   p_ctrl,
                RSIP_PRV_BYTE_SIZE_AES_BLOCK - (p_handle->buffered_length + 1));
     }
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
         p_func->p_verifyFinal((const uint32_t *) p_handle->buffer,
                               (const uint32_t *) mac_tmp,
@@ -1239,14 +1242,14 @@ static fsp_err_t aes_init (rsip_ctrl_t              * p_ctrl,
                            const rsip_wrapped_key_t * p_wrapped_key,
                            const uint8_t            * p_initial_vector)
 {
-    rsip_instance_ctrl_t                * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
-    rsip_aes_cipher_handle_t            * p_handle        = &p_instance_ctrl->handle.aes_cipher;
-    const rsip_func_subset_aes_cipher_t * p_func          = &gp_func_aes_cipher[p_wrapped_key->subtype];
+    rsip_instance_ctrl_t     * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
+    rsip_aes_cipher_handle_t * p_handle        = &p_instance_ctrl->handle.aes_cipher;
+
+    rsip_key_type_extend_t                key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type); // Parse key type
+    const rsip_func_subset_aes_cipher_t * p_func       = &gp_func_aes_cipher[key_type_ext.subtype];  // Set function
 
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
-
-    /* Check if the key type is enabled on configuration */
-    FSP_ERROR_RETURN(p_func->p_init_ecb_enc, FSP_ERR_NOT_ENABLED);
+    FSP_ERROR_RETURN(p_func->p_init_ecb_enc, FSP_ERR_NOT_ENABLED);                                   // Check configuration
 #endif
 
     /* Check state */
@@ -1255,7 +1258,7 @@ static fsp_err_t aes_init (rsip_ctrl_t              * p_ctrl,
     /* Initialize handle */
     r_rsip_handle_reset(&p_instance_ctrl->handle);
 
-    /* Set primitive */
+    /* Set function */
     p_handle->p_func = p_func;
 
     /* Select init function */
@@ -1304,8 +1307,8 @@ static fsp_err_t aes_init (rsip_ctrl_t              * p_ctrl,
         }
     }
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
-    rsip_ret_t rsip_ret = p_func_init((const uint32_t *) p_wrapped_key->value, (const uint32_t *) p_initial_vector);
+    /* Call function (cast to match the argument type with the primitive function) */
+    rsip_ret_t rsip_ret = p_func_init((const uint32_t *) p_wrapped_key->p_value, (const uint32_t *) p_initial_vector);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -1363,7 +1366,7 @@ static fsp_err_t aes_update (rsip_ctrl_t * p_ctrl, const uint8_t * p_input, uint
 
     if (0 != input_length)
     {
-        /* Call primitive (cast to match the argument type with the primitive function) */
+        /* Call function (cast to match the argument type with the primitive function) */
         p_func->p_update((const uint32_t *) p_input, (uint32_t *) p_output, r_rsip_byte_to_word_convert(input_length));
     }
     else
@@ -1391,7 +1394,7 @@ static fsp_err_t aes_finish (rsip_ctrl_t * p_ctrl)
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_AES_CIPHER == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret = p_func->p_final();
 
     /* Reset handle */
@@ -1436,16 +1439,16 @@ static fsp_err_t xts_init (rsip_ctrl_t              * p_ctrl,
                            const rsip_wrapped_key_t * p_wrapped_key,
                            const uint8_t            * p_initial_vector)
 {
-    rsip_instance_ctrl_t             * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
-    rsip_aes_cipher_handle_t         * p_handle        = &p_instance_ctrl->handle.aes_cipher;
-    const rsip_func_subset_aes_xts_t * p_func          = (RSIP_AES_CIPHER_MODE_XTS_ENC == mode) ?
-                                                         &gp_func_aes_xts_enc[p_wrapped_key->subtype] :
-                                                         &gp_func_aes_xts_dec[p_wrapped_key->subtype];
+    rsip_instance_ctrl_t     * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
+    rsip_aes_cipher_handle_t * p_handle        = &p_instance_ctrl->handle.aes_cipher;
+
+    rsip_key_type_extend_t             key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type); // Parse key type
+    const rsip_func_subset_aes_xts_t * p_func       = (RSIP_AES_CIPHER_MODE_XTS_ENC == mode) ?
+                                                      &gp_func_aes_xts_enc[key_type_ext.subtype] :
+                                                      &gp_func_aes_xts_dec[key_type_ext.subtype]; // Set function
 
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
-
-    /* Check if the key type is enabled on configuration */
-    FSP_ERROR_RETURN(p_func->p_init, FSP_ERR_NOT_ENABLED);
+    FSP_ERROR_RETURN(p_func->p_init, FSP_ERR_NOT_ENABLED);                                        // Check configuration
 #endif
 
     /* Check state */
@@ -1454,11 +1457,12 @@ static fsp_err_t xts_init (rsip_ctrl_t              * p_ctrl,
     /* Initialize handle */
     r_rsip_handle_reset(&p_instance_ctrl->handle);
 
-    /* Set primitive */
+    /* Set function */
     p_handle->p_func = p_func;
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
-    rsip_ret_t rsip_ret = p_func->p_init((const uint32_t *) p_wrapped_key->value, (const uint32_t *) p_initial_vector);
+    /* Call function (cast to match the argument type with the primitive function) */
+    rsip_ret_t rsip_ret =
+        p_func->p_init((const uint32_t *) p_wrapped_key->p_value, (const uint32_t *) p_initial_vector);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -1522,7 +1526,7 @@ static fsp_err_t xts_update (rsip_ctrl_t * p_ctrl, const uint8_t * p_input, uint
     {
         if (0 != block_length)
         {
-            /* Call primitive (cast to match the argument type with the primitive function) */
+            /* Call function (cast to match the argument type with the primitive function) */
             p_func->p_update((const uint32_t *) p_input,
                              (uint32_t *) p_output,
                              r_rsip_byte_to_word_convert(block_length));
@@ -1561,7 +1565,7 @@ static fsp_err_t xts_finish (rsip_ctrl_t * p_ctrl)
     fsp_err_t err = FSP_SUCCESS;
     if (RSIP_STATE_AES_XTS_UPDATE == p_instance_ctrl->state)
     {
-        /* If final function have not called (remaining blocks have not been input), Call primitive for empty message */
+        /* If final function have not called (remaining blocks have not been input), Call function for empty message */
         err = xts_finish_primitive(p_func, NULL, NULL, 0);
     }
 
@@ -1592,7 +1596,7 @@ static fsp_err_t xts_finish_primitive (rsip_func_subset_aes_xts_t * p_func,
         bswap_32big(r_rsip_byte_to_bit_convert_lower(input_length))
     };
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret = p_func->p_final(output_length_bit, (uint32_t *) p_input, (uint32_t *) (p_output));
 
     /* Check error */
@@ -1640,16 +1644,16 @@ static fsp_err_t gcm_init (rsip_ctrl_t              * p_ctrl,
                            const uint8_t            * p_nonce,
                            uint32_t                   nonce_length)
 {
-    rsip_instance_ctrl_t             * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
-    rsip_aes_gcm_handle_t            * p_handle        = &p_instance_ctrl->handle.aes_gcm;
-    const rsip_func_subset_aes_gcm_t * p_func          =
+    rsip_instance_ctrl_t  * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
+    rsip_aes_gcm_handle_t * p_handle        = &p_instance_ctrl->handle.aes_gcm;
+
+    rsip_key_type_extend_t             key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type); // Parse key type
+    const rsip_func_subset_aes_gcm_t * p_func       =
         ((RSIP_AES_AEAD_MODE_GCM_ENC == mode) || (RSIP_AES_AEAD_MODE_GCM_ENC_WRAPPED_IV == mode)) ?
-        &gp_func_aes_gcm_enc[p_wrapped_key->subtype] : &gp_func_aes_gcm_dec[p_wrapped_key->subtype];
+        &gp_func_aes_gcm_enc[key_type_ext.subtype] : &gp_func_aes_gcm_dec[key_type_ext.subtype];  // Set function
 
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
-
-    /* Check if the key type is enabled on configuration */
-    FSP_ERROR_RETURN(p_func->p_init, FSP_ERR_NOT_ENABLED);
+    FSP_ERROR_RETURN(p_func->p_init, FSP_ERR_NOT_ENABLED);                                        // Check configuration
 #endif
 
     /* Check state */
@@ -1676,7 +1680,7 @@ static fsp_err_t gcm_init (rsip_ctrl_t              * p_ctrl,
                 0
             };
 
-            err = gcm_iv_prepare(&gp_func_aes_cipher[p_wrapped_key->subtype],
+            err = gcm_iv_prepare(&gp_func_aes_cipher[key_type_ext.subtype],
                                  p_nonce,
                                  nonce_length,
                                  p_wrapped_key,
@@ -1684,7 +1688,7 @@ static fsp_err_t gcm_init (rsip_ctrl_t              * p_ctrl,
 
             if (FSP_SUCCESS == err)
             {
-                rsip_ret = p_func->p_init((const uint32_t *) p_wrapped_key->value, hashed_ivec);
+                rsip_ret = p_func->p_init((const uint32_t *) p_wrapped_key->p_value, hashed_ivec);
             }
 
             break;
@@ -1695,7 +1699,7 @@ static fsp_err_t gcm_init (rsip_ctrl_t              * p_ctrl,
         case RSIP_AES_AEAD_MODE_GCM_DEC_WRAPPED_IV:
         {
             err      = FSP_SUCCESS;
-            rsip_ret = p_func->p_init_wrapped_iv((const uint32_t *) p_wrapped_key->value, (const uint32_t *) p_nonce);
+            rsip_ret = p_func->p_init_wrapped_iv((const uint32_t *) p_wrapped_key->p_value, (const uint32_t *) p_nonce);
 
             break;
         }
@@ -1777,7 +1781,7 @@ static fsp_err_t gcm_aad_update (rsip_ctrl_t * p_ctrl, const uint8_t * p_aad, ui
                    p_aad,
                    RSIP_PRV_BYTE_SIZE_AES_BLOCK - p_handle->buffered_length);
 
-            /* Call primitive (cast to match the argument type with the primitive function) */
+            /* Call function (cast to match the argument type with the primitive function) */
             p_func->p_updateAad((uint32_t *) (p_handle->buffer),
                                 r_rsip_byte_to_word_convert((RSIP_PRV_BYTE_SIZE_AES_BLOCK)));
             length_rest = aad_length -
@@ -1787,7 +1791,7 @@ static fsp_err_t gcm_aad_update (rsip_ctrl_t * p_ctrl, const uint8_t * p_aad, ui
             /* Input block data */
             if (length_rest >= RSIP_PRV_BYTE_SIZE_AES_BLOCK)
             {
-                /* Call primitive (cast to match the argument type with the primitive function) */
+                /* Call function (cast to match the argument type with the primitive function) */
                 p_func->p_updateAad((const uint32_t *) (p_aad +
                                                         (RSIP_PRV_BYTE_SIZE_AES_BLOCK -
                                                          p_handle->buffered_length)),
@@ -1858,7 +1862,7 @@ static fsp_err_t gcm_update (rsip_ctrl_t         * p_ctrl,
                    p_input,
                    RSIP_PRV_BYTE_SIZE_AES_BLOCK - p_handle->buffered_length);
 
-            /* Call primitive (cast to match the argument type with the primitive function) */
+            /* Call function (cast to match the argument type with the primitive function) */
             p_func->p_update((uint32_t *) (p_handle->buffer), (uint32_t *) (p_output),
                              r_rsip_byte_to_word_convert(RSIP_PRV_BYTE_SIZE_AES_BLOCK));
             length_rest = input_length -
@@ -1872,7 +1876,7 @@ static fsp_err_t gcm_update (rsip_ctrl_t         * p_ctrl,
                 uint32_t block_data_length = (length_rest / RSIP_PRV_BYTE_SIZE_AES_BLOCK) *
                                              RSIP_PRV_BYTE_SIZE_AES_BLOCK;
 
-                /* Call primitive (cast to match the argument type with the primitive function) */
+                /* Call function (cast to match the argument type with the primitive function) */
                 p_func->p_update((const uint32_t *) (p_input +
                                                      (RSIP_PRV_BYTE_SIZE_AES_BLOCK -
                                                       p_handle->buffered_length)),
@@ -1955,7 +1959,7 @@ static fsp_err_t gcm_finish (rsip_ctrl_t * const p_ctrl,
     data_bit_size[1] = bswap_32big(r_rsip_byte_to_bit_convert_lower(p_handle->total_length));
     *p_output_length = p_handle->buffered_length;
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
         p_func->p_encryptFinal((uint32_t *) (p_handle->buffer), aad_bit_size, data_bit_size, (uint32_t *) p_output,
                                (uint32_t *) p_tag);
@@ -2066,7 +2070,7 @@ static fsp_err_t gcm_verify (rsip_ctrl_t * const   p_ctrl,
     tag_length_tmp[0] = bswap_32big(tag_length);
     *p_output_length  = p_handle->buffered_length;
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret = p_func->p_decryptFinal((uint32_t *) (p_handle->buffer),
                                                  (uint32_t *) tag_tmp,
                                                  aad_bit_size,
@@ -2169,8 +2173,8 @@ static fsp_err_t gcm_iv_prepare (const rsip_func_subset_aes_cipher_t * p_func_ae
     /* If iv_len is not 12 (96 bit), calculate GHASH */
     else
     {
-        /* Call primitive (cast to match the argument type with the primitive function) */
-        rsip_ret = p_func_aes_cipher->p_init_ecb_enc((const uint32_t *) p_wrapped_key->value, zero);
+        /* Call function (cast to match the argument type with the primitive function) */
+        rsip_ret = p_func_aes_cipher->p_init_ecb_enc((const uint32_t *) p_wrapped_key->p_value, zero);
         if (RSIP_RET_PASS == rsip_ret)
         {
             p_func_aes_cipher->p_update(zero, hash_subkey, RSIP_PRV_BYTE_SIZE_AES_BLOCK / sizeof(uint32_t));
@@ -2181,7 +2185,7 @@ static fsp_err_t gcm_iv_prepare (const rsip_func_subset_aes_cipher_t * p_func_ae
         {
             if (RSIP_PRV_BYTE_SIZE_AES_BLOCK <= initial_vector_length)
             {
-                /* Call primitive (cast to match the argument type with the primitive function) */
+                /* Call function (cast to match the argument type with the primitive function) */
                 rsip_ret =
                     gp_func_ghash_compute(hash_subkey, zero, (const uint32_t *) p_initial_vector, hashed_ivec_tmp,
                                           (initial_vector_length / RSIP_PRV_BYTE_SIZE_AES_BLOCK) * sizeof(uint32_t));
@@ -2193,7 +2197,7 @@ static fsp_err_t gcm_iv_prepare (const rsip_func_subset_aes_cipher_t * p_func_ae
                         memcpy(ivec_tmp, p_initial_vector + (initial_vector_length - ivec_length_rest),
                                ivec_length_rest);
 
-                        /* Call primitive (cast to match the argument type with the primitive function) */
+                        /* Call function (cast to match the argument type with the primitive function) */
                         rsip_ret = gp_func_ghash_compute(hash_subkey,
                                                          hashed_ivec_tmp,
                                                          ivec_tmp,
@@ -2206,7 +2210,7 @@ static fsp_err_t gcm_iv_prepare (const rsip_func_subset_aes_cipher_t * p_func_ae
             {
                 memcpy(ivec_tmp, p_initial_vector, initial_vector_length);
 
-                /* Call primitive (cast to match the argument type with the primitive function) */
+                /* Call function (cast to match the argument type with the primitive function) */
                 rsip_ret = gp_func_ghash_compute(hash_subkey,
                                                  zero,
                                                  ivec_tmp,
@@ -2222,7 +2226,7 @@ static fsp_err_t gcm_iv_prepare (const rsip_func_subset_aes_cipher_t * p_func_ae
                 ivec_bit_len[2] = bswap_32big(r_rsip_byte_to_bit_convert_upper(initial_vector_length));
                 ivec_bit_len[3] = bswap_32big(r_rsip_byte_to_bit_convert_lower(initial_vector_length));
 
-                /* Call primitive (cast to match the argument type with the primitive function) */
+                /* Call function (cast to match the argument type with the primitive function) */
                 rsip_ret = gp_func_ghash_compute(hash_subkey,
                                                  hashed_ivec_tmp,
                                                  ivec_bit_len,
@@ -2274,7 +2278,7 @@ static void gcm_aad_input_terminate (rsip_instance_ctrl_t * p_instance_ctrl)
                0,
                RSIP_PRV_BYTE_SIZE_AES_BLOCK - p_handle->buffered_length);
 
-        /* Call primitive (cast to match the argument type with the primitive function) */
+        /* Call function (cast to match the argument type with the primitive function) */
         p_func->p_updateAad((uint32_t *) (p_handle->
                                           buffer),
                             r_rsip_byte_to_word_convert(RSIP_PRV_BYTE_SIZE_AES_BLOCK));
@@ -2310,11 +2314,13 @@ static fsp_err_t ccm_init (rsip_ctrl_t              * p_ctrl,
                            const uint8_t            * p_nonce,
                            uint32_t                   nonce_length)
 {
-    rsip_instance_ctrl_t             * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
-    rsip_aes_ccm_handle_t            * p_handle        = &p_instance_ctrl->handle.aes_ccm;
-    const rsip_func_subset_aes_ccm_t * p_func          = (RSIP_AES_AEAD_MODE_CCM_ENC == mode) ?
-                                                         &gp_func_aes_ccm_enc[p_wrapped_key->subtype] : &
-                                                         gp_func_aes_ccm_dec[p_wrapped_key->subtype];
+    rsip_instance_ctrl_t  * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
+    rsip_aes_ccm_handle_t * p_handle        = &p_instance_ctrl->handle.aes_ccm;
+
+    rsip_key_type_extend_t             key_type_ext = r_rsip_key_type_parse(p_wrapped_key->type); // Parse key type
+    const rsip_func_subset_aes_ccm_t * p_func       =
+        (RSIP_AES_AEAD_MODE_CCM_ENC == mode) ?
+        &gp_func_aes_ccm_enc[key_type_ext.subtype] : &gp_func_aes_ccm_dec[key_type_ext.subtype];  // Set function
 
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
 
@@ -2331,11 +2337,13 @@ static fsp_err_t ccm_init (rsip_ctrl_t              * p_ctrl,
     /* Initialize handle */
     r_rsip_handle_reset(&p_instance_ctrl->handle);
 
-    /* Set primitive */
+    /* Set function */
     p_handle->p_func = p_func;
 
     /* Copy wrapped key */
-    memcpy(p_handle->wrapped_key, p_wrapped_key, RSIP_BYTE_SIZE_WRAPPED_KEY_AES_256);
+    p_handle->wrapped_key.type    = p_wrapped_key->type;
+    p_handle->wrapped_key.p_value = p_handle->wrapped_key_value;
+    memcpy(p_handle->wrapped_key_value, p_wrapped_key->p_value, RSIP_BYTE_SIZE_WRAPPED_KEY(p_wrapped_key->type));
 
     /* Copy nonce */
     memcpy(p_handle->nonce_buffer, p_nonce, nonce_length);
@@ -2406,7 +2414,7 @@ static fsp_err_t ccm_aad_update (rsip_ctrl_t * p_ctrl, const uint8_t * p_aad, ui
     rsip_instance_ctrl_t       * p_instance_ctrl = (rsip_instance_ctrl_t *) p_ctrl;
     rsip_aes_ccm_handle_t      * p_handle        = &p_instance_ctrl->handle.aes_ccm;
     rsip_func_subset_aes_ccm_t * p_func          = (rsip_func_subset_aes_ccm_t *) p_handle->p_func;
-    rsip_wrapped_key_t         * p_wrapped_key   = (rsip_wrapped_key_t *) p_handle->wrapped_key;
+    rsip_wrapped_key_t         * p_wrapped_key   = &p_handle->wrapped_key;
 
     /* Check length */
     FSP_ERROR_RETURN((p_handle->input_aad_length + aad_length) <= p_handle->total_aad_length, FSP_ERR_INVALID_SIZE);
@@ -2437,14 +2445,14 @@ static fsp_err_t ccm_aad_update (rsip_ctrl_t * p_ctrl, const uint8_t * p_aad, ui
         /* Clear buffer for ccm_update */
         memset(p_handle->buffer, 0, sizeof(p_handle->buffer));
 
-        /* Call primitive (cast to match the argument type with the primitive function) */
+        /* Call function (cast to match the argument type with the primitive function) */
         rsip_ret_t rsip_ret       = RSIP_RET_UNKNOWN;
         uint32_t   length_tmp     = bswap_32big(p_handle->total_length);
         uint32_t   tag_length_tmp = bswap_32big(p_handle->tag_length);
         if (RSIP_STATE_AES_CCM_ENC_UPDATE_AAD == p_instance_ctrl->state)
         {
             rsip_ret =
-                p_func->p_encryptInit((const uint32_t *) p_wrapped_key->value,
+                p_func->p_encryptInit((const uint32_t *) p_wrapped_key->p_value,
                                       &length_tmp,
                                       (const uint32_t *) counter,
                                       (const uint32_t *) formatted_data,
@@ -2453,7 +2461,7 @@ static fsp_err_t ccm_aad_update (rsip_ctrl_t * p_ctrl, const uint8_t * p_aad, ui
         else                           // RSIP_STATE_AES_CCM_DEC_UPDATE_AAD == p_instance_ctrl->state
         {
             rsip_ret =
-                p_func->p_decryptInit((const uint32_t *) p_wrapped_key->value, &length_tmp, &tag_length_tmp,
+                p_func->p_decryptInit((const uint32_t *) p_wrapped_key->p_value, &length_tmp, &tag_length_tmp,
                                       (const uint32_t *) counter, (const uint32_t *) formatted_data, formatted_length);
         }
 
@@ -2488,6 +2496,9 @@ static fsp_err_t ccm_aad_update (rsip_ctrl_t * p_ctrl, const uint8_t * p_aad, ui
 
             case RSIP_RET_KEY_FAIL:
             {
+                /* State transition*/
+                p_instance_ctrl->state = RSIP_STATE_MAIN;
+
                 err = FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL;
                 break;
             }
@@ -2538,7 +2549,7 @@ static fsp_err_t ccm_update (rsip_ctrl_t         * p_ctrl,
                p_input,
                RSIP_PRV_BYTE_SIZE_AES_BLOCK - p_handle->buffered_length);
 
-        /* Call primitive (cast to match the argument type with the primitive function) */
+        /* Call function (cast to match the argument type with the primitive function) */
         p_func->p_update((uint32_t *) p_handle->buffer, (uint32_t *) p_output,
                          r_rsip_byte_to_word_convert(RSIP_PRV_BYTE_SIZE_AES_BLOCK));
         length_rest = input_length -
@@ -2551,7 +2562,7 @@ static fsp_err_t ccm_update (rsip_ctrl_t         * p_ctrl,
             uint32_t block_data_length = (length_rest / RSIP_PRV_BYTE_SIZE_AES_BLOCK) *
                                          RSIP_PRV_BYTE_SIZE_AES_BLOCK;
 
-            /* Call primitive (cast to match the argument type with the primitive function) */
+            /* Call function (cast to match the argument type with the primitive function) */
             p_func->p_update((uint32_t *) (p_input +
                                            (RSIP_PRV_BYTE_SIZE_AES_BLOCK -
                                             p_handle->buffered_length)),
@@ -2621,7 +2632,7 @@ static fsp_err_t ccm_finish (rsip_ctrl_t * const p_ctrl,
         0
     };
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
         p_func->p_encryptFinal((uint32_t *) p_handle->buffer, &length_tmp, (uint32_t *) output_tmp,
                                (uint32_t *) tag_tmp);
@@ -2633,7 +2644,7 @@ static fsp_err_t ccm_finish (rsip_ctrl_t * const p_ctrl,
         case RSIP_RET_PASS:
         {
             memcpy(p_output, output_tmp, p_handle->buffered_length);
-            *p_output_length = p_handle->total_length;
+            *p_output_length = p_handle->buffered_length;
             memcpy(p_tag, tag_tmp, p_handle->tag_length);
 
             err = FSP_SUCCESS;
@@ -2667,6 +2678,7 @@ static fsp_err_t ccm_finish (rsip_ctrl_t * const p_ctrl,
  * @retval FSP_SUCCESS                           Normal termination.
  * @retval FSP_ERR_INVALID_SIZE                  tag_length is illegal.
  * @retval FSP_ERR_CRYPTO_RSIP_FAIL              Internal error.
+ * @retval FSP_ERR_CRYPTO_RSIP_AUTHENTICATION    Authentication is failed.
  *
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
  **********************************************************************************************************************/
@@ -2697,7 +2709,7 @@ static fsp_err_t ccm_verify (rsip_ctrl_t * const   p_ctrl,
     /* Copy tag */
     memcpy(tag_tmp, p_tag, tag_length);
 
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
         p_func->p_decryptFinal((uint32_t *) p_handle->buffer, &length_tmp, (uint32_t *) tag_tmp, &tag_length_tmp,
                                (uint32_t *) output_tmp);
@@ -2709,7 +2721,7 @@ static fsp_err_t ccm_verify (rsip_ctrl_t * const   p_ctrl,
         case RSIP_RET_PASS:
         {
             memcpy(p_output, output_tmp, p_handle->buffered_length);
-            *p_output_length = p_handle->total_length;
+            *p_output_length = p_handle->buffered_length;
 
             err = FSP_SUCCESS;
             break;
@@ -2718,6 +2730,12 @@ static fsp_err_t ccm_verify (rsip_ctrl_t * const   p_ctrl,
         case RSIP_RET_FAIL:
         {
             err = FSP_ERR_CRYPTO_RSIP_FAIL;
+            break;
+        }
+
+        case RSIP_RET_AUTH_FAIL:
+        {
+            err = FSP_ERR_CRYPTO_RSIP_AUTHENTICATION;
             break;
         }
 

@@ -81,10 +81,23 @@
 /* Value for VI6_RPFn_INFMT.CSC(Color Space Conversion Enable) setting */
 #define COLOR_FOTMAT_CONVERT                  (1U << R_LCDC_VI6_RPF0_INFMT_CSC_Pos)
 
+/* Value for display signal parameter check. */
 #define TIMING_MAX_1920                       (1920)
 #define TIMING_MAX_1080                       (1080)
 #define LAYER_MAX_HSIZE                       (1920)
 #define LAYER_MAX_VSIZE                       (1080)
+
+#define LCDC_DU_DITR1_VSA_MAX                 (4095)
+#define LCDC_DU_DITR1_VACTIVE_MIN             (1)
+#define LCDC_DU_DITR1_VACTIVE_MAX             (8190)
+#define LCDc_DU_DITR2_VBP_MAX                 (8191)
+#define LCDC_DU_DITR2_VFP_MAX                 (8191)
+
+#define LCDC_DU_DITR3_HSA_MAX                 (4095)
+#define LCDC_DU_DITR3_HACTIVE_MIN             (1)
+#define LCDC_DU_DITR3_HACTIVE_MAX             (8190)
+#define LCDC_DU_DITR4_HBP_MAX                 (8191)
+#define LCDC_DU_DITR4_HFP_MAX                 (8191)
 
 #define CAST_TO_UINT32                        (0xFFFFFFFFU)
 #define DL_NUM_CMD                            (25)
@@ -145,6 +158,7 @@ void lcdc_vspd_int(void);
 static fsp_err_t r_lcdc_open_param_check(display_cfg_t const * const p_cfg);
 static fsp_err_t r_lcdc_open_param_check_sync_signal(display_cfg_t const * const p_cfg);
 static fsp_err_t r_lcdc_open_param_check_display_cycle(display_cfg_t const * const p_cfg);
+static fsp_err_t r_lcdc_open_param_check_display_timing(display_cfg_t const * const p_cfg);
 static fsp_err_t r_lcdc_open_param_check_layer_setting(display_cfg_t const * const p_cfg);
 
 #endif
@@ -1752,6 +1766,9 @@ static fsp_err_t r_lcdc_open_param_check_sync_signal (display_cfg_t const * cons
     fsp_err_t err = r_lcdc_open_param_check_display_cycle(p_cfg);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
+    err = r_lcdc_open_param_check_display_timing(p_cfg);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
+
     err = r_lcdc_open_param_check_layer_setting(p_cfg);
     FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
@@ -1772,6 +1789,83 @@ static fsp_err_t r_lcdc_open_param_check_display_cycle (display_cfg_t const * co
 
     FSP_ERROR_RETURN((h_active <= TIMING_MAX_1920), FSP_ERR_INVALID_TIMING_SETTING);
     FSP_ERROR_RETURN((v_active <= TIMING_MAX_1080), FSP_ERR_INVALID_TIMING_SETTING);
+
+    return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
+ * The parameter checking for display timing.
+ *
+ * @param[in]   p_cfg   Pointer to the configuration structure for display interface
+ * @retval      FSP_SUCCESS                         No parameter error found
+ * @retval      FSP_ERR_INVALID_TIMING_SETTING      Invalid timing parameter.
+ **********************************************************************************************************************/
+static fsp_err_t r_lcdc_open_param_check_display_timing (display_cfg_t const * const p_cfg)
+{
+    /* Vertical signal timing setting restrictions are as follows
+     * (See section "DU_DITR1 : DU Display I/F Timing Register 1" and
+     *  "DU_DITR2 : DU Display I/F Timing Register 2" in the RZ microprocessor User's Manual for details):
+     *   - VSA available value     : DU_DITR1.VSA[11:0] -> max.4095
+     *   - VACTIVE available value : DU_DITR1.VACTIVE[28:16] -> min.1, max.8190
+     *   - VBP available value     : DU_DITR2.VBP[12:0] -> max.8191
+     *   - VFP available value     : DU_DITR2.VFP[12:0] -> max.8191
+     *
+     * p_cfg->output.vtiming.display_cyc sets the value of VACTIVE,
+     * so p_cfg->output.vtining.display_cyc value is greater than 0. */
+    FSP_ERROR_RETURN((p_cfg->output.vtiming.display_cyc >= LCDC_DU_DITR1_VACTIVE_MIN), FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* p_cfg->output.vtiming.sync_width sets the value of VSA,
+     * so p_cfg->output.vtiming.sync_width available max value is 4095. */
+    uint32_t v_sa = p_cfg->output.vtiming.sync_width;
+    FSP_ERROR_RETURN(LCDC_DU_DITR1_VSA_MAX >= v_sa, FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* p_cfg->output.vtiming.back_porch - p_cfg->output.vtiming.sync_width set the value of VBP,
+     * so p_cfg->output.vtiming.back_porch - p_cfg->output.vtiming.sync_width value is less than or equal to 8191. */
+    uint32_t v_bp = (uint32_t) (p_cfg->output.vtiming.back_porch - p_cfg->output.vtiming.sync_width);
+    FSP_ERROR_RETURN(LCDc_DU_DITR2_VBP_MAX >= v_bp, FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* DU_DITR1.VSA (Vsync period) + DU_DITR2.VBP (Vback period) should be set more than 0. */
+    FSP_ERROR_RETURN((v_sa + v_bp) > 0, FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* p_cfg->output.vtiming.total_cyc set the value of VSA + VBP + VACTIVE + VFP,
+     * so p_cfg->output.vtiming.total_cyc available max value is 4095 + 8191 + 8190 + 8191. */
+    FSP_ERROR_RETURN(p_cfg->output.vtiming.total_cyc <=
+                     LCDC_DU_DITR1_VSA_MAX + LCDc_DU_DITR2_VBP_MAX + LCDC_DU_DITR1_VACTIVE_MAX + LCDC_DU_DITR2_VFP_MAX,
+                     FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* Horizontal signal timing setting restrictions are as follows
+     * (See section "DU_DITR3 : DU Display I/F Timing Register 3" and
+     *  "DU_DITR4 : DU Display I/F Timing Register 4" in the RZ microprocessor User's Manual for details):
+     *   - HSA available value     : DU_DITR3.HSA[11:0] -> max.4095
+     *   - HACTIVE available value : DU_DITR3.HACTIVE[12:0] -> min.1, max.8190
+     *   - HBP available value     : DU_DITR4.HBP[12:0] -> max.8191
+     *   - HFP available value     : DU_DITR4.HFP[12:0] -> max.8191
+     *
+     * p_cfg->output.htiming.display_cyc sets the value of HACTIVE,
+     * so p_cfg->output.htining.display_cyc value is greater than 0. */
+    FSP_ERROR_RETURN((p_cfg->output.htiming.display_cyc >= LCDC_DU_DITR3_HACTIVE_MIN), FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* p_cfg->output.htiming.sync_width sets the value of HSA,
+     * so p_cfg->output.htiming.sync_width available max value is 4095. */
+    uint32_t h_sa = p_cfg->output.htiming.sync_width;
+    FSP_ERROR_RETURN(LCDC_DU_DITR3_HSA_MAX >= h_sa, FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* p_cfg->output.htiming.back_porch - p_cfg->output.htiming.sync_width set the value of HBP,
+     * so p_cfg->output.htiming.back_porch - p_cfg->output.htiming.sync_width value is less than or equal to 8191. */
+    uint32_t h_bp = (uint32_t) (p_cfg->output.htiming.back_porch - p_cfg->output.htiming.sync_width);
+    FSP_ERROR_RETURN(LCDC_DU_DITR4_HBP_MAX >= h_bp, FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* DU_DITR3.HSA (Hsync period) + DU_DITR4.HBP (Hback period) + DU_DITR4.HFP (Hfront) should be set 3 or more. */
+    uint32_t h_fp =
+        (uint32_t) (p_cfg->output.htiming.total_cyc - p_cfg->output.htiming.back_porch -
+                    p_cfg->output.htiming.display_cyc);
+    FSP_ERROR_RETURN((h_sa + h_bp + h_fp) >= 3, FSP_ERR_INVALID_TIMING_SETTING);
+
+    /* p_cfg->output.htiming.total_cyc set the value of HSA + HBP + HACTIVE + HFP,
+     * so p_cfg->output.htiming.total_cyc available max value is 4095 + 8191 + 8191 + 8191. */
+    FSP_ERROR_RETURN(p_cfg->output.htiming.total_cyc <=
+                     LCDC_DU_DITR3_HSA_MAX + LCDC_DU_DITR4_HBP_MAX + LCDC_DU_DITR3_HACTIVE_MAX + LCDC_DU_DITR4_HFP_MAX,
+                     FSP_ERR_INVALID_TIMING_SETTING);
 
     return FSP_SUCCESS;
 }

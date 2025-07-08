@@ -1130,7 +1130,7 @@ fsp_err_t R_GMAC_CallbackSet (ether_ctrl_t * const          p_ctrl,
 {
     gmac_instance_ctrl_t * p_instance_ctrl = (gmac_instance_ctrl_t *) p_ctrl;
 
-#if ETHER_CFG_PARAM_CHECKING_ENABLE
+#if (GMAC_CFG_PARAM_CHECKING_ENABLE)
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_callback);
     FSP_ERROR_RETURN(GMAC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);

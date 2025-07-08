@@ -34,7 +34,8 @@ typedef struct st_bsc_sdram_callback_args_t
 /** SDRAM chip select. */
 typedef enum e_bsc_sdram_chip_select
 {
-    BSC_SDRAM_CHIP_SELECT_3 = 3,       ///< Device connected to Chip-Select 3
+    BSC_SDRAM_CHIP_SELECT_2_3 = 2,     ///< Device connected to Chip-Select 2 and 3
+    BSC_SDRAM_CHIP_SELECT_3   = 3,     ///< Device connected to Chip-Select 3
 } bsc_sdram_chip_select_t;
 
 /** Number of insertion idle cycle between access cycles */
@@ -56,6 +57,30 @@ typedef enum e_bsc_sdram_command
     BSC_SDRAM_COMMAND_AUTO_PRECHARGE_MODE = 0x00,
     BSC_SDRAM_COMMAND_BANK_ACTIVE_MODE,
 } bsc_sdram_command_t;
+
+/** Specify SDRAM CS2 configuration */
+typedef struct st_bsc_sdram_cs2_settings
+{
+    sdram_data_bus_width_t    data_width;           ///< Select data bus width
+    uint32_t                  cas_latency;          ///< CAS Latency cycle (tCL)
+    sdram_address_bus_width_t row_address_width;    ///< Number of bits of SDRAM Row address
+    sdram_address_bus_width_t column_address_width; ///< Number of bits of SDRAM Column address
+
+    /** Idle cycle between Read-Read cycles in the same CS space */
+    bsc_sdram_idle_cycle_t r_r_same_space_idle_cycle;
+
+    /** Idle cycle between Read-Read cycles in the different CS space */
+    bsc_sdram_idle_cycle_t r_r_different_space_idle_cycle;
+
+    /** Idle cycle between Read-Write cycles in the same CS space */
+    bsc_sdram_idle_cycle_t r_w_same_space_idle_cycle;
+
+    /** Idle cycle between Read-Write cycles in the different CS space */
+    bsc_sdram_idle_cycle_t r_w_different_space_idle_cycle;
+
+    /** Idle cycle between Write-Read cycles and Write-Write cycles */
+    bsc_sdram_idle_cycle_t w_r_w_w_idle_cycle;
+} bsc_sdram_cs2_settings_t;
 
 /** Extended configuration. */
 typedef struct st_bsc_sdram_extended_cfg
@@ -82,6 +107,9 @@ typedef struct st_bsc_sdram_extended_cfg
 
     uint8_t   cmi_ipl;                 ///< SDRAM refresh compare match interrupt
     IRQn_Type cmi_irq;                 ///< SDRAM refresh compare match interrupt priority
+
+    /** CS2 SDRAM configuration */
+    bsc_sdram_cs2_settings_t const * p_cs2_cfg;
 
     /** Callback for SDRAM refresh compare match. */
     void (* p_callback)(bsc_sdram_callback_args_t * p_args);

@@ -69,11 +69,11 @@ void R_BSP_CacheEnableInst (void)
     sctlr  = __get_SCTLR();
     sctlr |= BSP_PRV_SCTLR_ELX_BIT_I;
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_SCTLR(sctlr);
 
-    __asm volatile ("ISB SY");
+    __ISB();
 }
 
 /*******************************************************************************************************************//**
@@ -86,11 +86,11 @@ void R_BSP_CacheEnableData (void)
     sctlr  = __get_SCTLR();
     sctlr |= BSP_PRV_SCTLR_ELX_BIT_C;
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_SCTLR(sctlr);
 
-    __asm volatile ("ISB SY");
+    __ISB();
 }
 
 /*******************************************************************************************************************//**
@@ -103,11 +103,11 @@ void R_BSP_CacheEnableMemoryProtect (void)
     sctlr  = __get_SCTLR();
     sctlr |= BSP_PRV_SCTLR_ELX_BIT_M;
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_SCTLR(sctlr);
 
-    __asm volatile ("ISB SY");
+    __ISB();
 }
 
 /*******************************************************************************************************************//**
@@ -120,11 +120,11 @@ void R_BSP_CacheDisableInst (void)
     sctlr  = __get_SCTLR();
     sctlr &= ~(BSP_PRV_SCTLR_ELX_BIT_I);
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_SCTLR(sctlr);
 
-    __asm volatile ("ISB SY");
+    __ISB();
 }
 
 /*******************************************************************************************************************//**
@@ -137,11 +137,11 @@ void R_BSP_CacheDisableData (void)
     sctlr  = __get_SCTLR();
     sctlr &= ~(BSP_PRV_SCTLR_ELX_BIT_C);
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_SCTLR(sctlr);
 
-    __asm volatile ("ISB SY");
+    __ISB();
 }
 
 /*******************************************************************************************************************//**
@@ -154,11 +154,11 @@ void R_BSP_CacheDisableMemoryProtect (void)
     sctlr  = __get_SCTLR();
     sctlr &= ~(BSP_PRV_SCTLR_ELX_BIT_M);
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_SCTLR(sctlr);
 
-    __asm volatile ("ISB SY");
+    __ISB();
 }
 
 /*******************************************************************************************************************//**
@@ -187,11 +187,11 @@ void R_BSP_CacheCleanAll (void)
 
     uintptr_t dccsw;
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_ICIALLU(0);
 
-    __asm volatile ("DMB SY");
+    __DMB();
 
     /* Reads the maximum level of cache implemented */
     clidr     = __get_CLIDR();
@@ -214,7 +214,7 @@ void R_BSP_CacheCleanAll (void)
                 csselr_level = csselr << BSP_PRV_CSSELR_LEVEL_OFFSET;
                 __set_CSSELR(csselr_level);
 
-                __asm volatile ("DSB SY");
+                __DSB();
 
                 /* Read the line size, number of ways, and number of sets for the current level of cache */
                 ccsidr          = __get_CCSIDR();
@@ -278,8 +278,8 @@ void R_BSP_CacheCleanAll (void)
             }
         }
 
-        __asm volatile ("DSB SY");
-        __asm volatile ("ISB SY");
+        __DSB();
+        __ISB();
     }
     else
     {
@@ -314,11 +314,11 @@ void R_BSP_CacheInvalidateAll (void)
 
     uintptr_t dcisw;
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_ICIALLU(0);
 
-    __asm volatile ("DMB SY");
+    __DMB();
 
     /* Reads the maximum level of cache implemented */
     clidr     = __get_CLIDR();
@@ -341,7 +341,7 @@ void R_BSP_CacheInvalidateAll (void)
                 csselr_level = csselr << BSP_PRV_CSSELR_LEVEL_OFFSET;
                 __set_CSSELR(csselr_level);
 
-                __asm volatile ("DSB SY");
+                __DSB();
 
                 /* Read the line size, number of ways, and number of sets for the current level of cache */
                 ccsidr          = __get_CCSIDR();
@@ -405,8 +405,8 @@ void R_BSP_CacheInvalidateAll (void)
             }
         }
 
-        __asm volatile ("DSB SY");
-        __asm volatile ("ISB SY");
+        __DSB();
+        __ISB();
     }
     else
     {
@@ -444,11 +444,11 @@ void R_BSP_CacheCleanInvalidateAll (void)
 
     uintptr_t dccisw;
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     __set_ICIALLU(0);
 
-    __asm volatile ("DMB SY");
+    __DMB();
 
     /* Reads the maximum level of cache implemented */
     clidr     = __get_CLIDR();
@@ -471,7 +471,7 @@ void R_BSP_CacheCleanInvalidateAll (void)
                 csselr_level = csselr << BSP_PRV_CSSELR_LEVEL_OFFSET;
                 __set_CSSELR(csselr_level);
 
-                __asm volatile ("DSB SY");
+                __DSB();
 
                 /* Read the line size, number of ways, and number of sets for the current level of cache */
                 ccsidr          = __get_CCSIDR();
@@ -535,8 +535,8 @@ void R_BSP_CacheCleanInvalidateAll (void)
             }
         }
 
-        __asm volatile ("DSB SY");
-        __asm volatile ("ISB SY");
+        __DSB();
+        __ISB();
     }
     else
     {
@@ -585,7 +585,7 @@ void R_BSP_CacheCleanRange (uintptr_t base_address, uintptr_t length)
         dccvac += dminline_size;       /* Next data line */
     } while (end_address > dccvac);
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     /* Calculate instruction cache line size */
     iminline      = (ctr >> BSP_PRV_CTR_IMINLINE_OFFSET) & BSP_PRV_CTR_IMINLINE_MASK;
@@ -601,8 +601,8 @@ void R_BSP_CacheCleanRange (uintptr_t base_address, uintptr_t length)
         icivau += iminline_size;       /* Next data line */
     } while (end_address == icivau);
 
-    __asm volatile ("DSB SY");
-    __asm volatile ("ISB SY");
+    __DSB();
+    __ISB();
 }
 
 /*******************************************************************************************************************//**
@@ -643,7 +643,7 @@ void R_BSP_CacheInvalidateRange (uintptr_t base_address, uintptr_t length)
         dcivac += dminline_size;       /* Next data line */
     } while (end_address > dcivac);
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     /* Calculate instruction cache line size */
     iminline      = (ctr >> BSP_PRV_CTR_IMINLINE_OFFSET) & BSP_PRV_CTR_IMINLINE_MASK;
@@ -659,8 +659,8 @@ void R_BSP_CacheInvalidateRange (uintptr_t base_address, uintptr_t length)
         icivau += iminline_size;       /* Next data line */
     } while (end_address == icivau);
 
-    __asm volatile ("DSB SY");
-    __asm volatile ("ISB SY");
+    __DSB();
+    __ISB();
 }
 
 /*******************************************************************************************************************//**
@@ -704,7 +704,7 @@ void R_BSP_CacheCleanInvalidateRange (uintptr_t base_address, uintptr_t length)
         dccivac += dminline_size;      /* Next data line */
     } while (end_address > dccivac);
 
-    __asm volatile ("DSB SY");
+    __DSB();
 
     /* Calculate instruction cache line size */
     iminline      = (ctr >> BSP_PRV_CTR_IMINLINE_OFFSET) & BSP_PRV_CTR_IMINLINE_MASK;
@@ -720,8 +720,8 @@ void R_BSP_CacheCleanInvalidateRange (uintptr_t base_address, uintptr_t length)
         icivau += iminline_size;       /* Next data line */
     } while (end_address == icivau);
 
-    __asm volatile ("DSB SY");
-    __asm volatile ("ISB SY");
+    __DSB();
+    __ISB();
 }
 
 /*******************************************************************************************************************//**

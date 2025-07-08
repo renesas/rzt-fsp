@@ -254,7 +254,7 @@ usb_er_t usb_hstd_transfer_start_req (usb_utr_t * ptr)
     }
 
     /* Pipe Transfer Process check */
-    if (USB_NULL != g_p_usb_hstd_pipe[ptr->ip][pipenum])
+    if (NULL != g_p_usb_hstd_pipe[ptr->ip][pipenum])
     {
         /* Check PIPE TYPE */
         if (usb_cstd_get_pipe_type(ptr, pipenum) != USB_TYPFIELD_ISO)
@@ -686,7 +686,7 @@ usb_er_t usb_hstd_transfer_end (usb_utr_t * ptr, uint16_t pipe, uint16_t status)
     }
   #endif                               /* (BSP_CFG_RTOS == 0) */
 
-    if (USB_NULL == g_p_usb_hstd_pipe[ptr->ip][pipe])
+    if (NULL == g_p_usb_hstd_pipe[ptr->ip][pipe])
     {
         USB_PRINTF1("### usb_hstd_transfer_end overlaps %d\n", pipe);
 

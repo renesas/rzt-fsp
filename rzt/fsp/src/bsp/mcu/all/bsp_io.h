@@ -37,6 +37,8 @@ FSP_HEADER
 /* Shift to get port in bsp_io_port_t and bsp_io_port_pin_t enums. */
 #define BSP_IO_PRV_PORT_OFFSET     (8U)
 
+#define BSP_IO_PRV_PRCR_TIMEOUT    (10000)
+
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
@@ -638,6 +640,11 @@ __STATIC_INLINE void R_BSP_PinAccessDisable (void)
     /** Get the current state of interrupts */
     FSP_CRITICAL_SECTION_DEFINE;
     FSP_CRITICAL_SECTION_ENTER;
+
+    /* If protection is already disabled, wait until protection is enabled on other cores */
+    uintptr_t timeout = BSP_IO_PRV_PRCR_TIMEOUT;
+    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_NS->PRCRN & BSP_IO_REG_PROTECT_GPIO), 0, timeout);
+    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_S->PRCRS & BSP_IO_REG_PROTECT_GPIO), 0, timeout);
 
     /** Is it safe to disable PFS register? */
     if (0 != g_protect_port_counter)

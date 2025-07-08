@@ -75,6 +75,21 @@
 
 #define XSPI_HYPER_PRV_BMCTL_DEFAULT_VALUE                   (0x000000FFUL)
 
+#define XSPI_HYPER_PRV_CDTBUF_CMDSIZE_OFFSET                 (0U)
+#define XSPI_HYPER_PRV_CDTBUF_CMDSIZE_VALUE_MASK             (0x03U)
+#define XSPI_HYPER_PRV_CDTBUF_ADDSIZE_OFFSET                 (2U)
+#define XSPI_HYPER_PRV_CDTBUF_ADDSIZE_VALUE_MASK             (0x07U)
+#define XSPI_HYPER_PRV_CDTBUF_DATASIZE_OFFSET                (5U)
+#define XSPI_HYPER_PRV_CDTBUF_DATASIZE_VALUE_MASK            (0x0FU)
+#define XSPI_HYPER_PRV_CDTBUF_LATE_OFFSET                    (9U)
+#define XSPI_HYPER_PRV_CDTBUF_LATE_VALUE_MASK                (0x1FU)
+#define XSPI_HYPER_PRV_CDTBUF_TRTYPE_OFFSET                  (15U)
+#define XSPI_HYPER_PRV_CDTBUF_TRTYPE_VALUE_MASK              (0x01U)
+#define XSPI_HYPER_PRV_CDTBUF_CMD_OFFSET                     (16U)
+#define XSPI_HYPER_PRV_CDTBUF_CMD_UPPER_OFFSET               (24U)
+#define XSPI_HYPER_PRV_CDTBUF_CMD_1B_VALUE_MASK              (0xFFU)
+#define XSPI_HYPER_PRV_CDTBUF_CMD_2B_VALUE_MASK              (0xFFFFU)
+
 #define XSPI_HYPER_PRV_CCCTL0_CANOWR_OFFSET                  (1U)
 #define XSPI_HYPER_PRV_CCCTL0_CAITV_OFFSET                   (8U)
 #define XSPI_HYPER_PRV_CCCTL0_CASFTSTA_OFFSET                (16U)
@@ -92,16 +107,36 @@
 
 #define XSPI_HYPER_PRV_CCCTL2_DEFAULT_VALUE                  (0xA0002000U)
 
+#define XSPI_HYPER_PRV_INTC_CMDCMPC_OFFSET                   (0U)
 #define XSPI_HYPER_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_0     (0xFFFF0000)
 #define XSPI_HYPER_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_1     (0x000800FF)
 #define XSPI_HYPER_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_2     (0x00FFF700)
 #define XSPI_HYPER_PRV_AUTOCALIBARION_PREAMBLE_PATTERN_3     (0xF700F708)
 
+#define XSPI_HYPER_PRV_CDTBUF_CMDSIZE_2_BYTES                (0x02U)
+#define XSPI_HYPER_PRV_CDTBUF_ADDSIZE_4_BYTES                (0x04U)
+
+#define XSPI_HYPER_PRV_COMMAND_ADDRESS_FOR_CDTBUF_SHIFT      (32U)
+#define XSPI_HYPER_PRV_COMMAND_ADDRESS_FOR_CDABUF_MASK       (0x00000000FFFFFFFF)
+#define XSPI_HYPER_PRV_COMMAND_ADDRESS_MASK                  (0x0000FFFFFFFFFFFF)
+
 #define XSPI_HYPER_PRV_1MB_MEMORY_SPACE                      (0xFFFFF)
 #define XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT                     (20U)
+#define XSPI_HYPER_PRV_UNIT_FLAG_MASK                        (3U)
+
+#define XSPI_HYPER_PRV_UINT32_BITS                           (32)
+
+#define XSPI_HYPER_PRV_1MB_MEMORY_SIZE                       (0x100000)
+#define XSPI_HYPER_PRV_2MB_MEMORY_SIZE                       (0x200000)
+#define XSPI_HYPER_PRV_4MB_MEMORY_SIZE                       (0x400000)
+#define XSPI_HYPER_PRV_8MB_MEMORY_SIZE                       (0x800000)
+#define XSPI_HYPER_PRV_16MB_MEMORY_SIZE                      (0x1000000)
+#define XSPI_HYPER_PRV_32MB_MEMORY_SIZE                      (0x2000000)
+#define XSPI_HYPER_PRV_64MB_MEMORY_SIZE                      (0x4000000)
+
 #define XSPI_HYPER_UNIT_FLAG_MASK                            (3U)
 
-#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+#if BSP_FEATURE_XSPI_HAS_XSPI_MISC2
  #define XSPI_HYPER_PRV_MSTP_CTRL_UNIT_OFFSET                (16U)
  #define XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_MASK              (0x01U)
  #define XSPI_HYPER_PRV_MSTP_CTRL_BUS_STOP_ACK_MASK          (0x02U)
@@ -138,6 +173,7 @@ const hyperbus_api_t g_hyperbus_on_xspi_hyper =
     .open           = R_XSPI_HYPER_Open,
     .burstTypeSet   = R_XSPI_HYPER_BurstTypeSet,
     .accessSpaceSet = R_XSPI_HYPER_AccessSpaceSet,
+    .directTransfer = R_XSPI_HYPER_DirectTransfer,
     .write          = R_XSPI_HYPER_Write,
     .erase          = R_XSPI_HYPER_Erase,
     .statusGet      = R_XSPI_HYPER_StatusGet,
@@ -205,7 +241,7 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     }
 #endif
 
-#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+#if BSP_FEATURE_XSPI_HAS_XSPI_MISC2
 
     /* Bus release request */
     R_XSPI_MISC2->MSTP_CTRL_XSPI &=
@@ -248,7 +284,70 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     }
 #endif
 
-#if XSPI_HYPER_CFG_CUSTOM_ADDR_SPACE_ENABLE
+    /* Set xSPI CSn address space. */
+#if 1 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
+    xspi_hyper_memory_size_t memory_size_reg = XSPI_HYPER_MEMORY_SIZE_1MB;
+
+    switch (p_cfg_extend->memory_size)
+    {
+        case XSPI_HYPER_PRV_1MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_HYPER_MEMORY_SIZE_1MB;
+            break;
+        }
+
+        case XSPI_HYPER_PRV_2MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_HYPER_MEMORY_SIZE_2MB;
+            break;
+        }
+
+        case XSPI_HYPER_PRV_4MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_HYPER_MEMORY_SIZE_4MB;
+            break;
+        }
+
+        case XSPI_HYPER_PRV_8MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_HYPER_MEMORY_SIZE_8MB;
+            break;
+        }
+
+        case XSPI_HYPER_PRV_16MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_HYPER_MEMORY_SIZE_16MB;
+            break;
+        }
+
+        case XSPI_HYPER_PRV_32MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_HYPER_MEMORY_SIZE_32MB;
+            break;
+        }
+
+        case XSPI_HYPER_PRV_64MB_MEMORY_SIZE:
+        {
+            memory_size_reg = XSPI_HYPER_MEMORY_SIZE_64MB;
+            break;
+        }
+
+        default:
+        {
+            break;
+        }
+    }
+
+    if (XSPI_HYPER_CHIP_SELECT_0 == p_cfg_extend->chip_select)
+    {
+        p_instance_ctrl->p_reg->CSSCTL_b.CS0SIZE = memory_size_reg;
+    }
+    else
+    {
+        p_instance_ctrl->p_reg->CSSCTL_b.CS1SIZE = memory_size_reg;
+    }
+
+#else
     uint32_t mirror_address_delta;
  #if 0 == BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS
     mirror_address_delta = 0;
@@ -261,66 +360,6 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
     R_XSPI1_MISC->CS0ENDAD = p_cfg_extend->p_address_space->unit1_cs0_end_address - mirror_address_delta;
     R_XSPI1_MISC->CS1STRAD = p_cfg_extend->p_address_space->unit1_cs1_start_address - mirror_address_delta;
     R_XSPI1_MISC->CS1ENDAD = p_cfg_extend->p_address_space->unit1_cs1_end_address - mirror_address_delta;
-#else
- #if 1 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
-
-    /* Set xSPI CSn slave memory size. */
-    if (XSPI_HYPER_CHIP_SELECT_0 == p_cfg_extend->chip_select)
-    {
-        p_instance_ctrl->p_reg->CSSCTL_b.CS0SIZE = p_cfg_extend->memory_size;
-    }
-    else
-    {
-        p_instance_ctrl->p_reg->CSSCTL_b.CS1SIZE = p_cfg_extend->memory_size;
-    }
-
- #elif 2 == BSP_FEATURE_XSPI_CS_ADDRESS_SPACE_SETTING_TYPE
-    uint32_t mirror_address_delta;
-  #if 0 == BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS
-    mirror_address_delta = 0U;
-  #else
-    mirror_address_delta = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - BSP_FEATURE_XSPI_DEVICE_0_MIRROR_START_ADDRESS;
-  #endif
-
-    if (XSPI_HYPER_CHIP_SELECT_0 == p_cfg_extend->chip_select)
-    {
-        if (0 == p_cfg_extend->unit)
-        {
-            R_XSPI0_MISC->CS0ENDAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS - mirror_address_delta +
-                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
-                                     XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
-        }
-        else
-        {
-            R_XSPI1_MISC->CS0ENDAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS - mirror_address_delta +
-                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
-                                     XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
-        }
-    }
-    else
-    {
-        if (0 == p_cfg_extend->unit)
-        {
-            R_XSPI0_MISC->CS1STRAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS +
-                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta;
-
-            R_XSPI0_MISC->CS1ENDAD = BSP_FEATURE_XSPI_DEVICE_0_START_ADDRESS +
-                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta +
-                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
-                                     XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
-        }
-        else
-        {
-            R_XSPI1_MISC->CS1STRAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS +
-                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta;
-
-            R_XSPI1_MISC->CS1ENDAD = BSP_FEATURE_XSPI_DEVICE_1_START_ADDRESS +
-                                     BSP_FEATURE_XSPI_DEVICE_ADDRESS_SPACE_SIZE / 2U - mirror_address_delta +
-                                     (uint32_t) (p_cfg_extend->memory_size << XSPI_HYPER_PRV_MEMORY_SIZE_SHIFT) +
-                                     XSPI_HYPER_PRV_1MB_MEMORY_SPACE;
-        }
-    }
- #endif
 #endif
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
 
@@ -404,6 +443,9 @@ fsp_err_t R_XSPI_HYPER_Open (hyperbus_ctrl_t * p_ctrl, hyperbus_cfg_t const * co
                                     ((p_cfg_extend->prefetch_en & XSPI_HYPER_PRV_BMCFG_PREEN_VALUE_MASK) <<
                                      XSPI_HYPER_PRV_BMCFG_PREEN_OFFSET);
 
+    /* Set use Channel. */
+    p_instance_ctrl->p_reg->CDCTL0_b.CSSEL = p_cfg_extend->chip_select;
+
     p_instance_ctrl->open             = XSPI_HYPER_PRV_OPEN;
     g_xspi_hyper_channels_open_flags |= (1U << ((p_cfg_extend->unit << 1U) + p_cfg_extend->chip_select));
 
@@ -467,6 +509,79 @@ fsp_err_t R_XSPI_HYPER_AccessSpaceSet (hyperbus_ctrl_t * p_ctrl, hyperbus_space_
         p_instance_ctrl->p_reg->CSa[p_cfg_extend->chip_select].CMCFG2_b.WRLATE =
             p_instance_ctrl->p_cfg->memory_write_latency_count;
     }
+
+    return FSP_SUCCESS;
+}
+
+/*******************************************************************************************************************//**
+ * Read/Write raw data directly with the HyperRAM.
+ *
+ * Implements @ref hyperbus_api_t::directTransfer.
+ *
+ * @retval FSP_SUCCESS                 The flash was programmed successfully.
+ * @retval FSP_ERR_ASSERTION           A required pointer is NULL.
+ * @retval FSP_ERR_NOT_OPEN            Driver is not opened.
+ **********************************************************************************************************************/
+fsp_err_t R_XSPI_HYPER_DirectTransfer (hyperbus_ctrl_t * const p_ctrl, hyperbus_direct_transfer_t * const p_transfer)
+{
+    xspi_hyper_instance_ctrl_t * p_instance_ctrl = (xspi_hyper_instance_ctrl_t *) p_ctrl;
+#if XSPI_HYPER_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(NULL != p_instance_ctrl);
+    FSP_ASSERT(NULL != p_transfer);
+    FSP_ERROR_RETURN(XSPI_HYPER_PRV_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
+
+    p_instance_ctrl->p_reg->CDCTL0_b.TRNUM = 0;
+
+    /* Direct Read/Write settings
+     * (see RZ microprocessor User's Manual section "Flow of Manual-command Procedure"). */
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->CDCTL0_b.TRREQ, 0);
+
+    uint32_t write_operation = ~(p_transfer->command_address.command_address_info_b.read_operation) & 0x1;
+
+    uint32_t cdtbuf0 = ((XSPI_HYPER_PRV_CDTBUF_CMDSIZE_2_BYTES) << XSPI_HYPER_PRV_CDTBUF_CMDSIZE_OFFSET) |
+                       ((XSPI_HYPER_PRV_CDTBUF_ADDSIZE_4_BYTES) << XSPI_HYPER_PRV_CDTBUF_ADDSIZE_OFFSET) |
+                       ((p_transfer->data_length & XSPI_HYPER_PRV_CDTBUF_DATASIZE_VALUE_MASK) <<
+                        XSPI_HYPER_PRV_CDTBUF_DATASIZE_OFFSET) |
+                       ((p_transfer->dummy_cycles & XSPI_HYPER_PRV_CDTBUF_LATE_VALUE_MASK) <<
+                        XSPI_HYPER_PRV_CDTBUF_LATE_OFFSET) |
+                       ((write_operation & XSPI_HYPER_PRV_CDTBUF_TRTYPE_VALUE_MASK) <<
+                        XSPI_HYPER_PRV_CDTBUF_TRTYPE_OFFSET);
+
+    uint16_t ca_info_upper = (p_transfer->command_address.command_address_info & XSPI_HYPER_PRV_COMMAND_ADDRESS_MASK) >>
+                             XSPI_HYPER_PRV_COMMAND_ADDRESS_FOR_CDTBUF_SHIFT;
+    uint32_t ca_info_lower = p_transfer->command_address.command_address_info &
+                             XSPI_HYPER_PRV_COMMAND_ADDRESS_FOR_CDABUF_MASK;
+
+    cdtbuf0 |= (uint32_t) ca_info_upper << XSPI_HYPER_PRV_CDTBUF_CMD_OFFSET;
+
+    p_instance_ctrl->p_reg->BUF[0].CDT = cdtbuf0;
+
+    p_instance_ctrl->p_reg->BUF[0].CDA = ca_info_lower;
+
+    if (1 == write_operation)
+    {
+        p_instance_ctrl->p_reg->BUF[0].CDD0 = (uint32_t) p_transfer->data_u64 & UINT32_MAX;
+        if (p_transfer->data_length > sizeof(uint32_t))
+        {
+            p_instance_ctrl->p_reg->BUF[0].CDD1 = (uint32_t) (p_transfer->data_u64 >> XSPI_HYPER_PRV_UINT32_BITS) &
+                                                  UINT32_MAX;
+        }
+    }
+
+    p_instance_ctrl->p_reg->CDCTL0_b.TRREQ = 1;
+    FSP_HARDWARE_REGISTER_WAIT(p_instance_ctrl->p_reg->INTS_b.CMDCMP, 1);
+
+    if (0 == write_operation)
+    {
+        p_transfer->data_u64 = p_instance_ctrl->p_reg->BUF[0].CDD0;
+        if (p_transfer->data_length > sizeof(uint32_t))
+        {
+            p_transfer->data_u64 |= (uint64_t) (p_instance_ctrl->p_reg->BUF[0].CDD1) << XSPI_HYPER_PRV_UINT32_BITS;
+        }
+    }
+
+    p_instance_ctrl->p_reg->INTC = 1 << XSPI_HYPER_PRV_INTC_CMDCMPC_OFFSET;
 
     return FSP_SUCCESS;
 }
@@ -563,11 +678,11 @@ fsp_err_t R_XSPI_HYPER_Close (hyperbus_ctrl_t * p_ctrl)
     p_instance_ctrl->open             = 0U;
     g_xspi_hyper_channels_open_flags &= ~(1U << ((p_cfg_extend->unit << 1U) + p_cfg_extend->chip_select));
 
-    if ((g_xspi_hyper_channels_open_flags & (XSPI_HYPER_UNIT_FLAG_MASK << (p_cfg_extend->unit << 1U))) == 0)
+    if ((g_xspi_hyper_channels_open_flags & (XSPI_HYPER_PRV_UNIT_FLAG_MASK << (p_cfg_extend->unit << 1U))) == 0)
     {
         R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
 
-#if BSP_FEATURE_XSPI_OTFD_SUPPORTED
+#if BSP_FEATURE_XSPI_HAS_XSPI_MISC2
 
         /* Module stop request */
         R_XSPI_MISC2->MSTP_CTRL_XSPI |= XSPI_HYPER_PRV_MSTP_CTRL_MODULE_STOP_MASK <<

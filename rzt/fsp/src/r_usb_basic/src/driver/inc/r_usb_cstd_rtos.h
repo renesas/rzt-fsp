@@ -23,6 +23,14 @@
 /** Size of a queue **/
   #define QUEUE_SIZE         (10)
 
+  #if (BSP_CFG_RTOS == 2)
+typedef TaskHandle_t      rtos_task_id_t;
+typedef QueueHandle_t     rtos_mbx_id_t;
+typedef QueueHandle_t     rtos_mem_id_t;
+typedef SemaphoreHandle_t rtos_sem_id_t;
+typedef TickType_t        rtos_time_t;
+  #endif /* (BSP_CFG_RTOS == 2) */
+  
 /** USB task's priority **/
   #define HCI_TSK_PRI        (configMAX_PRIORITIES - 1)
   #define HUB_TSK_PRI        (configMAX_PRIORITIES - 3)
@@ -57,8 +65,8 @@ typedef enum e_usb_rtos_err
 /******************************************************************************
  * Exported global variables
  ******************************************************************************/
-extern QueueHandle_t * g_mbx_table[];
-extern QueueHandle_t * g_mpl_table[];
+extern rtos_mbx_id_t * g_mbx_table[];
+extern rtos_mem_id_t * g_mpl_table[];
 
 /******************************************************************************
  * Exported global functions (to be accessed by other files)

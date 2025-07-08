@@ -25,7 +25,6 @@
 
 #if (BSP_CFG_RTOS == 2)
 uint16_t    usb_hcdc_get_string_info(usb_utr_t * mess, uint16_t addr, uint16_t string);
-static void usb_hcdc_check_result(usb_utr_t * mess, uint16_t data1, uint16_t data2);
 
 #else                                  /* (BSP_CFG_RTOS == 2) */
 static void usb_hcdc_check_result(usb_utr_t * mess, uint16_t data1, uint16_t data2);
@@ -42,6 +41,13 @@ const uint16_t g_usb_hcdc_device_tpl[] =
     USB_CFG_TPLCNT,                    /* Number of tpl table */
     0,                                 /* Reserved */
     USB_CFG_TPL                        /* Vendor ID, Product ID */
+};
+
+uint16_t g_usb_hcdc_vendor_table[2 + (2 * USB_HCDC_SPECIFIC_DEV_MAX)] =
+{
+    0,                                 /* Number of registered device */
+    0,                                 /* Reserved */
+    0                                  /* Vendor ID, Product ID */
 };
 
 int16_t g_usb_hcdc_smpl_class_seq[USB_NUM_USBIP];
@@ -198,6 +204,7 @@ void usb_hcdc_enumeration (usb_clsinfo_t * mess)
  ******************************************************************************/
 #endif                                 /* (BSP_CFG_RTOS == 0) */
 
+#if (BSP_CFG_RTOS == 0)
 /******************************************************************************
  * Function Name   : usb_hcdc_check_result
  * Description     : Host CDC class check result
@@ -247,6 +254,8 @@ static void usb_hcdc_check_result (usb_utr_t * mess, uint16_t data1, uint16_t da
 /******************************************************************************
  * End of function usb_hcdc_check_result
  ******************************************************************************/
+#endif /* if (BSP_CFG_RTOS == 0) */
+ 
 #if (BSP_CFG_RTOS == 0)
 
 /******************************************************************************
@@ -613,6 +622,21 @@ void usb_hcdc_registration (usb_utr_t * ptr)
  ******************************************************************************/
 
 /******************************************************************************
+ * Function Name   : usb_hcdc_get_vendor_table
+ * Description     : Returns the address of the vendor registration table under HCDC management.
+ * Argument        : none
+ * Return value    : uint16_t             : Address of the vendor registration table
+ ******************************************************************************/
+uint16_t * usb_hcdc_get_vendor_table (void)
+{
+    return &g_usb_hcdc_vendor_table[0];
+}
+
+/******************************************************************************
+ * End of function usb_hcdc_get_vendor_table
+ ******************************************************************************/
+
+/******************************************************************************
  * Function Name   : usb_hcdc_init
  * Description     : Initialize of Host CDC driver.
  * Arguments       : usb_utr_t    *ptr    : Pointer to usb_utr_t structure.
@@ -947,9 +971,11 @@ void usb_hcdc_get_line_coding (usb_instance_ctrl_t   * p_ctrl,
     g_setup.request_value  = setup->request_value;  /* wValue:Zero */
     g_setup.request_index  = setup->request_index;  /* wIndex:Interface */
     g_setup.request_length = setup->request_length; /* wLength:Zero */
-
+#if defined(BSP_CFG_CORE_CA55)
+    g_data_buf_addr[p_ctrl->module_number][USB_PIPE0] = (uintptr_t) g_com_parm;
+#else
     g_data_buf_addr[p_ctrl->module_number][USB_PIPE0] = (uint32_t) g_com_parm;
-
+#endif
     g_usb_on_usb.hostControlTransfer(p_ctrl, &g_setup, (uint8_t *) &g_usb_com_parm_temp, device_address);
 }
 

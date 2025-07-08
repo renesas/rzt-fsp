@@ -379,7 +379,7 @@ __STATIC_INLINE void r_bsp_irq_group_set (IRQn_Type const irq, uint32_t interrup
 /*******************************************************************************************************************//**
  * ENABLE ALL_EXCEPTION
  **********************************************************************************************************************/
-__STATIC_INLINE void __enable_all_exception (void)
+__STATIC_INLINE void r_bsp_enable_all_exception (void)
 {
     __asm volatile (
         "MSR     DAIFCLR, %[bsp_prv_daif_bit_all_exception]     \n"
@@ -390,7 +390,7 @@ __STATIC_INLINE void __enable_all_exception (void)
 /*******************************************************************************************************************//**
  * Disable FIQ
  **********************************************************************************************************************/
-__STATIC_INLINE void __disable_fiq (void)
+__STATIC_INLINE void r_bsp_disable_fiq (void)
 {
     __asm volatile (
         "MSR     DAIFSET, %[bsp_prv_daif_bit_f]     \n"
@@ -401,7 +401,7 @@ __STATIC_INLINE void __disable_fiq (void)
 /*******************************************************************************************************************//**
  * Enable FIQ
  **********************************************************************************************************************/
-__STATIC_INLINE void __enable_fiq (void)
+__STATIC_INLINE void r_bsp_enable_fiq (void)
 {
     __asm volatile (
         "MSR     DAIFCLR, %[bsp_prv_daif_bit_f]     \n"

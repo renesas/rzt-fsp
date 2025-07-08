@@ -1332,19 +1332,20 @@ static fsp_err_t r_sdhi_max_clock_rate_set (sdhi_instance_ctrl_t * p_ctrl, uint3
 static fsp_err_t r_sdhi_pin_cfg (sdhi_instance_ctrl_t * const p_ctrl)
 {
 #if SDHI_CFG_EMMC_SUPPORT_ENABLE
-    FSP_PARAMETER_NOT_USED(p_ctrl);
+    if (0 == p_ctrl->p_cfg->channel)
+    {
+        /* The host shall low RST_n signal supply at least 1us to the eMMC device (tRSTW).
+         * Reference section 6.15.9 "H/W Reset Operation" in the Embedded Multi-Media Card (eMMC) Electrical Standard (5.0)
+         * JESD84-B50. */
+        R_SDHI0->SD_STATUS_b.SD_RST = 0;
+        R_BSP_SoftwareDelay(SDHI_PRV_EMMC_RESET_LOW_PERIOD_US, BSP_DELAY_UNITS_MICROSECONDS);
 
-    /* The host shall low RST_n signal supply at least 1us to the eMMC device (tRSTW).
-     * Reference section 6.15.9 "H/W Reset Operation" in the Embedded Multi-Media Card (eMMC) Electrical Standard (5.0)
-     * JESD84-B50. */
-    R_SDHI0->SD_STATUS_b.SD_RST = 0;
-    R_BSP_SoftwareDelay(SDHI_PRV_EMMC_RESET_LOW_PERIOD_US, BSP_DELAY_UNITS_MICROSECONDS);
-
-    /* The host shall high RST_n supply at least 200us to the eMMC device (tRSCA).
-     * Reference section 6.15.9 "H/W Reset Operation" in the Embedded Multi-Media Card (eMMC) Electrical Standard (5.0)
-     * JESD84-B50. */
-    R_SDHI0->SD_STATUS_b.SD_RST = 1;
-    R_BSP_SoftwareDelay(SDHI_PRV_EMMC_RESET_HIGH_PERIOD_US, BSP_DELAY_UNITS_MICROSECONDS);
+        /* The host shall high RST_n supply at least 200us to the eMMC device (tRSCA).
+         * Reference section 6.15.9 "H/W Reset Operation" in the Embedded Multi-Media Card (eMMC) Electrical Standard (5.0)
+         * JESD84-B50. */
+        R_SDHI0->SD_STATUS_b.SD_RST = 1;
+        R_BSP_SoftwareDelay(SDHI_PRV_EMMC_RESET_HIGH_PERIOD_US, BSP_DELAY_UNITS_MICROSECONDS);
+    }
 #endif
 
 #if SDHI_CFG_SD_SUPPORT_ENABLE
@@ -2126,13 +2127,13 @@ static fsp_err_t r_sdhi_bus_width_set (sdhi_instance_ctrl_t * const p_ctrl, uint
  **********************************************************************************************************************/
 void r_sdhi_transfer_callback (sdhi_instance_ctrl_t * p_ctrl, sdmmc_callback_args_t * p_args)
 {
-#if SDMMC_CFG_UNALIGNED_ACCESS_ENABLE
+#if SDMMC_CFG_UNALIGNED_ACCESS_ENABLE || !SDMMC_CFG_DMAC_SUPPORT_ENABLE
     if (p_ctrl->transfer_blocks_total != p_ctrl->transfer_block_current)
     {
         if (SDHI_TRANSFER_DIR_READ == p_ctrl->transfer_dir)
         {
             uint32_t * p_transfer_data_32 = (uint32_t *) p_ctrl->p_transfer_data;
-            for (uint32_t i = 0; i < p_ctrl->p_cfg->block_size / sizeof(uint32_t); i += 2)
+            for (uint32_t i = 0; i < p_ctrl->transfer_block_size / sizeof(uint32_t); i += 2)
             {
                 p_transfer_data_32[i]     = p_ctrl->p_reg->SD_BUF0H;
                 p_transfer_data_32[i + 1] = p_ctrl->p_reg->SD_BUF0L;
@@ -2142,7 +2143,7 @@ void r_sdhi_transfer_callback (sdhi_instance_ctrl_t * p_ctrl, sdmmc_callback_arg
         if (SDHI_TRANSFER_DIR_WRITE == p_ctrl->transfer_dir)
         {
             uint32_t * p_transfer_data_32 = (uint32_t *) p_ctrl->p_transfer_data;
-            for (uint32_t i = 0; i < p_ctrl->p_cfg->block_size / sizeof(uint32_t); i += 2)
+            for (uint32_t i = 0; i < p_ctrl->transfer_block_size / sizeof(uint32_t); i += 2)
             {
                 p_ctrl->p_reg->SD_BUF0H = p_transfer_data_32[i];
                 p_ctrl->p_reg->SD_BUF0L = p_transfer_data_32[i + 1];
@@ -2195,27 +2196,33 @@ static fsp_err_t r_sdhi_transfer_read (sdhi_instance_ctrl_t * const p_ctrl,
 
     p_ctrl->p_reg->SD_INFO1_MASK &= ~(1U << SDHI_PRV_SD_INFO1_MASK_ACEND_ENABLE_BIT);
     p_ctrl->p_reg->SD_INFO2_MASK  = SDHI_PRV_SDHI_INFO2_MASK;
-    p_ctrl->p_reg->CC_EXT_MODE    = SDHI_PRV_SD_CC_EXT_MODE_DMASDRW_SET;
 
+#if SDHI_CFG_DMAC_SUPPORT_ENABLE
+
+    /* SD_BUF read/write DMA transfer is enabled. */
+    p_ctrl->p_reg->CC_EXT_MODE = SDHI_PRV_SD_CC_EXT_MODE_DMASDRW_SET;
+
+    /* DMAC interrupt unmasked. */
     p_ctrl->p_reg->DM_CM_INFO1_MASK &= ~(SDHI_PRV_SDHI_DM_CM_INFO1_SEQEND |
                                          SDHI_PRV_SDHI_DM_CM_INFO1_DTRANEND1);
     p_ctrl->p_reg->DM_CM_INFO2_MASK &= ~(SDHI_PRV_SDHI_DM_CM_INFO2_SEQERR |
                                          SDHI_PRV_SDHI_DM_CM_INFO2_DTRANERR1);
 
+    /* Set DMAC Transfer mode (64bit bus width and SD upstream). */
     p_ctrl->p_reg->DM_CM_DTRAN_MODE = SDHI_PRV_SDHI_DM_CM_DTRAN_MODE_BUS_WIDTH |
                                       SDHI_PRV_SDHI_DM_CM_DTRAN_MODE_CHNUM1;
-
-#if SDMMC_CFG_UNALIGNED_ACCESS_ENABLE
+ #if SDMMC_CFG_UNALIGNED_ACCESS_ENABLE
     if ((0U != ((uint32_t) (uintptr_t) p_data & 0x7U)) || (0U != (p_ctrl->p_cfg->block_size & 7U)))
     {
         /* For unaligned access read process, the CPU reads data from the SD_BUF0 register using the BRE flag interrupt.
          * Therefore, enable interrupts using the BRE flag. */
         p_ctrl->p_reg->SD_INFO2_MASK &= ~(SDHI_PRV_SDHI_INFO2_CARD_BRE);
 
-        /* 32bit access to SD_BUF. */
+        /* 32bit access to SD_BUF for read process without built-in DMAC. */
         p_ctrl->p_reg->HOST_MODE |= (1U << SDHI_PRV_HOST_MODE_WMODE_BIT) |
                                     (1U << SDHI_PRV_HOST_MODE_BUSWIDTH_BIT);
 
+        /* SD_BUF read/write DMA transfer is disabled. */
         p_ctrl->p_reg->CC_EXT_MODE_b.DMASDRW = 0;
 
         p_ctrl->transfer_block_current = 0U;
@@ -2225,22 +2232,44 @@ static fsp_err_t r_sdhi_transfer_read (sdhi_instance_ctrl_t * const p_ctrl,
         p_ctrl->transfer_block_size    = bytes;
     }
     else
-#endif
+ #endif
     {
         /* When using the built-in DMAC of SDHI, fix the bus width to 64 bits. */
         p_ctrl->p_reg->HOST_MODE &= ~((1U << SDHI_PRV_HOST_MODE_WMODE_BIT) |
                                       (1U << SDHI_PRV_HOST_MODE_BUSWIDTH_BIT));
 
-#if defined(BSP_CFG_CORE_CA55)
+ #if defined(BSP_CFG_CORE_CA55)
         uint64_t p_data_pa;                     /* Physical Address */
         uint64_t p_data_va = (uint64_t) p_data; /* Virtual Address */
         R_BSP_MmuVatoPa(p_data_va, &p_data_pa);
         p_ctrl->p_reg->DM_DTRAN_ADDR = (uint32_t) p_data_pa;
-#else
+ #else
         p_ctrl->p_reg->DM_DTRAN_ADDR = (uint32_t) p_data;
-#endif
+ #endif
+
+        /* DMAC Start */
         p_ctrl->p_reg->DM_CM_DTRAN_CTRL = SDHI_PRV_SDHI_DM_CM_DTRAN_CTRL_DM_START;
     }
+
+#else
+
+    /* For read process without built-in DMAC, the CPU reads data from the SD_BUF0 register using the BRE flag interrupt.
+     * Therefore, enable interrupts using the BRE flag. */
+    p_ctrl->p_reg->SD_INFO2_MASK &= ~(SDHI_PRV_SDHI_INFO2_CARD_BRE);
+
+    /* 32bit access to SD_BUF for read process without built-in DMAC. */
+    p_ctrl->p_reg->HOST_MODE |= (1U << SDHI_PRV_HOST_MODE_WMODE_BIT) |
+                                (1U << SDHI_PRV_HOST_MODE_BUSWIDTH_BIT);
+
+    /* SD_BUF read/write DMA transfer is disabled. */
+    p_ctrl->p_reg->CC_EXT_MODE_b.DMASDRW = 0;
+
+    p_ctrl->transfer_block_current = 0U;
+    p_ctrl->transfer_blocks_total  = block_count;
+    p_ctrl->p_transfer_data        = (uint8_t *) p_data;
+    p_ctrl->transfer_dir           = SDHI_TRANSFER_DIR_READ;
+    p_ctrl->transfer_block_size    = bytes;
+#endif
 
     return FSP_SUCCESS;
 }
@@ -2267,23 +2296,30 @@ static fsp_err_t r_sdhi_transfer_write (sdhi_instance_ctrl_t * const p_ctrl,
 
     p_ctrl->p_reg->SD_INFO1_MASK &= ~(1U << SDHI_PRV_SD_INFO1_MASK_ACEND_ENABLE_BIT);
     p_ctrl->p_reg->SD_INFO2_MASK  = SDHI_PRV_SDHI_INFO2_MASK;
-    p_ctrl->p_reg->CC_EXT_MODE    = SDHI_PRV_SD_CC_EXT_MODE_DMASDRW_SET;
 
+#if SDHI_CFG_DMAC_SUPPORT_ENABLE
+
+    /* SD_BUF read/write DMA transfer is enabled. */
+    p_ctrl->p_reg->CC_EXT_MODE = SDHI_PRV_SD_CC_EXT_MODE_DMASDRW_SET;
+
+    /* DMAC interrupt unmasked. */
     p_ctrl->p_reg->DM_CM_INFO1_MASK &= ~(SDHI_PRV_SDHI_DM_CM_INFO1_SEQEND |
                                          SDHI_PRV_SDHI_DM_CM_INFO1_DTRANEND0);
     p_ctrl->p_reg->DM_CM_INFO2_MASK &= ~(SDHI_PRV_SDHI_DM_CM_INFO2_SEQERR |
                                          SDHI_PRV_SDHI_DM_CM_INFO2_DTRANERR0);
 
+    /* Set DMAC Transfer mode (64bit bus width and SD downstream). */
     p_ctrl->p_reg->DM_CM_DTRAN_MODE = SDHI_PRV_SDHI_DM_CM_DTRAN_MODE_BUS_WIDTH |
                                       SDHI_PRV_SDHI_DM_CM_DTRAN_MODE_CHNUM0;
 
-#if SDMMC_CFG_UNALIGNED_ACCESS_ENABLE
+ #if SDMMC_CFG_UNALIGNED_ACCESS_ENABLE
     if ((0U != ((uint32_t) (uintptr_t) p_data & 0x7U)) || (0U != (p_ctrl->p_cfg->block_size & 7U)))
     {
-        /* 32bit access to SD_BUF. */
+        /* 32bit access to SD_BUF for write process without built-in DMAC. */
         p_ctrl->p_reg->HOST_MODE |= (1U << SDHI_PRV_HOST_MODE_WMODE_BIT) |
                                     (1U << SDHI_PRV_HOST_MODE_BUSWIDTH_BIT);
 
+        /* SD_BUF read/write DMA transfer is disabled. */
         p_ctrl->p_reg->CC_EXT_MODE_b.DMASDRW = 0;
 
         p_ctrl->transfer_block_current = 0U;
@@ -2293,21 +2329,39 @@ static fsp_err_t r_sdhi_transfer_write (sdhi_instance_ctrl_t * const p_ctrl,
         p_ctrl->transfer_block_size    = bytes;
     }
     else
-#endif
+ #endif
     {
         /* When using the built-in DMAC of SDHI, fix the bus width to 64 bits. */
         p_ctrl->p_reg->HOST_MODE &= ~((1U << SDHI_PRV_HOST_MODE_WMODE_BIT) |
                                       (1U << SDHI_PRV_HOST_MODE_BUSWIDTH_BIT));
-#if defined(BSP_CFG_CORE_CA55)
+ #if defined(BSP_CFG_CORE_CA55)
         uint64_t p_data_pa;                     /* Physical Address */
         uint64_t p_data_va = (uint64_t) p_data; /* Virtual Address */
         R_BSP_MmuVatoPa(p_data_va, &p_data_pa);
         p_ctrl->p_reg->DM_DTRAN_ADDR = (uint32_t) p_data_pa;
-#else
+ #else
         p_ctrl->p_reg->DM_DTRAN_ADDR = (uint32_t) p_data;
-#endif
+ #endif
+
+        /* DMAC Start */
         p_ctrl->p_reg->DM_CM_DTRAN_CTRL = SDHI_PRV_SDHI_DM_CM_DTRAN_CTRL_DM_START;
     }
+
+#else
+
+    /* 32bit access to SD_BUF for write process without built-in DMAC. */
+    p_ctrl->p_reg->HOST_MODE |= (1U << SDHI_PRV_HOST_MODE_WMODE_BIT) |
+                                (1U << SDHI_PRV_HOST_MODE_BUSWIDTH_BIT);
+
+    /* SD_BUF read/write DMA transfer is disabled. */
+    p_ctrl->p_reg->CC_EXT_MODE_b.DMASDRW = 0;
+
+    p_ctrl->transfer_block_current = 0U;
+    p_ctrl->transfer_blocks_total  = block_count;
+    p_ctrl->p_transfer_data        = (uint8_t *) &p_data[0];
+    p_ctrl->transfer_dir           = SDHI_TRANSFER_DIR_WRITE;
+    p_ctrl->transfer_block_size    = bytes;
+#endif
 
     return FSP_SUCCESS;
 }

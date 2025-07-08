@@ -39,6 +39,7 @@ RSIP_PRV_PRIMITIVE_FUNC
 
 void r_rsip_p32u (const uint32_t InData_Text[], uint32_t OutData_Text[], uint32_t MAX_CNT)
 {
+    RSIP_PRV_PRIMITIVE_ENTRY_NO_RETVAL;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;
@@ -51,41 +52,17 @@ void r_rsip_p32u (const uint32_t InData_Text[], uint32_t OutData_Text[], uint32_
     (void) oLoop;
     (void) oLoop1;
     (void) OFS_ADR;
-    r_rsip_func100(bswap_32big(0x0a2d7620U),
-                   bswap_32big(0x7f34890fU),
-                   bswap_32big(0xf041f7ceU),
-                   bswap_32big(0x27b39da4U));
+    r_rsip_func100(bswap_32big(0xf37d5391U),
+                   bswap_32big(0xc3a11829U),
+                   bswap_32big(0x3e976ae6U),
+                   bswap_32big(0x9d55be78U));
     WR1_PROG(REG_1444H, 0x00020061U);
     WR1_PROG(REG_182CH, 0x00018020U);
     WR1_PROG(REG_1824H, 0x07008d06U);
     WR1_PROG(REG_1408H, 0x000c1000U);
-    WAIT_STS(REG_1444H, 31U, 1U);
-    WR1_ADDR(REG_1420H, &InData_Text[0]);
-    WR1_ADDR(REG_1420H, &InData_Text[1]);
-    WR1_ADDR(REG_1420H, &InData_Text[2]);
-    WR1_ADDR(REG_1420H, &InData_Text[3]);
-    for (iLoop = 4; iLoop < MAX_CNT; iLoop = iLoop + 4)
-    {
-        WAIT_STS(REG_1444H, 31U, 1U);
-        WR1_ADDR(REG_1420H, &InData_Text[iLoop + 0]);
-        WR1_ADDR(REG_1420H, &InData_Text[iLoop + 1]);
-        WR1_ADDR(REG_1420H, &InData_Text[iLoop + 2]);
-        WR1_ADDR(REG_1420H, &InData_Text[iLoop + 3]);
-        WAIT_STS(REG_1408H, 30U, 1U);
-        RD1_ADDR(REG_1420H, &OutData_Text[iLoop - 4]);
-        RD1_ADDR(REG_1420H, &OutData_Text[iLoop - 3]);
-        RD1_ADDR(REG_1420H, &OutData_Text[iLoop - 2]);
-        RD1_ADDR(REG_1420H, &OutData_Text[iLoop - 1]);
-    }
-
-    WAIT_STS(REG_1408H, 30U, 1U);
-    RD1_ADDR(REG_1420H, &OutData_Text[iLoop - 4]);
-    RD1_ADDR(REG_1420H, &OutData_Text[iLoop - 3]);
-    RD1_ADDR(REG_1420H, &OutData_Text[iLoop - 2]);
-    RD1_ADDR(REG_1420H, &OutData_Text[iLoop - 1]);
-    r_rsip_func206();
-    r_rsip_func101(bswap_32big(0x5a024accU),
-                   bswap_32big(0xb006eef9U),
-                   bswap_32big(0xdfaa691eU),
-                   bswap_32big(0xb04f4019U));
+    r_rsip_func220(InData_Text, MAX_CNT, OutData_Text);
+    r_rsip_func101(bswap_32big(0x9f5b3985U),
+                   bswap_32big(0x7e0970c2U),
+                   bswap_32big(0xfd54e686U),
+                   bswap_32big(0x026c5901U));
 }

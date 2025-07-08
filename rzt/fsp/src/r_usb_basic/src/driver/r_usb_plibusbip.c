@@ -295,6 +295,7 @@ uint16_t usb_pstd_write_data (uint16_t pipe, uint16_t pipemode, usb_utr_t * p_ut
     uint16_t buffer;
     uint16_t mxps;
     uint16_t end_flag;
+    uint16_t read_pid;
 
     if (USB_MAX_PIPE_NO < pipe)
     {
@@ -361,6 +362,9 @@ uint16_t usb_pstd_write_data (uint16_t pipe, uint16_t pipemode, usb_utr_t * p_ut
         count    = size;
     }
 
+    read_pid = usb_cstd_get_pid(p_utr, pipe);
+    usb_cstd_set_nak(p_utr, pipe);
+
     gp_usb_pstd_data[pipe] = usb_pstd_write_fifo(count, pipemode, gp_usb_pstd_data[pipe], p_utr);
 
     /* Check data count to remain */
@@ -383,6 +387,14 @@ uint16_t usb_pstd_write_data (uint16_t pipe, uint16_t pipemode, usb_utr_t * p_ut
     {
         /* Total data count - count */
         g_usb_pstd_data_cnt[pipe] -= count;
+    }
+
+    hw_usb_clear_status_bemp(p_utr, pipe);
+
+    /* USB_PID_BUF ? */
+    if (USB_PID_BUF == (USB_PID & read_pid))
+    {
+        usb_cstd_set_buf(p_utr, pipe);
     }
 
     /* End or Err or Continue */
@@ -1063,6 +1075,24 @@ uint8_t usb_pstd_set_pipe_table (uint8_t * descriptor, usb_utr_t * p_utr, uint8_
                 pipe_cfg = (uint16_t) (USB_TYPFIELD_INT | USB_DIR_P_OUT);
             }
 
+            break;
+        }
+
+        case USB_EP_ISO:
+        {
+            /* Set pipe configuration table */
+            if (USB_EP_IN == (descriptor[USB_EP_B_ENDPOINTADDRESS] & USB_EP_DIRMASK))
+            {
+                /* IN(send) */
+                pipe_no  = usb_pstd_get_pipe_no(USB_EP_ISO, USB_PIPE_DIR_IN, p_utr, class_info);
+                pipe_cfg = (uint16_t) (USB_TYPFIELD_ISO | USB_CFG_DBLB | USB_DIR_P_IN);
+            }
+            else
+            {
+                /* OUT(receive) */
+                pipe_no  = usb_pstd_get_pipe_no(USB_EP_ISO, USB_PIPE_DIR_OUT, p_utr, class_info);
+                pipe_cfg = (uint16_t) (USB_TYPFIELD_ISO | USB_CFG_DBLB | USB_SHTNAKFIELD | USB_DIR_P_OUT);
+            }
             break;
         }
 

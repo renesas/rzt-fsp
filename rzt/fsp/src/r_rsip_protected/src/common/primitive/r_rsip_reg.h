@@ -18,10 +18,12 @@
  **********************************************************************************************************************/
 
 /* RSIP register access macro */
-#define RD1_MASK(reg, value)            ((reg) & (value))
-#define CHCK_STS(reg, bitPos, value)    ((value) == ((reg >> bitPos) & 1))
-#define WAIT_STS(reg, bitPos, value)    while (!CHCK_STS((reg), (bitPos), (value))) {;}
-#define WR1_ADDR(reg, addr)             (reg) = *(addr)
+#if !defined(WAIT_STS)
+ #define WAIT_STS(reg, bitPos, value)    while (!CHCK_STS((reg), (bitPos), (value))) {;}
+#endif
+#define RD1_MASK(reg, value)             ((reg) & (value))
+#define CHCK_STS(reg, bitPos, value)     ((value) == ((reg >> bitPos) & 1))
+#define WR1_ADDR(reg, addr)              (reg) = *(addr)
 #define WR2_ADDR(reg, addr)            \
     {                                  \
         WR1_ADDR((reg), (&(addr)[0])); \
@@ -51,6 +53,21 @@
         WR1_ADDR((reg), (&(addr)[6])); \
         WR1_ADDR((reg), (&(addr)[7])); \
     }
+#define WR12_ADDR(reg, addr)            \
+    {                                   \
+        WR1_ADDR((reg), (&(addr)[0]));  \
+        WR1_ADDR((reg), (&(addr)[1]));  \
+        WR1_ADDR((reg), (&(addr)[2]));  \
+        WR1_ADDR((reg), (&(addr)[3]));  \
+        WR1_ADDR((reg), (&(addr)[4]));  \
+        WR1_ADDR((reg), (&(addr)[5]));  \
+        WR1_ADDR((reg), (&(addr)[6]));  \
+        WR1_ADDR((reg), (&(addr)[7]));  \
+        WR1_ADDR((reg), (&(addr)[8]));  \
+        WR1_ADDR((reg), (&(addr)[9]));  \
+        WR1_ADDR((reg), (&(addr)[10])); \
+        WR1_ADDR((reg), (&(addr)[11])); \
+    }
 #define WR16_ADDR(reg, addr)            \
     {                                   \
         WR1_ADDR((reg), (&(addr)[0]));  \
@@ -71,12 +88,28 @@
         WR1_ADDR((reg), (&(addr)[15])); \
     }
 #define WR1_PROG(reg, value)    (reg) = (value)
+#define WR2_PROG(reg, value0, value1) \
+    {                                 \
+        WR1_PROG((reg), (value0));    \
+        WR1_PROG((reg), (value1));    \
+    }
 #define WR4_PROG(reg, value0, value1, value2, value3) \
     {                                                 \
         WR1_PROG((reg), (value0));                    \
         WR1_PROG((reg), (value1));                    \
         WR1_PROG((reg), (value2));                    \
         WR1_PROG((reg), (value3));                    \
+    }
+#define WR8_PROG(reg, value0, value1, value2, value3, value4, value5, value6, value7) \
+    {                                                                                 \
+        WR1_PROG((reg), (value0));                                                    \
+        WR1_PROG((reg), (value1));                                                    \
+        WR1_PROG((reg), (value2));                                                    \
+        WR1_PROG((reg), (value3));                                                    \
+        WR1_PROG((reg), (value4));                                                    \
+        WR1_PROG((reg), (value5));                                                    \
+        WR1_PROG((reg), (value6));                                                    \
+        WR1_PROG((reg), (value7));                                                    \
     }
 #define RD1_ADDR(reg, addr)     *(addr) = (reg)
 #define RD4_ADDR(reg, addr)            \
@@ -107,6 +140,84 @@
         RD1_ADDR((reg), (&(addr)[6])); \
         RD1_ADDR((reg), (&(addr)[7])); \
     }
+#define RD12_ADDR(reg, addr)            \
+    {                                   \
+        RD1_ADDR((reg), (&(addr)[0]));  \
+        RD1_ADDR((reg), (&(addr)[1]));  \
+        RD1_ADDR((reg), (&(addr)[2]));  \
+        RD1_ADDR((reg), (&(addr)[3]));  \
+        RD1_ADDR((reg), (&(addr)[4]));  \
+        RD1_ADDR((reg), (&(addr)[5]));  \
+        RD1_ADDR((reg), (&(addr)[6]));  \
+        RD1_ADDR((reg), (&(addr)[7]));  \
+        RD1_ADDR((reg), (&(addr)[8]));  \
+        RD1_ADDR((reg), (&(addr)[9]));  \
+        RD1_ADDR((reg), (&(addr)[10])); \
+        RD1_ADDR((reg), (&(addr)[11])); \
+    }
+#define RD16_ADDR(reg, addr)            \
+    {                                   \
+        RD1_ADDR((reg), (&(addr)[0]));  \
+        RD1_ADDR((reg), (&(addr)[1]));  \
+        RD1_ADDR((reg), (&(addr)[2]));  \
+        RD1_ADDR((reg), (&(addr)[3]));  \
+        RD1_ADDR((reg), (&(addr)[4]));  \
+        RD1_ADDR((reg), (&(addr)[5]));  \
+        RD1_ADDR((reg), (&(addr)[6]));  \
+        RD1_ADDR((reg), (&(addr)[7]));  \
+        RD1_ADDR((reg), (&(addr)[8]));  \
+        RD1_ADDR((reg), (&(addr)[9]));  \
+        RD1_ADDR((reg), (&(addr)[10])); \
+        RD1_ADDR((reg), (&(addr)[11])); \
+        RD1_ADDR((reg), (&(addr)[12])); \
+        RD1_ADDR((reg), (&(addr)[13])); \
+        RD1_ADDR((reg), (&(addr)[14])); \
+        RD1_ADDR((reg), (&(addr)[15])); \
+    }
+
+/* Address value */
+#define RSIP_PRV_ADDR_VAL_0000H    (RSIP_PRV_ADDR_BASE + 0x0000U)
+#define RSIP_PRV_ADDR_VAL_1000H    (RSIP_PRV_ADDR_BASE + 0x1000U)
+#define RSIP_PRV_ADDR_VAL_1420H    (RSIP_PRV_ADDR_BASE + 0x1420U)
+#define RSIP_PRV_ADDR_VAL_1440H    (RSIP_PRV_ADDR_BASE + 0x1440U)
+#define RSIP_PRV_ADDR_VAL_1600H    (RSIP_PRV_ADDR_BASE + 0x1600U)
+#define RSIP_PRV_ADDR_VAL_2000H    (RSIP_PRV_ADDR_BASE + 0x2000U)
+
+/*
+ * Address definition depends on the toolchain for optimization.
+ *
+ * ARM Cortex with GNU Toolchain: variable with const keyword
+ * - Common
+ *   - REG_0000H-REG_0FFCH: g_rsip_addr_0000h + offset (imm12)
+ * - if (5U == RSIP_PRV_IP_SERIES_MAJOR)
+ *   - REG_1000H-REG_1FFCH: g_rsip_addr_1000h + offset (imm12)
+ *   - REG_2000H-REG_24FCH: g_rsip_addr_2000h + offset (imm12)
+ *   - REG_1420H-REG_143CH: g_rsip_addr_1420h + offset (imm5)
+ *   - REG_1440H-REG_145CH: g_rsip_addr_1440h + offset (imm5)
+ *   - REG_1600H-REG_161CH: g_rsip_addr_1600h + offset (imm5)
+ *
+ * Other CPUs, other toolchains: #define preprocessor
+ */
+
+#if defined(__ARM_ARCH) && defined(__GNUC__)
+ #define RSIP_PRV_ADDR_0000H       g_rsip_addr_0000h
+#else
+ #define RSIP_PRV_ADDR_0000H       RSIP_PRV_ADDR_VAL_0000H
+#endif
+
+#if defined(__ARM_ARCH) && defined(__GNUC__) && (5U == RSIP_PRV_IP_SERIES_MAJOR)
+ #define RSIP_PRV_ADDR_1000H       g_rsip_addr_1000h
+ #define RSIP_PRV_ADDR_2000H       g_rsip_addr_2000h
+ #define RSIP_PRV_ADDR_1420H       g_rsip_addr_1420h
+ #define RSIP_PRV_ADDR_1440H       g_rsip_addr_1440h
+ #define RSIP_PRV_ADDR_1600H       g_rsip_addr_1600h
+#else
+ #define RSIP_PRV_ADDR_1000H       RSIP_PRV_ADDR_VAL_1000H
+ #define RSIP_PRV_ADDR_2000H       RSIP_PRV_ADDR_VAL_2000H
+ #define RSIP_PRV_ADDR_1420H       RSIP_PRV_ADDR_VAL_1420H
+ #define RSIP_PRV_ADDR_1440H       RSIP_PRV_ADDR_VAL_1440H
+ #define RSIP_PRV_ADDR_1600H       RSIP_PRV_ADDR_VAL_1600H
+#endif
 
 /* register address */
 #define REG_0000H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_0000H + 0x000U))
@@ -1397,22 +1508,22 @@
 #define REG_1414H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x414U))
 #define REG_1418H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x418U))
 #define REG_141CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x41CU))
-#define REG_1420H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x420U))
-#define REG_1424H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x424U))
-#define REG_1428H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x428U))
-#define REG_142CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x42CU))
-#define REG_1430H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x430U))
-#define REG_1434H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x434U))
-#define REG_1438H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x438U))
-#define REG_143CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x43CU))
-#define REG_1440H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x440U))
-#define REG_1444H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x444U))
-#define REG_1448H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x448U))
-#define REG_144CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x44CU))
-#define REG_1450H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x450U))
-#define REG_1454H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x454U))
-#define REG_1458H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x458U))
-#define REG_145CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x45CU))
+#define REG_1420H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x00U))
+#define REG_1424H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x04U))
+#define REG_1428H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x08U))
+#define REG_142CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x0CU))
+#define REG_1430H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x10U))
+#define REG_1434H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x14U))
+#define REG_1438H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x18U))
+#define REG_143CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x1CU))
+#define REG_1440H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x00U))
+#define REG_1444H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x04U))
+#define REG_1448H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x08U))
+#define REG_144CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x0CU))
+#define REG_1450H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x10U))
+#define REG_1454H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x14U))
+#define REG_1458H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x18U))
+#define REG_145CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x1CU))
 #define REG_1460H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x460U))
 #define REG_1464H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x464U))
 #define REG_1468H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x468U))
@@ -1517,14 +1628,14 @@
 #define REG_15F4H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x5F4U))
 #define REG_15F8H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x5F8U))
 #define REG_15FCH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x5FCU))
-#define REG_1600H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x600U))
-#define REG_1604H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x604U))
-#define REG_1608H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x608U))
-#define REG_160CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x60CU))
-#define REG_1610H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x610U))
-#define REG_1614H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x614U))
-#define REG_1618H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x618U))
-#define REG_161CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x61CU))
+#define REG_1600H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x00U))
+#define REG_1604H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x04U))
+#define REG_1608H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x08U))
+#define REG_160CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x0CU))
+#define REG_1610H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x10U))
+#define REG_1614H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x14U))
+#define REG_1618H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x18U))
+#define REG_161CH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x1CU))
 #define REG_1620H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x620U))
 #define REG_1624H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x624U))
 #define REG_1628H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_1000H + 0x628U))
@@ -2478,94 +2589,11 @@
 #define REG_24F8H                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_2000H + 0x4F8U))
 #define REG_24FCH                  (*(volatile uint32_t *) (RSIP_PRV_ADDR_2000H + 0x4FCU))
 
-#define RSIP_PRV_ADDR_VAL_0000H    (RSIP_PRV_ADDR_BASE + 0x0000U)
-#define RSIP_PRV_ADDR_VAL_1000H    (RSIP_PRV_ADDR_BASE + 0x1000U)
-#define RSIP_PRV_ADDR_VAL_2000H    (RSIP_PRV_ADDR_BASE + 0x2000U)
-#define RSIP_PRV_ADDR_VAL_1420H    (RSIP_PRV_ADDR_BASE + 0x1420U)
-#define RSIP_PRV_ADDR_VAL_1440H    (RSIP_PRV_ADDR_BASE + 0x1440U)
-#define RSIP_PRV_ADDR_VAL_1600H    (RSIP_PRV_ADDR_BASE + 0x1600U)
-
-/*
- * Address definition depends on the toolchain for optimization.
- *
- * GNU Toolchain: variable with const keyword
- * - REG_1420H-REG_143CH: gs_rsip_addr_1420h + offset (imm5)
- * - REG_1440H-REG_145CH: gs_rsip_addr_1440h + offset (imm5)
- * - REG_1600H-REG_161CH: gs_rsip_addr_1600h + offset (imm5)
- * - REG_0000H-REG_0FFCH: gs_rsip_addr_0000h + offset (imm12)
- * - REG_1000H-REG_1FFCH: gs_rsip_addr_1000h + offset (imm12) (except the above)
- * - REG_2000H-REG_24FCH: gs_rsip_addr_2000h + offset (imm12)
- *
- * Other toolchains: #define preprocessor
- */
-#if defined(__GNUC__)
- #define RSIP_PRV_ADDR_0000H       gs_rsip_addr_0000h
- #define RSIP_PRV_ADDR_1000H       gs_rsip_addr_1000h
- #define RSIP_PRV_ADDR_2000H       gs_rsip_addr_2000h
- #define RSIP_PRV_ADDR_1420H       gs_rsip_addr_1420h
- #define RSIP_PRV_ADDR_1440H       gs_rsip_addr_1440h
- #define RSIP_PRV_ADDR_1600H       gs_rsip_addr_1600h
-
- #undef REG_1420H
- #undef REG_1424H
- #undef REG_1428H
- #undef REG_142CH
- #undef REG_1430H
- #undef REG_1434H
- #undef REG_1438H
- #undef REG_143CH
- #define REG_1420H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x00U))
- #define REG_1424H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x04U))
- #define REG_1428H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x08U))
- #define REG_142CH    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x0CU))
- #define REG_1430H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x10U))
- #define REG_1434H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x14U))
- #define REG_1438H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x18U))
- #define REG_143CH    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1420H + 0x1CU))
-
- #undef REG_1440H
- #undef REG_1444H
- #undef REG_1448H
- #undef REG_144CH
- #undef REG_1450H
- #undef REG_1454H
- #undef REG_1458H
- #undef REG_145CH
- #define REG_1440H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x00U))
- #define REG_1444H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x04U))
- #define REG_1448H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x08U))
- #define REG_144CH    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x0CU))
- #define REG_1450H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x10U))
- #define REG_1454H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x14U))
- #define REG_1458H    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x18U))
- #define REG_145CH    (*(volatile uint32_t *) (RSIP_PRV_ADDR_1440H + 0x1CU))
-
- #undef REG_1600H
- #undef REG_1604H
- #undef REG_1608H
- #undef REG_160CH
- #undef REG_1610H
- #undef REG_1614H
- #undef REG_1618H
- #undef REG_161CH
- #define REG_1600H                (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x00U))
- #define REG_1604H                (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x04U))
- #define REG_1608H                (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x08U))
- #define REG_160CH                (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x0CU))
- #define REG_1610H                (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x10U))
- #define REG_1614H                (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x14U))
- #define REG_1618H                (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x18U))
- #define REG_161CH                (*(volatile uint32_t *) (RSIP_PRV_ADDR_1600H + 0x1CU))
-
-#else
- #define RSIP_PRV_ADDR_0000H      RSIP_PRV_ADDR_VAL_0000H
- #define RSIP_PRV_ADDR_1000H      RSIP_PRV_ADDR_VAL_1000H
- #define RSIP_PRV_ADDR_2000H      RSIP_PRV_ADDR_VAL_2000H
-#endif                                 /* defined(__GNUC__) */
-
 /* Register value */
-#define RSIP_PRV_CMD_REG_1424H    (0x00CF00CFU)
-#define RSIP_PRV_CMD_REG_1428H    (0x00CF00CFU)
+#define RSIP_PRV_CMD_REG_0018H     (0x00CB00CBU)
+#define RSIP_PRV_CMD_REG_001CH     (0x00CB00CBU)
+#define RSIP_PRV_CMD_REG_1424H     (0x00CF00CFU)
+#define RSIP_PRV_CMD_REG_1428H     (0x00CF00CFU)
 
 /***********************************************************************************************************************
  * Typedef definitions
@@ -2575,18 +2603,16 @@
  * Exported global variables
  **********************************************************************************************************************/
 
-#if defined(__GNUC__)
-extern uintptr_t const gs_rsip_addr_0000h;
-extern uintptr_t const gs_rsip_addr_1000h;
-extern uintptr_t const gs_rsip_addr_2000h;
+#if defined(__ARM_ARCH) && defined(__GNUC__)
+extern uintptr_t const g_rsip_addr_0000h;
+#endif
 
-extern uintptr_t const gs_rsip_addr_1420h;
-extern uintptr_t const gs_rsip_addr_1440h;
-extern uintptr_t const gs_rsip_addr_1600h;
-#endif                                 /* defined(__GNUC__) */
-
-/**********************************************************************************************************************
- * Public Function Prototypes
- **********************************************************************************************************************/
+#if defined(__ARM_ARCH) && defined(__GNUC__) && (5U == RSIP_PRV_IP_SERIES_MAJOR)
+extern uintptr_t const g_rsip_addr_1000h;
+extern uintptr_t const g_rsip_addr_2000h;
+extern uintptr_t const g_rsip_addr_1420h;
+extern uintptr_t const g_rsip_addr_1440h;
+extern uintptr_t const g_rsip_addr_1600h;
+#endif
 
 #endif                                 /* R_RSIP_REG_H */

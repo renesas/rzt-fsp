@@ -16,7 +16,7 @@
  ***********************************************************************************************************************/
 
 /* Storage sector size */
-#define USB_ATAPI_BLOCK_UNIT      (0x0200UL)
+#define USB_CFG_PMSC_ATAPI_BLOCK_UNIT      (0x0200UL)
 
 /* Operation when responding with a short packet to a command */
 

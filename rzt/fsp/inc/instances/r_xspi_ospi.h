@@ -144,7 +144,7 @@ typedef struct st_xspi_ospi_extended_cfg
 {
     uint8_t                             unit;                                    ///< Unit number of xSPI
     xspi_ospi_chip_select_t             chip_select;                             ///< Device number to be used for memory device
-    xspi_ospi_memory_size_t             memory_size;                             ///< Size of memory device
+    uint32_t                            memory_size;                             ///< Size of memory device
     xspi_ospi_timing_setting_t const  * p_timing_settings;                       ///< Memory mapped timing settings
     xspi_ospi_opi_command_set_t const * p_opi_commands;                          ///< If OPI commands are not used set this to NULL
     uint8_t                             opi_mem_read_dummy_cycles;               ///< Dummy cycles to be inserted for memory mapped reads
@@ -153,7 +153,7 @@ typedef struct st_xspi_ospi_extended_cfg
     xspi_ospi_prefetch_function_t       prefetch_en;                             ///< Prefetch function settings
     xspi_ospi_io_voltage_t              io_voltage;                              ///< Voltage setting of xSPI IO domain
     xspi_ospi_byte_order_t              byte_order;                              ///< Byte order on external bus. Only applicable in 8D-8D-8D(OPI) mode.
-    xspi_ospi_address_space_t const   * p_address_space;                         ///< Address space settings when custom address space enabled
+    xspi_ospi_address_space_t const   * p_address_space;                         ///< Memory mapped address space settings
 #if XSPI_OSPI_CFG_DMAC_SUPPORT_ENABLE
     transfer_instance_t const * p_lower_lvl_transfer;                            ///< DMAC Transfer instance used for data transmission
 #endif

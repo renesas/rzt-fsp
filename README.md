@@ -10,7 +10,7 @@ FSP uses an open software ecosystem and provides flexibility in using your prefe
 
 ### Current Release
 
-[FSP v2.3.0](https://github.com/renesas/rzt-fsp/releases/tag/v2.3.0)
+[FSP v3.0.0](https://github.com/renesas/rzt-fsp/releases/tag/v3.0.0)
 
 ### Supported RZ/T series Kits
 
@@ -29,7 +29,7 @@ For a list of software modules packaged with FSP, see [Supported Software](SUPPO
 
 ### Known Issues
 
-Known issues checks Getting Started with Flexible Software Package (Documentation No:R01AN6434EJ) in each product page.
+Known issues checks Getting Started with Flexible Software Package (Documentation No: [R01AN6434](https://www.renesas.com/search?keywords=R01AN6434&type=User%20Manual)) in each product page.
 * [RZ/T2M](https://www.renesas.com/rzt2m)
 * [RZ/T2L](https://www.renesas.com/rzt2l)
 * [RZ/T2ME](https://www.renesas.com/rzt2me)
@@ -37,7 +37,7 @@ Known issues checks Getting Started with Flexible Software Package (Documentatio
 
 ### Setup Instructions
 
-See Getting Started with Flexible Software Package (Documentation No: R01AN6434EJ).
+See Getting Started with Flexible Software Package (Documentation No: [R01AN6434](https://www.renesas.com/search?keywords=R01AN6434&type=User%20Manual)).
 
 #### For existing users that are using FSP with e² studio
 
@@ -49,18 +49,19 @@ See Getting Started with Flexible Software Package (Documentation No: R01AN6434E
 - FSP versions of 2.1.0 and later require a minimum e² studio version of 2024-04.
 - FSP versions of 2.2.0 and later require a minimum e² studio version of 2024-10.
 - FSP versions of 2.3.0 and later require a minimum e² studio version of 2025-01.
+- FSP versions of 3.0.0 and later require a minimum e² studio version of 2025-04.1.
 
 If you have already installed a previous FSP release that included e² studio then you can download the packs separately. These are available for download under the Assets section for each release. There is a zipped version, FSP_Packs_\<version\>.zip, and an installer version, FSP_Packs_\<version\>.exe.
 
 #### For new users that are using FSP with e² studio
 
-1.	Download the FSP with e² studio Installer from the Assets section of the [current release](https://github.com/renesas/rzt-fsp/releases/tag/v2.3.0).
+1.	Download the FSP with e² studio Installer from the Assets section of the [current release](https://github.com/renesas/rzt-fsp/releases/tag/v3.0.0).
 2.	Run the installer. This will install the e² studio tool, FSP packs, GCC toolchain and other tools required to use this software. No additional installations are required.
 
 #### If using FSP Smart Configurator (FSP SC) with IAR Embedded Workbench for ARM ####
 
-1. Download the IAR Embedded Workbench for ARM installer from [IAR website](https://www.iar.com/products/architectures/arm/iar-embedded-workbench-for-arm/).
-2. Download the FSP Smart Configurator Installer from the Assets section of the [current release](https://github.com/renesas/rzt-fsp/releases/tag/v2.3.0).
+1. Download the IAR Embedded Workbench for ARM installer from [IAR website](https://www.iar.com/embedded-development-tools/iar-embedded-workbench).
+2. Download the FSP Smart Configurator Installer from the Assets section of the [current release](https://github.com/renesas/rzt-fsp/releases/tag/v3.0.0).
 3. Run each installer.
 
 

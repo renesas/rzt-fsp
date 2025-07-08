@@ -193,7 +193,7 @@ typedef struct st_dmac_extended_cfg
     dmac_detection_t         detection_mode;                   ///< DMAC request detection method
     dmac_request_direction_t activation_request_source_select; ///< DMAC activation request source
 
-    dmac_register_select_reverse_t next_register_operaion;     ///< DEPRECATED - next_register_operaion will be renamed next_register_operation in the major release. Next register operation settings
+    dmac_register_select_reverse_t next_register_operation;    ///< Next register operation settings
 
     dmac_mode_select_t dmac_mode;                              ///< DMAC Mode
 

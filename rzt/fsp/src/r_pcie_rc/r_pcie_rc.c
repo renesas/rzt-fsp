@@ -342,7 +342,7 @@ fsp_err_t R_PCIE_RC_Open (pci_ctrl_t * const p_ctrl, pci_cfg_t const * const p_c
         R_PCIE0_PCI_RC_RESET_RST_OUT_B_Msk | R_PCIE0_PCI_RC_RESET_RST_PS_B_Msk |
         R_PCIE0_PCI_RC_RESET_RST_GP_B_Msk | R_PCIE0_PCI_RC_RESET_RST_B_Msk;
 
-    /* Wait for 500 μs or more */
+    /* Wait for 500 us or more */
     R_BSP_SoftwareDelay(PCIE_RC_RELEASE_RESET_WAIT_US, BSP_DELAY_UNITS_MICROSECONDS);
 
     /* Release the reset (RST_RSM_B).
@@ -882,7 +882,7 @@ fsp_err_t R_PCIE_RC_Close (pci_ctrl_t * const p_ctrl)
     {
         p_instance_ctrl->p_reg->PCI_RC_RESET &= (uint32_t) (~R_PCIE0_PCI_RC_RESET_RST_RSM_B_Msk);
 
-        /* Wait for 500 μs or more */
+        /* Wait for 500 us or more */
         R_BSP_SoftwareDelay(PCIE_RC_RELEASE_RESET_WAIT_US, BSP_DELAY_UNITS_MICROSECONDS);
 
         p_instance_ctrl->p_reg->PCI_RC_RESET &=
@@ -1397,9 +1397,6 @@ static void r_pcie_common_intx_handler (pci_event_t event)
     /* Recover ISR context saved in open. */
     pcie_rc_instance_ctrl_t * p_instance_ctrl = (pcie_rc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
 
-    /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
-    R_BSP_IrqClearPending(irq);
-
     /* Set static arguments */
     pci_callback_args_t args;
     args.event     = event;
@@ -1441,9 +1438,6 @@ void pcie_rc_message_receive_handler (void)
 
     /* Recover ISR context saved in open. */
     pcie_rc_instance_ctrl_t * p_instance_ctrl = (pcie_rc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
-
-    /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
-    R_BSP_IrqClearPending(irq);
 
     uint32_t status = p_instance_ctrl->p_reg->PCI_RC_MSGRCVIS;
 
@@ -1487,9 +1481,6 @@ void pcie_rc_power_off_indication_handler (void)
 
     /* Recover ISR context saved in open. */
     pcie_rc_instance_ctrl_t * p_instance_ctrl = (pcie_rc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
-
-    /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
-    R_BSP_IrqClearPending(irq);
 
     /* Set static arguments */
     pci_callback_args_t args;
@@ -1604,9 +1595,6 @@ void pcie_rc_msi_handler (void)
     /* Recover ISR context saved in open. */
     pcie_rc_instance_ctrl_t * p_instance_ctrl = (pcie_rc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
 
-    /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
-    R_BSP_IrqClearPending(irq);
-
     /* Set static arguments */
     pci_callback_args_t args;
     args.event     = PCI_EVENT_MSI_INTERRUPT;
@@ -1652,9 +1640,6 @@ void pcie_rc_link_equalization_request_handler (void)
     /* Recover ISR context saved in open. */
     pcie_rc_instance_ctrl_t * p_instance_ctrl = (pcie_rc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
 
-    /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
-    R_BSP_IrqClearPending(irq);
-
     /* Set static arguments */
     pci_callback_args_t args;
     args.event     = PCI_EVENT_LINK_EQUALIZATION_REQUEST;
@@ -1693,9 +1678,6 @@ void pcie_rc_event_handler (void)
 
     /* Recover ISR context saved in open. */
     pcie_rc_instance_ctrl_t * p_instance_ctrl = (pcie_rc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
-
-    /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
-    R_BSP_IrqClearPending(irq);
 
     /* Set static arguments */
     pci_callback_args_t args;
@@ -1739,9 +1721,6 @@ void pcie_rc_link_width_change_handler (void)
 
     /* Recover ISR context saved in open. */
     pcie_rc_instance_ctrl_t * p_instance_ctrl = (pcie_rc_instance_ctrl_t *) R_FSP_IsrContextGet(irq);
-
-    /* Clear pending interrupt to make sure it doesn't fire again if another overflow has already occurred. */
-    R_BSP_IrqClearPending(irq);
 
     /* Set static arguments */
     pci_callback_args_t args;

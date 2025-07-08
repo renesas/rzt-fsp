@@ -23,8 +23,10 @@
 #define R_BSP_GIC_INTID_1023             (1023)
 
 #define BSP_PRV_PRCR_KEY                 (0xA500U)
-#define BSP_PRV_PRCR_SYSTEM_UNLOCK       ((BSP_PRV_PRCR_KEY) | 0x8U)
+#define BSP_PRV_PRCR_SYSTEM              (0x8U)
+#define BSP_PRV_PRCR_SYSTEM_UNLOCK       ((BSP_PRV_PRCR_KEY) | BSP_PRV_PRCR_SYSTEM)
 #define BSP_PRV_PRCR_LOCK                ((BSP_PRV_PRCR_KEY) | 0x0U)
+#define BSP_PRV_PRCR_TIMEOUT             (10000)
 
 #if defined(__GNUC__)
  #define BSP_STACK_LIMIT                 &__AArch64StackLimit
@@ -393,17 +395,14 @@ BSP_ATTRIBUTE_STACKLESS void bsp_register_initialization (void)
 
 void bsp_reset_vector_address_setting (void)
 {
+    /* If protection is already disabled, wait until protection is enabled on other cores */
+    uintptr_t timeout = BSP_PRV_PRCR_TIMEOUT;
+    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_NS->PRCRN & BSP_PRV_PRCR_SYSTEM), 0, timeout);
+    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_S->PRCRS & BSP_PRV_PRCR_SYSTEM), 0, timeout);
+
     R_RWP_S->PRCRS = (uint16_t) BSP_PRV_PRCR_SYSTEM_UNLOCK;
 
-#if (0 == BSP_CFG_CORE_CA55)
-    R_CA55->RVBA[0].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
-#elif (1 == BSP_CFG_CORE_CA55)
-    R_CA55->RVBA[1].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
-#elif (2 == BSP_CFG_CORE_CA55)
-    R_CA55->RVBA[2].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
-#elif (3 == BSP_CFG_CORE_CA55)
-    R_CA55->RVBA[3].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
-#endif
+    R_CA55->RVBA[BSP_CFG_CORE_CA55].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
 
     R_RWP_S->PRCRS = (uint16_t) BSP_PRV_PRCR_LOCK;
 
@@ -662,7 +661,7 @@ void IRQ_ExecuteHandler (void)
     if (p_vector)
     {
         g_current_interrupt_num[g_current_interrupt_pointer++] = irq;
-        __asm volatile ("dmb sy");
+        __DMB();
 
         (*p_vector)();
     }
@@ -696,7 +695,7 @@ void FIQ_ExecuteHandler (void)
     irq = (IRQn_Type) (target_int_id - BSP_CORTEX_VECTOR_TABLE_ENTRIES);
 
     g_current_interrupt_num[g_current_interrupt_pointer++] = irq;
-    __asm volatile ("dmb sy");
+    __DMB();
 
     /* Enable nested interrupts */
     BSP_INTERRUPT_ENABLE;

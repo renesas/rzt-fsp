@@ -34,6 +34,8 @@
 #define USB_MAX_CONNECT_DEVICE_NUM     (2U)           /* 1-2 */
 #define USB_MAX_WLANGID_NUM            (32U)          /* Max Index Num of wLANGID. */
 
+ #define USB_HCDC_SPECIFIC_DEV_MAX      (5)            /* Maximum number of registrations for a specific device.*/
+
 /******************************************************************************
  * Exported global variables
  ******************************************************************************/
@@ -57,6 +59,16 @@ extern void     usb_hcdc_class_check(usb_utr_t * ptr, uint16_t ** table);
 
 void     usb_hcdc_enumeration(usb_clsinfo_t * mess);
 uint16_t usb_hcdc_pipe_info(usb_utr_t * ptr, uint8_t * table, uint16_t speed, uint16_t length);
+uint16_t * usb_hcdc_get_vendor_table(void);
+
+fsp_err_t R_USB_HCDC_ControlDataRead (usb_ctrl_t * const p_api_ctrl,
+                                      uint8_t          * p_buf,
+                                      uint32_t           size,
+                                      uint8_t            device_address);
+fsp_err_t R_USB_HCDC_SpecificDeviceRegister (usb_ctrl_t * const p_api_ctrl, uint16_t vendor_id, uint16_t product_id);
+fsp_err_t R_USB_HCDC_DeviceInfoGet (usb_ctrl_t * const       p_api_ctrl,
+                                    usb_hcdc_device_info_t * p_info,
+                                    uint8_t                  device_address);
 
 void usb_hcdc_set_control_line_state(usb_instance_ctrl_t * p_ctrl, uint8_t device_address, usb_setup_t * setup); /* DEPRECATED */
 void usb_hcdc_set_line_coding(usb_instance_ctrl_t   * p_ctrl,

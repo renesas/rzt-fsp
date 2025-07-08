@@ -20,6 +20,15 @@
 #define R_CRC0_CRCDOR_BY_CRCDOR_BY_Msk    (0xFFUL)
 #define R_CRC0_CRCDOR_HA_CRCDOR_HA_Msk    (0xFFFFUL)
 
+#define CRC_CRCCR1_CRCSWR_SHIFT           (5)
+
+/* Snoop address
+ * TDR and RDR depends on MCU.
+ * FTDRL is always 0x**F while FRDRL is always 0x**1.
+ */
+#define CRC_SNOOP_ADDRESS_TYPE_MASK       (0x0FU)
+#define CRC_SNOOP_ADDRESS_TYPE_FTDRL      (0x0FU)
+
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
@@ -33,6 +42,11 @@ static void crc_calculate_polynomial(crc_instance_ctrl_t * const p_instance_ctrl
 
 static void     crc_seed_value_update(crc_instance_ctrl_t * const p_instance_ctrl, uint32_t crc_seed);
 static uint32_t crc_calculated_value_get(crc_instance_ctrl_t * const p_instance_ctrl);
+
+#if CRC_CFG_PARAM_CHECKING_ENABLE
+static fsp_err_t r_crc_open_cfg_check(crc_cfg_t const * const p_cfg);
+
+#endif
 
 /***********************************************************************************************************************
  * Private global variables
@@ -70,6 +84,7 @@ const crc_api_t g_crc_on_crc =
  * @retval FSP_ERR_ASSERTION                 p_ctrl or p_cfg is NULL.
  * @retval FSP_ERR_ALREADY_OPEN              Module already open.
  * @retval FSP_ERR_IP_CHANNEL_NOT_PRESENT    The requested channel does not exist on this MCU.
+ * @retval FSP_ERR_UNSUPPORTED               Hardware not support this feature.
  **********************************************************************************************************************/
 fsp_err_t R_CRC_Open (crc_ctrl_t * const p_ctrl, crc_cfg_t const * const p_cfg)
 {
@@ -77,7 +92,10 @@ fsp_err_t R_CRC_Open (crc_ctrl_t * const p_ctrl, crc_cfg_t const * const p_cfg)
 
 #if CRC_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_ctrl);
-    FSP_ASSERT(p_cfg);
+
+    /* Verify the configuration parameters are valid */
+    fsp_err_t err = r_crc_open_cfg_check(p_cfg);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, err);
 
     /* Verify the control block has not already been initialized. */
     FSP_ERROR_RETURN(CRC_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
@@ -100,9 +118,11 @@ fsp_err_t R_CRC_Open (crc_ctrl_t * const p_ctrl, crc_cfg_t const * const p_cfg)
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
     uint8_t crccr0 = 0;
+#if BSP_FEATURE_CRC_HAS_CRCCR0_LMS
 
     /* Set bit order value */
     crccr0 = (uint8_t) (p_instance_ctrl->p_cfg->bit_order << R_CRC0_CRCCR0_LMS_Pos);
+#endif
 
     /* Set CRC polynomial */
     crccr0 |= (uint8_t) (p_instance_ctrl->p_cfg->polynomial << R_CRC0_CRCCR0_GPS_Pos);
@@ -111,6 +131,12 @@ fsp_err_t R_CRC_Open (crc_ctrl_t * const p_ctrl, crc_cfg_t const * const p_cfg)
     crccr0 |= (uint8_t) (1 << R_CRC0_CRCCR0_DORCLR_Pos);
 
     p_instance_ctrl->p_reg->CRCCR0 = crccr0;
+
+#if BSP_FEATURE_CRC_HAS_SNOOP
+
+    /* Disable snooping */
+    p_instance_ctrl->p_reg->CRCCR1 = 0;
+#endif
 
     return FSP_SUCCESS;
 }
@@ -211,30 +237,92 @@ fsp_err_t R_CRC_CalculatedValueGet (crc_ctrl_t * const p_ctrl, uint32_t * calcul
 }
 
 /*******************************************************************************************************************//**
- * @ref crc_api_t::snoopEnable is not supported on the CRC.
+ * Configure the snoop channel and set the CRC seed.
  *
- * @retval FSP_ERR_UNSUPPORTED         Function not supported in this implementation.
+ *  Implements @ref crc_api_t::snoopEnable
+ *
+ * The CRC calculator can operate on reads and writes over any of the first ten SCI channels.
+ * For example, if set to channel 0, transmit, every byte written out SCI channel 0 is also
+ * sent to the CRC calculator as if the value was explicitly written directly to the CRC calculator.
+ *
+ * @retval FSP_SUCCESS                  Snoop configured successfully.
+ * @retval FSP_ERR_ASSERTION            Pointer to control stucture is NULL
+ * @retval FSP_ERR_NOT_OPEN             The driver is not opened.
+ * @retval FSP_ERR_UNSUPPORTED          SNOOP operation is not supported.
+ *
  **********************************************************************************************************************/
 fsp_err_t R_CRC_SnoopEnable (crc_ctrl_t * const p_ctrl, uint32_t crc_seed)
 {
-    FSP_PARAMETER_NOT_USED(p_ctrl);
-    FSP_PARAMETER_NOT_USED(crc_seed);
+#if BSP_FEATURE_CRC_HAS_SNOOP
+    crc_instance_ctrl_t * p_instance_ctrl = (crc_instance_ctrl_t *) p_ctrl;
 
-    /* Return the unsupported error. */
+ #if CRC_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_ctrl);
+    FSP_ERROR_RETURN(CRC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+ #endif
+
+    crc_seed_value_update(p_instance_ctrl, crc_seed);
+
+    /* Set CRC snoop address */
+    p_instance_ctrl->p_reg->CRCSAR =
+        (uint16_t) ((p_instance_ctrl->p_cfg->snoop_address & R_CRC_CRCSAR_CRCSA_Msk) <<
+                    R_CRC_CRCSAR_CRCSA_Pos);
+
+    /*
+     * Enable snoop operation and set direction:
+     */
+    uint8_t addr = (uint8_t) p_instance_ctrl->p_cfg->snoop_address & CRC_SNOOP_ADDRESS_TYPE_MASK;
+    if ((BSP_FEATURE_CRC_SNOOP_ADDRESS_TYPE_TDR == addr) || (CRC_SNOOP_ADDRESS_TYPE_FTDRL == addr))
+    {
+        p_instance_ctrl->p_reg->CRCCR1 =
+            (uint8_t) ((1UL << R_CRC_CRCCR1_CRCSEN_Pos) | (1UL << R_CRC_CRCCR1_CRCSWR_Pos));
+    }
+    else
+    {
+        p_instance_ctrl->p_reg->CRCCR1 = (uint8_t) (1 << R_CRC_CRCCR1_CRCSEN_Pos);
+    }
+
+    FSP_REGISTER_READ(p_instance_ctrl->p_reg->CRCCR1_b.CRCSWR);
+
+    return FSP_SUCCESS;
+#else
+    FSP_PARAMETER_NOT_USED(crc_seed);
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+
     return FSP_ERR_UNSUPPORTED;
+#endif
 }
 
 /*******************************************************************************************************************//**
- * @ref crc_api_t::snoopDisable is not supported on the CRC.
+ * Disable snooping.
  *
- * @retval FSP_ERR_UNSUPPORTED         Function not supported in this implementation.
+ * Implements @ref crc_api_t::snoopDisable
+ *
+ * @retval FSP_SUCCESS             Snoop disabled.
+ * @retval FSP_ERR_ASSERTION       p_ctrl is NULL.
+ * @retval FSP_ERR_NOT_OPEN        The driver is not opened.
+ * @retval FSP_ERR_UNSUPPORTED     SNOOP operation is not supported.
+ *
  **********************************************************************************************************************/
 fsp_err_t R_CRC_SnoopDisable (crc_ctrl_t * const p_ctrl)
 {
+#if BSP_FEATURE_CRC_HAS_SNOOP
+ #if CRC_CFG_PARAM_CHECKING_ENABLE
+    crc_instance_ctrl_t * p_instance_ctrl = (crc_instance_ctrl_t *) p_ctrl;
+    FSP_ASSERT(p_ctrl);
+    FSP_ERROR_RETURN(CRC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+ #endif
     FSP_PARAMETER_NOT_USED(p_ctrl);
 
-    /* Return the unsupported error. */
+    /* Clear CRCSEN to disable snoop operation */
+    p_instance_ctrl->p_reg->CRCCR1 = 0;
+
+    return FSP_SUCCESS;
+#else
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+
     return FSP_ERR_UNSUPPORTED;
+#endif
 }
 
 /** @} (end addtogroup CRC) */
@@ -380,3 +468,32 @@ static void crc_calculate_polynomial (crc_instance_ctrl_t * const p_instance_ctr
     /* Return the calculated value */
     *calculatedValue = crc_calculated_value_get(p_instance_ctrl);
 }
+
+#if CRC_CFG_PARAM_CHECKING_ENABLE
+
+/*******************************************************************************************************************//**
+ * Validates the configuration arguments for illegal combinations or options.
+ *
+ * @param[in]  p_cfg                   Pointer to configuration structure
+ *
+ * @retval FSP_SUCCESS                     No configuration errors detected
+ * @retval FSP_ERR_ASSERTION               An input argument is invalid.
+ * @retval FSP_ERR_UNSUPPORTED             Hardware not support this feature.
+ **********************************************************************************************************************/
+static fsp_err_t r_crc_open_cfg_check (crc_cfg_t const * const p_cfg)
+{
+    FSP_ASSERT(NULL != p_cfg);
+
+ #if !BSP_FEATURE_CRC_HAS_CRCCR0_LMS
+
+    /* Verify the configuration bit order */
+    FSP_ERROR_RETURN(CRC_BIT_ORDER_LMS_LSB == p_cfg->bit_order, FSP_ERR_UNSUPPORTED);
+ #endif
+
+    /* Verify the configuration polynomial */
+    FSP_ERROR_RETURN((1 << p_cfg->polynomial) & BSP_FEATURE_CRC_POLYNOMIAL_MASK, FSP_ERR_UNSUPPORTED);
+
+    return FSP_SUCCESS;
+}
+
+#endif

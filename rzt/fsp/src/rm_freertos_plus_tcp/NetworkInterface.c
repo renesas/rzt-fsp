@@ -81,7 +81,11 @@ extern ether_instance_t * gp_freertos_ether;
 /***********************************************************************************************************************
  * Private global variables
  **********************************************************************************************************************/
-static TaskHandle_t xRxHanderTaskHandle = NULL;
+static TaskHandle_t xRxHanderTaskHandle        = NULL;
+static TaskHandle_t xCheckLinkStatusTaskHandle = NULL;
+
+/* Pointer to the interface object of this NIC */
+static NetworkInterface_t * pxFSPInterface = NULL;
 
 /***********************************************************************************************************************
  * Exported global function
@@ -90,7 +94,8 @@ static TaskHandle_t xRxHanderTaskHandle = NULL;
 /***********************************************************************************************************************
  * Prototype declaration of global functions
  **********************************************************************************************************************/
-void vEtherISRCallback(ether_callback_args_t * p_args);
+void                 vEtherISRCallback(ether_callback_args_t * p_args);
+NetworkInterface_t * pxFSP_Eth_FillInterfaceDescriptor(BaseType_t xEMACIndex, NetworkInterface_t * pxInterface);
 
 /***********************************************************************************************************************
  * Prototype declaration of private functions
@@ -99,54 +104,76 @@ static BaseType_t prvNetworkInterfaceInput(void);
 static void       prvRXHandlerTask(void * pvParameters);
 static void       prvCheckLinkStatusTask(void * pvParameters);
 
+static BaseType_t xFSP_Eth_NetworkInterfaceInitialise(NetworkInterface_t * pxInterface);
+static BaseType_t xFSP_Eth_NetworkInterfaceOutput(NetworkInterface_t              * pxInterface,
+                                                  NetworkBufferDescriptor_t * const pxNetworkBuffer,
+                                                  BaseType_t                        xReleaseAfterSend);
+static BaseType_t xFSP_Eth_GetPhyLinkStatus(struct xNetworkInterface * pxInterface);
+
 /***********************************************************************************************************************
  * Interface functions
  **********************************************************************************************************************/
-BaseType_t xNetworkInterfaceInitialise (void)
+static BaseType_t xFSP_Eth_NetworkInterfaceInitialise (NetworkInterface_t * pxInterface)
 {
     fsp_err_t  err;
     BaseType_t xReturn = pdFAIL;
 
-    if (ETHER_ZEROCOPY_ENABLE == gp_freertos_ether->p_cfg->zerocopy)
-    {
-        /*NOTE:Currently does not support zero copy mode*/
-        while (1)
-        {
-            ;
-        }
-    }
+    /* NOTE:Currently does not support zero copy mode */
+    configASSERT(ETHER_ZEROCOPY_ENABLE != gp_freertos_ether->p_cfg->zerocopy);
+
+    pxFSPInterface = pxInterface;
 
     err = gp_freertos_ether->p_api->open(gp_freertos_ether->p_ctrl, gp_freertos_ether->p_cfg);
 
-    if (FSP_SUCCESS != err)
+    if ((FSP_SUCCESS != err) && (FSP_ERR_ALREADY_OPEN != err))
     {
+        gp_freertos_ether->p_api->close(gp_freertos_ether->p_ctrl);
+
         return pdFAIL;
     }
 
-    xReturn = xTaskCreate(prvRXHandlerTask,
-                          "RXHandlerTask",
-                          configMINIMAL_STACK_SIZE,
-                          NULL,
-                          configMAX_PRIORITIES - 1,
-                          &xRxHanderTaskHandle);
+    err = gp_freertos_ether->p_api->linkProcess(gp_freertos_ether->p_ctrl);
 
-    if (pdFALSE != xReturn)
+    if (NULL == xRxHanderTaskHandle)
     {
-        xReturn = xTaskCreate(prvCheckLinkStatusTask,
-                              "CheckLinkStatusTask",
-                              configMINIMAL_STACK_SIZE,
-                              NULL,
-                              configMAX_PRIORITIES,
-                              NULL);
+        xTaskCreate(prvRXHandlerTask,
+                    "RXHandlerTask",
+                    configMINIMAL_STACK_SIZE,
+                    NULL,
+                    configMAX_PRIORITIES - 1,
+                    &xRxHanderTaskHandle);
+    }
+
+    if (NULL == xCheckLinkStatusTaskHandle)
+    {
+        xTaskCreate(prvCheckLinkStatusTask,
+                    "CheckLinkStatusTask",
+                    configMINIMAL_STACK_SIZE,
+                    NULL,
+                    configMAX_PRIORITIES - 1,
+                    &xCheckLinkStatusTaskHandle);
+    }
+
+    if ((FSP_SUCCESS == err) && (NULL != xRxHanderTaskHandle) && (NULL != xCheckLinkStatusTaskHandle))
+    {
+        xReturn = pdPASS;
+    }
+    else
+    {
+        xReturn = pdFAIL;
     }
 
     return xReturn;
 }
 
-BaseType_t xNetworkInterfaceOutput (NetworkBufferDescriptor_t * const pxNetworkBuffer, BaseType_t xReleaseAfterSend)
+static BaseType_t xFSP_Eth_NetworkInterfaceOutput (NetworkInterface_t              * pxInterface,
+                                                   NetworkBufferDescriptor_t * const pxNetworkBuffer,
+                                                   BaseType_t                        xReleaseAfterSend)
 {
     fsp_err_t  err;
     BaseType_t xReturn = pdPASS;
+
+    FSP_PARAMETER_NOT_USED(pxInterface);
 
     /* Simple network interfaces (as opposed to more efficient zero copy network
      * interfaces) just use Ethernet peripheral driver library functions to copy
@@ -187,16 +214,11 @@ BaseType_t xNetworkInterfaceOutput (NetworkBufferDescriptor_t * const pxNetworkB
     return xReturn;
 }
 
-void vNetworkInterfaceAllocateRAMToBuffers (
-    NetworkBufferDescriptor_t pxNetworkBuffers[ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS])
-{
-    /* Remove compiler warning about unused parameter. */
-    (void) pxNetworkBuffers;
-}
-
-BaseType_t xGetPhyLinkStatus (void)
+static BaseType_t xFSP_Eth_GetPhyLinkStatus (struct xNetworkInterface * pxInterface)
 {
     BaseType_t xReturn = pdPASS;
+
+    FSP_PARAMETER_NOT_USED(pxInterface);
 
     if (FSP_SUCCESS == gp_freertos_ether->p_api->linkProcess(gp_freertos_ether->p_ctrl))
     {
@@ -236,6 +258,49 @@ void vEtherISRCallback (ether_callback_args_t * p_args) {
     }
 }
 
+void vNetworkInterfaceAllocateRAMToBuffers (
+    NetworkBufferDescriptor_t pxNetworkBuffers[ipconfigNUM_NETWORK_BUFFER_DESCRIPTORS])
+{
+    /* Remove compiler warning about unused parameter. */
+    (void) pxNetworkBuffers;
+}
+
+NetworkInterface_t * pxFSP_Eth_FillInterfaceDescriptor (BaseType_t xEMACIndex, NetworkInterface_t * pxInterface)
+{
+    static char pcName[17];
+
+    /* This function pxFSP_Eth_FillInterfaceDescriptor() adds a network-interface. */
+
+    snprintf(pcName, sizeof(pcName), "eth%u", (unsigned) xEMACIndex);
+
+    memset(pxInterface, '\0', sizeof(*pxInterface));
+    pxInterface->pcName             = pcName;              /* Just for logging, debugging. */
+    pxInterface->pvArgument         = (void *) xEMACIndex; /* Has only meaning for the driver functions. */
+    pxInterface->pfInitialise       = xFSP_Eth_NetworkInterfaceInitialise;
+    pxInterface->pfOutput           = xFSP_Eth_NetworkInterfaceOutput;
+    pxInterface->pfGetPhyLinkStatus = xFSP_Eth_GetPhyLinkStatus;
+
+    FreeRTOS_AddNetworkInterface(pxInterface);
+
+    return pxInterface;
+}
+
+/*-----------------------------------------------------------*/
+
+#if defined(ipconfigIPv4_BACKWARD_COMPATIBLE) && (ipconfigIPv4_BACKWARD_COMPATIBLE == 1)
+
+/* Do not call the following function directly. It is there for downward compatibility.
+ * The function FreeRTOS_IPInit() will call it to initialice the interface and end-point
+ * objects.  See the description in FreeRTOS_Routing.h. */
+NetworkInterface_t * pxFillInterfaceDescriptor (BaseType_t xEMACIndex, NetworkInterface_t * pxInterface)
+{
+    return pxFSP_Eth_FillInterfaceDescriptor(xEMACIndex, pxInterface);
+}
+
+#endif
+
+/*-----------------------------------------------------------*/
+
 /***********************************************************************************************************************
  * private functions
  **********************************************************************************************************************/
@@ -258,11 +323,15 @@ static BaseType_t prvNetworkInterfaceInput (void) {
                                              (void *) pxBufferDescriptor->pucEthernetBuffer,
                                              &xBytesReceived);
         pxBufferDescriptor->xDataLength = (size_t) xBytesReceived;
+        pxBufferDescriptor->pxInterface = pxFSPInterface;
+        pxBufferDescriptor->pxEndPoint  =
+            FreeRTOS_MatchingEndpoint(pxFSPInterface, pxBufferDescriptor->pucEthernetBuffer);
 
         /* When driver received any data. */
         if ((FSP_SUCCESS == err) || (FSP_ERR_ETHER_ERROR_NO_DATA == err))
         {
-            if (eConsiderFrameForProcessing(pxBufferDescriptor->pucEthernetBuffer) == eProcessBuffer)
+            if ((pxBufferDescriptor->pxEndPoint != NULL) &&
+                (eConsiderFrameForProcessing(pxBufferDescriptor->pucEthernetBuffer) == eProcessBuffer))
             {
                 /* The event about to be sent to the TCP/IP is an Rx event. */
                 xRxEvent.eEventType = eNetworkRxEvent;
@@ -316,11 +385,40 @@ static void prvCheckLinkStatusTask (void * pvParameters) {
     /* Remove compiler warning about unused parameter. */
     (void) pvParameters;
 
+    fsp_err_t            current_link_status  = FSP_ERR_ETHER_ERROR_LINK;
+    fsp_err_t            previous_link_status = FSP_ERR_ETHER_ERROR_LINK;
+    const IPStackEvent_t xNetworkDownEvent    = {eNetworkDownEvent, pxFSPInterface};
+
     for ( ; ; )
     {
-        gp_freertos_ether->p_api->linkProcess(gp_freertos_ether->p_ctrl);
-
         vTaskDelay(ETHER_LINK_STATUS_CHECK_INTERVAL);
+        current_link_status = gp_freertos_ether->p_api->linkProcess(gp_freertos_ether->p_ctrl);
+
+        /* Link status is changed. */
+        if (previous_link_status != current_link_status)
+        {
+            if (FSP_SUCCESS == current_link_status)
+            {
+                /* Link status changed to up. */
+                previous_link_status = current_link_status;
+
+                vIPNetworkUpCalls(pxFSPInterface->pxEndPoint);
+            }
+            else if ((FSP_ERR_ETHER_ERROR_LINK == current_link_status) ||
+                     (FSP_ERR_ETHER_PHY_ERROR_LINK == current_link_status))
+            {
+                /* Link status changed to down. Send the data to the TCP/IP stack. */
+                if (pdPASS == xSendEventStructToIPTask(&xNetworkDownEvent, 0))
+                {
+                    previous_link_status = current_link_status;
+                }
+            }
+            else
+            {
+                /* Correct Link status could not be retrieved. */
+                ;
+            }
+        }
     }
 }
 

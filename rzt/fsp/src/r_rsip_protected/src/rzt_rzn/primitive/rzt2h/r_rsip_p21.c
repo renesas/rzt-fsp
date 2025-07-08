@@ -43,6 +43,7 @@ rsip_ret_t r_rsip_p21 (const uint32_t InData_HV[],
                        uint32_t       OutData_DataT[],
                        uint32_t       MAX_CNT)
 {
+    RSIP_PRV_PRIMITIVE_ENTRY;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;

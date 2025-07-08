@@ -26,6 +26,7 @@
 
 // #include "iodefine.h"
 #include "r_usb_basic.h"
+#include  "r_usb_extern.h"
 #include "r_usb_hhci.h"
 #include "r_usb_basic_define.h"
 #include "r_usb_hehci_def_usr.h"

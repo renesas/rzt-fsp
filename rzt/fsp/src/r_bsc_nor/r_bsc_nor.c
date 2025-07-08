@@ -109,6 +109,10 @@
 #define BSC_NOR_STATUS_Q6_TOGGLE_BIT_Pos                           (6U)
 #define BSC_NOR_STATUS_Q6_TOGGLE_BIT_Msk                           (1U << BSC_NOR_STATUS_Q6_TOGGLE_BIT_Pos)
 
+/* Each CSn area size */
+#define BSC_NOR_CS_AREA_SIZE                                       (BSP_FEATURE_BSC_NOR_CS3_BASE_ADDRESS - \
+                                                                    BSP_FEATURE_BSC_NOR_CS2_BASE_ADDRESS)
+
 /* Number of flash memory block information store sizes of CFI query result.
  * BSC_NOR HAL driver support up to 8 block information. */
 #define BSC_NOR_CFI_BLOCK_MEMORY_STORE_SIZE                        (8)
@@ -151,7 +155,7 @@ static fsp_err_t r_bsc_nor_get_sector_number_in_block(bsc_nor_instance_ctrl_t   
  **********************************************************************************************************************/
 #if 1 == BSP_FEATURE_BSC_HAS_CS_MIRROR_AREA
 
-static uint8_t volatile * const gp_bsc_nor_cs_base_address[BSC_NOR_PRV_NUM_CS] =
+static uint8_t volatile * const gp_bsc_nor_cs_base_mirror_address[BSC_NOR_PRV_NUM_CS] =
 {
     (uint8_t *) BSP_FEATURE_BSC_NOR_CS0_BASE_MIRROR_ADDRESS,
     0,
@@ -160,7 +164,8 @@ static uint8_t volatile * const gp_bsc_nor_cs_base_address[BSC_NOR_PRV_NUM_CS] =
     0,
     (uint8_t *) BSP_FEATURE_BSC_NOR_CS5_BASE_MIRROR_ADDRESS
 };
-#else
+#endif
+
 static uint8_t volatile * const gp_bsc_nor_cs_base_address[BSC_NOR_PRV_NUM_CS] =
 {
     (uint8_t *) BSP_FEATURE_BSC_NOR_CS0_BASE_ADDRESS,
@@ -170,7 +175,6 @@ static uint8_t volatile * const gp_bsc_nor_cs_base_address[BSC_NOR_PRV_NUM_CS] =
     0,
     (uint8_t *) BSP_FEATURE_BSC_NOR_CS5_BASE_ADDRESS
 };
-#endif
 
 static bsc_nor_block_info_t block_info[BSC_NOR_CFI_BLOCK_MEMORY_STORE_SIZE];
 
@@ -244,9 +248,15 @@ fsp_err_t R_BSC_NOR_Open (nor_flash_ctrl_t * p_ctrl, nor_flash_cfg_t const * con
     /* Save configurations. */
     p_instance_ctrl->p_cfg = p_cfg;
 
-    /* Set using CS base address */
+    /* Set using CS base address during initial settings.  */
     uint32_t chip_select = (uint32_t) p_instance_ctrl->p_cfg->chip_select;
+#if 0 == BSP_FEATURE_BSC_HAS_CS_MIRROR_AREA
     p_instance_ctrl->p_cs_base = (void *) gp_bsc_nor_cs_base_address[chip_select];
+#else
+    p_instance_ctrl->p_cs_base = (BSC_NOR_MEMORY_SPACE_CS == p_cfg_extend->initial_access_memory_space) ?
+                                 (void *) gp_bsc_nor_cs_base_address[chip_select] :
+                                 (void *) gp_bsc_nor_cs_base_mirror_address[chip_select];
+#endif
 
     /* Calculate the CSnWCR register base address. */
     uint32_t   address_gap = (uint32_t) ((uintptr_t) &R_BSC->CS3WCR_0 - (uintptr_t) &R_BSC->CS2WCR_0);
@@ -342,7 +352,14 @@ fsp_err_t R_BSC_NOR_Write (nor_flash_ctrl_t    * p_ctrl,
     FSP_ASSERT(0 != byte_count);
 #endif
 
-    uint16_t * p_cs_base = (uint16_t *) p_instance_ctrl->p_cs_base;
+    /* To issue Write Program sequence,
+     * the base address of CSn must be obtained from the destination address (p_dest).
+     *
+     * Example is as below on some devices :
+     *   - p_dest : 0x50020000 (write via CSn mirror address) -> CSn base address : 0x50000000.
+     *   - p_dest : 0x70020000 (write via CSn address) -> CSn base is 0x70000000.
+     */
+    uint16_t * p_cs_base = (uint16_t *) ((uintptr_t) p_dest & (~((uintptr_t) BSC_NOR_CS_AREA_SIZE - 1U)));
 
     if (BSC_NOR_PRV_WORD_SIZE == byte_count)
     {
@@ -422,7 +439,14 @@ fsp_err_t R_BSC_NOR_Erase (nor_flash_ctrl_t * p_ctrl, uint8_t * const p_device_a
 
     FSP_ERROR_RETURN(false == r_bsc_nor_status_sub(p_device_address), FSP_ERR_DEVICE_BUSY);
 
-    uint16_t * p_cs_base = (uint16_t *) p_instance_ctrl->p_cs_base;
+    /* To issue Erase sequence,
+     * the base address of CSn must be obtained from the destination address (p_device_address).
+     *
+     * Example is as below on some devices :
+     *   - p_dest : 0x50020000 (erase via CSn mirror address) -> CSn base address : 0x50000000.
+     *   - p_dest : 0x70020000 (erase via CSn address) -> CSn base is 0x70000000.
+     */
+    uint16_t * p_cs_base = (uint16_t *) ((uintptr_t) p_device_address & (~((uintptr_t) BSC_NOR_CS_AREA_SIZE - 1U)));
 
     bsc_nor_flash_erase_size_t erase_type = BSC_NOR_FLASH_ERASE_SIZE_ERROR;
     if (byte_count == NOR_FLASH_ERASE_SIZE_CHIP_ERASE)
@@ -665,8 +689,14 @@ static fsp_err_t r_bsc_nor_get_geometry_block_number (bsc_nor_instance_ctrl_t   
 {
     fsp_err_t err = FSP_ERR_INVALID_ARGUMENT;
 
-    /* The initial value of the block start address is the start address of the CS space. */
-    uint32_t block_start_addr = (uint32_t) (uintptr_t) p_instance_ctrl->p_cs_base;
+    /* The initial value of the block start address is the start address of the CS space.
+     * The start address of CSn must be obtained from p_address.
+     *
+     * Example is as below  on some devices :
+     *   - p_dest : 0x50020000 (erase via CSn mirror address) -> CSn base address : 0x50000000.
+     *   - p_dest : 0x70020000 (erase via CSn address) -> CSn base is 0x70000000.
+     */
+    uintptr_t block_start_addr = (uintptr_t) p_address & (~((uintptr_t) BSC_NOR_CS_AREA_SIZE - 1U));
 
     /* Loop through each block. */
     uint32_t block_number = p_instance_ctrl->block_number;
@@ -698,7 +728,7 @@ static fsp_err_t r_bsc_nor_get_geometry_block_number (bsc_nor_instance_ctrl_t   
          *           therefore 0x50040020 address belongs to the Block 1 immediately before Block 2.
          *           so p_block_start_address = 0x50040000, block_position = 1.
          */
-        if ((uint32_t) (uintptr_t) p_address < block_start_addr)
+        if ((uintptr_t) p_address < block_start_addr)
         {
             p_write_target_block->p_block_start_address =
                 (uint8_t *) (uintptr_t) (block_start_addr - previous_block_size);
@@ -743,7 +773,7 @@ static fsp_err_t r_bsc_nor_get_sector_number_in_block (bsc_nor_instance_ctrl_t  
     bsc_nor_block_info_t block    = p_instance_ctrl->p_block_info[position];
 
     /* The initial value of the sector start address is the start address of the block to which the sector belongs. */
-    uint32_t sector_start_address = (uint32_t) (uintptr_t) p_write_target_block->p_block_start_address;
+    uintptr_t sector_start_address = (uintptr_t) p_write_target_block->p_block_start_address;
 
     /* Loop through each sector in the block. */
     for (uint32_t i = 0; i < block.sector_number + 1; i++)
@@ -763,7 +793,7 @@ static fsp_err_t r_bsc_nor_get_sector_number_in_block (bsc_nor_instance_ctrl_t  
          *           therefore 0x50040020 address belongs to the Sector 2 immediately before Sector 3.
          *           so p_sector_start_address = 0x50040000, sector_position = 2.
          */
-        if ((uint32_t) (uintptr_t) p_address < sector_start_address)
+        if ((uintptr_t) p_address < sector_start_address)
         {
             /* The previous sector is the sector it belongs to. */
             p_write_target_sector->p_sector_start_address =

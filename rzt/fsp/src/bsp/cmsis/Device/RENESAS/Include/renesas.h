@@ -27,7 +27,7 @@ extern "C" {
 
  #include "../../../../mcu/all/bsp_compiler_support.h"
 
-/* Define compiler macros for CPU architecture, used in CMSIS 5. */
+/* Define compiler macros for CPU architecture, used in CMSIS. */
  #if defined(__ICCARM__)
   #if __ARM_ARCH_6M__ || __ARM_ARCH_7M__ || __ARM_ARCH_7EM__ || __ARM_ARCH_8M_BASE__ || __ARM_ARCH_8M_MAIN__
 

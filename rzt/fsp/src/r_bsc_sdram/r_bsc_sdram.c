@@ -20,7 +20,7 @@
 #define BSC_SDRAM_PRV_OPEN                       (0x42534452)
 
 #define BSC_SDRAM_CHANNEL_DUMMY                  (0x0U)
-#define BSC_SDRAM_VALID_CS_CHANNELS              (0x08) /* Valid channel : CS3 */
+#define BSC_SDRAM_VALID_CS_CHANNELS              (0x0C) /* Valid channel : CS2 and CS3 */
 
 /* BSC CSNBCR register bit masks */
 #define BSC_SDRAM_PRV_CSNBCR_BSZ_VALUE_MASK      (0x03U)
@@ -40,9 +40,14 @@
 #define BSC_SDRAM_PRV_CSNWCR_WTRCD_VALUE_MASK    (0x03U)
 #define BSC_SDRAM_PRV_CSNWCR_WTRP_VALUE_MASK     (0x03U)
 
+#define BSC_SDRAM_PRV_CSNWCR_A2CL_VALUE_MASK     (0x03U)
+#define BSC_SDRAM_PRB_CS2WCR_10BIT_MASK          (1U << 10U)
+
 /* BSC SDCR register bit masks */
 #define BSC_SDRAM_PRV_SDCR_A3COL_VALUE_MASK      (0x03U)
 #define BSC_SDRAM_PRV_SDCR_A3ROW_VALUE_MASK      (0x03U)
+#define BSC_SDRAM_PRV_SDCR_A2COL_VALUE_MASK      (0x03U)
+#define BSC_SDRAM_PRV_SDCR_A2ROW_VALUE_MASK      (0x03U)
 #define BSC_SDRAM_PRV_SDCR_BACTV_VALUE_MASK      (0x01U)
 
 /* BSC RTCSR register bit mask */
@@ -54,6 +59,7 @@
 #define BSC_SDRAM_PRV_RTCSR_CMF_Msk              (0x80UL)
 
 /* SDRAM MRS Configuration */
+#define BSC_SDRAM_MRS_CS2_ACCESS_ADDRESS_BASE    (0x80211000)
 #define BSC_SDRAM_MRS_CS3_ACCESS_ADDRESS_BASE    (0x80212000)
 #define BSC_SDRAM_MRS_BUTST_LENGTH_1             (0x00U)
 #define BSC_SDRAM_MRS_BURST_LENGTH_Pos           (0U)
@@ -197,6 +203,14 @@ fsp_err_t R_BSC_SDRAM_Open (sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_c
                     0U << R_BSC_SDCR_RMODE_Pos | /* Refresh operation : Auto-Refresh */
                     R_BSC_SDCR_RFSH_Msk;         /* Refresh operation : Enable */
 
+    if (BSC_SDRAM_CHIP_SELECT_2_3 == p_cfg_extend->chip_select)
+    {
+        /* Set SDRAM control setting for CS2. */
+        bsc_sdram_cs2_settings_t const * p_cs2_cfg = p_cfg_extend->p_cs2_cfg;
+        sdcr |= (p_cs2_cfg->column_address_width & BSC_SDRAM_PRV_SDCR_A2COL_VALUE_MASK) << R_BSC_SDCR_A2COL_Pos |
+                (p_cs2_cfg->row_address_width & BSC_SDRAM_PRV_SDCR_A2ROW_VALUE_MASK) << R_BSC_SDCR_A2ROW_Pos;
+    }
+
     /* Set SDRAM control setting. For setting RTCSR.RRC bit
      * Refresh count = 1 time  -> RTCSR.RRC = 0
      * Refresh count = 2 times -> RTCSR.RRC = 1
@@ -210,13 +224,50 @@ fsp_err_t R_BSC_SDRAM_Open (sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_c
                       BSC_SDRAM_PRV_RTCSR_CKS_Pos) |
                      BSC_SDRAM_PRV_RTCSR_CMIE_Msk;
 
-    R_BSC->CSnBCR[p_cfg_extend->chip_select] = csnbcr;
+    if (BSC_SDRAM_CHIP_SELECT_2_3 != p_cfg_extend->chip_select)
+    {
+        R_BSC->CSnBCR[p_cfg_extend->chip_select] = csnbcr;
+    }
+    else                               /* BSC_SDRAM_CHIP_SELECT_2_3 */
+    {
+        /* Set CS2 and CS3 bus access idle cycle. */
+        bsc_sdram_cs2_settings_t const * p_cs2_cfg = p_cfg_extend->p_cs2_cfg;
+        uint32_t cs2bcr = (((p_cs2_cfg->data_width & BSC_SDRAM_PRV_CSNBCR_BSZ_VALUE_MASK) << R_BSC_CSnBCR_BSZ_Pos) |
+                           1U << BSC_SDRAM_PRV_CSNBCR_RESERVED_Pos |
+                           (BSC_SDRAM_PRV_CSNBCR_TYPE_SDRAM << R_BSC_CSnBCR_TYPE_Pos) |
+                           ((p_cs2_cfg->r_r_same_space_idle_cycle & BSC_SDRAM_PRV_CSNBCR_IWRRS_VALUE_MASK) <<
+                            R_BSC_CSnBCR_IWRRS_Pos) |
+                           ((p_cs2_cfg->r_r_different_space_idle_cycle & BSC_SDRAM_PRV_CSNBCR_IWRRD_VALUE_MASK) <<
+                            R_BSC_CSnBCR_IWRRD_Pos) |
+                           ((p_cs2_cfg->r_w_same_space_idle_cycle & BSC_SDRAM_PRV_CSNBCR_IWRWS_VALUE_MASK) <<
+                            R_BSC_CSnBCR_IWRWS_Pos) |
+                           ((p_cs2_cfg->r_w_different_space_idle_cycle & BSC_SDRAM_PRV_CSNBCR_IWRWD_VALUE_MASK) <<
+                            R_BSC_CSnBCR_IWRWD_Pos) |
+                           ((p_cs2_cfg->w_r_w_w_idle_cycle & BSC_SDRAM_PRV_CSNBCR_IWW_VALUE_MASK) <<
+                            R_BSC_CSnBCR_IWW_Pos));
+        uint32_t cs3bcr = csnbcr;
+        R_BSC->CSnBCR[2] = cs2bcr;
+        R_BSC->CSnBCR[3] = cs3bcr;
+    }
+
     R_BSC->SDCR  = sdcr;
     R_BSC->RTCNT = BSC_SDRAM_PROTECT_KEY | 0x00U;
     R_BSC->RTCOR = BSC_SDRAM_PROTECT_KEY | p_cfg->auto_refresh_cycle;
     R_BSC->RTCSR = BSC_SDRAM_PROTECT_KEY | rtcsr;
 
-    *p_csnwcr = csnwcr;
+    if (BSC_SDRAM_CHIP_SELECT_2_3 != p_cfg_extend->chip_select)
+    {
+        *p_csnwcr = csnwcr;
+    }
+    else                               /* BSC_SDRAM_CHIP_SELECT_2_3 */
+    {
+        uint32_t cs2wcr =
+            ((p_cfg_extend->p_cs2_cfg->cas_latency - 1U) & BSC_SDRAM_PRV_CSNWCR_A2CL_VALUE_MASK) <<
+                R_BSC_CS2WCR_1_A2CL_Pos;
+        uint32_t cs3wcr = csnwcr;
+        R_BSC->CS2WCR_1 = cs2wcr | BSC_SDRAM_PRB_CS2WCR_10BIT_MASK;
+        R_BSC->CS3WCR_1 = cs3wcr;
+    }
 
     /* Set SDRAM Mode Register (MRS) */
     uint32_t mrs = (BSC_SDRAM_MRS_BUTST_LENGTH_1 << BSC_SDRAM_MRS_BURST_LENGTH_Pos) |
@@ -229,6 +280,19 @@ fsp_err_t R_BSC_SDRAM_Open (sdram_ctrl_t * p_ctrl, sdram_cfg_t const * const p_c
     uint32_t mrs_setting_addr = BSC_SDRAM_MRS_CS3_ACCESS_ADDRESS_BASE | (mrs << (p_cfg->data_width - 1));
     *(volatile uint16_t *) mrs_setting_addr = BSC_SDRAM_MRS_SETTING_DUMMY_DATA;
     __asm volatile ("dsb");
+
+    if (BSC_SDRAM_CHIP_SELECT_2_3 == p_cfg_extend->chip_select)
+    {
+        mrs = (BSC_SDRAM_MRS_BUTST_LENGTH_1 << BSC_SDRAM_MRS_BURST_LENGTH_Pos) |
+              (BSC_SDRAM_MRS_WRAP_SEQUENTIAL << BSC_SDRAM_MRS_WRAP_MODE_Pos) |
+              ((p_cfg_extend->p_cs2_cfg->cas_latency & BSC_SDRAM_MRS_LTMODE_VALUE_MASK) << BSC_SDRAM_MRS_LTMODE_Pos) |
+              ((p_cfg->write_burst_mode & BSC_SDRAM_MRS_WRITE_MODE_VALUE_MASK) << BSC_SDRAM_MRS_WRITE_MODE_Pos);
+
+        /* The MRS setting value is written to the SDRAM connected to CS2. */
+        mrs_setting_addr = BSC_SDRAM_MRS_CS2_ACCESS_ADDRESS_BASE | (mrs << (p_cfg_extend->p_cs2_cfg->data_width - 1));
+        *(volatile uint16_t *) mrs_setting_addr = BSC_SDRAM_MRS_SETTING_DUMMY_DATA;
+        __asm volatile ("dsb");
+    }
 
     /* Set callback and context pointers */
     p_instance_ctrl->p_callback = p_cfg_extend->p_callback;
@@ -470,6 +534,15 @@ static fsp_err_t r_bsc_sdram_open_param_checking (bsc_sdram_instance_ctrl_t * p_
 
     /* Validate channel number. */
     FSP_ERROR_RETURN(BSC_SDRAM_VALID_CS_CHANNELS & (1U << p_cfg_extend->chip_select), FSP_ERR_INVALID_CHANNEL);
+
+    if (BSC_SDRAM_CHIP_SELECT_2_3 == p_cfg_extend->chip_select)
+    {
+        FSP_ASSERT(NULL != p_cfg_extend->p_cs2_cfg);
+
+        /* When areas 2 and 3 are both set to SDRAM, auto precharge mode must be set.
+         *  (see RZ microprocessor User's Manual section "Bank Active" of "SDRAM Interface") */
+        FSP_ERROR_RETURN(BSC_SDRAM_COMMAND_AUTO_PRECHARGE_MODE == p_cfg_extend->command_mode, FSP_ERR_INVALID_ARGUMENT);
+    }
 
     return FSP_SUCCESS;
 }

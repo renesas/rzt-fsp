@@ -384,6 +384,60 @@ uint16_t usb_cstd_port_speed (usb_utr_t * ptr)
 
 #if (!(USB_UT_MODE == 1 && BSP_CFG_RTOS == 2))
 
+ #if (BSP_CFG_RTOS == 0)
+
+/******************************************************************************
+ * Function Name   : usb_call_callback
+ * Description     : Call callback functiont.
+ * Arguments       : usb_instance_ctrl_t   *p_ctrl     : control structure for USB API.
+ * Return value    : none
+ ******************************************************************************/
+static void usb_call_callback (usb_instance_ctrl_t * p_ctrl)
+{
+    usb_callback_args_t args;
+
+    /* Store callback arguments in memory provided by user if available.  This allows callback arguments to be
+     * stored in non-secure memory so they can be accessed by a non-secure callback function. */
+    usb_callback_args_t * p_args = g_usb_apl_callback_memory[p_ctrl->module_number];
+    if (NULL == p_args)
+    {
+        /* Store on stack */
+        p_args = &args;
+    }
+    else
+    {
+        /* Save current arguments on the stack in case this is a nested interrupt. */
+        args = *p_args;
+    }
+
+    *p_args = *p_ctrl;
+
+  #if BSP_TZ_SECURE_BUILD
+
+    /* g_usb_apl_callback can point to a secure function or a non-secure function. */
+    if (!cmse_is_nsfptr(g_usb_apl_callback[p_ctrl->module_number]))
+    {
+        /* If p_callback is secure, then the project does not need to change security state. */
+        (*g_usb_apl_callback[p_ctrl->module_number])(p_args);
+    }
+    else
+    {
+        /* If g_usb_apl_callback is Non-secure, then the project must change to Non-secure state in order to call the callback. */
+        usb_prv_ns_callback p_callback = (usb_prv_ns_callback) (g_usb_apl_callback[p_ctrl->module_number]);
+
+        p_callback(p_args);
+    }
+
+  #else                                /* BSP_TZ_SECURE_BUILD */
+    /* If the project is not Trustzone Secure, then it will never need to change security state in order to call the callback. */
+
+    // p_ctrl->p_callback(p_args);
+    (*g_usb_apl_callback[p_ctrl->module_number])(p_args);
+  #endif                               /* BSP_TZ_SECURE_BUILD */
+}
+
+ #endif /* (BSP_CFG_RTOS == 0) */
+
 /******************************************************************************
  * Function Name   : usb_set_event
  * Description     : Set event.
@@ -493,6 +547,13 @@ void usb_set_event (usb_status_t event, usb_instance_ctrl_t * p_ctrl)
     {
         g_usb_cstd_event.write_pointer = 0;
     }
+    
+    
+    if (NULL != g_usb_apl_callback[p_ctrl->module_number])
+    {
+        p_ctrl->event = event;
+        usb_call_callback(p_ctrl);
+    }
  #endif                                /*#if (BSP_CFG_RTOS == 2)*/
     } /* End of function usb_set_event() */
 
@@ -553,7 +614,7 @@ fsp_err_t usb_cstd_rel_semaphore (usb_instance_ctrl_t * p_ctrl)
 
     if (pdPASS == retval)
     {
-        g_usb_cur_task_hdl[usbip_no]     = (usb_hdl_t) USB_NULL;
+        g_usb_cur_task_hdl[usbip_no]     = (rtos_task_id_t) USB_NULL;
         g_usb_semaphore_holder[usbip_no] = 0;
 
         return FSP_SUCCESS;

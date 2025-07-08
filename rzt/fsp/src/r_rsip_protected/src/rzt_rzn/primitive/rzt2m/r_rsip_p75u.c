@@ -39,6 +39,7 @@ RSIP_PRV_PRIMITIVE_FUNC
 
 rsip_ret_t r_rsip_p75u (const uint32_t InData_Msg[], uint32_t MAX_CNT)
 {
+    RSIP_PRV_PRIMITIVE_ENTRY;
     uint32_t iLoop;
     uint32_t jLoop;
     uint32_t kLoop;
@@ -77,10 +78,10 @@ rsip_ret_t r_rsip_p75u (const uint32_t InData_Msg[], uint32_t MAX_CNT)
     WR1_PROG(REG_1444H, 0x00000000U);
     WAIT_STS(REG_2030H, 8U, 0U);
     WR1_PROG(REG_143CH, 0x00001600U);
-    r_rsip_func101(bswap_32big(0xaaca37fbU),
-                   bswap_32big(0x6c09b70cU),
-                   bswap_32big(0xa181089bU),
-                   bswap_32big(0xacd1cc69U));
+    r_rsip_func101(bswap_32big(0x984a2902U),
+                   bswap_32big(0x8205e4feU),
+                   bswap_32big(0xe794abd6U),
+                   bswap_32big(0x46d93f1fU));
 
     return RSIP_RET_PASS;
 }

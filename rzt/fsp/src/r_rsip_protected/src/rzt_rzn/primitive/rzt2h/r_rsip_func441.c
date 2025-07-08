@@ -66,23 +66,13 @@ void r_rsip_func441 (const uint32_t ARG1[])
     WAIT_STS(REG_1444H, 31U, 1U);
     WR1_ADDR(REG_1420H, &ARG1[3]);
     WR1_PROG(REG_1458H, 0x00000000U);
-    WR1_PROG(REG_1444H, 0x000000a7U);
-    WR1_PROG(REG_1608H, 0x800103a0U);
-    WR1_PROG(REG_1458H, 0x00000000U);
-    WAIT_STS(REG_1444H, 31U, 1U);
-    WR1_PROG(REG_1420H, bswap_32big(0x00000441U));
-    WR1_PROG(REG_1458H, 0x00000000U);
+    r_rsip_subfunc009(bswap_32big(0x00000441U));
     r_rsip_func101(bswap_32big(0x5a0bd2b8U),
                    bswap_32big(0xdae009c4U),
                    bswap_32big(0xab0494a0U),
                    bswap_32big(0xa028dc60U));
     r_rsip_func045();
-    WR1_PROG(REG_1444H, 0x000000a7U);
-    WR1_PROG(REG_1608H, 0x800103a0U);
-    WR1_PROG(REG_1458H, 0x00000000U);
-    WAIT_STS(REG_1444H, 31U, 1U);
-    WR1_PROG(REG_1420H, bswap_32big(0x00000441U));
-    WR1_PROG(REG_1458H, 0x00000000U);
+    r_rsip_subfunc009(bswap_32big(0x00000441U));
     r_rsip_func101(bswap_32big(0xdba39511U),
                    bswap_32big(0x126ebee7U),
                    bswap_32big(0xb12910f6U),
@@ -106,9 +96,7 @@ void r_rsip_func441 (const uint32_t ARG1[])
     WR1_ADDR(REG_1420H, &ARG1[10]);
     WR1_ADDR(REG_1420H, &ARG1[11]);
     WR1_PROG(REG_1824H, 0x08000085U);
-    WR1_PROG(REG_1400H, 0x00420011U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
+    r_rsip_subfunc003(0x00420011U);
     WAIT_STS(REG_1828H, 6U, 0U);
     WR1_PROG(REG_143CH, 0x00000500U);
     r_rsip_func100(bswap_32big(0x694945c9U),
@@ -116,9 +104,7 @@ void r_rsip_func441 (const uint32_t ARG1[])
                    bswap_32big(0xd260cc85U),
                    bswap_32big(0xb54870a1U));
     WR1_PROG(REG_1824H, 0x08000095U);
-    WR1_PROG(REG_1400H, 0x00420011U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
+    r_rsip_subfunc003(0x00420011U);
     WAIT_STS(REG_1828H, 6U, 0U);
     WR1_PROG(REG_143CH, 0x00000500U);
     WR1_PROG(REG_1444H, 0x000003c2U);
@@ -130,9 +116,7 @@ void r_rsip_func441 (const uint32_t ARG1[])
     WR1_ADDR(REG_1420H, &ARG1[14]);
     WR1_ADDR(REG_1420H, &ARG1[15]);
     WR1_PROG(REG_1A24H, 0x9c100005U);
-    WR1_PROG(REG_1400H, 0x00820011U);
-    WAIT_STS(REG_1404H, 30U, 0U);
-    WR1_PROG(REG_143CH, 0x00001800U);
+    r_rsip_subfunc003(0x00820011U);
     WR1_PROG(REG_1600H, 0x00007c1cU);
     WR1_PROG(REG_1458H, 0x00000000U);
     WR1_PROG(REG_143CH, 0x00602000U);

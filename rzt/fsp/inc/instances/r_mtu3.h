@@ -54,22 +54,6 @@ typedef enum e_mtu3_io_pin_level
     MTU3_IO_PIN_LEVEL_INPUT_B_MTU1_TCNT_CH0_8 = 12,       ///< Capture input source is the clock source for counting in MTU1. (ch0, 8)
 } mtu3_io_pin_level_t;
 
-/** I/O Level Select(MTU5) */
-typedef enum e_mtu3_io_pin_level_uvw
-{
-    MTU3_IO_PIN_LEVEL_UVW_NO_FUNC                    = 0x0,  ///< No function
-    MTU3_IO_PIN_LEVEL_UVW_INPUT_RISING_EDGE          = 0x11, ///< Input capture at rising edge.
-    MTU3_IO_PIN_LEVEL_UVW_INPUT_FALLING_EDGE         = 0x12, ///< Input capture at falling edge.
-    MTU3_IO_PIN_LEVEL_UVW_INPUT_BOTH_EDGE            = 0x13, ///< Input capture at both edges.
-    MTU3_IO_PIN_LEVEL_UVW_INPUT_MTU8_TGRC_COMPARE    = 0x14, ///< Input capture on generation of compare match with MTU8.TGRC
-    MTU3_IO_PIN_LEVEL_UVW_EXTERNAL_LOW_TROUGH        = 0x19, ///< Measurement of low pulse width of external input signal.Capture at trough in complementary PWM mode.
-    MTU3_IO_PIN_LEVEL_UVW_EXTERNAL_LOW_CREST         = 0x1A, ///< Measurement of low pulse width of external input signal.Capture at crest of complementary PWM mode.
-    MTU3_IO_PIN_LEVEL_UVW_EXTERNAL_LOW_CREST_TROUGH  = 0x1B, ///< Measurement of low pulse width of external input signal.Capture at crest and trough of complementary PWM mode.
-    MTU3_IO_PIN_LEVEL_UVW_EXTERNAL_HIGH_TROUGH       = 0x1D, ///< Measurement of high pulse width of external input signal.Capture at trough in complementary PWM mode.
-    MTU3_IO_PIN_LEVEL_UVW_EXTERNAL_HIGH_CREST        = 0x1E, ///< Measurement of high pulse width of external input signal.Capture at crest of complementary PWM mode.
-    MTU3_IO_PIN_LEVEL_UVW_EXTERNAL_HIGH_CREST_TROUGH = 0x1F, ///< Measurement of high pulse width of external input signal.Capture at crest and trough of complementary PWM mode.
-} mtu3_io_pin_level_uvw_t;
-
 /** Clock Edge Select */
 typedef enum e_mtu3_clock_edge
 {
@@ -79,58 +63,41 @@ typedef enum e_mtu3_clock_edge
 } mtu3_clock_edge_t;
 
 /** Time Prescaler Select */
-typedef enum e_mtu3_div
+typedef enum e_mtu3_clock_div
 {
-    MTU3_DIV_PCLKH_1  = 0x0,                ///< PCLKH divided by 1  (common ch)
-    MTU3_DIV_PCLKH_4  = 0x1,                ///< PCLKH divided by 4  (common ch)
-    MTU3_DIV_PCLKH_16 = 0x2,                ///< PCLKH divided by 16 (common ch)
-    MTU3_DIV_PCLKH_64 = 0x3,                ///< PCLKH divided by 64 (common ch)
-    MTU3_DIV_PCLKH_2  = 0x8,                ///< PCLKH divided by 2 (common ch)
-    MTU3_DIV_PCLKH_8  = 0x10,               ///< PCLKH divided by 8 (common ch)
-    MTU3_DIV_PCLKH_32 = 0x18,               ///< PCLKH divided by 32 (common ch)
+    MTU3_CLOCK_DIV_1  = 0x0,                  ///< CLOCK divided by 1  (common ch)
+    MTU3_CLOCK_DIV_4  = 0x1,                  ///< CLOCK divided by 4  (common ch)
+    MTU3_CLOCK_DIV_16 = 0x2,                  ///< CLOCK divided by 16 (common ch)
+    MTU3_CLOCK_DIV_64 = 0x3,                  ///< CLOCK divided by 64 (common ch)
+    MTU3_CLOCK_DIV_2  = 0x8,                  ///< CLOCK divided by 2 (common ch)
+    MTU3_CLOCK_DIV_8  = 0x10,                 ///< CLOCK divided by 8 (common ch)
+    MTU3_CLOCK_DIV_32 = 0x18,                 ///< CLOCK divided by 32 (common ch)
 
-    MTU3_DIV_MTCLKA_CH_0     = 0x4,         ///< External clock: counts on MTCLKA pin input (ch0)
-    MTU3_DIV_MTCLKB_CH_0     = 0x5,         ///< External clock: counts on MTCLKB pin input (ch0)
-    MTU3_DIV_MTCLKC_CH_0     = 0x6,         ///< External clock: counts on MTCLKC pin input (ch0)
-    MTU3_DIV_MTCLKD_CH_0     = 0x7,         ///< External clock: counts on MTCLKD pin input (ch0)
-    MTU3_DIV_PCLKH_256_CH_0  = 0x20,        ///< PCLKH divided by 256 (ch0)
-    MTU3_DIV_PCLKH_1024_CH_0 = 0x28,        ///< PCLKH divided by 1024 (ch0)
-    MTU3_DIV_MTIOC1A_CH_0    = 0x38,        ///< External clock: counts on MTIOC1A pin input (ch0)
+    MTU3_CLOCK_DIV_MTCLKA_CH_0  = 0x4,        ///< External clock: counts on MTCLKA pin input (ch0)
+    MTU3_CLOCK_DIV_MTCLKB_CH_0  = 0x5,        ///< External clock: counts on MTCLKB pin input (ch0)
+    MTU3_CLOCK_DIV_MTCLKC_CH_0  = 0x6,        ///< External clock: counts on MTCLKC pin input (ch0)
+    MTU3_CLOCK_DIV_MTCLKD_CH_0  = 0x7,        ///< External clock: counts on MTCLKD pin input (ch0)
+    MTU3_CLOCK_DIV_256_CH_0     = 0x20,       ///< CLOCK divided by 256 (ch0)
+    MTU3_CLOCK_DIV_1024_CH_0    = 0x28,       ///< CLOCK divided by 1024 (ch0)
+    MTU3_CLOCK_DIV_MTIOC1A_CH_0 = 0x38,       ///< External clock: counts on MTIOC1A pin input (ch0)
 
-    MTU3_DIV_MTCLKA_CH_1     = 0x4,         ///< External clock: counts on MTCLKA pin input (ch1)
-    MTU3_DIV_MTCLKB_CH_1     = 0x5,         ///< External clock: counts on MTCLKB pin input (ch1)
-    MTU3_DIV_PCLKH_256_CH_1  = 0x6,         ///< PCLKH divided by 256 (ch1)
-    MTU3_DIV_TCNT_CH1        = 0x7,         ///< Overflow/underflow of MTU2.TCNT
-    MTU3_DIV_PCLKH_1024_CH_1 = 0x20,        ///< PCLKH divided by 1024 (ch1)
+    MTU3_CLOCK_DIV_MTCLKA_CH_1 = 0x4,         ///< External clock: counts on MTCLKA pin input (ch1)
+    MTU3_CLOCK_DIV_MTCLKB_CH_1 = 0x5,         ///< External clock: counts on MTCLKB pin input (ch1)
+    MTU3_CLOCK_DIV_256_CH_1    = 0x6,         ///< CLOCK divided by 256 (ch1)
+    MTU3_CLOCK_DIV_TCNT_CH1    = 0x7,         ///< Overflow/underflow of MTU2.TCNT
+    MTU3_CLOCK_DIV_1024_CH_1   = 0x20,        ///< CLOCK divided by 1024 (ch1)
 
-    MTU3_DIV_MTCLKA_CH_2     = 0x4,         ///< External clock: counts on MTCLKA pin input (ch2)
-    MTU3_DIV_MTCLKB_CH_2     = 0x5,         ///< External clock: counts on MTCLKB pin input (ch2)
-    MTU3_DIV_MTCLKC_CH_2     = 0x6,         ///< External clock: counts on MTCLKC pin input (ch2)
-    MTU3_DIV_PCLKH_1024_CH_2 = 0x7,         ///< PCLKH divided by 1024 (ch2)
-    MTU3_DIV_PCLKH_256_CH_2  = 0x20,        ///< PCLKH divided by 256 (ch2)
+    MTU3_CLOCK_DIV_MTCLKA_CH_2 = 0x4,         ///< External clock: counts on MTCLKA pin input (ch2)
+    MTU3_CLOCK_DIV_MTCLKB_CH_2 = 0x5,         ///< External clock: counts on MTCLKB pin input (ch2)
+    MTU3_CLOCK_DIV_MTCLKC_CH_2 = 0x6,         ///< External clock: counts on MTCLKC pin input (ch2)
+    MTU3_CLOCK_DIV_1024_CH_2   = 0x7,         ///< CLOCK divided by 1024 (ch2)
+    MTU3_CLOCK_DIV_256_CH_2    = 0x20,        ///< CLOCK divided by 256 (ch2)
 
-    MTU3_DIV_PCLKH_256_CH_3_4_6_7_8  = 0x4, ///< PCLKH divided by 256 (ch3-4, 6-8)
-    MTU3_DIV_PCLKH_1024_CH_3_4_6_7_8 = 0x5, ///< PCLKH divided by 1024 (ch3-4, 6-8)
-    MTU3_DIV_MTCLKA_CH_3_4_6_7_8     = 0x6, ///< External clock: counts on MTCLKA pin input (ch3-4, 6-8)
-    MTU3_DIV_MTCLKB_CH_3_4_6_7_8     = 0x7, ///< External clock: counts on MTCLKB pin input (ch3-4, 6-8)
-} mtu3_div_t;
-
-/** Time Prescaler Select(MTU5) */
-typedef enum e_mtu3_div_uvw
-{
-    MTU3_DIV_UVW_PCLKH_1              = 0x0,  ///< PCLKH divided by 1
-    MTU3_DIV_UVW_PCLKH_4              = 0x1,  ///< PCLKH divided by 4
-    MTU3_DIV_UVW_PCLKH_16             = 0x2,  ///< PCLKH divided by 16
-    MTU3_DIV_UVW_PCLKH_64             = 0x3,  ///< PCLKH divided by 64
-    MTU3_DIV_UVW_PCLKH_2              = 0x4,  ///< PCLKH divided by 2
-    MTU3_DIV_UVW_PCLKH_8              = 0x8,  ///< PCLKH divided by 8
-    MTU3_DIV_UVW_PCLKH_32             = 0xC,  ///< PCLKH divided by 32
-    MTU3_DIV_UVW_PCLKH_256            = 0x10, ///< PCLKH divided by 256
-    MTU3_DIV_UVW_PCLKH_1024           = 0x14, ///< PCLKH divided by 1024
-    MTU3_DIV_UVW_MTIOC1A_RISING_EDGE  = 0x1C, ///< External clock: Counts at the rising edge on MTIOC1A pin input
-    MTU3_DIV_UVW_MTIOC1A_FALLING_EDGE = 0x3C, ///< External clock: Counts at the falling edge on MTIOC1A pin input
-    MTU3_DIV_UVW_MTIOC1A_BOTH_EDGE    = 0x5C, ///< External clock: Counts at the both edges on MTIOC1A pin input
-} mtu3_div_uvw_t;
+    MTU3_CLOCK_DIV_256_CH_3_4_6_7_8    = 0x4, ///< CLOCK divided by 256 (ch3-4, 6-8)
+    MTU3_CLOCK_DIV_1024_CH_3_4_6_7_8   = 0x5, ///< CLOCK divided by 1024 (ch3-4, 6-8)
+    MTU3_CLOCK_DIV_MTCLKA_CH_3_4_6_7_8 = 0x6, ///< External clock: counts on MTCLKA pin input (ch3-4, 6-8)
+    MTU3_CLOCK_DIV_MTCLKB_CH_3_4_6_7_8 = 0x7, ///< External clock: counts on MTCLKB pin input (ch3-4, 6-8)
+} mtu3_clock_div_t;
 
 /** Counter Clear Source Select */
 typedef enum e_mtu3_tcnt_clear
@@ -159,11 +126,24 @@ typedef enum e_mtu3_elc_operation_option
     MTU3_EVENT_OPERATION_SELECT_DISABLE       = 0x3, ///< The MTU event operation is set to disable
 } mtu3_elc_operation_option_t;
 
+/** Level of MTU3 pin */
+typedef enum e_mtu3_pin_level
+{
+    MTU3_PIN_LEVEL_LOW  = 0,           ///< Pin level low
+    MTU3_PIN_LEVEL_HIGH = 1,           ///< Pin level high
+} mtu3_pin_level_t;
+
 /** Configurations for output pins. */
 typedef struct st_mtu3_output_pin
 {
     mtu3_io_pin_level_t output_pin_level_a; ///< I/O Control A
     mtu3_io_pin_level_t output_pin_level_b; ///< I/O Control B
+    bool                output_enabled_a;   ///< Set to true to enable output, false to disable output
+    mtu3_pin_level_t    stop_level_a;       ///< Select a stop level from ::mtu3_pin_level_t
+    mtu3_pin_level_t    initial_level;      ///< Select a initial level from ::mtu3_pin_level_t
+    bool                output_enabled_b;   ///< Set to true to enable output, false to disable output
+    mtu3_pin_level_t    stop_level_b;       ///< Select a stop level from ::mtu3_pin_level_t
+    bool                retain_level;       ///< Set to true to retain output, false to not retain output
 } mtu3_output_pin_t;
 
 /** Disables or enables the noise filter for input from the MTIOCnA pin */
@@ -183,15 +163,6 @@ typedef enum e_mtu3_noise_filter_external
     MTU3_NOISE_FILTER_EXTERNAL_C_ENABLE = 4U, ///< The noise filter for the MTCLKC pin is enabled.
     MTU3_NOISE_FILTER_EXTERNAL_D_ENABLE = 8U, ///< The noise filter for the MTCLKD pin is enabled.
 } mtu3_noise_filter_mtclk_setting_t;
-
-/** Disables or enables the noise filter for input from the MTIC5U, MTIC5V, MTIC5W pin */
-typedef enum e_mtu3_noise_filter_uvw
-{
-    MTU3_NOISE_FILTER_UVW_DISABLE  = 0U, ///< The noise filter for the MTIOC pin is disabled
-    MTU3_NOISE_FILTER_UVW_U_ENABLE = 1U, ///< The noise filter for the MTIC5U pin is enabled
-    MTU3_NOISE_FILTER_UVW_V_ENABLE = 2U, ///< The noise filter for the MTIC5V pin is enabled
-    MTU3_NOISE_FILTER_UVW_W_ENABLE = 4U, ///< The noise filter for the MTIC5W pin is enabled
-} mtu3_noise_filter_setting_uvw_t;
 
 typedef enum e_mtu3_noise_filter_clock
 {
@@ -236,19 +207,6 @@ typedef enum e_mtu3_adc_compare_match
     MTU3_ADC_COMPARE_MATCH_ADC_B = 0x2U, ///< Set A/D conversion start request value for MTU3 A/D converter start request B
 } mtu3_adc_compare_match_t;
 
-/** Current timer status. */
-typedef struct st_mtu3_status
-{
-    uint32_t counter;                  ///< Current counter value
-
-    /* MTU3 ch5 specific parameters */
-    uint32_t tgru_counter;             ///< Current counter value(TGRU)
-    uint32_t tgrv_counter;             ///< Current counter value(TGRV)
-    uint32_t tgrw_counter;             ///< Current counter value(TGRW)
-
-    timer_state_t state;               ///< Current timer state (running or stopped)
-} mtu3_status_t;
-
 /** MTU3 configuration for event link function*/
 typedef struct st_mtu3_elc_operation
 {
@@ -256,27 +214,6 @@ typedef struct st_mtu3_elc_operation
     mtu3_elc_operation_option_t mtu3_elc_operation; ///< MTU3 operation select
     mtu3_elc_operation_option_t mtu4_elc_operation; ///< MTU4 operation select
 } mtu3_elc_operation_t;
-
-/** MTU3 set counter. */
-typedef struct st_mtu3_counter
-{
-    uint32_t tgra_counts;              ///< Counter value(TGRA)
-    uint32_t tgrb_counts;              ///< Counter value(TGRB)
-
-    /* MTU3 ch5 specific parameters */
-    uint32_t tgru_counts;              ///< Counter value(TGRU)
-    uint32_t tgrv_counts;              ///< Counter value(TGRV)
-    uint32_t tgrw_counts;              ///< Counter value(TGRW)
-} mtu3_counter_t;
-
-/** MTU3 information structure to store various information for a timer resource */
-typedef struct st_mtu3_info
-{
-    timer_direction_t count_direction;    ///< Clock counting direction of the timer.
-    uint32_t          clock_frequency[3]; ///< Clock frequency of the timer counter.(For ch5, use clock_frequency[0]-[2].)
-
-    mtu3_counter_t count_param;
-} mtu3_info_t;
 
 /** Channel control block. DO NOT INITIALIZE.  Initialization occurs when @ref timer_api_t::open is called. */
 typedef struct st_mtu3_instance_ctrl
@@ -291,6 +228,9 @@ typedef struct st_mtu3_instance_ctrl
     void (* p_callback)(timer_callback_args_t *); ///< Pointer to callback
     timer_callback_args_t * p_callback_memory;    ///< Pointer to optional callback argument memory
     void const            * p_context;            ///< Pointer to context to be passed into callback function
+
+    uint8_t tior_ioa;                             ///< TIOR.IOA register value
+    uint8_t tior_iob;                             ///< TIOR.IOB register value
 } mtu3_instance_ctrl_t;
 
 /** MTU3 extension for advanced PWM features. */
@@ -307,38 +247,6 @@ typedef struct st_mtu3_extended_pwm_cfg
     mtu3_interrupt_skip_count_t interrupt_skip_count_tgr4an_bn; ///< TRG4AN/TRG4BN Interrupt Skipping Count Setting(TITCR2A)
     mtu3_interrupt_skip_count_t interrupt_skip_count_tgr7an_bn; ///< TRG7AN/TRG7BN Interrupt Skipping Count Setting(TITCR2B)
 } mtu3_extended_pwm_cfg_t;
-
-/** MTU3 extension for ch5. */
-typedef struct st_mtu3_extended_uvw_cfg
-{
-    /* Used only with MTU5(TGRU5, TGRV5, TGRW5) */
-    uint16_t tgru_val;                          ///< Capture/Compare match U register
-    uint16_t tgrv_val;                          ///< Capture/Compare match V register
-    uint16_t tgrw_val;                          ///< Capture/Compare match W register
-
-    mtu3_div_uvw_t mtu3_clk_div_u;              ///< Time Prescaler Select U register
-    mtu3_div_uvw_t mtu3_clk_div_v;              ///< Time Prescaler Select V register
-    mtu3_div_uvw_t mtu3_clk_div_w;              ///< Time Prescaler Select W register
-
-    mtu3_io_pin_level_uvw_t output_pin_level_u; ///< I/O Control U register
-    mtu3_io_pin_level_uvw_t output_pin_level_v; ///< I/O Control V register
-    mtu3_io_pin_level_uvw_t output_pin_level_w; ///< I/O Control W register
-
-    /* Debounce filter for MTIC5U, MTIC5V or MTIC5W input signal pin. */
-    mtu3_noise_filter_setting_uvw_t noise_filter_mtioc_setting_uvw;
-    mtu3_noise_filter_clock_t       noise_filter_mtioc_clk_uvw;
-
-    uint8_t   capture_u_ipl;                             ///< Capture/Compare match U interrupt priority
-    uint8_t   capture_v_ipl;                             ///< Capture/Compare match V interrupt priority
-    uint8_t   capture_w_ipl;                             ///< Capture/Compare match W interrupt priority
-    IRQn_Type capture_u_irq;                             ///< Capture/Compare match U interrupt
-    IRQn_Type capture_v_irq;                             ///< Capture/Compare match V interrupt
-    IRQn_Type capture_w_irq;                             ///< Capture/Compare match W interrupt
-
-    bsp_irq_gpt_selected_event_t capture_u_select_event; ///< Selected capture u event
-    bsp_irq_gpt_selected_event_t capture_v_select_event; ///< Selected capture v event
-    bsp_irq_gpt_selected_event_t capture_w_select_event; ///< Selected capture w event
-} mtu3_extended_uvw_cfg_t;
 
 typedef enum e_mtu3_phase_counting_mode
 {
@@ -367,14 +275,27 @@ typedef enum e_mtu3_external_clock
     MTU3_EXTERNAL_CLOCK_MTCLKC_D = 0x1, ///< MTCLKC, MTCLKD
 } mtu3_external_clock_t;
 
+typedef enum e_mtu3_compare_match_status
+{
+    MTU3_COMPARE_MATCH_STATUS_DISABLE = 0x0, ///< Disable compare match
+    MTU3_COMPARE_MATCH_STATUS_ENABLE  = 0x1, ///< Enable compare match
+} mtu3_compare_match_status_t;
+
+typedef enum e_mtu3_buffer_mode
+{
+    MTU3_BUFFER_MODE_ENABLE  = 1U,     ///< Buffer mode enable
+    MTU3_BUFFER_MODE_DISABLE = 0U,     ///< Buffer mode disabled
+} mtu3_buffer_mode_t;
+
 /** The MTU3 extension constitutes a unique feature of MTU3. */
 typedef struct st_mtu3_extended_cfg
 {
-    uint32_t          tgra_val;           ///< Capture/Compare match A register
-    uint32_t          tgrb_val;           ///< Capture/Compare match B register
-    uint32_t          tgrc_val;           ///< Capture/Compare match C register (Does not exist in MTU ch1-2)
-    uint32_t          tgrd_val;           ///< Capture/Compare match D register (Does not exist in MTU ch1-2)
-    mtu3_div_t        mtu3_clk_div;       ///< Time Prescaler Select
+    uint32_t         tgra_val;            ///< Capture/Compare match A register
+    uint32_t         tgrb_val;            ///< Capture/Compare match B register
+    uint32_t         tgrc_val;            ///< Capture/Compare match C register (Does not exist in MTU ch1-2)
+    uint32_t         tgrd_val;            ///< Capture/Compare match D register (Does not exist in MTU ch1-2)
+    mtu3_clock_div_t mtu3_clk_div;        ///< Time Prescaler Select
+
     mtu3_clock_edge_t clk_edge;           ///< Clock Edge Select
     mtu3_tcnt_clear_t mtu3_clear;         ///< Counter Clear Source Select
     mtu3_output_pin_t mtioc_ctrl_setting; ///< I/O Control A, B
@@ -398,7 +319,6 @@ typedef struct st_mtu3_extended_cfg
     IRQn_Type capture_a_irq;                             ///< Capture/Compare match A interrupt
     IRQn_Type capture_b_irq;                             ///< Capture/Compare match B interrupt
 
-    mtu3_extended_uvw_cfg_t const * p_uvw_cfg;           ///< Advanced MTU ch5 features, optional
     mtu3_extended_pwm_cfg_t const * p_pwm_cfg;           ///< Advanced PWM features, optional
     mtu3_phase_counting_mode_t      counting_mode;       ///< Select the counting mode.
     mtu3_bit_mode_t                 bit_mode;            ///< Select bit mode
@@ -411,6 +331,13 @@ typedef struct st_mtu3_extended_cfg
     bsp_irq_gpt_selected_event_t capture_a_select_event; ///< Selected capture a event
     bsp_irq_gpt_selected_event_t capture_b_select_event; ///< Selected capture b event
     bsp_irq_gpt_selected_event_t cycle_end_select_event; ///< Selected cycle end event
+
+    uint32_t compare_match_value;                        ///< Storing compare match value for channels
+    mtu3_compare_match_status_t compare_match_status;    ///< Storing the compare match status
+    mtu3_buffer_mode_t          buffer_mode;             ///< Buffer mode enable
+
+    /* Set to true to enable custom waveform, false to disable custom waveform */
+    bool custom_waveform_enabled;
 } mtu3_extended_cfg_t;
 
 /**********************************************************************************************************************
@@ -430,12 +357,18 @@ fsp_err_t R_MTU3_Open(timer_ctrl_t * const p_ctrl, timer_cfg_t const * const p_c
 fsp_err_t R_MTU3_Stop(timer_ctrl_t * const p_ctrl);
 fsp_err_t R_MTU3_Start(timer_ctrl_t * const p_ctrl);
 fsp_err_t R_MTU3_Reset(timer_ctrl_t * const p_ctrl);
-fsp_err_t R_MTU3_PeriodSet(timer_ctrl_t * const p_ctrl, mtu3_counter_t * const p_counter);
-fsp_err_t R_MTU3_InfoGet(timer_ctrl_t * const p_ctrl, mtu3_info_t * const p_info);
-fsp_err_t R_MTU3_StatusGet(timer_ctrl_t * const p_ctrl, mtu3_status_t * const p_status);
+fsp_err_t R_MTU3_PeriodSet(timer_ctrl_t * const p_ctrl, uint32_t const period_counts);
+fsp_err_t R_MTU3_DutyCycleSet(timer_ctrl_t * const p_ctrl, uint32_t const duty_cycle_counts, uint32_t const pin);
+fsp_err_t R_MTU3_CompareMatchSet(timer_ctrl_t * const        p_ctrl,
+                                 uint32_t const              compare_match_value,
+                                 timer_compare_match_t const match_channel);
+fsp_err_t R_MTU3_InfoGet(timer_ctrl_t * const p_ctrl, timer_info_t * const p_info);
+fsp_err_t R_MTU3_StatusGet(timer_ctrl_t * const p_ctrl, timer_status_t * const p_status);
 fsp_err_t R_MTU3_CounterSet(timer_ctrl_t * const p_ctrl, uint32_t counter);
 fsp_err_t R_MTU3_OutputEnable(timer_ctrl_t * const p_ctrl, mtu3_output_pin_t pin_level);
 fsp_err_t R_MTU3_OutputDisable(timer_ctrl_t * const p_ctrl, mtu3_io_pin_t pin);
+fsp_err_t R_MTU3_Enable(timer_ctrl_t * const p_ctrl);
+fsp_err_t R_MTU3_Disable(timer_ctrl_t * const p_ctrl);
 fsp_err_t R_MTU3_AdcTriggerSet(timer_ctrl_t * const     p_ctrl,
                                mtu3_adc_compare_match_t which_compare_match,
                                uint16_t                 compare_match_value);

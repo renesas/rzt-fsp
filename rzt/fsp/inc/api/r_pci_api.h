@@ -60,7 +60,10 @@ typedef enum e_pci_event
     PCI_EVENT_PME_TURN_OFF_RCV_EVENT,        ///< PME_Turn_Off message receive
     PCI_EVENT_PME_STATUS_CLEAR,              ///< PME_STATUS clear output
     PCI_EVENT_PM_PME_RECEIVE,                ///< PM_PME message receive interrupt
-    PCI_EVENT_POWEROFF_L2                    ///< POWEROFF indication on L2
+    PCI_EVENT_POWEROFF_L2,                   ///< POWEROFF indication on L2
+    PCI_EVENT_DMA_TRANSFER_COMPLETE,         ///< DMA transfer complete
+    PCI_EVENT_DMA_TRANSFER_STOP,             ///< DMA transfer stop
+    PCI_EVENT_DMA_TRANSFER_ERROR,            ///< DMA transfer error
 } pci_event_t;
 
 /** PCI Configuration Write Type 0/1 */
@@ -178,6 +181,7 @@ typedef struct st_pci_status
 typedef struct st_pci_callback_args
 {
     pci_event_t  event;                ///< Event code
+    uint32_t     dma_channel;          ///< Channel of DMA (valid only for DMA-related events)
     uint32_t     data1;                ///< Data when event interrupt occurred.
     uint32_t     data2;                ///< Data when event interrupt occurred.
     uint32_t     data3;                ///< Data when event interrupt occurred.

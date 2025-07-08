@@ -144,12 +144,12 @@ static const uint32_t gs_hash_length[] =
     [RSIP_HASH_TYPE_SHA512_256] = RSIP_PRV_BYTE_SIZE_DIGEST_SHA256
 };
 
-static const uint32_t gs_key_length[RSIP_KEY_RSA_NUM] =
+static const uint32_t gs_key_length[RSIP_PRV_KEY_SUBTYPE_RSA_NUM] =
 {
-    [RSIP_KEY_RSA_1024] = RSIP_PRV_BYTE_SIZE_RSA_1024_N,
-    [RSIP_KEY_RSA_2048] = RSIP_PRV_BYTE_SIZE_RSA_2048_N,
-    [RSIP_KEY_RSA_3072] = RSIP_PRV_BYTE_SIZE_RSA_3072_N,
-    [RSIP_KEY_RSA_4096] = RSIP_PRV_BYTE_SIZE_RSA_4096_N,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_1024] = RSIP_PRV_BYTE_SIZE_RSA_1024_N,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_2048] = RSIP_PRV_BYTE_SIZE_RSA_2048_N,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_3072] = RSIP_PRV_BYTE_SIZE_RSA_3072_N,
+    [RSIP_PRV_KEY_SUBTYPE_RSA_4096] = RSIP_PRV_BYTE_SIZE_RSA_4096_N,
 };
 
 /* Because the buffer sizes are large, allocate memory in the static area instead of the stack area. */
@@ -176,11 +176,10 @@ static uint8_t em_buffer2[RSIP_PRV_BYTE_SIZE_RSA_EM_BUFFER];
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_public_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_2048_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_3072_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_4096_PUBLIC
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  * @endparblock
  *
  * @par State transition
@@ -200,8 +199,6 @@ static uint8_t em_buffer2[RSIP_PRV_BYTE_SIZE_RSA_EM_BUFFER];
  *
  * @note This API provides RSA low-level primitives (RSAEP/RSAVP1).
  *       It should be used in conjunction with any padding scheme.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSA_Encrypt (rsip_ctrl_t * const              p_ctrl,
                               rsip_wrapped_key_t const * const p_wrapped_public_key,
@@ -213,15 +210,16 @@ fsp_err_t R_RSIP_RSA_Encrypt (rsip_ctrl_t * const              p_ctrl,
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_public_key);
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ASSERT(p_plain);
     FSP_ASSERT(p_cipher);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PUBLIC == p_wrapped_public_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type);         // Parse key type
+    rsip_func_rsa_t        p_func       = gp_func_rsa_public[key_type_ext.subtype];                  // Set function
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_public[p_wrapped_public_key->subtype], FSP_ERR_NOT_ENABLED);
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PUBLIC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                   // Check configuration
 #endif
 
     /* Check state */
@@ -237,11 +235,10 @@ fsp_err_t R_RSIP_RSA_Encrypt (rsip_ctrl_t * const              p_ctrl,
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_private_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_2048_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_3072_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_4096_PRIVATE
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  * @endparblock
  *
  * @par State transition
@@ -261,8 +258,6 @@ fsp_err_t R_RSIP_RSA_Encrypt (rsip_ctrl_t * const              p_ctrl,
  *
  * @note This API provides RSA low-level primitives (RSADP/RSASP1).
  *       It should be used in conjunction with any padding scheme.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSA_Decrypt (rsip_ctrl_t * const              p_ctrl,
                               rsip_wrapped_key_t const * const p_wrapped_private_key,
@@ -274,15 +269,16 @@ fsp_err_t R_RSIP_RSA_Decrypt (rsip_ctrl_t * const              p_ctrl,
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_private_key);
+    FSP_ASSERT(p_wrapped_private_key->p_value);
     FSP_ASSERT(p_cipher);
     FSP_ASSERT(p_plain);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PRIVATE == p_wrapped_private_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_private_key->type);         // Parse key type
+    rsip_func_rsa_t        p_func       = gp_func_rsa_private[key_type_ext.subtype];                  // Set function
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_private[p_wrapped_private_key->subtype], FSP_ERR_NOT_ENABLED);
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PRIVATE == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                    // Check configuration
 #endif
 
     /* Check state */
@@ -298,11 +294,10 @@ fsp_err_t R_RSIP_RSA_Decrypt (rsip_ctrl_t * const              p_ctrl,
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_public_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_2048_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_3072_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_4096_PUBLIC
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * mLen (plain_length) and k (modulus length) must meet the following condition.
  * - mLen <= k - 11
@@ -324,8 +319,6 @@ fsp_err_t R_RSIP_RSA_Decrypt (rsip_ctrl_t * const              p_ctrl,
  * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSAES_PKCS1_V1_5_Encrypt (rsip_ctrl_t * const              p_ctrl,
                                            rsip_wrapped_key_t const * const p_wrapped_public_key,
@@ -338,21 +331,25 @@ fsp_err_t R_RSIP_RSAES_PKCS1_V1_5_Encrypt (rsip_ctrl_t * const              p_ct
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_public_key);
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ASSERT(p_plain);
     FSP_ASSERT(p_cipher);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PUBLIC == p_wrapped_public_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type);         // Parse key type
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_public[p_wrapped_public_key->subtype], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_rsa_t p_func = gp_func_rsa_public[key_type_ext.subtype];                               // Set function
+
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PUBLIC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                   // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen = gs_key_length[p_wrapped_public_key->subtype]; // Actual name on RFC8017 is "k"
+    uint32_t klen = gs_key_length[key_type_ext.subtype]; // Actual name on RFC8017 is "k"
     uint32_t mlen = plain_length;
 
     /* Check length */
@@ -398,11 +395,10 @@ fsp_err_t R_RSIP_RSAES_PKCS1_V1_5_Encrypt (rsip_ctrl_t * const              p_ct
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_private_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_2048_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_3072_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_4096_PRIVATE
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * plain_buffer_length must be greater than or equal to mLen(plaintext length).
  * @endparblock
@@ -425,8 +421,6 @@ fsp_err_t R_RSIP_RSAES_PKCS1_V1_5_Encrypt (rsip_ctrl_t * const              p_ct
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
  *
  * @note This API skips the ciphertext length checking at RFC8017 (PKCS#1 v2.2) Section 7.2.2 Step 1.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSAES_PKCS1_V1_5_Decrypt (rsip_ctrl_t * const              p_ctrl,
                                            rsip_wrapped_key_t const * const p_wrapped_private_key,
@@ -440,22 +434,25 @@ fsp_err_t R_RSIP_RSAES_PKCS1_V1_5_Decrypt (rsip_ctrl_t * const              p_ct
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_private_key);
+    FSP_ASSERT(p_wrapped_private_key->p_value);
     FSP_ASSERT(p_cipher);
     FSP_ASSERT(p_plain);
     FSP_ASSERT(p_plain_length);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PRIVATE == p_wrapped_private_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_private_key->type);         // Parse key type
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_private[p_wrapped_private_key->subtype], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_rsa_t p_func = gp_func_rsa_private[key_type_ext.subtype];                               // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PRIVATE == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                    // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen = gs_key_length[p_wrapped_private_key->subtype]; // Actual name in RFC 8107 is "k"
+    uint32_t klen = gs_key_length[key_type_ext.subtype]; // Actual name in RFC 8107 is "k"
     uint32_t mlen = 0;
 
     /*
@@ -543,19 +540,19 @@ fsp_err_t R_RSIP_RSAES_PKCS1_V1_5_Decrypt (rsip_ctrl_t * const              p_ct
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_public_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_2048_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_3072_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_4096_PUBLIC
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * mLen (plain_length), hLen (hash length of hash_function), and k (modulus length)
  * must meet the following condition.
  * - mLen <= k - 2 hLen - 2
  *
- * Argument hash_function accepts any member of enumeration @ref rsip_hash_type_t.
- *
- * Argument mask_generation_function accepts any member of enumeration @ref rsip_mgf_type_t.
+ * Argument hash_function and mask_generation_function must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  * @endparblock
  *
  * @retval FSP_SUCCESS                           Normal termination.
@@ -571,8 +568,6 @@ fsp_err_t R_RSIP_RSAES_PKCS1_V1_5_Decrypt (rsip_ctrl_t * const              p_ct
  * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSAES_OAEP_Encrypt (rsip_ctrl_t * const              p_ctrl,
                                      rsip_wrapped_key_t const * const p_wrapped_public_key,
@@ -589,24 +584,27 @@ fsp_err_t R_RSIP_RSAES_OAEP_Encrypt (rsip_ctrl_t * const              p_ctrl,
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_public_key);
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ASSERT(p_label || (0 == label_length));
     FSP_ASSERT(p_plain);
     FSP_ASSERT(p_cipher);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PUBLIC == p_wrapped_public_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type);         // Parse key type
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_public[p_wrapped_public_key->subtype], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_rsa_t p_func = gp_func_rsa_public[key_type_ext.subtype];                               // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PUBLIC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                   // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);                             // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);                  // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen  = gs_key_length[p_wrapped_public_key->subtype]; // Actual name on RFC8017 is "k"
+    uint32_t klen  = gs_key_length[key_type_ext.subtype]; // Actual name on RFC8017 is "k"
     uint32_t hlen  = gs_hash_length[hash_function];
     uint32_t mlen  = plain_length;
     uint32_t dblen = klen - hlen - 1;
@@ -721,20 +719,20 @@ fsp_err_t R_RSIP_RSAES_OAEP_Encrypt (rsip_ctrl_t * const              p_ctrl,
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_private_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_2048_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_3072_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_4096_PRIVATE
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * hLen (hash length of hash_function) and k (modulus length) must meet the following condition.
  * - k >= 2 hLen + 2
  *
  * plain_buffer_length must be greater than or equal to mLen(plaintext length).
  *
- * Argument hash_function accepts any member of enumeration @ref rsip_hash_type_t.
- *
- * Argument mask_generation_function accepts any member of enumeration @ref rsip_mgf_type_t.
+ * Argument hash_function and mask_generation_function must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  * @endparblock
  *
  * @par State transition
@@ -755,8 +753,6 @@ fsp_err_t R_RSIP_RSAES_OAEP_Encrypt (rsip_ctrl_t * const              p_ctrl,
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
  *
  * @note This API skips the ciphertext length checking at RFC8017 (PKCS#1 v2.2) Section 7.1.2 Step 1.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSAES_OAEP_Decrypt (rsip_ctrl_t * const              p_ctrl,
                                      rsip_wrapped_key_t const * const p_wrapped_private_key,
@@ -774,25 +770,28 @@ fsp_err_t R_RSIP_RSAES_OAEP_Decrypt (rsip_ctrl_t * const              p_ctrl,
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_private_key);
+    FSP_ASSERT(p_wrapped_private_key->p_value);
     FSP_ASSERT(p_label || (0 == label_length));
     FSP_ASSERT(p_cipher);
     FSP_ASSERT(p_plain);
     FSP_ASSERT(p_plain_length);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PRIVATE == p_wrapped_private_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_private_key->type);         // Parse key type
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_private[p_wrapped_private_key->subtype], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_rsa_t p_func = gp_func_rsa_private[key_type_ext.subtype];                               // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PRIVATE == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                    // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);                              // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);                   // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen  = gs_key_length[p_wrapped_private_key->subtype]; // Actual name in RFC 8107 is "k"
+    uint32_t klen  = gs_key_length[key_type_ext.subtype]; // Actual name in RFC 8107 is "k"
     uint32_t hlen  = gs_hash_length[hash_function];
     uint32_t mlen  = 0;
     uint32_t dblen = klen - hlen - 1;
@@ -926,13 +925,15 @@ fsp_err_t R_RSIP_RSAES_OAEP_Decrypt (rsip_ctrl_t * const              p_ctrl,
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_private_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_2048_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_3072_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_4096_PRIVATE
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
- * Argument hash_function accepts any member of enumeration @ref rsip_hash_type_t.
+ * Argument hash_function must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * Message hash p_hash should be computed in advance with hash_function.
  * @endparblock
@@ -953,8 +954,6 @@ fsp_err_t R_RSIP_RSAES_OAEP_Decrypt (rsip_ctrl_t * const              p_ctrl,
  * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSASSA_PKCS1_V1_5_Sign (rsip_ctrl_t * const              p_ctrl,
                                          rsip_wrapped_key_t const * const p_wrapped_private_key,
@@ -967,22 +966,25 @@ fsp_err_t R_RSIP_RSASSA_PKCS1_V1_5_Sign (rsip_ctrl_t * const              p_ctrl
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_private_key);
+    FSP_ASSERT(p_wrapped_private_key->p_value);
     FSP_ASSERT(p_hash);
     FSP_ASSERT(p_signature);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PRIVATE == p_wrapped_private_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_private_key->type);         // Parse key type
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_private[p_wrapped_private_key->subtype], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_rsa_t p_func = gp_func_rsa_private[key_type_ext.subtype];                               // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PRIVATE == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                    // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);                              // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen = gs_key_length[p_wrapped_private_key->subtype]; // Actual name in RFC 8107 is "k"
+    uint32_t klen = gs_key_length[key_type_ext.subtype]; // Actual name in RFC 8107 is "k"
 
     /*
      * EMSA-PKCS1-v1_5 encoding
@@ -1012,13 +1014,15 @@ fsp_err_t R_RSIP_RSASSA_PKCS1_V1_5_Sign (rsip_ctrl_t * const              p_ctrl
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_public_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_2048_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_3072_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_4096_PUBLIC
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
- * Argument hash_function accepts any member of enumeration @ref rsip_hash_type_t.
+ * Argument hash_function must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * Message hash p_hash should be computed in advance with hash_function.
  * @endparblock
@@ -1039,8 +1043,6 @@ fsp_err_t R_RSIP_RSASSA_PKCS1_V1_5_Sign (rsip_ctrl_t * const              p_ctrl
  * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSASSA_PKCS1_V1_5_Verify (rsip_ctrl_t * const              p_ctrl,
                                            rsip_wrapped_key_t const * const p_wrapped_public_key,
@@ -1053,22 +1055,25 @@ fsp_err_t R_RSIP_RSASSA_PKCS1_V1_5_Verify (rsip_ctrl_t * const              p_ct
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_public_key);
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ASSERT(p_hash);
     FSP_ASSERT(p_signature);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PUBLIC == p_wrapped_public_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type);         // Parse key type
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_public[p_wrapped_public_key->subtype], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_rsa_t p_func = gp_func_rsa_public[key_type_ext.subtype];                               // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PUBLIC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                   // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);                             // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen = gs_key_length[p_wrapped_public_key->subtype]; // Actual name in RFC 8107 is "k"
+    uint32_t klen = gs_key_length[key_type_ext.subtype]; // Actual name in RFC 8107 is "k"
 
     /*
      * s = OS2IP (S)
@@ -1109,15 +1114,15 @@ fsp_err_t R_RSIP_RSASSA_PKCS1_V1_5_Verify (rsip_ctrl_t * const              p_ct
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_private_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_2048_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_3072_PRIVATE
- * - @ref RSIP_KEY_TYPE_RSA_4096_PRIVATE
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
- * Argument hash_function accepts any member of enumeration @ref rsip_hash_type_t.
- *
- * Argument mask_generation_function accepts any member of enumeration @ref rsip_mgf_type_t.
+ * Argument hash_function and mask_generation_function must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * Message hash p_hash should be computed in advance with hash_function.
  *
@@ -1148,8 +1153,6 @@ fsp_err_t R_RSIP_RSASSA_PKCS1_V1_5_Verify (rsip_ctrl_t * const              p_ct
  * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSASSA_PSS_Sign (rsip_ctrl_t * const              p_ctrl,
                                   rsip_wrapped_key_t const * const p_wrapped_private_key,
@@ -1164,23 +1167,26 @@ fsp_err_t R_RSIP_RSASSA_PSS_Sign (rsip_ctrl_t * const              p_ctrl,
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_private_key);
+    FSP_ASSERT(p_wrapped_private_key->p_value);
     FSP_ASSERT(p_hash);
     FSP_ASSERT(p_signature);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PRIVATE == p_wrapped_private_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_private_key->type);         // Parse key type
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_private[p_wrapped_private_key->subtype], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_rsa_t p_func = gp_func_rsa_private[key_type_ext.subtype];                               // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PRIVATE == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                    // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);                              // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);                   // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen = gs_key_length[p_wrapped_private_key->subtype]; // Actual name in RFC 8107 is "k"
+    uint32_t klen = gs_key_length[key_type_ext.subtype]; // Actual name in RFC 8107 is "k"
 
     fsp_err_t err = emsa_pss_encode(p_ctrl,
                                     hash_function,
@@ -1215,15 +1221,15 @@ fsp_err_t R_RSIP_RSASSA_PSS_Sign (rsip_ctrl_t * const              p_ctrl,
  *
  * @par Conditions
  * @parblock
- * Key type of p_wrapped_public_key must be one of the following:
- * - @ref RSIP_KEY_TYPE_RSA_1024_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_2048_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_3072_PUBLIC
- * - @ref RSIP_KEY_TYPE_RSA_4096_PUBLIC
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
- * Argument hash_function accepts any member of enumeration @ref rsip_hash_type_t.
- *
- * Argument mask_generation_function accepts any member of enumeration @ref rsip_mgf_type_t.
+ * Argument hash_function and mask_generation_function must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
  *
  * Message hash p_hash should be computed in advance with hash_function.
  *
@@ -1254,8 +1260,6 @@ fsp_err_t R_RSIP_RSASSA_PSS_Sign (rsip_ctrl_t * const              p_ctrl,
  * @retval FSP_ERR_CRYPTO_RSIP_RESOURCE_CONFLICT A resource conflict occurred because a hardware resource required
  *                                               by the processing is in use by other processing.
  * @retval FSP_ERR_CRYPTO_RSIP_FATAL             Software corruption is detected.
- *
- * @sa Section @ref r-rsip-protected-supported-algorithms "Supported Algorithms".
  **********************************************************************************************************************/
 fsp_err_t R_RSIP_RSASSA_PSS_Verify (rsip_ctrl_t * const              p_ctrl,
                                     rsip_wrapped_key_t const * const p_wrapped_public_key,
@@ -1270,23 +1274,26 @@ fsp_err_t R_RSIP_RSASSA_PSS_Verify (rsip_ctrl_t * const              p_ctrl,
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_public_key);
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ASSERT(p_hash);
     FSP_ASSERT(p_signature);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PUBLIC == p_wrapped_public_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type);         // Parse key type
 
-    /* Check configuration */
-    FSP_ERROR_RETURN(gp_func_rsa_public[p_wrapped_public_key->subtype], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_rsa_t p_func = gp_func_rsa_public[key_type_ext.subtype];                               // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PUBLIC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func, FSP_ERR_NOT_ENABLED);                                                   // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);                             // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);                  // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen = gs_key_length[p_wrapped_public_key->subtype]; // Actual name in RFC 8107 is "k"
+    uint32_t klen = gs_key_length[key_type_ext.subtype]; // Actual name in RFC 8107 is "k"
 
     /*
      * s = OS2IP (S)
@@ -1317,6 +1324,21 @@ fsp_err_t R_RSIP_RSASSA_PSS_Verify (rsip_ctrl_t * const              p_ctrl,
 
 /*******************************************************************************************************************//**
  * Verifies a certificate with RSASSA-PKCS1-v1_5.
+ *
+ * @par Conditions
+ * @parblock
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ *
+ * Argument hash_function must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ *
+ * Message hash p_hash should be computed in advance with hash_function.
+ * @endparblock
  *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
@@ -1352,25 +1374,25 @@ fsp_err_t R_RSIP_PKI_RSASSA_PKCS1_V1_5_CertVerify (rsip_ctrl_t * const          
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_public_key);
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ASSERT(p_hash);
     FSP_ASSERT(p_signature);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PUBLIC == p_wrapped_public_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type);         // Parse key type
 
-    /* Set function */
-    rsip_func_subset_pki_rsa_verify_t p_func = gp_func_pki_rsa_verify[p_wrapped_public_key->subtype];
-
-    /* Check configuration */
-    FSP_ERROR_RETURN(p_func.p_init, FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_subset_pki_rsa_verify_t p_func = gp_func_pki_rsa_verify[key_type_ext.subtype];         // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PUBLIC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func.p_init, FSP_ERR_NOT_ENABLED);                                            // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);                             // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen = gs_key_length[p_wrapped_public_key->subtype]; // Actual name in RFC 8107 is "k"
+    uint32_t klen = gs_key_length[key_type_ext.subtype]; // Actual name in RFC 8107 is "k"
 
     /*
      * s = OS2IP (S)
@@ -1417,6 +1439,31 @@ fsp_err_t R_RSIP_PKI_RSASSA_PKCS1_V1_5_CertVerify (rsip_ctrl_t * const          
 /*******************************************************************************************************************//**
  * Verifies a certificate with RSASSA-PSS.
  *
+ * @par Conditions
+ * @parblock
+ * Argument @ref rsip_wrapped_key_t::type must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ *
+ * Argument hash_function and mask_generation_function must be supported by both the function and the device,
+ * and must also be enabled in the configuration. For more details, please refer to
+ * @ref r-rsip-protected-supported-algorithms "Supported Algorithms" and
+ * @ref r-rsip-protected-configuration "Configuration".
+ *
+ * Message hash p_hash should be computed in advance with hash_function.
+ *
+ * Salt length salt_length must be one of the following:
+ * - Any member of enumeration @ref rsip_rsa_salt_length_t
+ *   - @ref RSIP_RSA_SALT_LENGTH_AUTO
+ *   - @ref RSIP_RSA_SALT_LENGTH_HASH
+ *   - @ref RSIP_RSA_SALT_LENGTH_MAX
+ * - Integers that satisfies the formula: sLen <= emLen - hLen - 2
+ *   - sLen is salt_length
+ *   - emLen is the same as modulus length
+ *   - hLen is the hash length
+ * @endparblock
+ *
  * @par State transition
  * This API can only be executed in **STATE_MAIN**, and does not cause any state transitions.
  *
@@ -1458,26 +1505,26 @@ fsp_err_t R_RSIP_PKI_RSASSA_PSS_CertVerify (rsip_ctrl_t * const              p_c
 #if RSIP_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(p_instance_ctrl);
     FSP_ASSERT(p_wrapped_public_key);
+    FSP_ASSERT(p_wrapped_public_key->p_value);
     FSP_ASSERT(p_hash);
     FSP_ASSERT(p_signature);
     FSP_ERROR_RETURN(RSIP_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
+#endif
 
-    /* Check key type */
-    FSP_ERROR_RETURN(RSIP_ALG_RSA_PUBLIC == p_wrapped_public_key->alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type);         // Parse key type
 
-    /* Set function */
-    rsip_func_subset_pki_rsa_verify_t p_func = gp_func_pki_rsa_verify[p_wrapped_public_key->subtype];
-
-    /* Check configuration */
-    FSP_ERROR_RETURN(p_func.p_init, FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);
-    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);
+#if RSIP_CFG_PARAM_CHECKING_ENABLE
+    rsip_func_subset_pki_rsa_verify_t p_func = gp_func_pki_rsa_verify[key_type_ext.subtype];         // Set function
+    FSP_ERROR_RETURN(RSIP_PRV_ALG_RSA_PUBLIC == key_type_ext.alg, FSP_ERR_CRYPTO_RSIP_KEY_SET_FAIL); // Check key type
+    FSP_ERROR_RETURN(p_func.p_init, FSP_ERR_NOT_ENABLED);                                            // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[hash_function], FSP_ERR_NOT_ENABLED);                             // Check configuration
+    FSP_ERROR_RETURN(g_sha_enabled[mask_generation_function], FSP_ERR_NOT_ENABLED);                  // Check configuration
 #endif
 
     /* Check state */
     FSP_ERROR_RETURN(RSIP_STATE_MAIN == p_instance_ctrl->state, FSP_ERR_INVALID_STATE);
 
-    uint32_t klen = gs_key_length[p_wrapped_public_key->subtype]; // Actual name in RFC 8107 is "k"
+    uint32_t klen = gs_key_length[key_type_ext.subtype]; // Actual name in RFC 8107 is "k"
 
     /*
      * s = OS2IP (S)
@@ -1549,11 +1596,15 @@ static fsp_err_t r_rsip_rsa_encrypt (rsip_wrapped_key_t const * const p_wrapped_
                                      uint8_t const * const            p_plain,
                                      uint8_t * const                  p_cipher)
 {
-    /* Call primitive (cast to match the argument type with the primitive function) */
-    rsip_ret_t rsip_ret =
-        gp_func_rsa_public[p_wrapped_public_key->subtype]((const uint32_t *) p_wrapped_public_key->
-                                                          value, (const uint32_t *) p_plain,
-                                                          (uint32_t *) p_cipher);
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type); // Parse key type
+    rsip_func_rsa_t        p_func       = gp_func_rsa_public[key_type_ext.subtype];          // Set function
+
+    /* Call function (cast to match the argument type with the primitive function) */
+    rsip_ret_t rsip_ret = p_func((const uint32_t *)
+                                 p_wrapped_public_key->
+                                 p_value,
+                                 (const uint32_t *) p_plain,
+                                 (uint32_t *) p_cipher);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -1611,11 +1662,12 @@ static fsp_err_t r_rsip_rsa_decrypt (rsip_wrapped_key_t const * const p_wrapped_
                                      uint8_t const * const            p_cipher,
                                      uint8_t * const                  p_plain)
 {
-    /* Call primitive (cast to match the argument type with the primitive function) */
+    rsip_key_type_extend_t key_type_ext = r_rsip_key_type_parse(p_wrapped_private_key->type); // Parse key type
+    rsip_func_rsa_t        p_func       = gp_func_rsa_private[key_type_ext.subtype];          // Set function
+
+    /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
-        gp_func_rsa_private[p_wrapped_private_key->subtype]((const uint32_t *) p_wrapped_private_key->
-                                                            value, (const uint32_t *) p_cipher,
-                                                            (uint32_t *) p_plain);
+        p_func((const uint32_t *) p_wrapped_private_key->p_value, (const uint32_t *) p_cipher, (uint32_t *) p_plain);
 
     /* Check error */
     fsp_err_t err = FSP_ERR_CRYPTO_RSIP_FATAL;
@@ -2329,21 +2381,22 @@ static fsp_err_t pki_rsa_encrypt (rsip_wrapped_key_t const * const p_wrapped_pub
                                   uint8_t const * const            p_plain,
                                   uint8_t * const                  p_cipher)
 {
-    /* Set function */
-    rsip_func_subset_pki_rsa_verify_t p_func = gp_func_pki_rsa_verify[p_wrapped_public_key->subtype];
+    rsip_key_type_extend_t            key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type); // Parse key type
+    rsip_func_subset_pki_rsa_verify_t p_func       = gp_func_pki_rsa_verify[key_type_ext.subtype];      // Set function
 
-    uint8_t  pki_enc_cert_info[RSIP_CFG_BYTE_SIZE_PKI_ENC_CERT_INFO];
+    rsip_verified_cert_info_t pki_enc_cert_info;
     uint32_t cmd[1] = {bswap_32big(0U)};
 
     /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
-        p_func.p_init((const uint32_t *) p_wrapped_public_key->value, (const uint32_t *) p_plain,
+        p_func.p_init((const uint32_t *) p_wrapped_public_key->p_value,
+                      (const uint32_t *) p_plain,
                       (uint32_t *) p_cipher);
 
     if (RSIP_RET_PASS == rsip_ret)
     {
         /* Dummy call */
-        p_func.p_final(cmd, cmd, (const uint32_t *) p_plain, NULL, NULL, (uint32_t *) pki_enc_cert_info);
+        p_func.p_final(cmd, cmd, (const uint32_t *) p_plain, NULL, NULL, (uint32_t *) &pki_enc_cert_info);
     }
 
     /* Check error */
@@ -2406,8 +2459,8 @@ static fsp_err_t pki_rsassa_pkcs1_v1_5_info_output (rsip_instance_ctrl_t        
                                                     uint8_t const * const            p_hash,
                                                     uint8_t const * const            p_signature)
 {
-    /* Set function */
-    rsip_func_subset_pki_rsa_verify_t p_func = gp_func_pki_rsa_verify[p_wrapped_public_key->subtype];
+    rsip_key_type_extend_t            key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type); // Parse key type
+    rsip_func_subset_pki_rsa_verify_t p_func       = gp_func_pki_rsa_verify[key_type_ext.subtype];      // Set function
 
     uint32_t signature_type[1] =
     {
@@ -2421,7 +2474,7 @@ static fsp_err_t pki_rsassa_pkcs1_v1_5_info_output (rsip_instance_ctrl_t        
 
     /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
-        p_func.p_init((const uint32_t *) p_wrapped_public_key->value,
+        p_func.p_init((const uint32_t *) p_wrapped_public_key->p_value,
                       (const uint32_t *) p_signature,
                       (uint32_t *) em_buffer);
 
@@ -2499,8 +2552,8 @@ static fsp_err_t pki_rsassa_pss_info_output (rsip_instance_ctrl_t           * p_
                                              uint8_t const * const            p_salt,
                                              uint32_t const                   slen)
 {
-    /* Set function */
-    rsip_func_subset_pki_rsa_verify_t p_func = gp_func_pki_rsa_verify[p_wrapped_public_key->subtype];
+    rsip_key_type_extend_t            key_type_ext = r_rsip_key_type_parse(p_wrapped_public_key->type); // Parse key type
+    rsip_func_subset_pki_rsa_verify_t p_func       = gp_func_pki_rsa_verify[key_type_ext.subtype];      // Set function
 
     uint32_t signature_type[1] =
     {
@@ -2518,7 +2571,7 @@ static fsp_err_t pki_rsassa_pss_info_output (rsip_instance_ctrl_t           * p_
 
     /* Call function (cast to match the argument type with the primitive function) */
     rsip_ret_t rsip_ret =
-        p_func.p_init((const uint32_t *) p_wrapped_public_key->value,
+        p_func.p_init((const uint32_t *) p_wrapped_public_key->p_value,
                       (const uint32_t *) p_signature,
                       (uint32_t *) em_buffer);
 

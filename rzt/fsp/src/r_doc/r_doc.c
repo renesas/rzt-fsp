@@ -87,12 +87,29 @@ fsp_err_t R_DOC_Open (doc_ctrl_t * const p_ctrl, doc_cfg_t const * const p_cfg)
     R_BSP_MODULE_START(FSP_IP_DOC, 0);
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_LPC_RESET);
 
+#if BSP_FEATURE_DOC_VERSION == 1
+
     /* Clear the hardware status flag and Configure the DOC using DOCR register.
      * DOC Interrupt enable. */
     R_DOC->DOCR = (uint8_t) (R_DOC_DOCR_DOPCFCL_Msk | R_DOC_DOCR_DOPCIE_Msk | p_cfg->event);
 
     /* write initial data for comparison/ addition/subtraction to DODSR register */
     R_DOC->DODSR = (uint16_t) (p_instance_ctrl->p_cfg->doc_data & UINT16_MAX);
+#else
+
+    /* Configure the DOC using DOCR register. */
+    uint32_t docr = R_DOC_B_DOCR_OMS_Msk & p_cfg->event;
+    docr         |= (uint32_t) (p_cfg->event << (R_DOC_B_DOCR_DCSEL_Pos - 2U)) & R_DOC_B_DOCR_DCSEL_Msk;
+    docr         |= (uint32_t) (p_cfg->bit_width << R_DOC_B_DOCR_DOBW_Pos) & R_DOC_B_DOCR_DOBW_Msk;
+    R_DOC_B->DOCR = (uint8_t) docr & UINT8_MAX;
+
+    /* Clear the hardware status flag. */
+    R_DOC_B->DOSCR = 1;
+
+    /* write initial data for comparison/ addition/subtraction to DODSR0/DODSR1 registers. */
+    R_DOC_B->DODSR0 = p_ctrl->p_cfg->doc_data;
+    R_DOC_B->DODSR1 = p_ctrl->p_cfg->doc_data_extra;
+#endif
 
     gp_ctrl = p_instance_ctrl;
 
@@ -122,7 +139,9 @@ fsp_err_t R_DOC_Close (doc_ctrl_t * const p_ctrl)
 #endif
 
     /* DOC Interrupt disable. */
+#if BSP_FEATURE_DOC_VERSION == 1
     R_DOC->DOCR_b.DOPCIE = 0;
+#endif
 
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_STOP(FSP_IP_DOC, 0);
@@ -156,7 +175,11 @@ fsp_err_t R_DOC_Read (doc_ctrl_t * const p_ctrl, uint32_t * p_result)
 #endif
 
     /* Read the result of addition or subtraction operation from the register and store in the user supplied location */
+#if BSP_FEATURE_DOC_VERSION == 1
     *p_result = R_DOC->DODSR;
+#else
+    *p_result = R_DOC_B->DODSR0;
+#endif
 
     return FSP_SUCCESS;
 }
@@ -182,7 +205,11 @@ fsp_err_t R_DOC_Write (doc_ctrl_t * const p_ctrl, uint32_t data)
 #endif
 
     /* Writes the user supplied data to the DODIR register for data operation in Comparison, Addition and subtraction modes */
+#if BSP_FEATURE_DOC_VERSION == 1
     R_DOC->DODIR = (uint16_t) (data & UINT16_MAX);
+#else
+    R_DOC_B->DODIR = data;
+#endif
 
     return FSP_SUCCESS;
 }
@@ -253,7 +280,10 @@ void doc_int_isr (uint32_t id)
 
     p_args->p_context = p_ctrl->p_context;
 
-    p_ctrl->p_callback(p_args);
+    if (NULL != p_ctrl->p_callback)
+    {
+        p_ctrl->p_callback(p_args);
+    }
 
     if (NULL != p_ctrl->p_callback_memory)
     {
@@ -262,7 +292,12 @@ void doc_int_isr (uint32_t id)
     }
 
     /* clear DOPCF flag */
+
+#if BSP_FEATURE_DOC_VERSION == 1
     R_DOC->DOCR = (uint8_t) (R_DOC_DOCR_DOPCFCL_Msk | R_DOC_DOCR_DOPCIE_Msk | (p_ctrl->p_cfg->event));
+#else
+    R_DOC_B->DOSCR = 1;
+#endif
 
     DOC_CFG_MULTIPLEX_INTERRUPT_DISABLE;
 }
