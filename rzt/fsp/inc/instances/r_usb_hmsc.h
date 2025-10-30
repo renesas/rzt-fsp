@@ -30,10 +30,6 @@ fsp_err_t R_USB_HMSC_StorageCommand(usb_ctrl_t * const p_api_ctrl, uint8_t * p_b
 
 fsp_err_t R_USB_HMSC_DriveNumberGet(usb_ctrl_t * const p_api_ctrl, uint8_t * p_drive, uint8_t destination);
 
-fsp_err_t R_USB_HMSC_SemaphoreGet(void);
-
-fsp_err_t R_USB_HMSC_SemaphoreRelease(void);
-
 fsp_err_t R_USB_HMSC_StorageReadSector(uint16_t        drive_number,
                                        uint8_t * const buff,
                                        uint32_t        sector_number,
@@ -43,6 +39,10 @@ fsp_err_t R_USB_HMSC_StorageWriteSector(uint16_t              drive_number,
                                         uint8_t const * const buff,
                                         uint32_t              sector_number,
                                         uint16_t              sector_count);
+
+fsp_err_t R_USB_HMSC_SemaphoreGet(void);
+
+fsp_err_t R_USB_HMSC_SemaphoreRelease(void);
 
 extern uint8_t  g_format_flag;
 

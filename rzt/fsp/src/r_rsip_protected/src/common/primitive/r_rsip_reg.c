@@ -17,7 +17,7 @@
 uintptr_t const g_rsip_addr_0000h = RSIP_PRV_ADDR_VAL_0000H;
 #endif
 
-#if defined(__ARM_ARCH) && defined(__GNUC__) && (5U == RSIP_PRV_IP_SERIES_MAJOR)
+#if defined(__ARM_ARCH) && defined(__GNUC__) && (5U == RSIP_PRV_ADDR_TYPE)
 uintptr_t const g_rsip_addr_1000h = RSIP_PRV_ADDR_VAL_1000H;
 uintptr_t const g_rsip_addr_2000h = RSIP_PRV_ADDR_VAL_2000H;
 uintptr_t const g_rsip_addr_1420h = RSIP_PRV_ADDR_VAL_1420H;

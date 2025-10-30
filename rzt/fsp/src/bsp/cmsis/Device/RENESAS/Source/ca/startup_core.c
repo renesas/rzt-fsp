@@ -22,12 +22,6 @@
 #define R_BSP_GIC_INTID_1020             (1020)
 #define R_BSP_GIC_INTID_1023             (1023)
 
-#define BSP_PRV_PRCR_KEY                 (0xA500U)
-#define BSP_PRV_PRCR_SYSTEM              (0x8U)
-#define BSP_PRV_PRCR_SYSTEM_UNLOCK       ((BSP_PRV_PRCR_KEY) | BSP_PRV_PRCR_SYSTEM)
-#define BSP_PRV_PRCR_LOCK                ((BSP_PRV_PRCR_KEY) | 0x0U)
-#define BSP_PRV_PRCR_TIMEOUT             (10000)
-
 #if defined(__GNUC__)
  #define BSP_STACK_LIMIT                 &__AArch64StackLimit
  #define BSP_SYSTEMINIT_B_INSTRUCTION \
@@ -56,6 +50,11 @@ extern fsp_vector_t g_vector_table[BSP_ICU_VECTOR_MAX_ENTRIES];
 extern fsp_vector_t g_sgi_ppi_vector_table[BSP_CORTEX_VECTOR_TABLE_ENTRIES];
 
 /***********************************************************************************************************************
+ * Exported global functions (to be accessed by other files)
+ **********************************************************************************************************************/
+extern void R_BSP_WarmStart_StackLess(void);
+
+/***********************************************************************************************************************
  * Private global variables and functions
  **********************************************************************************************************************/
 void system_init(void) BSP_PLACE_IN_SECTION(".loader_text");
@@ -64,34 +63,37 @@ void bsp_reset_vector_address_setting(void);
 
 void Default_Handler(void);
 
+/* Determine whether a software reset has occurred */
 bool g_bsp_software_reset_occurred BSP_PLACE_IN_SECTION(".software_reset");
+
+/* Determine whether it is the initial startup or the state after a software reset. */
+#if (1 == _RZT_ORDINAL) || (!BSP_CFG_ESD_BOOT && !BSP_CFG_EMMC_BOOT)
+bool g_bsp_first_operation = true;
+#else
+bool g_bsp_first_operation BSP_PLACE_IN_SECTION(".first_operation") = true;
+
+#endif
 
 /*******************************************************************************************************************//**
  * Default exception handler.
  **********************************************************************************************************************/
 void Default_Handler (void)
 {
-    /** A error has occurred. The user will need to investigate the cause. Common problems are stack corruption
-     *  or use of an invalid pointer. Use the Fault Status window in e2 studio or manually check the fault status
-     *  registers for more information.
-     */
     BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
 }
 
-#define WEAK_REF_ATTRIBUTE    __attribute__((weak, alias("Default_Handler")))
-
-void SyncSp0_Handler(void) WEAK_REF_ATTRIBUTE;
-void SerrSp0_Handler(void) WEAK_REF_ATTRIBUTE;
-void SyncSpx_Handler(void) WEAK_REF_ATTRIBUTE;
-void SerrSpx_Handler(void) WEAK_REF_ATTRIBUTE;
-void SyncLowEl64_Handler(void) WEAK_REF_ATTRIBUTE;
-void IrqLowEl64_Handler(void) WEAK_REF_ATTRIBUTE;
-void FiqLowEl64_Handler(void) WEAK_REF_ATTRIBUTE;
-void SerrorLowEl64_Handler(void) WEAK_REF_ATTRIBUTE;
-void SyncLowEl32_Handler(void) WEAK_REF_ATTRIBUTE;
-void IrqLowEl32_Handler(void) WEAK_REF_ATTRIBUTE;
-void FiqLowEl32_Handler(void) WEAK_REF_ATTRIBUTE;
-void SerrorLowEl32_Handler(void) WEAK_REF_ATTRIBUTE;
+__WEAK void SyncSp0_Handler(void);
+__WEAK void SerrSp0_Handler(void);
+__WEAK void SyncSpx_Handler(void);
+__WEAK void SerrSpx_Handler(void);
+__WEAK void SyncLowEl64_Handler(void);
+__WEAK void IrqLowEl64_Handler(void);
+__WEAK void FiqLowEl64_Handler(void);
+__WEAK void SerrorLowEl64_Handler(void);
+__WEAK void SyncLowEl32_Handler(void);
+__WEAK void IrqLowEl32_Handler(void);
+__WEAK void FiqLowEl32_Handler(void);
+__WEAK void SerrorLowEl32_Handler(void);
 
 void __Vectors(void)                       BSP_PLACE_IN_SECTION(".intvec"); /* branch_to_SyncSp0_Handler */
 void branch_to_IrqSp0_Handler(void)        BSP_PLACE_IN_SECTION(".intvec_0x080");
@@ -136,7 +138,71 @@ extern uint64_t __AArch64StackLimit;
 #endif
 
 /*******************************************************************************************************************//**
- * Vectore table
+ * Exception handlers
+ *********************************************************************************************************************/
+
+__WEAK void SyncSp0_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void SerrSp0_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void SyncSpx_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void SerrSpx_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void SyncLowEl64_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void IrqLowEl64_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void FiqLowEl64_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void SerrorLowEl64_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void SyncLowEl32_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void IrqLowEl32_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void FiqLowEl32_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void SerrorLowEl32_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+/*******************************************************************************************************************//**
+ * Vector table
  *********************************************************************************************************************/
 
 BSP_ATTRIBUTE_STACKLESS void __Vectors (void) /* branch_to_SyncSp0_Handler */
@@ -282,12 +348,24 @@ BSP_ATTRIBUTE_STACKLESS void branch_to_SerrorLowEl32_Handler (void)
  **********************************************************************************************************************/
 BSP_ATTRIBUTE_STACKLESS void system_init (void)
 {
+    /* Call R_BSP_WarmStart_StackLess. Return here when processing is complete. */
+    __asm volatile (
+        "BLR  %0        \n"
+        ::"r" (&R_BSP_WarmStart_StackLess) : "memory");
+
     /* g_bsp_software_reset_occurred = false */
     __asm volatile (
         "MOV  x0, %0    \n"
         "MOV  w1, #0    \n"
         "STRB  w1, [x0] \n"
         ::"r" (&g_bsp_software_reset_occurred) : "memory");
+
+    /* g_bsp_first_operation = true */
+    __asm volatile (
+        "MOV  x0, %0    \n"
+        "MOV  w1, #1    \n"
+        "STRB  w1, [x0] \n"
+        ::"r" (&g_bsp_first_operation) : "memory");
 
     __asm volatile (
         "b bsp_register_initialization          \n"
@@ -395,16 +473,21 @@ BSP_ATTRIBUTE_STACKLESS void bsp_register_initialization (void)
 
 void bsp_reset_vector_address_setting (void)
 {
-    /* If protection is already disabled, wait until protection is enabled on other cores */
-    uintptr_t timeout = BSP_PRV_PRCR_TIMEOUT;
-    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_NS->PRCRN & BSP_PRV_PRCR_SYSTEM), 0, timeout);
-    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_S->PRCRS & BSP_PRV_PRCR_SYSTEM), 0, timeout);
+#if BSP_CFG_SEMAPHORE_ENABLE
 
-    R_RWP_S->PRCRS = (uint16_t) BSP_PRV_PRCR_SYSTEM_UNLOCK;
+    /* Initialize semaphores required for synchronization and exclusive control between CPUs. */
+    bsp_semaphore_init();
+#endif
+
+    bsp_regiser_protect_semaphore_take(BSP_REG_PROTECT_PRCR_SYSTEM);
+
+    R_RWP_S->PRCRS = (uint16_t) ((R_RWP_S->PRCRS | BSP_REG_PROTECT_PRCR_KEY) | BSP_REG_PROTECT_PRCR_SYSTEM);
 
     R_CA55->RVBA[BSP_CFG_CORE_CA55].L = (uint32_t) ((uintptr_t) &Software_Reset_Handler);
 
-    R_RWP_S->PRCRS = (uint16_t) BSP_PRV_PRCR_LOCK;
+    R_RWP_S->PRCRS = ((R_RWP_S->PRCRS | BSP_REG_PROTECT_PRCR_KEY) & (uint16_t) (~BSP_REG_PROTECT_PRCR_SYSTEM));
+
+    BSP_SEMAPHORE_INTERNAL_CPU_RELEASE_FOR_PROTECTION;
 
     BSP_SYSTEMINIT_B_INSTRUCTION
 }
@@ -481,7 +564,7 @@ BSP_ATTRIBUTE_STACKLESS void Software_Reset_Handler (void)
         "cache_invalidation_per_level_end:                  \n"
         "DSB       SY                                       \n"
         "ISB       SY                                       \n"
-        "cache_invalidation_end:                              \n"
+        "cache_invalidation_end:                            \n"
         ::: "memory");
 
     /* g_bsp_software_reset_occurred = true */

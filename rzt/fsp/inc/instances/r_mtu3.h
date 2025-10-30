@@ -224,7 +224,7 @@ typedef struct st_mtu3_instance_ctrl
     R_MTU_Type        * p_reg_com;                ///< Base register for this channel(common ch)
     void              * p_reg_nf;                 ///< Base register for this channel(noise fileter)
     uint32_t            channel_mask;             ///< Channel bitmask
-
+    bool                oneshot_interrupt_flag;   ///< Interrupt flag when One-Shot mode
     void (* p_callback)(timer_callback_args_t *); ///< Pointer to callback
     timer_callback_args_t * p_callback_memory;    ///< Pointer to optional callback argument memory
     void const            * p_context;            ///< Pointer to context to be passed into callback function
@@ -290,6 +290,7 @@ typedef enum e_mtu3_buffer_mode
 /** The MTU3 extension constitutes a unique feature of MTU3. */
 typedef struct st_mtu3_extended_cfg
 {
+    void           * p_reg;               ///< Base register for this channel
     uint32_t         tgra_val;            ///< Capture/Compare match A register
     uint32_t         tgrb_val;            ///< Capture/Compare match B register
     uint32_t         tgrc_val;            ///< Capture/Compare match C register (Does not exist in MTU ch1-2)

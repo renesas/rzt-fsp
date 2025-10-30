@@ -1491,7 +1491,6 @@ static fsp_err_t r_xspi_qspi_otfd_side_channal_seed_init (uint32_t p_seed[])
  * @return      See @ref RENESAS_ERROR_CODES or functions called by this function for other possible return codes.
  *              This function calls:
  *                  * @ref R_RSIP_Open
- *                  * @ref R_RSIP_InjectedKeyImport
  *                  * @ref R_RSIP_OTF_Init
  *                  * @ref R_RSIP_Close
  **********************************************************************************************************************/

@@ -166,12 +166,26 @@
 #define RSIP_PRV_FUNC_NAME_ECDSA_SIGN_BRAINPOOLP256R1                   r_rsip_wrapper_pf0_brainpoolp256r1
 #define RSIP_PRV_FUNC_NAME_ECDSA_VERIFY_BRAINPOOLP256R1                 r_rsip_wrapper_pf1_brainpoolp256r1
 
+#define RSIP_PRV_FUNC_NAME_ECDH_WRAPPED_BRAINPOOLP256R1                 NULL
+#define RSIP_PRV_FUNC_NAME_ECDH_PLAIN_BRAINPOOLP256R1                   NULL
+
+#define RSIP_PRV_FUNC_NAME_PKI_ECDSA_VERIFY_INIT_BRAINPOOLP256R1        NULL
+#define RSIP_PRV_FUNC_NAME_PKI_ECDSA_VERIFY_FINAL_BRAINPOOLP256R1       NULL
+#define RSIP_PRV_FUNC_NAME_PKI_CERT_KEY_IMPORT_ECC_BRAINPOOLP256R1      NULL
+
 #define RSIP_PRV_FUNC_NAME_KEY_PAIR_GENERATE_ECC_BRAINPOOLP384R1        r_rsip_wrapper_pf9_brainpoolp384r1
 #define RSIP_PRV_FUNC_NAME_ENC_KEY_WRAP_ECC_BRAINPOOLP384R1_PUBLIC      r_rsip_wrapper_p2d_brainpoolp384r1
 #define RSIP_PRV_FUNC_NAME_ENC_KEY_WRAP_ECC_BRAINPOOLP384R1_PRIVATE     r_rsip_wrapper_p2e_brainpoolp384r1
 
 #define RSIP_PRV_FUNC_NAME_ECDSA_SIGN_BRAINPOOLP384R1                   r_rsip_wrapper_pf5_brainpoolp384r1
 #define RSIP_PRV_FUNC_NAME_ECDSA_VERIFY_BRAINPOOLP384R1                 r_rsip_wrapper_pf6_brainpoolp384r1
+
+#define RSIP_PRV_FUNC_NAME_ECDH_WRAPPED_BRAINPOOLP384R1                 NULL
+#define RSIP_PRV_FUNC_NAME_ECDH_PLAIN_BRAINPOOLP384R1                   NULL
+
+#define RSIP_PRV_FUNC_NAME_PKI_ECDSA_VERIFY_INIT_BRAINPOOLP384R1        NULL
+#define RSIP_PRV_FUNC_NAME_PKI_ECDSA_VERIFY_FINAL_BRAINPOOLP384R1       NULL
+#define RSIP_PRV_FUNC_NAME_PKI_CERT_KEY_IMPORT_ECC_BRAINPOOLP384R1      NULL
 
 #define RSIP_PRV_FUNC_NAME_KEY_PAIR_GENERATE_ECC_EDWARDS25519           r_rsip_wrapper_p4a
 #define RSIP_PRV_FUNC_NAME_ENC_KEY_WRAP_ECC_EDWARDS25519_PUBLIC         r_rsip_paa
@@ -211,6 +225,25 @@
 
 #define RSIP_PRV_FUNC_NAME_RSA_ENCRYPT_4096                             r_rsip_p7b
 #define RSIP_PRV_FUNC_NAME_RSA_DECRYPT_4096                             r_rsip_p7c
+
+#define RSIP_PRV_FUNC_NAME_SHA1SHA2_INIT                                r_rsip_p70i
+#define RSIP_PRV_FUNC_NAME_SHA1SHA2_RESUME                              r_rsip_p70r
+#define RSIP_PRV_FUNC_NAME_SHA1SHA2_UPDATE                              r_rsip_p70u
+#define RSIP_PRV_FUNC_NAME_SHA1SHA2_SUSPEND                             r_rsip_p70s
+#define RSIP_PRV_FUNC_NAME_SHA1SHA2_FINAL                               r_rsip_p70f
+
+#define RSIP_PRV_FUNC_NAME_HMAC_SHA1SHA2_INIT                           r_rsip_p75i
+#define RSIP_PRV_FUNC_NAME_HMAC_SHA1SHA2_RESUME                         r_rsip_p75r
+#define RSIP_PRV_FUNC_NAME_HMAC_SHA1SHA2_UPDATE                         r_rsip_p75u
+#define RSIP_PRV_FUNC_NAME_HMAC_SHA1SHA2_SUSPEND                        r_rsip_p75s
+#define RSIP_PRV_FUNC_NAME_HMAC_SHA1SHA2_FINAL                          r_rsip_p75f
+
+#define RSIP_PRV_FUNC_NAME_KDF_HMAC_SHA1SHA2_INIT                       r_rsip_pe5i
+#define RSIP_PRV_FUNC_NAME_KDF_HMAC_SHA1SHA2_RESUME                     r_rsip_pe5r
+#define RSIP_PRV_FUNC_NAME_KDF_HMAC_SHA1SHA2_ENC_UPDATE                 r_rsip_pe5e
+#define RSIP_PRV_FUNC_NAME_KDF_HMAC_SHA1SHA2_UPDATE                     r_rsip_pe5u
+#define RSIP_PRV_FUNC_NAME_KDF_HMAC_SHA1SHA2_SUSPEND                    r_rsip_pe5s
+#define RSIP_PRV_FUNC_NAME_KDF_HMAC_SHA1SHA2_FINAL                      r_rsip_pe5f
 
 #define RSIP_PRV_FUNC_NAME_KEY_GENERATE_HMAC_SHA1                       r_rsip_p6d
 #define RSIP_PRV_FUNC_NAME_ENC_KEY_WRAP_HMAC_SHA1                       r_rsip_wrapper_p0f_hmac_sha1

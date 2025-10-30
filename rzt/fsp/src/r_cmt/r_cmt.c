@@ -52,18 +52,19 @@ void cmt_cm_int_isr(void);
 /* CMT implementation of timer interface  */
 const timer_api_t g_timer_on_cmt =
 {
-    .open         = R_CMT_Open,
-    .stop         = R_CMT_Stop,
-    .start        = R_CMT_Start,
-    .reset        = R_CMT_Reset,
-    .enable       = R_CMT_Enable,
-    .disable      = R_CMT_Disable,
-    .periodSet    = R_CMT_PeriodSet,
-    .dutyCycleSet = R_CMT_DutyCycleSet,
-    .infoGet      = R_CMT_InfoGet,
-    .statusGet    = R_CMT_StatusGet,
-    .callbackSet  = R_CMT_CallbackSet,
-    .close        = R_CMT_Close,
+    .open            = R_CMT_Open,
+    .stop            = R_CMT_Stop,
+    .start           = R_CMT_Start,
+    .reset           = R_CMT_Reset,
+    .enable          = R_CMT_Enable,
+    .disable         = R_CMT_Disable,
+    .periodSet       = R_CMT_PeriodSet,
+    .dutyCycleSet    = R_CMT_DutyCycleSet,
+    .compareMatchSet = R_CMT_CompareMatchSet,
+    .infoGet         = R_CMT_InfoGet,
+    .statusGet       = R_CMT_StatusGet,
+    .callbackSet     = R_CMT_CallbackSet,
+    .close           = R_CMT_Close,
 };
 
 /*******************************************************************************************************************//**
@@ -257,6 +258,24 @@ fsp_err_t R_CMT_DutyCycleSet (timer_ctrl_t * const p_ctrl, uint32_t const duty_c
     FSP_PARAMETER_NOT_USED(p_ctrl);
     FSP_PARAMETER_NOT_USED(duty_cycle_counts);
     FSP_PARAMETER_NOT_USED(pin);
+
+    return FSP_ERR_UNSUPPORTED;
+}
+
+/*******************************************************************************************************************//**
+ * Set value for compare match feature. Implements @ref timer_api_t::compareMatchSet.
+ *
+ * @note This API should be used when timer is stop counting. And shall not be used along with PWM operation.
+ *
+ * @retval FSP_ERR_UNSUPPORTED         CMT compare match set is not supported.
+ **********************************************************************************************************************/
+fsp_err_t R_CMT_CompareMatchSet (timer_ctrl_t * const        p_ctrl,
+                                 uint32_t const              compare_match_value,
+                                 timer_compare_match_t const match_channel)
+{
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(compare_match_value);
+    FSP_PARAMETER_NOT_USED(match_channel);
 
     return FSP_ERR_UNSUPPORTED;
 }

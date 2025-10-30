@@ -506,7 +506,7 @@ static fsp_err_t rm_freertos_plus_fat_wait_event (rm_freertos_plus_fat_instance_
      * value back to 0, making the notification value act like a binary (rather than
      * a counting) semaphore.  */
     uint32_t ulNotificationValue = ulTaskNotifyTake(pdTRUE, timeout);
-    FSP_ERROR_RETURN(1U == ulNotificationValue, FSP_ERR_TIMEOUT);
+    FSP_ERROR_RETURN(1U <= ulNotificationValue, FSP_ERR_TIMEOUT);
     FSP_PARAMETER_NOT_USED(p_instance_ctrl);
 #else
     while (!p_instance_ctrl->event_ready)

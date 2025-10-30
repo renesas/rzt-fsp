@@ -231,15 +231,16 @@ fsp_err_t R_RSIP_KDF_SHA_ECDHSecretUpdate (rsip_ctrl_t * const                 p
             /* Set length */
             switch (p_wrapped_secret->type)
             {
-                /* ECC secp256r1 */
+                /* ECC secp256r1, brainpoolP256r1 */
                 case RSIP_PRV_KEY_SUBTYPE_ECC_SECP256R1:
+                case RSIP_PRV_KEY_SUBTYPE_ECC_BRAINPOOLP256R1:
                 {
                     p_handle->wrapped_msg_length        = RSIP_PRV_BYTE_SIZE_ECDH_WRAPPED_SECRET_256;
                     p_handle->actual_wrapped_msg_length = RSIP_PRV_BYTE_SIZE_ECC_256_PARAM;
                     break;
                 }
 
-                /* ECC secp384r1 */
+                /* ECC secp384r1, brainpoolP384r1 */
                 default:
                 {
                     p_handle->wrapped_msg_length        = RSIP_PRV_BYTE_SIZE_ECDH_WRAPPED_SECRET_384;
@@ -600,7 +601,7 @@ fsp_err_t R_RSIP_KDF_SHA_Suspend (rsip_ctrl_t * const p_ctrl, rsip_kdf_sha_handl
         case RSIP_USER_HANDLE_STATE_UPDATE:
         {
             /* Read internal state */
-            rsip_ret = r_rsip_kdf_sha_suspend(p_instance_ctrl->handle.kdf_sha.internal_state);
+            rsip_ret = r_rsip_kdf_sha_suspend(&p_instance_ctrl->handle.kdf_sha);
 
             /* Handle state transition */
             p_instance_ctrl->handle.kdf_sha.handle_state = RSIP_USER_HANDLE_STATE_RESUME;
@@ -1087,16 +1088,18 @@ fsp_err_t R_RSIP_KDF_HMAC_ECDHSecretUpdate (rsip_ctrl_t * const                 
             /* Set length */
             switch (p_wrapped_secret->type)
             {
-                /* ECC secp256r1 */
+                /* ECC secp256r1, brainpoolP256r1 */
                 case RSIP_PRV_KEY_SUBTYPE_ECC_SECP256R1:
+                case RSIP_PRV_KEY_SUBTYPE_ECC_BRAINPOOLP256R1:
                 {
                     p_handle->wrapped_msg_length        = RSIP_PRV_BYTE_SIZE_ECDH_WRAPPED_SECRET_256;
                     p_handle->actual_wrapped_msg_length = RSIP_PRV_BYTE_SIZE_ECC_256_PARAM;
                     break;
                 }
 
-                /* ECC secp384r1 */
+                /* ECC secp384r1, brainpoolP384r1 */
                 case RSIP_PRV_KEY_SUBTYPE_ECC_SECP384R1:
+                case RSIP_PRV_KEY_SUBTYPE_ECC_BRAINPOOLP384R1:
                 {
                     p_handle->wrapped_msg_length        = RSIP_PRV_BYTE_SIZE_ECDH_WRAPPED_SECRET_384;
                     p_handle->actual_wrapped_msg_length = RSIP_PRV_BYTE_SIZE_ECC_384_PARAM;
@@ -1438,7 +1441,7 @@ fsp_err_t R_RSIP_KDF_HMAC_Suspend (rsip_ctrl_t * const p_ctrl, rsip_kdf_hmac_han
         case RSIP_USER_HANDLE_STATE_UPDATE:
         {
             /* Read internal state */
-            rsip_ret = r_rsip_kdf_hmac_suspend(p_instance_ctrl->handle.kdf_hmac.internal_state);
+            rsip_ret = r_rsip_kdf_hmac_suspend(&p_instance_ctrl->handle.kdf_hmac);
 
             /* Handle state transition */
             p_instance_ctrl->handle.kdf_hmac.handle_state = RSIP_USER_HANDLE_STATE_RESUME;
@@ -1850,32 +1853,20 @@ static rsip_ret_t kdf_sha_finish (rsip_ctrl_t * const p_ctrl, uint8_t * p_digest
     {
         case RSIP_USER_HANDLE_STATE_INIT:
         {
-            ret = r_rsip_kdf_sha_init_final(p_handle,
-                                            p_handle->buffer2,
-                                            p_handle->buffered_length2,
-                                            p_handle->total_length,
-                                            p_digest);
+            ret = r_rsip_kdf_sha_init_final(p_handle, p_digest);
             break;
         }
 
         case RSIP_USER_HANDLE_STATE_RESUME:
         {
-            ret = r_rsip_kdf_sha_resume_final(p_handle,
-                                              p_handle->buffer2,
-                                              p_handle->buffered_length2,
-                                              p_handle->total_length + p_handle->buffered_length2,
-                                              p_digest);
+            ret = r_rsip_kdf_sha_resume_final(p_handle, p_digest);
             break;
         }
 
         case RSIP_USER_HANDLE_STATE_UPDATE:
         default:
         {
-            ret = r_rsip_kdf_sha_final(p_handle,
-                                       p_handle->buffer2,
-                                       p_handle->buffered_length2,
-                                       p_handle->total_length + p_handle->buffered_length2,
-                                       p_digest);
+            ret = r_rsip_kdf_sha_final(p_handle, p_digest);
         }
     }
 
@@ -2013,30 +2004,21 @@ static rsip_ret_t kdf_hmac_update (rsip_ctrl_t * const p_ctrl, const uint8_t * p
     {
         case RSIP_USER_HANDLE_STATE_INIT:
         {
-            ret = r_rsip_kdf_hmac_init_update(&p_handle->wrapped_key,
-                                              p_message,
-                                              message_length - p_handle->actual_wrapped_msg_length,
-                                              p_handle->wrapped_msg,
-                                              p_handle->wrapped_msg_length,
-                                              p_handle->internal_state);
+            ret =
+                r_rsip_kdf_hmac_init_update(p_handle, p_message, message_length - p_handle->actual_wrapped_msg_length);
             break;
         }
 
         case RSIP_USER_HANDLE_STATE_RESUME:
         {
-            ret = r_rsip_kdf_hmac_resume_update(&p_handle->wrapped_key,
-                                                p_message,
-                                                message_length,
-                                                p_handle->wrapped_msg,
-                                                p_handle->wrapped_msg_length,
-                                                p_handle->internal_state);
+            ret = r_rsip_kdf_hmac_resume_update(p_handle, p_message, message_length);
             break;
         }
 
         case RSIP_USER_HANDLE_STATE_UPDATE:
         default:
         {
-            ret = r_rsip_kdf_hmac_update(&p_handle->wrapped_key, p_message, message_length, p_handle->internal_state);
+            ret = r_rsip_kdf_hmac_update(p_handle, p_message, message_length);
         }
     }
 
@@ -2078,36 +2060,20 @@ static rsip_ret_t kdf_hmac_sign_finish (rsip_ctrl_t * const p_ctrl, uint8_t * p_
         case RSIP_USER_HANDLE_STATE_INIT:
         {
             ret =
-                r_rsip_kdf_hmac_init_final(&p_handle->wrapped_key,
-                                           p_handle->buffer,
-                                           p_handle->buffered_length,
-                                           p_handle->wrapped_msg,
-                                           p_handle->wrapped_msg_length,
-                                           p_handle->actual_wrapped_msg_length,
-                                           p_mac);
+                r_rsip_kdf_hmac_init_final(p_handle, p_mac);
             break;
         }
 
         case RSIP_USER_HANDLE_STATE_RESUME:
         {
-            ret = r_rsip_kdf_hmac_resume_final(&p_handle->wrapped_key,
-                                               p_handle->buffer,
-                                               p_handle->buffered_length,
-                                               p_handle->total_length + p_handle->buffered_length,
-                                               p_mac,
-                                               p_handle->internal_state);
+            ret = r_rsip_kdf_hmac_resume_final(p_handle, p_mac);
             break;
         }
 
         case RSIP_USER_HANDLE_STATE_UPDATE:
         default:
         {
-            ret = r_rsip_kdf_hmac_final(&p_handle->wrapped_key,
-                                        p_handle->buffer,
-                                        p_handle->buffered_length,
-                                        p_handle->total_length + p_handle->buffered_length,
-                                        p_mac,
-                                        p_handle->internal_state);
+            ret = r_rsip_kdf_hmac_final(p_handle, p_mac);
         }
     }
 

@@ -266,7 +266,6 @@ fsp_err_t usb_module_start (uint8_t ip_type)
   #if 1 == BSP_FEATURE_USB_HOST_INIT_TYPE
     USB00->USBCTR &= ~0x00000002UL;    /* UTMI+PHY reset OFF */               /* UTMI+PHY reset release */
   #else
-    USB_M0->LPSTS_b.SUSPM    = 1;
     USB00->VBCTRL_b.SIDDQREL = 1;
     R_BSP_SoftwareDelay(10, BSP_DELAY_UNITS_MICROSECONDS);
     USB00->USBCTR_b.PLL_RST  = 0;

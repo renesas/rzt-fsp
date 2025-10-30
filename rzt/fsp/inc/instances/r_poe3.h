@@ -99,6 +99,8 @@ typedef struct st_poe3_extended_cfg
     IRQn_Type oei3_irq;                                ///< Output Enable Interrupt 3 interrupt number assigned to this instance
     uint8_t   oei4_ipl;                                ///< Output Enable Interrupt 4 interrupt priority
     IRQn_Type oei4_irq;                                ///< Output Enable Interrupt 4 interrupt number assigned to this instance
+
+    void * p_reg;                                      ///< Register base address
 } poe3_extended_cfg_t;
 
 /** Channel control block. DO NOT INITIALIZE.  Initialization occurs when @ref poe3_api_t::open is called. */
@@ -127,9 +129,9 @@ extern const poe3_api_t g_poe30_on_poe3;
  * Public APIs
  **********************************************************************************************************************/
 fsp_err_t R_POE3_Open(poe3_ctrl_t * const p_ctrl, poe3_cfg_t const * const p_cfg);
-fsp_err_t R_POE3_StatusGet(poe3_ctrl_t * const p_ctrl, poe3_status_t * const p_status);
 fsp_err_t R_POE3_OutputDisable(poe3_ctrl_t * const p_ctrl);
 fsp_err_t R_POE3_Reset(poe3_ctrl_t * const p_ctrl);
+fsp_err_t R_POE3_StatusGet(poe3_ctrl_t * const p_ctrl, poe3_status_t * const p_status);
 fsp_err_t R_POE3_Close(poe3_ctrl_t * const p_ctrl);
 fsp_err_t R_POE3_CallbackSet(poe3_ctrl_t * const          p_ctrl,
                              void (                     * p_callback)(poe3_callback_args_t *),

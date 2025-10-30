@@ -30,6 +30,12 @@ FSP_HEADER
  * Typedef definitions
  **********************************************************************************************************************/
 
+/** Driver extended configuration. */
+typedef struct st_crc_extended_cfg
+{
+    void * p_reg;
+} crc_extended_cfg_t;
+
 /** Driver instance control structure. */
 typedef struct st_crc_instance_ctrl
 {

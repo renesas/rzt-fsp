@@ -138,6 +138,8 @@ fsp_err_t R_POEG_Open (poeg_ctrl_t * const p_ctrl, poeg_cfg_t const * const p_cf
 #if POEG_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_cfg);
     FSP_ASSERT(NULL != p_instance_ctrl);
+    poeg_extended_cfg_t * p_extend = (poeg_extended_cfg_t *) p_cfg->p_extend;
+    FSP_ASSERT(NULL != p_extend->p_reg);
     FSP_ERROR_RETURN(POEG_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
     FSP_ERROR_RETURN(((1U << p_cfg->channel) & BSP_FEATURE_POEG_CHANNEL_MASK), FSP_ERR_IP_CHANNEL_NOT_PRESENT);
     FSP_ERROR_RETURN((p_cfg->unit <= BSP_FEATURE_POEG_MAX_UNIT), FSP_ERR_IP_UNIT_NOT_PRESENT);
@@ -150,26 +152,15 @@ fsp_err_t R_POEG_Open (poeg_ctrl_t * const p_ctrl, poeg_cfg_t const * const p_cf
     {
         FSP_ASSERT(NULL != p_cfg->p_callback);
     }
+
+#else
+
+    /* Get extended configuration structure pointer. */
+    poeg_extended_cfg_t * p_extend = (poeg_extended_cfg_t *) p_cfg->p_extend;
 #endif
 
-    if (BSP_FEATURE_POEG_LLPP_UNIT == p_cfg->unit)
-    {
-        /* LLPP Peripheral */
-        p_instance_ctrl->p_reg =
-            (R_POEG0_Type *) ((uintptr_t) R_POEG0 + (p_cfg->channel * BSP_FEATURE_POEG_GROUP_OFSSET_ADDRESS));
-    }
-    else if (BSP_FEATURE_POEG_NONSAFETY_UNIT == p_cfg->unit)
-    {
-        /* Non-Safety Peripheral */
-        p_instance_ctrl->p_reg =
-            (R_POEG0_Type *) ((uintptr_t) R_POEG1 + (p_cfg->channel * BSP_FEATURE_POEG_GROUP_OFSSET_ADDRESS));
-    }
-    else
-    {
-        /* Safety Peripheral */
-        p_instance_ctrl->p_reg =
-            (R_POEG0_Type *) ((uintptr_t) R_POEG2 + (p_cfg->channel * BSP_FEATURE_POEG_GROUP_OFSSET_ADDRESS));
-    }
+    /* Set the base address for specified channel. */
+    p_instance_ctrl->p_reg = (R_POEG0GA_Type *) p_extend->p_reg;
 
     p_instance_ctrl->p_cfg = p_cfg;
 #if 1 == BSP_FEATURE_POEG_ERROR_SIGNAL_TYPE || 2 == BSP_FEATURE_POEG_ERROR_SIGNAL_TYPE

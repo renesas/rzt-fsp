@@ -20,6 +20,8 @@
 /***********************************************************************************************************************
  * Exported global variables (to be accessed by other files)
  **********************************************************************************************************************/
+extern bool g_bsp_software_reset_occurred;
+extern bool g_bsp_first_operation;
 
 /***********************************************************************************************************************
  * Exported global functions (to be accessed by other files)
@@ -28,6 +30,10 @@
 extern void bsp_master_mpu_init(void);
 extern void bsp_global_system_counter_init(void);
 
+ #if (1 == BSP_CFG_EMMC_BOOT)
+extern void bsp_sdhi_emmc_media_init(void);
+
+ #endif
 #endif
 
 #if defined(BSP_CFG_CORE_CR52)
@@ -48,6 +54,10 @@ extern void bsp_static_constructor_init(void);
 extern void bsp_application_bss_init(void);
 extern void bsp_copy_to_ram(void);
 
+ #if (1U < BSP_FEATURE_BSP_CR52_CORE_NUM) || (1U < BSP_FEATURE_BSP_CA55_CORE_NUM)
+extern void bsp_cpu_reset_release(void);
+
+ #endif
 #endif
 
 #if !BSP_CFG_PORT_PROTECT
@@ -80,6 +90,12 @@ static void bsp_init_uninitialized_vars(void);
  **********************************************************************************************************************/
 void SystemInit (void)
 {
+    /* This process runs only once after startup. */
+    if (true == g_bsp_first_operation)
+    {
+        g_bsp_software_reset_occurred = false;
+    }
+
 #if BSP_CFG_EARLY_INIT
 
     /* Initialize uninitialized BSP variables early for use in R_BSP_WarmStart. */
@@ -91,14 +107,34 @@ void SystemInit (void)
 
 #if (1 == _RZT_ORDINAL)
 
-    /* Configure system clocks. */
-    bsp_clock_init();
+    /* After a software reset, the following processes are not executed. */
+    if (false == g_bsp_software_reset_occurred)
+    {
+        /* Configure system clocks. */
+        bsp_clock_init();
+    }
 #endif
 
     /* Call post clock initialization hook. */
     R_BSP_WarmStart(BSP_WARM_START_POST_CLOCK);
 
 #if BSP_CFG_C_RUNTIME_INIT
+ #if (1 == _RZT_ORDINAL)
+  #if (1 == BSP_CFG_ESD_BOOT) || (1 == BSP_CFG_EMMC_BOOT)
+
+    /* Initialize uninitialized BSP SDHI variables for use in eSD boot or eMMC boot. */
+    bsp_sdhi_init_uninitialized_vars();
+
+    /* Stores the SDHI register settings. */
+    bsp_sdhi_store_sdhi_register();
+
+   #if (1 == BSP_CFG_EMMC_BOOT)
+
+    /* Initializes eMMC device. */
+    bsp_sdhi_emmc_media_init();
+   #endif
+  #endif
+ #endif
 
     /* Copy the primary core loader data from external Flash to internal RAM. */
     bsp_loader_data_init();
@@ -110,16 +146,24 @@ void SystemInit (void)
 #if BSP_FEATURE_ADDRESS_EXPANDER_SUPPORTED
  #if (1 == _RZT_ORDINAL)
 
-    /* Initialize the Address Expander settings. */
-    bsp_address_expander_init();
+    /* After a software reset, the following processes are not executed. */
+    if (false == g_bsp_software_reset_occurred)
+    {
+        /* Initialize the Address Expander settings. */
+        bsp_address_expander_init();
+    }
  #endif
 #endif
 
 #if BSP_FEATURE_TZC400_SUPPORTED
  #if (1 == _RZT_ORDINAL)
 
-    /* Initialize the TZC-400 settings. */
-    bsp_tzc_400_cfg();
+    /* After a software reset, the following processes are not executed. */
+    if (false == g_bsp_software_reset_occurred)
+    {
+        /* Initialize the TZC-400 settings. */
+        bsp_tzc_400_cfg();
+    }
  #endif
 #endif
 
@@ -138,6 +182,14 @@ void SystemInit (void)
      * In the case of multi-core operation, copies each section (vector, loader(program/data), user(program/data)) of
      * the secondary core (or later). */
     bsp_copy_to_ram();
+
+ #if (1 == _RZT_ORDINAL)
+  #if (1 == BSP_CFG_ESD_BOOT) || (1 == BSP_CFG_EMMC_BOOT)
+
+    /* Restores the saved SDHI register setting value. */
+    bsp_sdhi_restore_sdhi_register();
+  #endif
+ #endif
 #endif
 
 #if BSP_CFG_C_RUNTIME_INIT
@@ -148,26 +200,29 @@ void SystemInit (void)
 
 #if !BSP_CFG_PORT_PROTECT
 
-    /* When writing to the PRCR register the upper 8-bits must be the correct key. Set lower bits to 0 to
-     * disable writes. */
-    bsp_release_port_protect();
+    /* After a software reset, the following processes are not executed. */
+    if (false == g_bsp_software_reset_occurred)
+    {
+        /* When writing to the PRCR register the upper 8-bits must be the correct key.
+         * Set lower bits to 0 to disable writes. */
+        bsp_release_port_protect();
+    }
 #endif
 
     /* Call Post C runtime initialization hook. */
     R_BSP_WarmStart(BSP_WARM_START_POST_C);
 
 #if (1 == _RZT_ORDINAL)
- #if BSP_CFG_SEMAPHORE_ENABLE
 
-    /* Initialize semaphores required for synchronization and exclusive control between CPUs. */
-    bsp_semaphore_init();
- #endif
+    /* After a software reset, the following processes are not executed. */
+    if (false == g_bsp_software_reset_occurred)
+    {
+        /* Initialize the Master-MPU settings. */
+        bsp_master_mpu_init();
 
-    /* Initialize the Master-MPU settings. */
-    bsp_master_mpu_init();
-
-    /* Initialize global system counter. The counter is enabled and is incrementing. */
-    bsp_global_system_counter_init();
+        /* Initialize global system counter. The counter is enabled and is incrementing. */
+        bsp_global_system_counter_init();
+    }
 #endif
 
     /* GIC initialization */
@@ -179,10 +234,29 @@ void SystemInit (void)
 #if defined(BSP_CFG_CORE_CR52)
  #if (BSP_FEATURE_TFU_SUPPORTED & BSP_CFG_USE_TFU_MATHLIB)
 
-    /* Initialize the TFU settings. */
-    bsp_tfu_init();
+    /* After a software reset, the following processes are not executed. */
+    if (false == g_bsp_software_reset_occurred)
+    {
+        /* Initialize the TFU settings. */
+        bsp_tfu_init();
+    }
  #endif
 #endif
+
+#if !(BSP_CFG_RAM_EXECUTION)
+ #if (1U < BSP_FEATURE_BSP_CR52_CORE_NUM) || (1U < BSP_FEATURE_BSP_CA55_CORE_NUM)
+
+    /* After a software reset, the following processes are not executed. */
+    if (false == g_bsp_software_reset_occurred)
+    {
+        /* Reset release each CPU */
+        bsp_cpu_reset_release();
+    }
+ #endif
+#endif
+
+    /* The first operation has been completed at this point. */
+    g_bsp_first_operation = false;
 
     /* Jump to main. */
     main();
@@ -197,8 +271,6 @@ void SystemInit (void)
  **********************************************************************************************************************/
 static void bsp_init_uninitialized_vars (void)
 {
-    g_protect_port_counter = 0;
-
     extern volatile uint16_t g_protect_counters[];
     for (uint32_t i = 0; i < 4; i++)
     {

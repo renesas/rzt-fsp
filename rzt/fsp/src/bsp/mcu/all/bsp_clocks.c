@@ -13,13 +13,6 @@
  * Macro definitions
  **********************************************************************************************************************/
 
-/* Key code for writing PRCR register. */
-#define BSP_PRV_PRCR_KEY                                     (0xA500U)
-#define BSP_PRV_PRCR_CGC                                     (0x3U)
-#define BSP_PRV_PRCR_CGC_UNLOCK                              ((BSP_PRV_PRCR_KEY) | BSP_PRV_PRCR_CGC)
-#define BSP_PRV_PRCR_LOCK                                    ((BSP_PRV_PRCR_KEY) | 0x0U)
-#define BSP_PRV_PRCR_TIMEOUT                                 (10000)
-
 /* Key code for writing  PCMD register. */
 #define BSP_PRV_PCMD_KEY                                     (0xA5U)
 
@@ -508,14 +501,13 @@ void bsp_clock_init (void)
 {
     volatile uint32_t dummy = 0;
 
-    /* If protection is already disabled, wait until protection is enabled on other cores */
-    uintptr_t timeout = BSP_PRV_PRCR_TIMEOUT;
-    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_NS->PRCRN & BSP_PRV_PRCR_CGC), 0, timeout);
-    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_S->PRCRS & BSP_PRV_PRCR_CGC), 0, timeout);
+    bsp_regiser_protect_semaphore_take(BSP_REG_PROTECT_PRCR_CGC);
 
     /* Unlock CGC protection registers. */
-    R_RWP_NS->PRCRN = (uint16_t) BSP_PRV_PRCR_CGC_UNLOCK;
-    R_RWP_S->PRCRS  = (uint16_t) BSP_PRV_PRCR_CGC_UNLOCK;
+    R_RWP_NS->PRCRN = ((R_RWP_NS->PRCRN | BSP_REG_PROTECT_PRCR_KEY) | BSP_REG_PROTECT_PRCR_CGC);
+    R_RWP_S->PRCRS  = ((R_RWP_S->PRCRS | BSP_REG_PROTECT_PRCR_KEY) | BSP_REG_PROTECT_PRCR_CGC);
+
+    BSP_SEMAPHORE_INTERNAL_CPU_RELEASE_FOR_PROTECTION;
 
     /* The SystemCoreClock needs to be updated before calling R_BSP_SoftwareDelay. */
     SystemCoreClockUpdate();
@@ -825,9 +817,13 @@ void bsp_clock_init (void)
     } while (1 == R_CLMA6->PROTSR_b.PRERR);
 #endif
 
+    FSP_HARDWARE_REGISTER_WAIT(BSP_SEMAPHORE_INTERNAL_CPU_STATE_READ_FOR_PROTECTION, BSP_RESOURCE_STATE_NOT_BEING_USED);
+
     /* Lock CGC and LPM protection registers. */
-    R_RWP_NS->PRCRN = (uint16_t) BSP_PRV_PRCR_LOCK;
-    R_RWP_S->PRCRS  = (uint16_t) BSP_PRV_PRCR_LOCK;
+    R_RWP_NS->PRCRN = ((R_RWP_NS->PRCRN | BSP_REG_PROTECT_PRCR_KEY) & (uint16_t) (~BSP_REG_PROTECT_PRCR_CGC));
+    R_RWP_S->PRCRS  = ((R_RWP_S->PRCRS | BSP_REG_PROTECT_PRCR_KEY) & (uint16_t) (~BSP_REG_PROTECT_PRCR_CGC));
+
+    BSP_SEMAPHORE_INTERNAL_CPU_RELEASE_FOR_PROTECTION;
 
     FSP_PARAMETER_NOT_USED(dummy);
 }

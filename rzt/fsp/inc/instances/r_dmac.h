@@ -134,6 +134,7 @@ typedef enum e_dmac_detection
 {
     DMAC_DETECTION_FALLING_EDGE = 1,   ///< Falling edge detection.
     DMAC_DETECTION_RISING_EDGE  = 2,   ///< Rising edge detection.
+    DMAC_DETECTION_BOTH_EDGE    = 3,   ///< Both falling and rising edge detection.
     DMAC_DETECTION_LOW_LEVEL    = 5,   ///< Low level detection.
     DMAC_DETECTION_HIGH_LEVEL   = 6,   ///< High level detection.
 } dmac_detection_t;
@@ -158,6 +159,13 @@ typedef enum e_dmac_mode_select
     DMAC_MODE_SELECT_REGISTER = 0,     ///< Register mode.
     DMAC_MODE_SELECT_LINK     = 1,     ///< Link mode.
 } dmac_mode_select_t;
+
+/** DMAC external output signals (DACK/TEND) active level. */
+typedef enum e_dmac_external_output_signal_active_level
+{
+    DMAC_EXTERNAL_OUTPUT_SIGNAL_ACTIVE_LEVEL_LOW_ACTIVE  = 0, ///< External DACK/TEND is active-low.
+    DMAC_EXTERNAL_OUTPUT_SIGNAL_ACTIVE_LEVEL_HIGH_ACTIVE = 1, ///< External DACK/TEND is active-high.
+} dmac_external_output_signal_active_level_t;
 
 /** Control block used by driver. DO NOT INITIALIZE - this structure will be initialized in @ref transfer_api_t::open. */
 typedef struct st_dmac_instance_ctrl
@@ -189,18 +197,21 @@ typedef struct st_dmac_extended_cfg
     /** Select which event will trigger the transfer. */
     elc_event_t activation_source;
 
-    dmac_ack_mode_t          ack_mode;                         ///< DACK output mode
-    dmac_detection_t         detection_mode;                   ///< DMAC request detection method
-    dmac_request_direction_t activation_request_source_select; ///< DMAC activation request source
+    dmac_ack_mode_t          ack_mode;                            ///< DACK output mode
+    dmac_detection_t         detection_mode;                      ///< DMAC request detection method
+    dmac_request_direction_t activation_request_source_select;    ///< DMAC activation request source
 
-    dmac_register_select_reverse_t next_register_operation;    ///< Next register operation settings
+    dmac_register_select_reverse_t next_register_operation;       ///< Next register operation settings
 
-    dmac_mode_select_t dmac_mode;                              ///< DMAC Mode
+    dmac_mode_select_t dmac_mode;                                 ///< DMAC Mode
 
-    dmac_link_cfg_t const * p_descriptor;                      ///< The address of the descriptor (DMA Link Mode only)
+    dmac_link_cfg_t const * p_descriptor;                         ///< The address of the descriptor (DMA Link Mode only)
 
-    uint16_t transfer_interval;                                ///< DMA transfer interval
-    dmac_channel_scheduling_t channel_scheduling;              ///< DMA channel scheduling
+    uint16_t transfer_interval;                                   ///< DMA transfer interval
+    dmac_channel_scheduling_t channel_scheduling;                 ///< DMA channel scheduling
+
+    dmac_external_output_signal_active_level_t dack_active_level; ///< DACK active level
+    dmac_external_output_signal_active_level_t tend_active_level; ///< TEND active level
 
     /** Callback for transfer end interrupt. */
     void (* p_callback)(transfer_callback_args_t * cb_data);

@@ -255,13 +255,20 @@ FSP_HEADER
     __asm volatile ("isb");
 #endif
 
-/** In the event of an unrecoverable error the BSP will by default call the __BKPT() intrinsic function which will
- *  alert the user of the error. The user can override this default behavior by defining their own
- *  BSP_CFG_HANDLE_UNRECOVERABLE_ERROR macro.
+/** In the event of an unrecoverable error, the BSP will by default take no action.
+ *  The user can override this default behavior by defining their own BSP_CFG_HANDLE_UNRECOVERABLE_ERROR macro.
+ *
+ *  When BSP_CFG_HANDLE_UNRECOVERABLE_ERROR is called from error handlers, the user will need to investigate the cause.
+ *  Common problems are stack corruption or the use of an invalid pointer.
+ *
+ *  Use the Fault Status window in e2 studio or manually check the fault status registers for more information.
+ *  After an error handler, other interrupts may occur. Therefore, override  BSP_CFG_HANDLE_UNRECOVERABLE_ERROR macro
+ *  with a user-defined function and place a breakpoint inside it. This will help you catch the first interrupt and
+ *  identify the root cause of the error.
  */
 #if !defined(BSP_CFG_HANDLE_UNRECOVERABLE_ERROR)
 
- #define BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(x)    __BKPT((x))
+ #define BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(x)
 #endif
 
 /***********************************************************************************************************************

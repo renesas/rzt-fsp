@@ -185,77 +185,6 @@ const usb_api_t g_usb_on_usb =
  **********************************************************************************************************************/
 
 /**************************************************************************//**
- * @brief Obtains completed USB related events. (OS-less Only)
- *
- * In USB host mode, the device address value of the USB device that completed
- * an event is specified in the usb_ctrl_t structure member (address) specified
- * by the event's argument.
- * In USB peripheral mode, USB_NULL is specified in member (address).
- * If this function is called in the RTOS execution environment, a failure is returned.
- *
- * @retval FSP_SUCCESS        Event Get Success.
- * @retval FSP_ERR_USB_FAILED If called in the RTOS environment, an error is returned.
- *
- * @note Do not use the same variable as the first argument of R_USB_Open for the first argument.
- * @note Do not call this API in the interrupt function.
- ******************************************************************************/
-fsp_err_t R_USB_EventGet (usb_ctrl_t * const p_ctrl, usb_status_t * event)
-{
-    fsp_err_t result;
-#if (BSP_CFG_RTOS == 0)
-    result   = FSP_SUCCESS;
-    (*event) = USB_STATUS_NONE;
-    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
-
-    usb_cstd_usb_task();
-    if (g_usb_cstd_event.write_pointer != g_usb_cstd_event.read_pointer)
-    {
-        *p_instance_ctrl = g_usb_cstd_event.ctrl[g_usb_cstd_event.read_pointer];
-        (*event)         = g_usb_cstd_event.code[g_usb_cstd_event.read_pointer];
-        g_usb_cstd_event.read_pointer++;
-        if (g_usb_cstd_event.read_pointer >= USB_EVENT_MAX)
-        {
-            g_usb_cstd_event.read_pointer = 0;
-        }
-    }
-
-#else                                  /* (BSP_CFG_RTOS == 0) */
-    FSP_PARAMETER_NOT_USED(p_ctrl);
-    FSP_PARAMETER_NOT_USED(*event);
-    result = FSP_ERR_USB_FAILED;
-#endif /* (BSP_CFG_RTOS == 0) */
-    return result;
-}                                      /* End of function R_USB_EventGet() */
-
-/**************************************************************************//**
- * @brief Register a callback function to be called upon completion of a
- * USB related event. (RTOS only)
- *
- * This function registers a callback function to be called when a USB-related event has completed.
- * If this function is called in the OS-less execution environment, a failure is returned.
- *
- * @retval FSP_SUCCESS        Successfully completed.
- * @retval FSP_ERR_USB_FAILED If this function is called in the OS-less execution environment, a failure is returned.
- * @retval FSP_ERR_ASSERTION  Parameter is NULL error.
- * @note Do not call this API in the interrupt function.
- ******************************************************************************/
-fsp_err_t R_USB_Callback (usb_callback_t * p_callback)
-{
-    fsp_err_t err;
-#if (BSP_CFG_RTOS == 2)
- #if USB_CFG_PARAM_CHECKING_ENABLE
-    FSP_ASSERT(p_callback)
- #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
-    g_usb_apl_callback[0] = p_callback;
-    err = FSP_SUCCESS;
-#else /* (BSP_CFG_RTOS == 2) */
-    FSP_PARAMETER_NOT_USED(*p_callback);
-    err = FSP_ERR_USB_FAILED;
-#endif                                 /* (BSP_CFG_RTOS == 2) */
-    return err;
-} /* End of function R_USB_Callback() */
-
-/**************************************************************************//**
  * @brief Applies power to the USB module specified in the argument (p_ctrl).
  *
  * @retval FSP_SUCCESS           Success in open.
@@ -2073,6 +2002,77 @@ fsp_err_t R_USB_PipeInfoGet (usb_ctrl_t * const p_ctrl, usb_pipe_t * p_info, uin
 
     return result;
 }
+
+/**************************************************************************//**
+ * @brief Obtains completed USB related events. (OS-less Only)
+ *
+ * In USB host mode, the device address value of the USB device that completed
+ * an event is specified in the usb_ctrl_t structure member (address) specified
+ * by the event's argument.
+ * In USB peripheral mode, USB_NULL is specified in member (address).
+ * If this function is called in the RTOS execution environment, a failure is returned.
+ *
+ * @retval FSP_SUCCESS        Event Get Success.
+ * @retval FSP_ERR_USB_FAILED If called in the RTOS environment, an error is returned.
+ *
+ * @note Do not use the same variable as the first argument of R_USB_Open for the first argument.
+ * @note Do not call this API in the interrupt function.
+ ******************************************************************************/
+fsp_err_t R_USB_EventGet (usb_ctrl_t * const p_ctrl, usb_status_t * event)
+{
+    fsp_err_t result;
+#if (BSP_CFG_RTOS == 0)
+    result   = FSP_SUCCESS;
+    (*event) = USB_STATUS_NONE;
+    usb_instance_ctrl_t * p_instance_ctrl = (usb_instance_ctrl_t *) p_ctrl;
+
+    usb_cstd_usb_task();
+    if (g_usb_cstd_event.write_pointer != g_usb_cstd_event.read_pointer)
+    {
+        *p_instance_ctrl = g_usb_cstd_event.ctrl[g_usb_cstd_event.read_pointer];
+        (*event)         = g_usb_cstd_event.code[g_usb_cstd_event.read_pointer];
+        g_usb_cstd_event.read_pointer++;
+        if (g_usb_cstd_event.read_pointer >= USB_EVENT_MAX)
+        {
+            g_usb_cstd_event.read_pointer = 0;
+        }
+    }
+
+#else                                  /* (BSP_CFG_RTOS == 0) */
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(*event);
+    result = FSP_ERR_USB_FAILED;
+#endif /* (BSP_CFG_RTOS == 0) */
+    return result;
+}                                      /* End of function R_USB_EventGet() */
+
+/**************************************************************************//**
+ * @brief Register a callback function to be called upon completion of a
+ * USB related event. (RTOS only)
+ *
+ * This function registers a callback function to be called when a USB-related event has completed.
+ * If this function is called in the OS-less execution environment, a failure is returned.
+ *
+ * @retval FSP_SUCCESS        Successfully completed.
+ * @retval FSP_ERR_USB_FAILED If this function is called in the OS-less execution environment, a failure is returned.
+ * @retval FSP_ERR_ASSERTION  Parameter is NULL error.
+ * @note Do not call this API in the interrupt function.
+ ******************************************************************************/
+fsp_err_t R_USB_Callback (usb_callback_t * p_callback)
+{
+    fsp_err_t err;
+#if (BSP_CFG_RTOS == 2)
+ #if USB_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_callback)
+ #endif                                /* USB_CFG_PARAM_CHECKING_ENABLE */
+    g_usb_apl_callback[0] = p_callback;
+    err = FSP_SUCCESS;
+#else /* (BSP_CFG_RTOS == 2) */
+    FSP_PARAMETER_NOT_USED(*p_callback);
+    err = FSP_ERR_USB_FAILED;
+#endif                                 /* (BSP_CFG_RTOS == 2) */
+    return err;
+} /* End of function R_USB_Callback() */
 
 /**************************************************************************//**
  * @brief This API enables or disables pull-up of D+/D- line.

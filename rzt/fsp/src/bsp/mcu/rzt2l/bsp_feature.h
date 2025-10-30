@@ -67,6 +67,7 @@ FSP_HEADER
 #define BSP_FEATURE_BSP_DDRSS_SUPPORTED                        (0U)
 #define BSP_FEATURE_BSP_ENCOUT_SUPPORTED                       (1U)
 #define BSP_FEATURE_BSP_ENDAT_UNIT                             (2U)
+#define BSP_FEATURE_BSP_ESD_BOOT_CHANNEL                       (0U) // This MCU does not support eSD boot mode.
 #define BSP_FEATURE_BSP_EVENT_NUM_MAX                          (500)
 #define BSP_FEATURE_BSP_HAS_CR52_CPU1_TCM                      (0U)
 #define BSP_FEATURE_BSP_HAS_CR52_CPU1_LLPP                     (0U)
@@ -110,9 +111,11 @@ FSP_HEADER
 #define BSP_FEATURE_BSP_NON_SELECTABLE_INTERRUPT_EVENT_NUM     (448)
 #define BSP_FEATURE_BSP_PCIE_SUPPORTED                         (0U)
 #define BSP_FEATURE_BSP_SDHI_SUPPORTED                         (0U)
+#define BSP_FEATURE_BSP_SDHI_VIRTUAL_ADDRESS                   (0U) // This MCU does not support eMMC/eSD boot mode.
+#define BSP_FEATURE_BSP_SDHI_VIRTUAL_SIZE                      (0U) // This MCU does not support eMMC/eSD boot mode.
 #define BSP_FEATURE_BSP_SELECTABLE_INTERRUPT_EVENT_NUM         (0)
 #define BSP_FEATURE_BSP_SELECTABLE_INTERRUPT_START             (0)
-#define BSP_FEATURE_BSP_SEMAPHORE_SUPPORTED                    (0U)
+#define BSP_FEATURE_BSP_SEMAPHORE_SUPPORTED                    (1U)
 #define BSP_FEATURE_BSP_SHOSTIF_SUPPORTED                      (1U)
 #define BSP_FEATURE_BSP_SLAVE_STOP_SUPPORTED                   (0U)
 #define BSP_FEATURE_BSP_TRACE_CLOCK_SUPPORTED                  (1U)
@@ -258,6 +261,8 @@ FSP_HEADER
 
 #define BSP_FEATURE_GPT_32BIT_CHANNEL_MASK                     (0x3FFFF)
 #define BSP_FEATURE_GPT_CHANNEL                                (18U)
+#define BSP_FEATURE_GPT_CLOCK_DIVIDER_STEP_SIZE                (2U)
+#define BSP_FEATURE_GPT_CLOCK_DIVIDER_VALUE_7_9_VALID          (0U)
 #define BSP_FEATURE_GPT_INPUT_CAPTURE_SIGNAL_SELECTABLE        (0U)
 #define BSP_FEATURE_GPT_LLPP_BASE_ADDRESS                      (R_GPT0_BASE)
 #define BSP_FEATURE_GPT_LLPP_BASE_CHANNEL                      (0U) // LLPP channel: ch0-6
@@ -349,7 +354,10 @@ FSP_HEADER
 #define BSP_FEATURE_LPM_SNZREQCR_MASK                          (0x7342FFFFU)
 
 #define BSP_FEATURE_MAILBOX_SEM_SUPPORTED                      (1U)
+#define BSP_FEATURE_MAILBOX_SEM_INTERNAL_CPU_SEM_SUPPORTED     (0U)
 
+#define BSP_FEATURE_MTU3_CLOCK_DIVIDER_STEP_SIZE               (2U)
+#define BSP_FEATURE_MTU3_CLOCK_DIVIDER_VALUE_7_9_VALID         (0U)
 #define BSP_FEATURE_MTU3_MAX_CHANNELS                          (9U)
 #define BSP_FEATURE_MTU3_UVW_MAX_CHANNELS                      (3U)
 #define BSP_FEATURE_MTU3_VALID_CHANNEL_MASK                    (0x01FF)

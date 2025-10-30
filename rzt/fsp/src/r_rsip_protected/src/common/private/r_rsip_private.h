@@ -13,6 +13,7 @@
 #include "r_rsip.h"
 #include "r_rsip_err.h"
 #include "r_rsip_util.h"
+#include "r_rsip_addr.h"
 
 /***********************************************************************************************************************
  * Macro definitions
@@ -58,6 +59,12 @@ typedef rsip_ret_t (* rsip_func_aes_cipher_init_t)(const uint32_t InData_KeyInde
 typedef rsip_ret_t (* rsip_func_aes_gcm_init_t)(const uint32_t InData_KeyIndex[], const uint32_t InData_IV[]);
 typedef rsip_ret_t (* rsip_func_ghash_t)(const uint32_t InData_HV[], const uint32_t InData_IV[],
                                          const uint32_t InData_Text[], uint32_t OutData_DataT[], uint32_t MAX_CNT);
+
+/* ChaCha20-Poly1305 */
+typedef rsip_ret_t (* rsip_func_chacha_poly_init_t)(const uint32_t * InData_KeyIndex, const uint32_t * InData_Nonce,
+                                                    const uint32_t * InData_TextLen, const uint32_t * InData_DataALen);
+typedef rsip_ret_t (* rsip_func_chacha_poly_resume_t)(const uint32_t * InData_KeyIndex, const uint32_t * InData_Nonce,
+                                                      const uint32_t * InData_State);
 
 /* ECDSA */
 typedef rsip_ret_t (* rsip_func_ecdsa_sign_t)(const uint32_t InData_KeyIndex[], const uint32_t InData_MsgDgst[],
@@ -179,6 +186,110 @@ typedef struct st_rsip_func_subset_aes_cmac
                                  const uint32_t * InData_DataTLen, const uint32_t all_msg_len);
 } rsip_func_subset_aes_cmac_t;
 
+/* ChaCha20 */
+typedef struct st_rsip_func_subset_chacha20
+{
+    rsip_ret_t (* p_init)(const uint32_t * InData_KeyIndex, const uint32_t * InData_Ctr, const uint32_t * InData_Nonce,
+                          const uint32_t * InData_TextLen);
+    void (* p_update)(const uint32_t * InData_Text, uint32_t * OutData_Text, uint32_t MAX_CNT);
+    rsip_ret_t (* p_final)(const uint32_t * InData_Text, uint32_t * OutData_Text, uint32_t MAX_CNT);
+    rsip_ret_t (* p_suspend)(uint32_t * OutData_State);
+    rsip_ret_t (* p_resume)(const uint32_t * InData_KeyIndex, const uint32_t * InData_Nonce,
+                            const uint32_t * InData_State);
+} rsip_func_subset_chacha20_t;
+
+/* ChaCha20-Poly1305 */
+typedef struct st_rsip_func_subset_chacha20_poly1305
+{
+    rsip_func_chacha_poly_init_t p_init_enc;
+    rsip_func_chacha_poly_init_t p_init_dec;
+    void (* p_updateAad)(const uint32_t * InData_DataA, uint32_t MAX_CNT);
+    void (* p_updateTransition)();
+    void (* p_update)(const uint32_t * InData_Text, uint32_t * OutData_Text, uint32_t MAX_CNT);
+    rsip_ret_t (* p_final)(const uint32_t * InData_Text, const uint32_t * InData_DataT, uint32_t * OutData_Text,
+                           uint32_t * OutData_DataT, uint32_t MAX_CNT);
+    rsip_ret_t (* p_suspend)(uint32_t * OutData_State);
+    rsip_func_chacha_poly_resume_t p_resume_enc;
+    rsip_func_chacha_poly_resume_t p_resume_dec;
+} rsip_func_subset_chacha20_poly1305_t;
+
+/* SHA */
+#if 1U == RSIP_PRV_HASH_IP_TYPE
+typedef rsip_ret_t (* rsip_func_subset_sha_t)(const uint32_t InData_InitVal[], const uint32_t InData_PaddedMsg[],
+                                              uint32_t MAX_CNT, uint32_t OutData_MsgDigest[]);
+#elif (3U == RSIP_PRV_HASH_IP_TYPE) || (5U == RSIP_PRV_HASH_IP_TYPE)
+typedef struct st_rsip_func_subset_sha
+{
+    rsip_ret_t (* p_init)(const uint32_t InData_HashType[], const uint32_t InData_MsgLen[]);
+    rsip_ret_t (* p_resume)(const uint32_t InData_HashType[], const uint32_t InData_State[]);
+    rsip_ret_t (* p_update)(const uint32_t InData_Msg[], uint32_t MAX_CNT);
+    rsip_ret_t (* p_suspend)(uint32_t OutData_State[]);
+    rsip_ret_t (* p_final)(const uint32_t InData_Msg[], uint32_t MAX_CNT, uint32_t OutData_MsgDigest[]);
+} rsip_func_subset_sha_t;
+#endif
+
+/* HMAC */
+#if 1U == RSIP_PRV_HASH_IP_TYPE
+typedef struct st_rsip_func_subset_hmac
+{
+    rsip_ret_t (* p_init)(const uint32_t InData_KeyIndex[]);
+    rsip_ret_t (* p_resume)(const uint32_t InData_KeyIndex[], const uint32_t InData_State[]);
+    rsip_ret_t (* p_update)(const uint32_t InData_PaddedMsg[], uint32_t MAX_CNT);
+    rsip_ret_t (* p_suspend)(uint32_t OutData_State[]);
+    rsip_ret_t (* p_final)(const uint32_t InData_Cmd[], const uint32_t InData_MAC[], const uint32_t InData_length[],
+                           uint32_t OutData_MAC[]);
+} rsip_func_subset_hmac_t[RSIP_PRV_KEY_SUBTYPE_HMAC_SHA256 + 1];
+#elif (3U == RSIP_PRV_HASH_IP_TYPE) || (5U == RSIP_PRV_HASH_IP_TYPE)
+typedef struct st_rsip_func_subset_hmac
+{
+    rsip_ret_t (* p_init)(const uint32_t InData_KeyIndex[], const uint32_t InData_HashType[],
+                          const uint32_t InData_MsgLen[], uint32_t KEY_INDEX_SIZE);
+    rsip_ret_t (* p_resume)(const uint32_t InData_KeyIndex[], const uint32_t InData_HashType[],
+                            const uint32_t InData_State[], uint32_t KEY_INDEX_SIZE);
+    rsip_ret_t (* p_update)(const uint32_t InData_Msg[], uint32_t MAX_CNT);
+    rsip_ret_t (* p_suspend)(uint32_t OutData_State[]);
+    rsip_ret_t (* p_final)(const uint32_t InData_Cmd[], const uint32_t InData_Msg[], const uint32_t InData_MAC[],
+                           const uint32_t InData_length[], uint32_t MAX_CNT, uint32_t OutData_MAC[]);
+} rsip_func_subset_hmac_t;
+#endif
+
+/* KDF SHA */
+#if 1U == RSIP_PRV_HASH_IP_TYPE
+typedef rsip_ret_t (* rsip_func_subset_kdf_sha_t)(const uint32_t InData_Msg1[], const uint32_t InData_Msg1Length[],
+                                                  const uint32_t InData_EncMsg[], const uint32_t InData_EncMsgLength[],
+                                                  const uint32_t InData_Msg2[],
+                                                  const uint32_t InData_Msg2Length[], uint32_t OutData_KDFInfo[]);
+#elif (3U == RSIP_PRV_HASH_IP_TYPE) || (5U == RSIP_PRV_HASH_IP_TYPE)
+typedef struct st_rsip_func_subset_kdf_sha
+{
+    rsip_ret_t (* p_init)(const uint32_t InData_HashType[], const uint32_t InData_MsgLen[]);
+    rsip_ret_t (* p_resume)(const uint32_t InData_HashType[], const uint32_t InData_State[]);
+    rsip_ret_t (* p_update)(const uint32_t InData_Msg1[], const uint32_t InData_Msg1Length[],
+                            const uint32_t InData_EncMsg[], const uint32_t InData_EncMsgLength[],
+                            const uint32_t InData_Msg2[],
+                            const uint32_t InData_Msg2Length[]);
+    rsip_ret_t (* p_suspend)(uint32_t OutData_State[]);
+    rsip_ret_t (* p_final)(const uint32_t InData_Msg1[], const uint32_t InData_Msg1Length[],
+                           const uint32_t InData_EncMsg[], const uint32_t InData_EncMsgLength[],
+                           const uint32_t InData_Msg2[],
+                           const uint32_t InData_Msg2Length[], uint32_t OutData_KDFInfo[]);
+} rsip_func_subset_kdf_sha_t;
+#endif
+
+/* KDF HMAC */
+typedef struct st_rsip_func_subset_kdf_hmac
+{
+    rsip_ret_t (* p_init)(const uint32_t InData_KeyType[], const uint32_t InData_KeyIndex[],
+                          const uint32_t InData_HashType[], const uint32_t InData_MsgLen[]);
+    rsip_ret_t (* p_resume)(const uint32_t InData_KeyType[], const uint32_t InData_KeyIndex[],
+                            const uint32_t InData_HashType[], const uint32_t InData_State[]);
+    rsip_ret_t (* p_enc_update)(const uint32_t InData_EncMsg[], uint32_t MAX_CNT2);
+    rsip_ret_t (* p_update)(const uint32_t InData_Msg[], uint32_t MAX_CNT);
+    rsip_ret_t (* p_suspend)(uint32_t OutData_State[]);
+    rsip_ret_t (* p_final)(const uint32_t InData_Msg[], const uint32_t InData_EncMsg[], uint32_t OutData_KDFInfo[],
+                           uint32_t MAX_CNT, uint32_t MAX_CNT2);
+} rsip_func_subset_kdf_hmac_t;
+
 /* PKI */
 typedef struct st_rsip_func_subset_pki_ecdsa_verify
 {
@@ -243,6 +354,9 @@ extern const rsip_func_subset_aes_ccm_t    gp_func_aes_ccm_enc[RSIP_PRV_KEY_SUBT
 extern const rsip_func_subset_aes_ccm_t    gp_func_aes_ccm_dec[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
 extern const rsip_func_subset_aes_cmac_t   gp_func_aes_cmac[RSIP_PRV_KEY_SUBTYPE_AES_NUM];
 
+extern const rsip_func_subset_chacha20_t          gp_func_chacha20[RSIP_PRV_KEY_SUBTYPE_CHACHA_NUM];
+extern const rsip_func_subset_chacha20_poly1305_t gp_func_chacha20_poly1305[RSIP_PRV_KEY_SUBTYPE_CHACHA_NUM];
+
 extern const rsip_func_ecdsa_sign_t   gp_func_ecdsa_sign[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
 extern const rsip_func_ecdsa_verify_t gp_func_ecdsa_verify[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
 
@@ -254,6 +368,13 @@ extern const rsip_func_ecdh_t gp_func_ecdh_plain[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
 
 extern const rsip_func_rsa_t gp_func_rsa_public[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
 extern const rsip_func_rsa_t gp_func_rsa_private[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
+
+extern const rsip_func_subset_sha_t      gp_func_sha1sha2;
+extern const rsip_func_subset_sha_t      gp_func_sha3;
+extern const rsip_func_subset_hmac_t     gp_func_hmac_sha1sha2;
+extern const rsip_func_subset_hmac_t     gp_func_hmac_sha3;
+extern const rsip_func_subset_kdf_sha_t  gp_func_kdf_sha1sha2;
+extern const rsip_func_subset_kdf_hmac_t gp_func_kdf_hmac_sha1sha2;
 
 extern const rsip_func_subset_pki_ecdsa_verify_t gp_func_pki_ecdsa_verify[RSIP_PRV_KEY_SUBTYPE_ECC_NUM];
 extern const rsip_func_subset_pki_rsa_verify_t   gp_func_pki_rsa_verify[RSIP_PRV_KEY_SUBTYPE_RSA_NUM];
@@ -310,7 +431,7 @@ rsip_ret_t r_rsip_close(void);
 void r_rsip_kuk_set(const void * p_key_update_key);
 
 /*******************************************************************************************************************//**
- * Gets parameter for RFC3394 AES Key Wrap from target key type.
+ * Gets parameters for RFC3394 AES Key Wrap from target key type.
  *
  * @param[in]  key_type         Key type of target key.
  * @param[out] wrapped_key_type Key type number used for primitives.
@@ -326,17 +447,14 @@ fsp_err_t r_rsip_get_rfc3394_key_wrap_param(rsip_key_type_t key_type, uint32_t *
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     hash_type      Generating hash type.
+ * @param[in,out] p_handle       Pointer to handle.
  * @param[in]     p_message      Pointer to message. The length is message_length.
  * @param[in]     message_length Byte length of message.
- * @param[in,out] internal_state Buffer of internal state.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_sha1sha2_init_update(rsip_hash_type_t hash_type,
-                                       const uint8_t  * p_message,
-                                       uint64_t         message_length,
-                                       uint32_t       * internal_state);
+rsip_ret_t r_rsip_sha_hash_init_update(rsip_sha_handle_t * p_handle, const uint8_t * p_message,
+                                       uint64_t message_length);
 
 /*******************************************************************************************************************//**
  * 1. Resume hash operation.
@@ -344,43 +462,37 @@ rsip_ret_t r_rsip_sha1sha2_init_update(rsip_hash_type_t hash_type,
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     hash_type      Generating hash type.
+ * @param[in,out] p_handle       Pointer to handle.
  * @param[in]     p_message      Pointer to message. The length is message_length.
  * @param[in]     message_length Byte length of message.
- * @param[in,out] internal_state Buffer of internal state.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_sha1sha2_resume_update(rsip_hash_type_t hash_type,
-                                         const uint8_t  * p_message,
-                                         uint64_t         message_length,
-                                         uint32_t       * internal_state);
+rsip_ret_t r_rsip_sha_hash_resume_update(rsip_sha_handle_t * p_handle,
+                                         const uint8_t     * p_message,
+                                         uint64_t            message_length);
 
 /*******************************************************************************************************************//**
  * Input block message in block length.
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     hash_type      Generating hash type.
+ * @param[in,out] p_handle       Pointer to handle.
  * @param[in]     p_message      Pointer to message. The length is message_length.
  * @param[in]     message_length Byte length of message.
- * @param[in,out] internal_state Buffer of internal state.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_sha1sha2_update(rsip_hash_type_t hash_type,
-                                  const uint8_t  * p_message,
-                                  uint64_t         message_length,
-                                  uint32_t       * internal_state);
+rsip_ret_t r_rsip_sha_hash_update(rsip_sha_handle_t * p_handle, const uint8_t * p_message, uint64_t message_length);
 
 /*******************************************************************************************************************//**
  * Suspend hash operation.
  *
- * @param[in,out] internal_state Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_sha1sha2_suspend(uint32_t * internal_state);
+rsip_ret_t r_rsip_sha_hash_suspend(rsip_sha_handle_t * p_handle);
 
 /*******************************************************************************************************************//**
  * 1. Initialize hash operation.
@@ -395,7 +507,7 @@ rsip_ret_t r_rsip_sha1sha2_suspend(uint32_t * internal_state);
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_sha1sha2_init_final(rsip_hash_type_t hash_type,
+rsip_ret_t r_rsip_sha_hash_init_final(rsip_hash_type_t hash_type,
                                       const uint8_t  * p_message,
                                       uint64_t         message_length,
                                       uint8_t        * p_digest);
@@ -406,42 +518,24 @@ rsip_ret_t r_rsip_sha1sha2_init_final(rsip_hash_type_t hash_type,
  *
  * @note Message length must be at least 1 byte.
  *
- * @param[in]     hash_type            Generating hash type.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[out]    p_digest             Pointer to destination of message digest. The length depends on hash type.
- * @param[in,out] internal_state       Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[out]    p_digest       Pointer to destination of message digest. The length depends on hash type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_sha1sha2_resume_final(rsip_hash_type_t hash_type,
-                                        uint8_t        * p_message,
-                                        uint64_t         message_length,
-                                        uint64_t         total_message_length,
-                                        uint8_t        * p_digest,
-                                        uint32_t       * internal_state);
+rsip_ret_t r_rsip_sha_hash_resume_final(rsip_sha_handle_t * p_handle, uint8_t * p_digest);
 
 /*******************************************************************************************************************//**
  * Input the remaining message and finalize hash operation.
  *
  * @note Message length must be at least 1 byte.
  *
- * @param[in]     hash_type            Generating hash type.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[out]    p_digest             Pointer to destination of message digest. The length depends on hash type.
- * @param[in,out] internal_state       Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[out]    p_digest       Pointer to destination of message digest. The length depends on hash type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_sha1sha2_final(rsip_hash_type_t hash_type,
-                                 uint8_t        * p_message,
-                                 uint64_t         message_length,
-                                 uint64_t         total_message_length,
-                                 uint8_t        * p_digest,
-                                 uint32_t       * internal_state);
+rsip_ret_t r_rsip_sha_hash_final(rsip_sha_handle_t * p_handle, uint8_t * p_digest);
 
 /*******************************************************************************************************************//**
  * 1. Initialize HMAC operation.
@@ -449,17 +543,13 @@ rsip_ret_t r_rsip_sha1sha2_final(rsip_hash_type_t hash_type,
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     p_wrapped_key  Pointer to wrapped key of HMAC key.
+ * @param[in,out] p_handle       Pointer to handle.
  * @param[in]     p_message      Pointer to message. The length is message_length.
  * @param[in]     message_length Byte length of message.
- * @param[in,out] internal_state Buffer of internal state.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_hmac_init_update(const rsip_wrapped_key_t * p_wrapped_key,
-                                   const uint8_t            * p_message,
-                                   uint64_t                   message_length,
-                                   uint32_t                 * internal_state);
+rsip_ret_t r_rsip_hmac_init_update(rsip_hmac_handle_t * p_handle, const uint8_t * p_message, uint64_t message_length);
 
 /*******************************************************************************************************************//**
  * 1. Resume HMAC operation.
@@ -467,34 +557,26 @@ rsip_ret_t r_rsip_hmac_init_update(const rsip_wrapped_key_t * p_wrapped_key,
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     p_wrapped_key  Pointer to wrapped key of HMAC key.
+ * @param[in,out] p_handle       Pointer to handle.
  * @param[in]     p_message      Pointer to message. The length is message_length.
  * @param[in]     message_length Byte length of message.
- * @param[in,out] internal_state Buffer of internal state.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_hmac_resume_update(const rsip_wrapped_key_t * p_wrapped_key,
-                                     const uint8_t            * p_message,
-                                     uint64_t                   message_length,
-                                     uint32_t                 * internal_state);
+rsip_ret_t r_rsip_hmac_resume_update(rsip_hmac_handle_t * p_handle, const uint8_t * p_message, uint64_t message_length);
 
 /*******************************************************************************************************************//**
  * Input block message in block length.
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     p_wrapped_key  Pointer to wrapped key of HMAC key.
+ * @param[in,out] p_handle       Pointer to handle.
  * @param[in]     p_message      Pointer to message. The length is message_length.
  * @param[in]     message_length Byte length of message.
- * @param[in,out] internal_state Buffer of internal state.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_hmac_update(const rsip_wrapped_key_t * p_wrapped_key,
-                              const uint8_t            * p_message,
-                              uint64_t                   message_length,
-                              uint32_t                 * internal_state);
+rsip_ret_t r_rsip_hmac_update(rsip_hmac_handle_t * p_handle, const uint8_t * p_message, uint64_t message_length);
 
 /*******************************************************************************************************************//**
  * Suspend HMAC operation.
@@ -531,21 +613,12 @@ rsip_ret_t r_rsip_hmac_init_final(const rsip_wrapped_key_t * p_wrapped_key,
  *
  * @note Message length must be at least 1 byte.
  *
- * @param[in]     p_wrapped_key        Pointer to wrapped key of HMAC key.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[out]    p_mac                Pointer to destination of message digest. The length depends on MAC type.
- * @param[in,out] internal_state       Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[out]    p_mac          Pointer to destination of message digest. The length depends on MAC type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_hmac_resume_final(const rsip_wrapped_key_t * p_wrapped_key,
-                                    const uint8_t            * p_message,
-                                    uint64_t                   message_length,
-                                    uint64_t                   total_message_length,
-                                    uint8_t                  * p_mac,
-                                    uint32_t                 * internal_state);
+rsip_ret_t r_rsip_hmac_resume_final(rsip_hmac_handle_t * p_handle, uint8_t * p_mac);
 
 /*******************************************************************************************************************//**
  * 1. Input the remaining message and finalize HMAC operation.
@@ -553,21 +626,12 @@ rsip_ret_t r_rsip_hmac_resume_final(const rsip_wrapped_key_t * p_wrapped_key,
  *
  * @note Message length must be at least 1 byte.
  *
- * @param[in]     p_wrapped_key        Pointer to wrapped key of HMAC key.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[out]    p_mac                Pointer to destination of message digest. The length depends on MAC type.
- * @param[in,out] internal_state       Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[out]    p_mac          Pointer to destination of message digest. The length depends on MAC type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_hmac_final(const rsip_wrapped_key_t * p_wrapped_key,
-                             uint8_t                  * p_message,
-                             uint64_t                   message_length,
-                             uint64_t                   total_message_length,
-                             uint8_t                  * p_mac,
-                             uint32_t                 * internal_state);
+rsip_ret_t r_rsip_hmac_final(rsip_hmac_handle_t * p_handle, uint8_t * p_mac);
 
 /*******************************************************************************************************************//**
  * 1. Initialize HMAC operation.
@@ -597,23 +661,13 @@ rsip_ret_t r_rsip_hmac_init_verify(const rsip_wrapped_key_t * p_wrapped_key,
  *
  * @note Message length must be at least 1 byte.
  *
- * @param[in]     p_wrapped_key        Pointer to wrapped key of HMAC key.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[in]     p_mac                Pointer to MAC. The length depends on mac_length.
- * @param[in]     mac_length           Byte length of MAC.
- * @param[in,out] internal_state       Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_mac          Pointer to MAC. The length depends on mac_length.
+ * @param[in]     mac_length     Byte length of MAC.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_hmac_resume_verify(const rsip_wrapped_key_t * p_wrapped_key,
-                                     const uint8_t            * p_message,
-                                     uint64_t                   message_length,
-                                     uint64_t                   total_message_length,
-                                     const uint8_t            * p_mac,
-                                     uint32_t                   mac_length,
-                                     uint32_t                 * internal_state);
+rsip_ret_t r_rsip_hmac_resume_verify(rsip_hmac_handle_t * p_handle, const uint8_t * p_mac, uint32_t mac_length);
 
 /*******************************************************************************************************************//**
  * 1. Input the remaining message and finalize HMAC operation.
@@ -621,23 +675,13 @@ rsip_ret_t r_rsip_hmac_resume_verify(const rsip_wrapped_key_t * p_wrapped_key,
  *
  * @note Message length must be at least 1 byte.
  *
- * @param[in]     p_wrapped_key        Pointer to wrapped key of HMAC key.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[in]     p_mac                Pointer to MAC. The length depends on mac_length.
- * @param[in]     mac_length           Byte length of MAC.
- * @param[in,out] internal_state       Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_mac          Pointer to MAC. The length depends on mac_length.
+ * @param[in]     mac_length     Byte length of MAC.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_hmac_verify(const rsip_wrapped_key_t * p_wrapped_key,
-                              uint8_t                  * p_message,
-                              uint64_t                   message_length,
-                              uint64_t                   total_message_length,
-                              const uint8_t            * p_mac,
-                              uint32_t                   mac_length,
-                              uint32_t                 * internal_state);
+rsip_ret_t r_rsip_hmac_verify(rsip_hmac_handle_t * p_handle, const uint8_t * p_mac, uint32_t mac_length);
 
 /*******************************************************************************************************************//**
  * 1. Initialize hash operation.
@@ -687,11 +731,11 @@ rsip_ret_t r_rsip_kdf_sha_update(rsip_kdf_sha_handle_t * p_handle, const uint8_t
 /*******************************************************************************************************************//**
  * Suspend hash operation.
  *
- * @param[in,out] internal_state Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_sha_suspend(uint32_t * internal_state);
+rsip_ret_t r_rsip_kdf_sha_suspend(rsip_kdf_sha_handle_t * p_handle);
 
 /*******************************************************************************************************************//**
  * 1. Initialize hash operation.
@@ -700,18 +744,11 @@ rsip_ret_t r_rsip_kdf_sha_suspend(uint32_t * internal_state);
  * @note This function allows empty message.
  *
  * @param[in,out] p_handle       Pointer to handle.
- * @param[in]     p_message      Pointer to message. The length is message_length.
- * @param[in]     message_length Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
  * @param[out]    p_digest       Pointer to destination of message digest. The length depends on hash type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_sha_init_final(rsip_kdf_sha_handle_t * p_handle,
-                                     const uint8_t         * p_message,
-                                     uint64_t                message_length,
-                                     uint64_t                total_message_length,
-                                     uint8_t               * p_digest);
+rsip_ret_t r_rsip_kdf_sha_init_final(rsip_kdf_sha_handle_t * p_handle, uint8_t * p_digest);
 
 /*******************************************************************************************************************//**
  * 1. Resume hash operation.
@@ -720,18 +757,11 @@ rsip_ret_t r_rsip_kdf_sha_init_final(rsip_kdf_sha_handle_t * p_handle,
  * @note Message length must be at least 1 byte.
  *
  * @param[in,out] p_handle       Pointer to handle.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[out]    p_digest             Pointer to destination of message digest. The length depends on hash type.
+ * @param[out]    p_digest       Pointer to destination of message digest. The length depends on hash type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_sha_resume_final(rsip_kdf_sha_handle_t * p_handle,
-                                       uint8_t               * p_message,
-                                       uint64_t                message_length,
-                                       uint64_t                total_message_length,
-                                       uint8_t               * p_digest);
+rsip_ret_t r_rsip_kdf_sha_resume_final(rsip_kdf_sha_handle_t * p_handle, uint8_t * p_digest);
 
 /*******************************************************************************************************************//**
  * Input the remaining message and finalize hash operation.
@@ -739,18 +769,11 @@ rsip_ret_t r_rsip_kdf_sha_resume_final(rsip_kdf_sha_handle_t * p_handle,
  * @note Message length must be at least 1 byte.
  *
  * @param[in,out] p_handle       Pointer to handle.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[out]    p_digest             Pointer to destination of message digest. The length depends on hash type.
+ * @param[out]    p_digest       Pointer to destination of message digest. The length depends on hash type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_sha_final(rsip_kdf_sha_handle_t * p_handle,
-                                uint8_t               * p_message,
-                                uint64_t                message_length,
-                                uint64_t                total_message_length,
-                                uint8_t               * p_digest);
+rsip_ret_t r_rsip_kdf_sha_final(rsip_kdf_sha_handle_t * p_handle, uint8_t * p_digest);
 
 /*******************************************************************************************************************//**
  * 1. Initialize HMAC operation.
@@ -758,21 +781,15 @@ rsip_ret_t r_rsip_kdf_sha_final(rsip_kdf_sha_handle_t * p_handle,
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     p_wrapped_key      Pointer to wrapped key of HMAC key.
- * @param[in]     p_message          Pointer to message. The length is message_length.
- * @param[in]     message_length     Byte length of message.
- * @param[in]     p_wrapped_msg      Pointer to wrapped message. The length is message_length.
- * @param[in]     wrapped_msg_length Byte length of wrapped message.
- * @param[in,out] internal_state     Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_message      Pointer to message. The length is message_length.
+ * @param[in]     message_length Byte length of message.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_hmac_init_update(const rsip_wrapped_key_t * p_wrapped_key,
-                                       const uint8_t            * p_message,
-                                       uint64_t                   message_length,
-                                       const uint8_t            * p_wrapped_msg,
-                                       uint64_t                   wrapped_msg_length,
-                                       uint32_t                 * internal_state);
+rsip_ret_t r_rsip_kdf_hmac_init_update(rsip_kdf_hmac_handle_t * p_handle,
+                                       const uint8_t          * p_message,
+                                       uint64_t                 message_length);
 
 /*******************************************************************************************************************//**
  * 1. Resume HMAC operation.
@@ -780,47 +797,38 @@ rsip_ret_t r_rsip_kdf_hmac_init_update(const rsip_wrapped_key_t * p_wrapped_key,
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     p_wrapped_key      Pointer to wrapped key of HMAC key.
- * @param[in]     p_message          Pointer to message. The length is message_length.
- * @param[in]     message_length     Byte length of message.
- * @param[in]     p_wrapped_msg      Pointer to wrapped message. The length is message_length.
- * @param[in]     wrapped_msg_length Byte length of wrapped message.
- * @param[in,out] internal_state     Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[in]     p_message      Pointer to message. The length is message_length.
+ * @param[in]     message_length Byte length of message.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_hmac_resume_update(const rsip_wrapped_key_t * p_wrapped_key,
-                                         const uint8_t            * p_message,
-                                         uint64_t                   message_length,
-                                         const uint8_t            * p_wrapped_msg,
-                                         uint64_t                   wrapped_msg_length,
-                                         uint32_t                 * internal_state);
+rsip_ret_t r_rsip_kdf_hmac_resume_update(rsip_kdf_hmac_handle_t * p_handle,
+                                         const uint8_t          * p_message,
+                                         uint64_t                 message_length);
 
 /*******************************************************************************************************************//**
  * Input block message in block length.
  *
  * @note Message length must be at least 1 block.
  *
- * @param[in]     p_wrapped_key  Pointer to wrapped key of HMAC key.
+ * @param[in,out] p_handle       Pointer to handle.
  * @param[in]     p_message      Pointer to message. The length is message_length.
  * @param[in]     message_length Byte length of message.
- * @param[in,out] internal_state Buffer of internal state.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_hmac_update(const rsip_wrapped_key_t * p_wrapped_key,
-                                  const uint8_t            * p_message,
-                                  uint64_t                   message_length,
-                                  uint32_t                 * internal_state);
+rsip_ret_t r_rsip_kdf_hmac_update(rsip_kdf_hmac_handle_t * p_handle, const uint8_t * p_message,
+                                  uint64_t message_length);
 
 /*******************************************************************************************************************//**
  * Suspend HMAC operation.
  *
- * @param[in,out] internal_state Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_hmac_suspend(uint32_t * internal_state);
+rsip_ret_t r_rsip_kdf_hmac_suspend(rsip_kdf_hmac_handle_t * p_handle);
 
 /*******************************************************************************************************************//**
  * 1. Initialize HMAC operation.
@@ -829,23 +837,12 @@ rsip_ret_t r_rsip_kdf_hmac_suspend(uint32_t * internal_state);
  *
  * @note This function allows empty message.
  *
- * @param[in]     p_wrapped_key             Pointer to wrapped key of HMAC key.
- * @param[in]     p_message                 Pointer to message. The length is message_length.
- * @param[in]     message_length            Byte length of message.
- * @param[in]     p_wrapped_msg             Pointer to wrapped message. The length is message_length.
- * @param[in]     wrapped_msg_length        Byte length of wrapped message.
- * @param[in]     actual_wrapped_msg_length Byte length of actual wrapped message.
- * @param[out]    p_mac                     Pointer to destination of message digest. The length depends on MAC type.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[out]    p_mac          Pointer to destination of message digest. The length depends on MAC type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_hmac_init_final(const rsip_wrapped_key_t * p_wrapped_key,
-                                      const uint8_t            * p_message,
-                                      uint64_t                   message_length,
-                                      const uint8_t            * p_wrapped_msg,
-                                      uint64_t                   wrapped_msg_length,
-                                      uint64_t                   actual_wrapped_msg_length,
-                                      uint8_t                  * p_mac);
+rsip_ret_t r_rsip_kdf_hmac_init_final(rsip_kdf_hmac_handle_t * p_handle, uint8_t * p_mac);
 
 /*******************************************************************************************************************//**
  * 1. Resume HMAC operation.
@@ -854,21 +851,12 @@ rsip_ret_t r_rsip_kdf_hmac_init_final(const rsip_wrapped_key_t * p_wrapped_key,
  *
  * @note Message length must be at least 1 byte.
  *
- * @param[in]     p_wrapped_key        Pointer to wrapped key of HMAC key.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[out]    p_mac                Pointer to destination of message digest. The length depends on MAC type.
- * @param[in,out] internal_state       Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[out]    p_mac          Pointer to destination of message digest. The length depends on MAC type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_hmac_resume_final(const rsip_wrapped_key_t * p_wrapped_key,
-                                        const uint8_t            * p_message,
-                                        uint64_t                   message_length,
-                                        uint64_t                   total_message_length,
-                                        uint8_t                  * p_mac,
-                                        uint32_t                 * internal_state);
+rsip_ret_t r_rsip_kdf_hmac_resume_final(rsip_kdf_hmac_handle_t * p_handle, uint8_t * p_mac);
 
 /*******************************************************************************************************************//**
  * 1. Input the remaining message and finalize HMAC operation.
@@ -876,21 +864,12 @@ rsip_ret_t r_rsip_kdf_hmac_resume_final(const rsip_wrapped_key_t * p_wrapped_key
  *
  * @note Message length must be at least 1 byte.
  *
- * @param[in]     p_wrapped_key        Pointer to wrapped key of HMAC key.
- * @param[in]     p_message            Pointer to message. The length is message_length.
- * @param[in]     message_length       Byte length of message.
- * @param[in]     total_message_length Byte length of total message length.
- * @param[out]    p_mac                Pointer to destination of message digest. The length depends on MAC type.
- * @param[in,out] internal_state       Buffer of internal state.
+ * @param[in,out] p_handle       Pointer to handle.
+ * @param[out]    p_mac          Pointer to destination of message digest. The length depends on MAC type.
  *
  * @return The return value of the internally called primitive function.
  **********************************************************************************************************************/
-rsip_ret_t r_rsip_kdf_hmac_final(const rsip_wrapped_key_t * p_wrapped_key,
-                                 const uint8_t            * p_message,
-                                 uint64_t                   message_length,
-                                 uint64_t                   total_message_length,
-                                 uint8_t                  * p_mac,
-                                 uint32_t                 * internal_state);
+rsip_ret_t r_rsip_kdf_hmac_final(rsip_kdf_hmac_handle_t * p_handle, uint8_t * p_mac);
 
 /*******************************************************************************************************************//**
  * Parses key type.

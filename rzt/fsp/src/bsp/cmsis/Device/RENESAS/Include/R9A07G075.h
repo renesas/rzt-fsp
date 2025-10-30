@@ -31,39 +31,13 @@ extern "C" {
 /* ================                           Processor and Core Peripheral Section                           ================ */
 /* =========================================================================================================================== */
 
-/* ----------------Configuration of the Cortex-M Processor and Core Peripherals---------------- */
- #ifdef RENESAS_CORTEX_M4
-  #define __MPU_PRESENT             1  /*!< MPU present or not                                                    */
-  #define __NVIC_PRIO_BITS          4  /*!< Number of Bits used for Priority Levels                               */
-  #define __Vendor_SysTickConfig    0  /*!< Set to 1 if different SysTick Config is used                          */
-  #define __FPU_PRESENT             1  /*!< FPU present or not                                                    */
-  #include "core_cm4.h"                /*!< Cortex-M4 processor and core peripherals                              */
- #elif defined(RENESAS_CORTEX_M0PLUS)
-  #define __MPU_PRESENT             1  /*!< MPU present or not                                                    */
-  #define __NVIC_PRIO_BITS          2  /*!< Number of Bits used for Priority Levels                               */
-  #define __Vendor_SysTickConfig    0  /*!< Set to 1 if different SysTick Config is used                          */
-  #define __FPU_PRESENT             0  /*!< FPU present or not                                                    */
-  #define __VTOR_PRESENT            1  /*!< Vector table VTOR register available or not                           */
-  #include "core_cm0plus.h"            /*!< Cortex-M0 processor and core peripherals                              */
- #elif defined(RENESAS_CORTEX_M23)
-  #define __MPU_PRESENT             1  /*!< MPU present or not                                                    */
-  #define __NVIC_PRIO_BITS          2  /*!< Number of Bits used for Priority Levels                               */
-  #define __Vendor_SysTickConfig    0  /*!< Set to 1 if different SysTick Config is used                          */
-  #define __FPU_PRESENT             0  /*!< FPU present or not                                                    */
-  #define __VTOR_PRESENT            1  /*!< Vector table VTOR register available or not                           */
-  #include "core_cm23.h"               /*!< Cortex-M23 processor and core peripherals                             */
- #elif defined(RENESAS_CORTEX_M33)
-  #define __MPU_PRESENT             1  /*!< MPU present or not                                                    */
-  #define __NVIC_PRIO_BITS          4  /*!< Number of Bits used for Priority Levels                               */
-  #define __Vendor_SysTickConfig    0  /*!< Set to 1 if different SysTick Config is used                          */
-  #define __FPU_PRESENT             1  /*!< FPU present or not                                                    */
-  #define __VTOR_PRESENT            1  /*!< Vector table VTOR register available or not                           */
-  #define __DSP_PRESENT             1  /*!< DSP present or not                                                    */
-  #include "core_cm33.h"               /*!< Cortex-M33 processor and core peripherals                             */
- #elif defined(RENESAS_CORTEX_R52)
-  #define __FPU_PRESENT             1  /*!< FPU present or not                                                    */
+/* ==========================  Configuration of the ARM Cortex-R52 Processor and Core Peripherals  =========================== */
+ #if defined(RENESAS_CORTEX_R52)
+  #define __FPU_PRESENT    1           /*!< FPU present or not                                                    */
   #include "cr/core_cr52.h"            /*!< Cortex-R52 processor and core peripherals                              */
  #endif
+
+/** @} */ /* End of group Configuration_of_CMSIS */
 
  #include "system.h"                   /*!< System                                                                */
 
@@ -5678,18 +5652,18 @@ typedef struct                         /*!< (@ 0x80046000) R_TSU Structure      
 } R_TSU_Type;                          /*!< Size = 20 (0x14)                                                          */
 
 /* =========================================================================================================================== */
-/* ================                                          R_POEG1                                          ================ */
+/* ================                                         R_POEG1GA                                         ================ */
 /* =========================================================================================================================== */
 
 /**
- * @brief GPT Port Output Enable 1 (R_POEG1)
+ * @brief GPT Port Output Enable 1 Group A (R_POEG1GA)
  */
 
-typedef struct                         /*!< (@ 0x80047000) R_POEG1 Structure                                          */
+typedef struct                         /*!< (@ 0x80047000) R_POEG1GA Structure                                        */
 {
     union
     {
-        __IOM uint32_t POEG1GA;        /*!< (@ 0x00000000) POEG1 Group A Setting Register                             */
+        __IOM uint32_t POEG1G;         /*!< (@ 0x00000000) POEG1 Group Setting Register                               */
 
         struct
         {
@@ -5706,78 +5680,9 @@ typedef struct                         /*!< (@ 0x80047000) R_POEG1 Structure    
             __IOM uint32_t INV   : 1;  /*!< [28..28] GTETRGn Input Inverting                                          */
             __IOM uint32_t NFEN  : 1;  /*!< [29..29] Noise filter Enable                                              */
             __IOM uint32_t NFCS  : 2;  /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG1GA_b;
+        } POEG1G_b;
     };
-    __IM uint32_t RESERVED[255];
-
-    union
-    {
-        __IOM uint32_t POEG1GB;        /*!< (@ 0x00000400) POEG1 Group B Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF  : 1;  /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF  : 1;  /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF : 1;  /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF   : 1;  /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE  : 1;  /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE  : 1;  /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE : 1;  /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t             : 9;
-            __IM uint32_t ST     : 1;  /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t             : 11;
-            __IOM uint32_t INV   : 1;  /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN  : 1;  /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS  : 2;  /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG1GB_b;
-    };
-    __IM uint32_t RESERVED1[255];
-
-    union
-    {
-        __IOM uint32_t POEG1GC;        /*!< (@ 0x00000800) POEG1 Group C Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF  : 1;  /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF  : 1;  /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF : 1;  /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF   : 1;  /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE  : 1;  /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE  : 1;  /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE : 1;  /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t             : 9;
-            __IM uint32_t ST     : 1;  /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t             : 11;
-            __IOM uint32_t INV   : 1;  /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN  : 1;  /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS  : 2;  /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG1GC_b;
-    };
-    __IM uint32_t RESERVED2[255];
-
-    union
-    {
-        __IOM uint32_t POEG1GD;        /*!< (@ 0x00000C00) POEG1 Group D Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF  : 1;  /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF  : 1;  /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF : 1;  /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF   : 1;  /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE  : 1;  /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE  : 1;  /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE : 1;  /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t             : 9;
-            __IM uint32_t ST     : 1;  /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t             : 11;
-            __IOM uint32_t INV   : 1;  /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN  : 1;  /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS  : 2;  /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG1GD_b;
-    };
-} R_POEG1_Type;                        /*!< Size = 3076 (0xc04)                                                       */
+} R_POEG1GA_Type;                      /*!< Size = 4 (0x4)                                                            */
 
 /* =========================================================================================================================== */
 /* ================                                          R_DMAC0                                          ================ */
@@ -20329,18 +20234,18 @@ typedef struct                         /*!< (@ 0x81009000) R_RTC Structure      
 } R_RTC_Type;                             /*!< Size = 112 (0x70)                                                         */
 
 /* =========================================================================================================================== */
-/* ================                                          R_POEG2                                          ================ */
+/* ================                                         R_POEG2GA                                         ================ */
 /* =========================================================================================================================== */
 
 /**
- * @brief GPT Port Output Enable 2 (R_POEG2)
+ * @brief GPT Port Output Enable 2 Group A (R_POEG2GA)
  */
 
-typedef struct                         /*!< (@ 0x8100A000) R_POEG2 Structure                                          */
+typedef struct                         /*!< (@ 0x8100A000) R_POEG2GA Structure                                        */
 {
     union
     {
-        __IOM uint32_t POEG2GA;        /*!< (@ 0x00000000) POEG2 Group A Setting Register                             */
+        __IOM uint32_t POEG2G;         /*!< (@ 0x00000000) POEG2 Group Setting Register                               */
 
         struct
         {
@@ -20357,78 +20262,9 @@ typedef struct                         /*!< (@ 0x8100A000) R_POEG2 Structure    
             __IOM uint32_t INV   : 1;  /*!< [28..28] GTETRGn Input Inverting                                          */
             __IOM uint32_t NFEN  : 1;  /*!< [29..29] Noise filter Enable                                              */
             __IOM uint32_t NFCS  : 2;  /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG2GA_b;
+        } POEG2G_b;
     };
-    __IM uint32_t RESERVED[255];
-
-    union
-    {
-        __IOM uint32_t POEG2GB;        /*!< (@ 0x00000400) POEG2 Group B Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF  : 1;  /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF  : 1;  /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF : 1;  /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF   : 1;  /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE  : 1;  /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE  : 1;  /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE : 1;  /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t             : 9;
-            __IM uint32_t ST     : 1;  /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t             : 11;
-            __IOM uint32_t INV   : 1;  /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN  : 1;  /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS  : 2;  /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG2GB_b;
-    };
-    __IM uint32_t RESERVED1[255];
-
-    union
-    {
-        __IOM uint32_t POEG2GC;        /*!< (@ 0x00000800) POEG2 Group C Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF  : 1;  /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF  : 1;  /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF : 1;  /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF   : 1;  /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE  : 1;  /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE  : 1;  /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE : 1;  /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t             : 9;
-            __IM uint32_t ST     : 1;  /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t             : 11;
-            __IOM uint32_t INV   : 1;  /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN  : 1;  /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS  : 2;  /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG2GC_b;
-    };
-    __IM uint32_t RESERVED2[255];
-
-    union
-    {
-        __IOM uint32_t POEG2GD;        /*!< (@ 0x00000C00) POEG2 Group D Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF  : 1;  /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF  : 1;  /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF : 1;  /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF   : 1;  /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE  : 1;  /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE  : 1;  /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE : 1;  /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t             : 9;
-            __IM uint32_t ST     : 1;  /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t             : 11;
-            __IOM uint32_t INV   : 1;  /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN  : 1;  /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS  : 2;  /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG2GD_b;
-    };
-} R_POEG2_Type;                        /*!< Size = 3076 (0xc04)                                                       */
+} R_POEG2GA_Type;                      /*!< Size = 4 (0x4)                                                            */
 
 /* =========================================================================================================================== */
 /* ================                                           R_OTP                                           ================ */
@@ -24502,18 +24338,18 @@ typedef struct                         /*!< (@ 0x90005000) R_POE3 Structure     
 } R_POE3_Type;                         /*!< Size = 48 (0x30)                                                          */
 
 /* =========================================================================================================================== */
-/* ================                                          R_POEG0                                          ================ */
+/* ================                                         R_POEG0GA                                         ================ */
 /* =========================================================================================================================== */
 
 /**
- * @brief GPT Port Output Enable 0 (R_POEG0)
+ * @brief GPT Port Output Enable 0 Group A (R_POEG0GA)
  */
 
-typedef struct                          /*!< (@ 0x90006000) R_POEG0 Structure                                          */
+typedef struct                          /*!< (@ 0x90006000) R_POEG0GA Structure                                        */
 {
     union
     {
-        __IOM uint32_t POEG0GA;         /*!< (@ 0x00000000) POEG0 Group A Setting Register                             */
+        __IOM uint32_t POEG0G;          /*!< (@ 0x00000000) POEG0 Group Setting Register                               */
 
         struct
         {
@@ -24534,90 +24370,9 @@ typedef struct                          /*!< (@ 0x90006000) R_POEG0 Structure   
             __IOM uint32_t INV     : 1; /*!< [28..28] GTETRGn Input Inverting                                          */
             __IOM uint32_t NFEN    : 1; /*!< [29..29] Noise filter Enable                                              */
             __IOM uint32_t NFCS    : 2; /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG0GA_b;
+        } POEG0G_b;
     };
-    __IM uint32_t RESERVED[255];
-
-    union
-    {
-        __IOM uint32_t POEG0GB;         /*!< (@ 0x00000400) POEG0 Group B Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF    : 1; /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF    : 1; /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF   : 1; /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF     : 1; /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE    : 1; /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE    : 1; /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE   : 1; /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t               : 9;
-            __IM uint32_t ST       : 1; /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t               : 7;
-            __IOM uint32_t DERR0ST : 1; /*!< [24..24] DSMIF0 error status                                              */
-            __IOM uint32_t DERR1ST : 1; /*!< [25..25] DSMIF1 error status                                              */
-            __IOM uint32_t DERR0E  : 1; /*!< [26..26] Permit output disabled by DSMIF0 error detection                 */
-            __IOM uint32_t DERR1E  : 1; /*!< [27..27] Permit output disabled by DSMIF1 error detection                 */
-            __IOM uint32_t INV     : 1; /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN    : 1; /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS    : 2; /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG0GB_b;
-    };
-    __IM uint32_t RESERVED1[255];
-
-    union
-    {
-        __IOM uint32_t POEG0GC;         /*!< (@ 0x00000800) POEG0 Group C Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF    : 1; /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF    : 1; /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF   : 1; /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF     : 1; /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE    : 1; /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE    : 1; /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE   : 1; /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t               : 9;
-            __IM uint32_t ST       : 1; /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t               : 7;
-            __IOM uint32_t DERR0ST : 1; /*!< [24..24] DSMIF0 error status                                              */
-            __IOM uint32_t DERR1ST : 1; /*!< [25..25] DSMIF1 error status                                              */
-            __IOM uint32_t DERR0E  : 1; /*!< [26..26] Permit output disabled by DSMIF0 error detection                 */
-            __IOM uint32_t DERR1E  : 1; /*!< [27..27] Permit output disabled by DSMIF1 error detection                 */
-            __IOM uint32_t INV     : 1; /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN    : 1; /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS    : 2; /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG0GC_b;
-    };
-    __IM uint32_t RESERVED2[255];
-
-    union
-    {
-        __IOM uint32_t POEG0GD;         /*!< (@ 0x00000C00) POEG0 Group D Setting Register                             */
-
-        struct
-        {
-            __IOM uint32_t PIDF    : 1; /*!< [0..0] Port Input Detection Flag                                          */
-            __IOM uint32_t IOCF    : 1; /*!< [1..1] GPT Output Stop Request Detection Flag                             */
-            __IOM uint32_t OSTPF   : 1; /*!< [2..2] Oscillation Stop Detection Flag                                    */
-            __IOM uint32_t SSF     : 1; /*!< [3..3] Software Stop Flag                                                 */
-            __IOM uint32_t PIDE    : 1; /*!< [4..4] Port Input Detection Enable                                        */
-            __IOM uint32_t IOCE    : 1; /*!< [5..5] GPT Output Stop Request Enable                                     */
-            __IOM uint32_t OSTPE   : 1; /*!< [6..6] Enable Stopping Output on Stopping of Oscillation                  */
-            uint32_t               : 9;
-            __IM uint32_t ST       : 1; /*!< [16..16] GTETRGn Input Status Flag                                        */
-            uint32_t               : 7;
-            __IOM uint32_t DERR0ST : 1; /*!< [24..24] DSMIF0 error status                                              */
-            __IOM uint32_t DERR1ST : 1; /*!< [25..25] DSMIF1 error status                                              */
-            __IOM uint32_t DERR0E  : 1; /*!< [26..26] Permit output disabled by DSMIF0 error detection                 */
-            __IOM uint32_t DERR1E  : 1; /*!< [27..27] Permit output disabled by DSMIF1 error detection                 */
-            __IOM uint32_t INV     : 1; /*!< [28..28] GTETRGn Input Inverting                                          */
-            __IOM uint32_t NFEN    : 1; /*!< [29..29] Noise filter Enable                                              */
-            __IOM uint32_t NFCS    : 2; /*!< [31..30] Noise filter Clock Select                                        */
-        } POEG0GD_b;
-    };
-} R_POEG0_Type;                         /*!< Size = 3076 (0xc04)                                                       */
+} R_POEG0GA_Type;                       /*!< Size = 4 (0x4)                                                            */
 
 /* =========================================================================================================================== */
 /* ================                                         R_DSMIF0                                          ================ */
@@ -24930,7 +24685,10 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
  #define R_DOC_BASE           0x80044000UL
  #define R_ADC121_BASE        0x80045000UL
  #define R_TSU_BASE           0x80046000UL
- #define R_POEG1_BASE         0x80047000UL
+ #define R_POEG1GA_BASE       0x80047000UL
+ #define R_POEG1GB_BASE       0x80047400UL
+ #define R_POEG1GC_BASE       0x80047800UL
+ #define R_POEG1GD_BASE       0x80047C00UL
  #define R_DMAC0_BASE         0x80080000UL
  #define R_DMAC1_BASE         0x80081000UL
  #define R_ICU_NS_BASE        0x80090000UL
@@ -24961,7 +24719,10 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
  #define R_CRC1_BASE          0x81003000UL
  #define R_IIC2_BASE          0x81008000UL
  #define R_RTC_BASE           0x81009000UL
- #define R_POEG2_BASE         0x8100A000UL
+ #define R_POEG2GA_BASE       0x8100A000UL
+ #define R_POEG2GB_BASE       0x8100A400UL
+ #define R_POEG2GC_BASE       0x8100A800UL
+ #define R_POEG2GD_BASE       0x8100AC00UL
  #define R_OTP_BASE           0x81028000UL
  #define R_PORT_SR_BASE       0x81030000UL
  #define R_PTADR_BASE         0x81030C00UL
@@ -25006,7 +24767,10 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
  #define R_TFU_BASE           0x90003000UL
  #define R_ADC120_BASE        0x90004000UL
  #define R_POE3_BASE          0x90005000UL
- #define R_POEG0_BASE         0x90006000UL
+ #define R_POEG0GA_BASE       0x90006000UL
+ #define R_POEG0GB_BASE       0x90006400UL
+ #define R_POEG0GC_BASE       0x90006800UL
+ #define R_POEG0GD_BASE       0x90006C00UL
  #define R_DSMIF0_BASE        0x90008000UL
  #define R_DSMIF1_BASE        0x90008400UL
  #define R_GSC_BASE           0xC0060000UL
@@ -25048,7 +24812,10 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
  #define R_DOC           ((R_DOC_Type *) R_DOC_BASE)
  #define R_ADC121        ((R_ADC121_Type *) R_ADC121_BASE)
  #define R_TSU           ((R_TSU_Type *) R_TSU_BASE)
- #define R_POEG1         ((R_POEG1_Type *) R_POEG1_BASE)
+ #define R_POEG1GA       ((R_POEG1GA_Type *) R_POEG1GA_BASE)
+ #define R_POEG1GB       ((R_POEG1GA_Type *) R_POEG1GB_BASE)
+ #define R_POEG1GC       ((R_POEG1GA_Type *) R_POEG1GC_BASE)
+ #define R_POEG1GD       ((R_POEG1GA_Type *) R_POEG1GD_BASE)
  #define R_DMAC0         ((R_DMAC0_Type *) R_DMAC0_BASE)
  #define R_DMAC1         ((R_DMAC0_Type *) R_DMAC1_BASE)
  #define R_ICU_NS        ((R_ICU_NS_Type *) R_ICU_NS_BASE)
@@ -25079,7 +24846,10 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
  #define R_CRC1          ((R_CRC0_Type *) R_CRC1_BASE)
  #define R_IIC2          ((R_IIC0_Type *) R_IIC2_BASE)
  #define R_RTC           ((R_RTC_Type *) R_RTC_BASE)
- #define R_POEG2         ((R_POEG2_Type *) R_POEG2_BASE)
+ #define R_POEG2GA       ((R_POEG2GA_Type *) R_POEG2GA_BASE)
+ #define R_POEG2GB       ((R_POEG2GA_Type *) R_POEG2GB_BASE)
+ #define R_POEG2GC       ((R_POEG2GA_Type *) R_POEG2GC_BASE)
+ #define R_POEG2GD       ((R_POEG2GA_Type *) R_POEG2GD_BASE)
  #define R_OTP           ((R_OTP_Type *) R_OTP_BASE)
  #define R_PORT_SR       ((R_PORT_COMMON_Type *) R_PORT_SR_BASE)
  #define R_PTADR         ((R_PTADR_Type *) R_PTADR_BASE)
@@ -25124,7 +24894,10 @@ typedef struct                         /*!< (@ 0xC0060000) R_GSC Structure      
  #define R_TFU           ((R_TFU_Type *) R_TFU_BASE)
  #define R_ADC120        ((R_ADC121_Type *) R_ADC120_BASE)
  #define R_POE3          ((R_POE3_Type *) R_POE3_BASE)
- #define R_POEG0         ((R_POEG0_Type *) R_POEG0_BASE)
+ #define R_POEG0GA       ((R_POEG0GA_Type *) R_POEG0GA_BASE)
+ #define R_POEG0GB       ((R_POEG0GA_Type *) R_POEG0GB_BASE)
+ #define R_POEG0GC       ((R_POEG0GA_Type *) R_POEG0GC_BASE)
+ #define R_POEG0GD       ((R_POEG0GA_Type *) R_POEG0GD_BASE)
  #define R_DSMIF0        ((R_DSMIF0_Type *) R_DSMIF0_BASE)
  #define R_DSMIF1        ((R_DSMIF0_Type *) R_DSMIF1_BASE)
  #define R_GSC           ((R_GSC_Type *) R_GSC_BASE)

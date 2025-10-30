@@ -292,6 +292,7 @@ typedef struct st_dsmif_extended_cfg
 #endif
     dsmif_channel_cfg_t * p_channel_cfgs[DSMIF_MAX_NUM_CHANNELS]; ///< Configuration for each channel, set to NULL if unused
     dsmif_channel_mask_t  channel_mask;                           ///< Channel bitmask
+    void                * p_reg;                                  ///< Register base address
 } dsmif_extended_cfg_t;
 
 /** DSMIF instance control block. DO NOT INITIALIZE. */
@@ -405,14 +406,14 @@ fsp_err_t R_DSMIF_Open(adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg);
 fsp_err_t R_DSMIF_ScanStart(adc_ctrl_t * p_ctrl);
 fsp_err_t R_DSMIF_ScanStop(adc_ctrl_t * p_ctrl);
 fsp_err_t R_DSMIF_CfgSet(adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg);
-fsp_err_t R_DSMIF_Read(adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint32_t * const p_data);
 fsp_err_t R_DSMIF_StatusGet(adc_ctrl_t * p_ctrl, adc_status_t * p_status);
+fsp_err_t R_DSMIF_ErrorStatusGet(adc_ctrl_t * p_ctrl, dsmif_error_status_t * p_error_status);
+fsp_err_t R_DSMIF_Read(adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint32_t * const p_data);
 fsp_err_t R_DSMIF_Close(adc_ctrl_t * p_ctrl);
 fsp_err_t R_DSMIF_CallbackSet(adc_ctrl_t * const          p_ctrl,
                               void (                    * p_callback)(adc_callback_args_t *),
                               void const * const          p_context,
                               adc_callback_args_t * const p_callback_memory);
-fsp_err_t R_DSMIF_ErrorStatusGet(adc_ctrl_t * p_ctrl, dsmif_error_status_t * p_error_status);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup DSMIF)

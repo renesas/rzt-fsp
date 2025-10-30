@@ -167,27 +167,16 @@ fsp_err_t R_DSMIF_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
 
     dsmif_extended_cfg_t const * p_cfg_extend = p_cfg->p_extend;
 
+#if (1 == DSMIF_CFG_PARAM_CHECKING_ENABLE)
+    FSP_ASSERT(p_cfg_extend->p_reg);
+#endif
+
     /* mask_bit DSMIF 0 to 2 bits per unit */
     /* Calculate the register base address. */
-    uintptr_t base_address = (uintptr_t) R_DSMIF0;
     p_instance_ctrl->channel_mask = (uint32_t) (p_cfg_extend->channel_mask >> (p_cfg->unit * 3U));
-    if (p_cfg->unit < BSP_FEATURE_DSMIF_HAS_LLPP_UNIT)
-    {
-        base_address =
-            (uintptr_t) ((uintptr_t) R_DSMIF0 + (uint32_t) (BSP_FEATURE_DSMIF_ADDRESS_OFFSET * p_cfg->unit));
-    }
+    p_instance_ctrl->p_reg        = (R_DSMIF0_Type *) p_cfg_extend->p_reg;
 
-#if (0U != BSP_FEATURE_DSMIF_LLPP1_BASE_ADDRESS)
-    else
-    {
-        base_address =
-            (uintptr_t) ((uintptr_t) R_DSMIF6 +
-                         (BSP_FEATURE_DSMIF_ADDRESS_OFFSET * (p_cfg->unit % BSP_FEATURE_DSMIF_HAS_LLPP_UNIT)));
-    }
-#endif
-    p_instance_ctrl->p_reg = (R_DSMIF0_Type *) base_address;
-
-    /* Figure 39.2 Start flow of DSMIF */
+    /* Figure "Start flow of DSMIF" */
     /* Release from the module-stop state */
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_LPC_RESET);
     R_BSP_MODULE_START(FSP_IP_DSMIF, p_cfg->unit);
@@ -377,7 +366,7 @@ fsp_err_t R_DSMIF_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
  * Starts either synchronous control mode or individual control mode .
  *
  * @note After executing R_DSMIF_ScanStart, it is necessary to wait until the filter result is output stably.
- *       (Reference section 39.3.15.1 "Settling Time of Channel Activation")
+ *       (Reference section "Settling Time of Channel Activation")
  *
  * @retval  FSP_SUCCESS                Scan started or hardware triggers enabled successfully.
  * @retval  FSP_ERR_ASSERTION          An input pointer was NULL.

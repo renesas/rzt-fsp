@@ -175,10 +175,10 @@ fsp_err_t R_RTC_Open (rtc_ctrl_t * const p_ctrl, rtc_cfg_t const * const p_cfg)
     FSP_ERROR_RETURN(R_RTC_RTCA0SCMP_RTCA0SCMP_Msk >= p_cfg->freq_compare_value, FSP_ERR_INVALID_ARGUMENT);
 #endif
 
-    r_rtc_config_rtc_interrupts(p_instance_ctrl, p_cfg);
-
     /* Set the clock source for RTC. */
     r_rtc_set_clock_source(p_cfg);
+
+    r_rtc_config_rtc_interrupts(p_instance_ctrl, p_cfg);
 
     /** Mark driver as open by initializing it to "RTC" in its ASCII equivalent. */
     p_instance_ctrl->open = RTC_OPEN;
@@ -370,11 +370,10 @@ fsp_err_t R_RTC_CalendarTimeGet (rtc_ctrl_t * const p_ctrl, rtc_time_t * const p
 fsp_err_t R_RTC_CalendarAlarmSet (rtc_ctrl_t * const p_ctrl, rtc_alarm_time_t * const p_alarm)
 {
     rtc_instance_ctrl_t * p_instance_ctrl = (rtc_instance_ctrl_t *) p_ctrl;
-    fsp_err_t             err             = FSP_SUCCESS;
 
 #if RTC_CFG_PARAM_CHECKING_ENABLE
     FSP_ASSERT(NULL != p_instance_ctrl);
-    FSP_ASSERT(p_alarm);
+    FSP_ASSERT(NULL != p_alarm);
     FSP_ERROR_RETURN(RTC_OPEN == p_instance_ctrl->open, FSP_ERR_NOT_OPEN);
     FSP_ERROR_RETURN(p_instance_ctrl->p_cfg->alarm_irq >= 0, FSP_ERR_IRQ_BSP_DISABLED);
 
@@ -382,11 +381,8 @@ fsp_err_t R_RTC_CalendarAlarmSet (rtc_ctrl_t * const p_ctrl, rtc_alarm_time_t * 
     FSP_ERROR_RETURN(FSP_SUCCESS == r_rtc_alarm_time_and_date_validate(p_alarm), FSP_ERR_INVALID_ARGUMENT);
 #endif
 
-    if (p_instance_ctrl->p_cfg->alarm_irq >= 0)
-    {
-        /* Disable the ICU alarm interrupt request */
-        R_BSP_IrqDisable(p_instance_ctrl->p_cfg->alarm_irq);
-    }
+    /* Disable the ICU alarm interrupt request */
+    R_BSP_IrqDisable(p_instance_ctrl->p_cfg->alarm_irq);
 
     /* Set alarm time */
     volatile uint8_t field;
@@ -426,7 +422,7 @@ fsp_err_t R_RTC_CalendarAlarmSet (rtc_ctrl_t * const p_ctrl, rtc_alarm_time_t * 
 
     R_BSP_IrqEnable(p_instance_ctrl->p_cfg->alarm_irq);
 
-    return err;
+    return FSP_SUCCESS;
 }
 
 /*******************************************************************************************************************//**

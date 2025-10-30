@@ -189,7 +189,7 @@
  * ARM Cortex with GNU Toolchain: variable with const keyword
  * - Common
  *   - REG_0000H-REG_0FFCH: g_rsip_addr_0000h + offset (imm12)
- * - if (5U == RSIP_PRV_IP_SERIES_MAJOR)
+ * - if (5U == RSIP_PRV_ADDR_TYPE)
  *   - REG_1000H-REG_1FFCH: g_rsip_addr_1000h + offset (imm12)
  *   - REG_2000H-REG_24FCH: g_rsip_addr_2000h + offset (imm12)
  *   - REG_1420H-REG_143CH: g_rsip_addr_1420h + offset (imm5)
@@ -205,7 +205,7 @@
  #define RSIP_PRV_ADDR_0000H       RSIP_PRV_ADDR_VAL_0000H
 #endif
 
-#if defined(__ARM_ARCH) && defined(__GNUC__) && (5U == RSIP_PRV_IP_SERIES_MAJOR)
+#if defined(__ARM_ARCH) && defined(__GNUC__) && (5U == RSIP_PRV_ADDR_TYPE)
  #define RSIP_PRV_ADDR_1000H       g_rsip_addr_1000h
  #define RSIP_PRV_ADDR_2000H       g_rsip_addr_2000h
  #define RSIP_PRV_ADDR_1420H       g_rsip_addr_1420h
@@ -2607,7 +2607,7 @@
 extern uintptr_t const g_rsip_addr_0000h;
 #endif
 
-#if defined(__ARM_ARCH) && defined(__GNUC__) && (5U == RSIP_PRV_IP_SERIES_MAJOR)
+#if defined(__ARM_ARCH) && defined(__GNUC__) && (5U == RSIP_PRV_ADDR_TYPE)
 extern uintptr_t const g_rsip_addr_1000h;
 extern uintptr_t const g_rsip_addr_2000h;
 extern uintptr_t const g_rsip_addr_1420h;

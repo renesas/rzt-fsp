@@ -259,12 +259,12 @@ __packed struct  __iar_u32
 
  #include "iccarm_builtin.h"
 
- #define __enable_irq           __iar_builtin_enable_interrupt
- #define __disable_irq          __iar_builtin_disable_interrupt
- #define __enable_fault_irq     __iar_builtin_enable_fiq
- #define __disable_fault_irq    __iar_builtin_disable_fiq
- #define __arm_rsr              __iar_builtin_rsr
- #define __arm_wsr              __iar_builtin_wsr
+ #define __enable_irq           __iar_builtin_enable_interrupt  // DEPRECATED
+ #define __disable_irq          __iar_builtin_disable_interrupt // DEPRECATED
+ #define __enable_fault_irq     __iar_builtin_enable_fiq        // DEPRECATED
+ #define __disable_fault_irq    __iar_builtin_disable_fiq       // DEPRECATED
+ #define __arm_rsr              __iar_builtin_rsr               // DEPRECATED
+ #define __arm_wsr              __iar_builtin_wsr               // DEPRECATED
 
  #if __FPU_PRESENT
   #define __get_FPSCR()        (__arm_rsr("FPSCR"))
@@ -346,7 +346,7 @@ __STATIC_FORCEINLINE uint8_t __CLZ (uint32_t value)
     return n;
 }
 
- #define __CLREX    __iar_builtin_CLREX
+ #define __CLREX    __iar_builtin_CLREX // DEPRECATED
 
 __STATIC_FORCEINLINE void __DMB (void)
 {
@@ -363,9 +363,9 @@ __STATIC_FORCEINLINE void __ISB (void)
     __ASM volatile ("ISB SY");
 }
 
- #define __LDREXB    __iar_builtin_LDREXB
- #define __LDREXH    __iar_builtin_LDREXH
- #define __LDREXW    __iar_builtin_LDREX
+ #define __LDREXB    __iar_builtin_LDREXB // DEPRECATED
+ #define __LDREXH    __iar_builtin_LDREXH // DEPRECATED
+ #define __LDREXW    __iar_builtin_LDREX  // DEPRECATED
 
 __STATIC_FORCEINLINE uint32_t __RBIT (uint32_t value)
 {
@@ -401,91 +401,91 @@ __STATIC_FORCEINLINE uint32_t __REV16 (uint32_t value)
     return result;
 }
 
-__IAR_FT int16_t __REVSH (int16_t val)
+__IAR_FT int16_t __REVSH (int16_t val) // DEPRECATED
 {
     return (int16_t) __iar_builtin_REVSH(val);
 }
 
- #define __ROR           __iar_builtin_ROR
- #define __RRX           __iar_builtin_RRX
+ #define __ROR           __iar_builtin_ROR    // DEPRECATED
+ #define __RRX           __iar_builtin_RRX    // DEPRECATED
 
- #define __SEV           __iar_builtin_SEV
+ #define __SEV           __iar_builtin_SEV    // DEPRECATED
 
- #define __SSAT          __iar_builtin_SSAT
+ #define __SSAT          __iar_builtin_SSAT   // DEPRECATED
 
- #define __STREXB        __iar_builtin_STREXB
- #define __STREXH        __iar_builtin_STREXH
- #define __STREXW        __iar_builtin_STREX
+ #define __STREXB        __iar_builtin_STREXB // DEPRECATED
+ #define __STREXH        __iar_builtin_STREXH // DEPRECATED
+ #define __STREXW        __iar_builtin_STREX  // DEPRECATED
 
- #define __USAT          __iar_builtin_USAT
+ #define __USAT          __iar_builtin_USAT   // DEPRECATED
 
- #define __WFE           __iar_builtin_WFE
- #define __WFI           __iar_builtin_WFI
+ #define __WFI()    __ASM volatile ("wfi" ::: "memory")
+ #define __WFE()    __ASM volatile ("wfe" ::: "memory")
 
- #define __SADD8         __iar_builtin_SADD8
- #define __QADD8         __iar_builtin_QADD8
- #define __SHADD8        __iar_builtin_SHADD8
- #define __UADD8         __iar_builtin_UADD8
- #define __UQADD8        __iar_builtin_UQADD8
- #define __UHADD8        __iar_builtin_UHADD8
- #define __SSUB8         __iar_builtin_SSUB8
- #define __QSUB8         __iar_builtin_QSUB8
- #define __SHSUB8        __iar_builtin_SHSUB8
- #define __USUB8         __iar_builtin_USUB8
- #define __UQSUB8        __iar_builtin_UQSUB8
- #define __UHSUB8        __iar_builtin_UHSUB8
- #define __SADD16        __iar_builtin_SADD16
- #define __QADD16        __iar_builtin_QADD16
- #define __SHADD16       __iar_builtin_SHADD16
- #define __UADD16        __iar_builtin_UADD16
- #define __UQADD16       __iar_builtin_UQADD16
- #define __UHADD16       __iar_builtin_UHADD16
- #define __SSUB16        __iar_builtin_SSUB16
- #define __QSUB16        __iar_builtin_QSUB16
- #define __SHSUB16       __iar_builtin_SHSUB16
- #define __USUB16        __iar_builtin_USUB16
- #define __UQSUB16       __iar_builtin_UQSUB16
- #define __UHSUB16       __iar_builtin_UHSUB16
- #define __SASX          __iar_builtin_SASX
- #define __QASX          __iar_builtin_QASX
- #define __SHASX         __iar_builtin_SHASX
- #define __UASX          __iar_builtin_UASX
- #define __UQASX         __iar_builtin_UQASX
- #define __UHASX         __iar_builtin_UHASX
- #define __SSAX          __iar_builtin_SSAX
- #define __QSAX          __iar_builtin_QSAX
- #define __SHSAX         __iar_builtin_SHSAX
- #define __USAX          __iar_builtin_USAX
- #define __UQSAX         __iar_builtin_UQSAX
- #define __UHSAX         __iar_builtin_UHSAX
- #define __USAD8         __iar_builtin_USAD8
- #define __USADA8        __iar_builtin_USADA8
- #define __SSAT16        __iar_builtin_SSAT16
- #define __USAT16        __iar_builtin_USAT16
- #define __UXTB16        __iar_builtin_UXTB16
- #define __UXTAB16       __iar_builtin_UXTAB16
- #define __SXTB16        __iar_builtin_SXTB16
- #define __SXTAB16       __iar_builtin_SXTAB16
- #define __SMUAD         __iar_builtin_SMUAD
- #define __SMUADX        __iar_builtin_SMUADX
- #define __SMMLA         __iar_builtin_SMMLA
- #define __SMLAD         __iar_builtin_SMLAD
- #define __SMLADX        __iar_builtin_SMLADX
- #define __SMLALD        __iar_builtin_SMLALD
- #define __SMLALDX       __iar_builtin_SMLALDX
- #define __SMUSD         __iar_builtin_SMUSD
- #define __SMUSDX        __iar_builtin_SMUSDX
- #define __SMLSD         __iar_builtin_SMLSD
- #define __SMLSDX        __iar_builtin_SMLSDX
- #define __SMLSLD        __iar_builtin_SMLSLD
- #define __SMLSLDX       __iar_builtin_SMLSLDX
- #define __SEL           __iar_builtin_SEL
- #define __QADD          __iar_builtin_QADD
- #define __QSUB          __iar_builtin_QSUB
- #define __PKHBT         __iar_builtin_PKHBT
- #define __PKHTB         __iar_builtin_PKHTB
+ #define __SADD8         __iar_builtin_SADD8   // DEPRECATED
+ #define __QADD8         __iar_builtin_QADD8   // DEPRECATED
+ #define __SHADD8        __iar_builtin_SHADD8  // DEPRECATED
+ #define __UADD8         __iar_builtin_UADD8   // DEPRECATED
+ #define __UQADD8        __iar_builtin_UQADD8  // DEPRECATED
+ #define __UHADD8        __iar_builtin_UHADD8  // DEPRECATED
+ #define __SSUB8         __iar_builtin_SSUB8   // DEPRECATED
+ #define __QSUB8         __iar_builtin_QSUB8   // DEPRECATED
+ #define __SHSUB8        __iar_builtin_SHSUB8  // DEPRECATED
+ #define __USUB8         __iar_builtin_USUB8   // DEPRECATED
+ #define __UQSUB8        __iar_builtin_UQSUB8  // DEPRECATED
+ #define __UHSUB8        __iar_builtin_UHSUB8  // DEPRECATED
+ #define __SADD16        __iar_builtin_SADD16  // DEPRECATED
+ #define __QADD16        __iar_builtin_QADD16  // DEPRECATED
+ #define __SHADD16       __iar_builtin_SHADD16 // DEPRECATED
+ #define __UADD16        __iar_builtin_UADD16  // DEPRECATED
+ #define __UQADD16       __iar_builtin_UQADD16 // DEPRECATED
+ #define __UHADD16       __iar_builtin_UHADD16 // DEPRECATED
+ #define __SSUB16        __iar_builtin_SSUB16  // DEPRECATED
+ #define __QSUB16        __iar_builtin_QSUB16  // DEPRECATED
+ #define __SHSUB16       __iar_builtin_SHSUB16 // DEPRECATED
+ #define __USUB16        __iar_builtin_USUB16  // DEPRECATED
+ #define __UQSUB16       __iar_builtin_UQSUB16 // DEPRECATED
+ #define __UHSUB16       __iar_builtin_UHSUB16 // DEPRECATED
+ #define __SASX          __iar_builtin_SASX    // DEPRECATED
+ #define __QASX          __iar_builtin_QASX    // DEPRECATED
+ #define __SHASX         __iar_builtin_SHASX   // DEPRECATED
+ #define __UASX          __iar_builtin_UASX    // DEPRECATED
+ #define __UQASX         __iar_builtin_UQASX   // DEPRECATED
+ #define __UHASX         __iar_builtin_UHASX   // DEPRECATED
+ #define __SSAX          __iar_builtin_SSAX    // DEPRECATED
+ #define __QSAX          __iar_builtin_QSAX    // DEPRECATED
+ #define __SHSAX         __iar_builtin_SHSAX   // DEPRECATED
+ #define __USAX          __iar_builtin_USAX    // DEPRECATED
+ #define __UQSAX         __iar_builtin_UQSAX   // DEPRECATED
+ #define __UHSAX         __iar_builtin_UHSAX   // DEPRECATED
+ #define __USAD8         __iar_builtin_USAD8   // DEPRECATED
+ #define __USADA8        __iar_builtin_USADA8  // DEPRECATED
+ #define __SSAT16        __iar_builtin_SSAT16  // DEPRECATED
+ #define __USAT16        __iar_builtin_USAT16  // DEPRECATED
+ #define __UXTB16        __iar_builtin_UXTB16  // DEPRECATED
+ #define __UXTAB16       __iar_builtin_UXTAB16 // DEPRECATED
+ #define __SXTB16        __iar_builtin_SXTB16  // DEPRECATED
+ #define __SXTAB16       __iar_builtin_SXTAB16 // DEPRECATED
+ #define __SMUAD         __iar_builtin_SMUAD   // DEPRECATED
+ #define __SMUADX        __iar_builtin_SMUADX  // DEPRECATED
+ #define __SMMLA         __iar_builtin_SMMLA   // DEPRECATED
+ #define __SMLAD         __iar_builtin_SMLAD   // DEPRECATED
+ #define __SMLADX        __iar_builtin_SMLADX  // DEPRECATED
+ #define __SMLALD        __iar_builtin_SMLALD  // DEPRECATED
+ #define __SMLALDX       __iar_builtin_SMLALDX // DEPRECATED
+ #define __SMUSD         __iar_builtin_SMUSD   // DEPRECATED
+ #define __SMUSDX        __iar_builtin_SMUSDX  // DEPRECATED
+ #define __SMLSD         __iar_builtin_SMLSD   // DEPRECATED
+ #define __SMLSDX        __iar_builtin_SMLSDX  // DEPRECATED
+ #define __SMLSLD        __iar_builtin_SMLSLD  // DEPRECATED
+ #define __SMLSLDX       __iar_builtin_SMLSLDX // DEPRECATED
+ #define __SEL           __iar_builtin_SEL     // DEPRECATED
+ #define __QADD          __iar_builtin_QADD    // DEPRECATED
+ #define __QSUB          __iar_builtin_QSUB    // DEPRECATED
+ #define __PKHBT         __iar_builtin_PKHBT   // DEPRECATED
+ #define __PKHTB         __iar_builtin_PKHTB   // DEPRECATED
 
-#else                                  /* __ICCARM_INTRINSICS_VERSION__ == 2 */
+#else                                          /* __ICCARM_INTRINSICS_VERSION__ == 2 */
 
  #if !__FPU_PRESENT
   #define __get_FPSCR    __cmsis_iar_get_FPSR_not_active

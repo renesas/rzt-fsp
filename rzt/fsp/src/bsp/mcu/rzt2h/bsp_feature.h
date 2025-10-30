@@ -65,8 +65,10 @@ FSP_HEADER
 #define BSP_FEATURE_BSP_CS0_BASE_ADDRESS                       (0x70000000U)
 #define BSP_FEATURE_BSP_CS0_SIZE                               (0x10000000U)
 #define BSP_FEATURE_BSP_DDRSS_SUPPORTED                        (1U)
+#define BSP_FEATURE_BSP_EMMC_BOOT_CHANNEL                      (0U)
 #define BSP_FEATURE_BSP_ENCOUT_SUPPORTED                       (1U)
 #define BSP_FEATURE_BSP_ENDAT_UNIT                             (16U)
+#define BSP_FEATURE_BSP_ESD_BOOT_CHANNEL                       (1U)
 #define BSP_FEATURE_BSP_EVENT_NUM_MAX                          (970)
 #define BSP_FEATURE_BSP_HAS_CR52_CPU1_TCM                      (1U)
 #define BSP_FEATURE_BSP_HAS_CR52_CPU1_LLPP                     (1U)
@@ -110,6 +112,8 @@ FSP_HEADER
 #define BSP_FEATURE_BSP_NON_SELECTABLE_INTERRUPT_EVENT_NUM     (384)
 #define BSP_FEATURE_BSP_PCIE_SUPPORTED                         (1U)
 #define BSP_FEATURE_BSP_SDHI_SUPPORTED                         (1U)
+#define BSP_FEATURE_BSP_SDHI_VIRTUAL_ADDRESS                   (0x88000000U)
+#define BSP_FEATURE_BSP_SDHI_VIRTUAL_SIZE                      (0x0C000000U)
 #define BSP_FEATURE_BSP_SELECTABLE_INTERRUPT_EVENT_NUM         (160)
 #define BSP_FEATURE_BSP_SELECTABLE_INTERRUPT_START             (384)
 #define BSP_FEATURE_BSP_SEMAPHORE_SUPPORTED                    (1U)
@@ -258,6 +262,8 @@ FSP_HEADER
 
 #define BSP_FEATURE_GPT_32BIT_CHANNEL_MASK                     (0x3FFFF)
 #define BSP_FEATURE_GPT_CHANNEL                                (56U)
+#define BSP_FEATURE_GPT_CLOCK_DIVIDER_STEP_SIZE                (2U)
+#define BSP_FEATURE_GPT_CLOCK_DIVIDER_VALUE_7_9_VALID          (0U)
 #define BSP_FEATURE_GPT_INPUT_CAPTURE_SIGNAL_SELECTABLE        (1U)
 #define BSP_FEATURE_GPT_LLPP_BASE_ADDRESS                      (R_GPT00_0_BASE)
 #define BSP_FEATURE_GPT_LLPP_BASE_CHANNEL                      (0U) // LLPP channel: ch0-29
@@ -349,7 +355,10 @@ FSP_HEADER
 #define BSP_FEATURE_LPM_SNZREQCR_MASK                          (0x7342FFFFU)
 
 #define BSP_FEATURE_MAILBOX_SEM_SUPPORTED                      (1U)
+#define BSP_FEATURE_MAILBOX_SEM_INTERNAL_CPU_SEM_SUPPORTED     (1U)
 
+#define BSP_FEATURE_MTU3_CLOCK_DIVIDER_STEP_SIZE               (2U)
+#define BSP_FEATURE_MTU3_CLOCK_DIVIDER_VALUE_7_9_VALID         (0U)
 #define BSP_FEATURE_MTU3_MAX_CHANNELS                          (9U)
 #define BSP_FEATURE_MTU3_UVW_MAX_CHANNELS                      (3U)
 #define BSP_FEATURE_MTU3_VALID_CHANNEL_MASK                    (0x01FF)

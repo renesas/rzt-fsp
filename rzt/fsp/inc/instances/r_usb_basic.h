@@ -72,11 +72,11 @@ fsp_err_t R_USB_UsedPipesGet(usb_ctrl_t * const p_ctrl, uint16_t * p_pipe, uint8
 
 fsp_err_t R_USB_PipeInfoGet(usb_ctrl_t * const p_ctrl, usb_pipe_t * p_info, uint8_t pipe_number);
 
-fsp_err_t R_USB_PullUp(usb_ctrl_t * const p_ctrl, uint8_t state);
-
 fsp_err_t R_USB_EventGet(usb_ctrl_t * const p_ctrl, usb_status_t * event);
 
 fsp_err_t R_USB_Callback(usb_callback_t * p_callback);
+
+fsp_err_t R_USB_PullUp(usb_ctrl_t * const p_ctrl, uint8_t state);
 
 fsp_err_t R_USB_HostControlTransfer(usb_ctrl_t * const p_ctrl,
                                     usb_setup_t      * p_setup,
@@ -90,6 +90,10 @@ fsp_err_t R_USB_PeriControlDataSet(usb_ctrl_t * const p_ctrl, uint8_t * p_buf, u
 fsp_err_t R_USB_PeriControlStatusSet(usb_ctrl_t * const p_ctrl, usb_setup_status_t status);
 
 fsp_err_t R_USB_RemoteWakeup(usb_ctrl_t * const p_ctrl);
+
+fsp_err_t R_USB_DriverActivate(usb_ctrl_t * const p_api_ctrl);
+
+fsp_err_t R_USB_CallbackMemorySet(usb_ctrl_t * const p_api_ctrl, usb_callback_args_t * p_callback_memory);
 
 fsp_err_t R_USB_ModuleNumberGet(usb_ctrl_t * const p_ctrl, uint8_t * module_number);
 
@@ -108,10 +112,6 @@ fsp_err_t R_USB_SetupGet(usb_ctrl_t * const p_ctrl, usb_setup_t * setup);
 fsp_err_t R_USB_OtgCallbackSet(usb_ctrl_t * const p_api_ctrl, usb_otg_callback_t * p_callback);
 
 fsp_err_t R_USB_OtgSRP(usb_ctrl_t * const p_api_ctrl);
-
-fsp_err_t R_USB_DriverActivate(usb_ctrl_t * const p_api_ctrl);
-
-fsp_err_t R_USB_CallbackMemorySet(usb_ctrl_t * const p_api_ctrl, usb_callback_args_t * p_callback_memory);
 
 /* Common macro for FSP header files. There is also a corresponding FSP_HEADER macro at the top of this file. */
 FSP_FOOTER

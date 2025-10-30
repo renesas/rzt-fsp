@@ -89,6 +89,12 @@
 #define DMAC_PRV_RSSEL_REQ_SEL_OFFSET      (10U)
 #define DMAC_PRV_RSSEL_REQ_SEL_MASK        (0x3FFU)
 
+/* DMAC Common Control Register Bit Field Definitions */
+#define DMAC_PRV_CMNCR_AL_OFFSET           (24U)
+#define DMAC_PRV_CMNCR_AL_MASK             (0x01U)
+#define DMAC_PRV_CMNCR_TL_OFFSET           (28U)
+#define DMAC_PRV_CMNCR_TL_MASK             (0x01U)
+
 /***********************************************************************************************************************
  * Private function prototypes
  **********************************************************************************************************************/
@@ -198,6 +204,16 @@ fsp_err_t R_DMAC_Open (transfer_ctrl_t * const p_ctrl, transfer_cfg_t const * co
     {
         /* Do nothing. */
     }
+
+    /* Set external output signal active levels. */
+    uint32_t cmncr = R_BSC->CMNCR;
+
+    cmncr &=
+        (uint32_t) ~(DMAC_PRV_CMNCR_AL_MASK << DMAC_PRV_CMNCR_AL_OFFSET | DMAC_PRV_CMNCR_TL_MASK <<
+                     DMAC_PRV_CMNCR_TL_OFFSET);
+    cmncr       |= (p_extend->dack_active_level & DMAC_PRV_CMNCR_AL_MASK) << DMAC_PRV_CMNCR_AL_OFFSET;
+    cmncr       |= (p_extend->tend_active_level & DMAC_PRV_CMNCR_TL_MASK) << DMAC_PRV_CMNCR_TL_OFFSET;
+    R_BSC->CMNCR = cmncr;
 
     /* Set callback and context pointers, if configured */
     p_instance_ctrl->p_callback        = p_extend->p_callback;
@@ -385,6 +401,7 @@ fsp_err_t R_DMAC_SoftwareStop (transfer_ctrl_t * const p_ctrl)
  *
  * @retval FSP_SUCCESS              Counter value written successfully.
  * @retval FSP_ERR_ASSERTION        An input parameter is invalid.
+ * @retval FSP_ERR_INVALID_ADDRESS  Descriptor address is invalid.
  * @retval FSP_ERR_NOT_OPEN         Handle is not initialized.  Call R_DMAC_Open to initialize the control block.
  **********************************************************************************************************************/
 fsp_err_t R_DMAC_Enable (transfer_ctrl_t * const p_ctrl)
@@ -702,8 +719,9 @@ fsp_err_t R_DMAC_Close (transfer_ctrl_t * const p_ctrl)
  *
  * @param[in]  p_instance_ctrl             Pointer to control structure.
  *
- * @retval     FSP_SUCCESS          Successful close.
- * @retval     FSP_ERR_ASSERTION    An input parameter is invalid.
+ * @retval     FSP_SUCCESS                 Successful close.
+ * @retval     FSP_ERR_ASSERTION           An input parameter is invalid.
+ * @retval     FSP_ERR_INVALID_ADDRESS     Descriptor address is invalid.
  **********************************************************************************************************************/
 static fsp_err_t r_dmac_prv_enable (dmac_instance_ctrl_t * p_instance_ctrl)
 {
@@ -1336,53 +1354,77 @@ static fsp_err_t r_dmac_info_parameter_checking (transfer_info_t const * const p
  **********************************************************************************************************************/
 static fsp_err_t r_dmac_link_descriptor_parameter_checking (dmac_link_cfg_t const * p_descriptor)
 {
+    /* Provide a pointer variable for accessing values stored in the descriptor.
+     * In CA55 environment, the virtual address of the descriptor is stored. */
     dmac_link_cfg_t const * p_current_descriptor = p_descriptor;
+
+    /* Provide a uint32_t variable to store the descriptor address value (physical address).
+     * Since DMAC handles 32 bit physical addresses, the descriptor address is evaluated as same condition. */
+    uint32_t current_descriptor_pa;
+
  #if defined(BSP_CFG_CORE_CA55)
     uint64_t  va;
     uint64_t  pa;
     fsp_err_t err;
- #endif
-    do
-    {
- #if defined(BSP_CFG_CORE_CA55)
-        va  = (uint64_t) p_current_descriptor;
-        err = R_BSP_MmuVatoPa(va, &pa);
-        FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
 
-        /* Start address of the link destination must be 4 byte align.
-         * (See section 'Next Link Address Register n (NXLA_n)' of the RZ microprocessor manual) */
-        FSP_ASSERT(0U == (pa & DMAC_PRV_MASK_ALIGN_N_BYTES(DMAC_PRV_MASK_ALIGN_4_BYTES)));
+    /* In CA55 environment, address convertion is required to store physical address to current_descriptor_pa
+     * since a virtual address is provided as the descriptor address. */
+    va  = (uint64_t) p_current_descriptor;
+    err = R_BSP_MmuVatoPa(va, &pa);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
 
-        /* Start address of the link destination must not be in TCM area.
-         * (See section 'TCM Access via AXIS Interface of Cortex-R52' of the RZ microprocessor manual) */
-        FSP_ERROR_RETURN(false == r_dmac_address_tcm_check((uintptr_t) pa), FSP_ERR_ASSERTION);
-        FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uintptr_t) pa), FSP_ERR_ASSERTION);
-
-        err = R_BSP_MmuPatoVa(pa, &va, BSP_MMU_CONVERSION_NON_CACHE);
-        FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+    current_descriptor_pa = (uint32_t) pa;
  #else
 
+    /* In CR52 environment, the received descriptor address is stored without conversion
+     * since MMU is not implemented. */
+    current_descriptor_pa = (uint32_t) p_current_descriptor;
+ #endif
+
+    do
+    {
         /* Start address of the link destination must be 4 byte align.
          * (See section 'Next Link Address Register n (NXLA_n)' of the RZ microprocessor manual) */
-        FSP_ASSERT(0U == ((uintptr_t) p_current_descriptor & DMAC_PRV_MASK_ALIGN_N_BYTES(DMAC_PRV_MASK_ALIGN_4_BYTES)));
+        FSP_ASSERT(0U == (current_descriptor_pa & DMAC_PRV_MASK_ALIGN_N_BYTES(DMAC_PRV_MASK_ALIGN_4_BYTES)));
 
         /* Start address of the link destination must not be in TCM area.
          * (See section 'TCM Access via AXIS Interface of Cortex-R52' of the RZ microprocessor manual) */
-        FSP_ERROR_RETURN(false == r_dmac_address_tcm_check((uintptr_t) p_current_descriptor), FSP_ERR_ASSERTION);
-        FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uintptr_t) p_current_descriptor),
+        FSP_ERROR_RETURN(false == r_dmac_address_tcm_check((uintptr_t) current_descriptor_pa), FSP_ERR_ASSERTION);
+        FSP_ERROR_RETURN(false == r_dmac_address_tcm_via_axis_check((uintptr_t) current_descriptor_pa),
                          FSP_ERR_ASSERTION);
- #endif
+
         if (DMAC_LINK_END_ENABLE == p_current_descriptor->header.link_end)
         {
             break;
         }
 
  #if defined(BSP_CFG_CORE_CA55)
-        p_current_descriptor = (dmac_link_cfg_t *) (uintptr_t) (p_current_descriptor->next_link_addr);
+
+        /* Physical address is stored in next_link_addr. */
+        current_descriptor_pa = p_current_descriptor->next_link_addr;
+
+        /* FSP_SUCCESS should be returned when next link address is NULL
+         * since NULL is stored as next link address at the end of the list. */
+        if (NULL != (void *) (uintptr_t) current_descriptor_pa)
+        {
+            /* Store virtual address of the next descriptor to p_current_descriptor
+             * in order to access the values in the next descriptor. */
+            pa  = current_descriptor_pa;
+            err = R_BSP_MmuPatoVa(pa, &va, BSP_MMU_CONVERSION_NON_CACHE);
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+            p_current_descriptor = (dmac_link_cfg_t *) va;
+        }
+
  #else
-        p_current_descriptor = (dmac_link_cfg_t *) (uintptr_t) (p_current_descriptor->p_next_link_addr);
+        current_descriptor_pa = (uint32_t) (p_current_descriptor->p_next_link_addr);
+
+        /* In CR52 environment, the received descriptor address is stored without conversion
+         * since MMU is not implemented. */
+        p_current_descriptor = (dmac_link_cfg_t *) current_descriptor_pa;
  #endif
-    } while (NULL != p_current_descriptor);
+
+        /* If NULL is stored in the next link address (physical address), it indicates the end of the list. */
+    } while (NULL != (void *) (uintptr_t) current_descriptor_pa);
 
     return FSP_SUCCESS;
 }
@@ -1392,8 +1434,9 @@ static fsp_err_t r_dmac_link_descriptor_parameter_checking (dmac_link_cfg_t cons
  *
  * @param[in]   p_instance_ctrl                 Pointer to control structure.
  *
- * @retval      FSP_SUCCESS            Alignment on source and destination pointers is valid.
- * @retval      FSP_ERR_ASSERTION      The current configuration is invalid.
+ * @retval      FSP_SUCCESS                  Alignment on source and destination pointers is valid.
+ * @retval      FSP_ERR_ASSERTION            The current configuration is invalid.
+ * @retval      FSP_ERR_INVALID_ADDRESS      Descriptor address is invalid.
  **********************************************************************************************************************/
 static fsp_err_t r_dmac_enable_parameter_checking (dmac_instance_ctrl_t * const p_instance_ctrl)
 {
@@ -1419,8 +1462,8 @@ static fsp_err_t r_dmac_enable_parameter_checking (dmac_instance_ctrl_t * const 
  *
  * @param[in]   p_instance_ctrl                 Pointer to control structure.
  *
- * @retval      FSP_SUCCESS            Alignment on source and destination pointers is valid.
- * @retval      FSP_ERR_ASSERTION      The current configuration is invalid.
+ * @retval      FSP_SUCCESS                  Alignment on source and destination pointers is valid.
+ * @retval      FSP_ERR_ASSERTION            The current configuration is invalid.
  **********************************************************************************************************************/
 static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_ctrl_t * const p_instance_ctrl)
 {
@@ -1486,15 +1529,34 @@ static fsp_err_t r_dmac_enable_parameter_checking_register_mode (dmac_instance_c
  *
  * @param[in]   p_instance_ctrl                 Pointer to control structure.
  *
- * @retval      FSP_SUCCESS            Alignment on source and destination pointers is valid.
- * @retval      FSP_ERR_ASSERTION      The current configuration is invalid.
+ * @retval      FSP_SUCCESS                  Alignment on source and destination pointers is valid.
+ * @retval      FSP_ERR_ASSERTION            The current configuration is invalid.
+ * @retval      FSP_ERR_INVALID_ADDRESS      Descriptor address is invalid.
  **********************************************************************************************************************/
 static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_t * const p_instance_ctrl)
 {
     FSP_PARAMETER_NOT_USED(p_instance_ctrl);
     FSP_ASSERT(NULL != p_instance_ctrl->p_descriptor);
 
+    /* Provide a pointer variable for accessing values stored in the descriptor.
+     * In CA55 environment, the virtual address of the descriptor is stored. */
     dmac_link_cfg_t const * p_current_descriptor = p_instance_ctrl->p_descriptor;
+
+    /* Provide a uint32_t variable to store the descriptor address value (physical address).
+     * Since DMAC handles 32 bit physical addresses, the descriptor address is evaluated as same condition. */
+    uint32_t current_descriptor_pa;
+
+ #if defined(BSP_CFG_CORE_CA55)
+    uint64_t  va;
+    uint64_t  pa;
+    fsp_err_t err;
+
+    /* Ensure the address of the initial descriptor is valid. */
+    va  = (uint64_t) p_current_descriptor;
+    err = R_BSP_MmuVatoPa(va, &pa);
+    FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+ #endif
+
     do
     {
  #if defined(BSP_CFG_CORE_CA55)
@@ -1537,11 +1599,32 @@ static fsp_err_t r_dmac_enable_parameter_checking_link_mode (dmac_instance_ctrl_
         }
 
  #if defined(BSP_CFG_CORE_CA55)
-        p_current_descriptor = (dmac_link_cfg_t *) (uintptr_t) (p_current_descriptor->next_link_addr);
+
+        /* Physical address is stored in next_link_addr. */
+        current_descriptor_pa = p_current_descriptor->next_link_addr;
+
+        /* FSP_SUCCESS should be returned when the next link address is NULL
+         * since NULL is stored as next link address at the end of the list. */
+        if (NULL != (void *) (uintptr_t) current_descriptor_pa)
+        {
+            /* Store virtual address of the next descriptor to p_current_descriptor
+             * in order to access the values in the next descriptor. */
+            pa  = current_descriptor_pa;
+            err = R_BSP_MmuPatoVa(pa, &va, BSP_MMU_CONVERSION_NON_CACHE);
+            FSP_ERROR_RETURN(FSP_SUCCESS == err, FSP_ERR_INVALID_ADDRESS);
+            p_current_descriptor = (dmac_link_cfg_t *) va;
+        }
+
  #else
-        p_current_descriptor = (dmac_link_cfg_t *) (uintptr_t) (p_current_descriptor->p_next_link_addr);
+        current_descriptor_pa = (uint32_t) (p_current_descriptor->p_next_link_addr);
+
+        /* In CR52 environment, the received descriptor address is stored without conversion
+         * since MMU is not implemented. */
+        p_current_descriptor = (dmac_link_cfg_t *) current_descriptor_pa;
  #endif
-    } while (NULL != p_current_descriptor);
+
+        /* If NULL is stored in the next link address (physical address), it indicates the end of the list. */
+    } while (NULL != (void *) (uintptr_t) current_descriptor_pa);
 
     return FSP_SUCCESS;
 }

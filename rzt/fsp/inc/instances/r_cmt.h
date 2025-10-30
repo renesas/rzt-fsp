@@ -71,6 +71,9 @@ fsp_err_t R_CMT_CallbackSet(timer_ctrl_t * const          p_ctrl,
                             void (                      * p_callback)(timer_callback_args_t *),
                             void const * const            p_context,
                             timer_callback_args_t * const p_callback_memory);
+fsp_err_t R_CMT_CompareMatchSet(timer_ctrl_t * const        p_ctrl,
+                                uint32_t const              compare_match_value,
+                                timer_compare_match_t const match_channel);
 fsp_err_t R_CMT_Close(timer_ctrl_t * const p_ctrl);
 
 /*******************************************************************************************************************//**

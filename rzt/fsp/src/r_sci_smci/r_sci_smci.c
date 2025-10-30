@@ -222,22 +222,13 @@ fsp_err_t R_SCI_SMCI_Open (smci_ctrl_t * const p_ctrl, smci_cfg_t const * const 
     FSP_ASSERT(p_cfg->p_callback);
     FSP_ASSERT(p_ext);
     FSP_ASSERT(p_ext->p_smci_baud_setting);
+    FSP_ASSERT(p_ext->p_reg);
 
     /* Make sure this channel exists. */
     FSP_ERROR_RETURN(BSP_FEATURE_SCI_CHANNELS & (1U << p_cfg->channel), FSP_ERR_IP_CHANNEL_NOT_PRESENT);
 #endif
 
-    if (p_cfg->channel != BSP_FEATURE_SCI_SAFETY_CHANNEL)
-    {
-        /* Non-Safety Peripheral */
-        p_instance_ctrl->p_reg =
-            (R_SCI0_Type *) ((uintptr_t) R_SCI0 + (p_cfg->channel * ((uintptr_t) R_SCI1 - (uintptr_t) R_SCI0)));
-    }
-    else
-    {
-        /* Safety Peripheral */
-        p_instance_ctrl->p_reg = (R_SCI0_Type *) BSP_FEATURE_SCI_SAFETY_CHANNEL_BASE_ADDRESS;
-    }
+    p_instance_ctrl->p_reg = (R_SCI0_Type *) p_ext->p_reg;
 
     p_instance_ctrl->p_cfg = p_cfg;
 

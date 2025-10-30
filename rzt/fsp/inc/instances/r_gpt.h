@@ -518,6 +518,7 @@ typedef struct st_gpt_extended_cfg
     uint8_t             dead_time_error_source_select; ///< Dead time error interrupt source select
     uint8_t             trough_source_select;          ///< Trough interrupt source select
     gpt_gtior_setting_t gtior_setting;                 ///< Custom GTIOR settings used for configuring GTIOCxA and GTIOCxB pins.
+    void              * p_reg;                         ///< Register base address for specified channel
 } gpt_extended_cfg_t;
 
 /**********************************************************************************************************************
@@ -541,6 +542,9 @@ fsp_err_t R_GPT_Enable(timer_ctrl_t * const p_ctrl);
 fsp_err_t R_GPT_Disable(timer_ctrl_t * const p_ctrl);
 fsp_err_t R_GPT_PeriodSet(timer_ctrl_t * const p_ctrl, uint32_t const period_counts);
 fsp_err_t R_GPT_DutyCycleSet(timer_ctrl_t * const p_ctrl, uint32_t const duty_cycle_counts, uint32_t const pin);
+fsp_err_t R_GPT_CompareMatchSet(timer_ctrl_t * const        p_ctrl,
+                                uint32_t const              compare_match_value,
+                                timer_compare_match_t const match_channel);
 fsp_err_t R_GPT_InfoGet(timer_ctrl_t * const p_ctrl, timer_info_t * const p_info);
 fsp_err_t R_GPT_StatusGet(timer_ctrl_t * const p_ctrl, timer_status_t * const p_status);
 fsp_err_t R_GPT_CounterSet(timer_ctrl_t * const p_ctrl, uint32_t counter);
@@ -554,9 +558,6 @@ fsp_err_t R_GPT_CallbackSet(timer_ctrl_t * const          p_ctrl,
                             void const * const            p_context,
                             timer_callback_args_t * const p_callback_memory);
 fsp_err_t R_GPT_Close(timer_ctrl_t * const p_ctrl);
-fsp_err_t R_GPT_CompareMatchSet(timer_ctrl_t * const        p_ctrl,
-                                uint32_t const              compare_match_value,
-                                timer_compare_match_t const match_channel);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup GPT)

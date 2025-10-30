@@ -98,6 +98,8 @@ static void bsp_prv_ddr_reg_init (void)
  **********************************************************************************************************************/
 void bsp_ddr_init (void)
 {
+    bsp_prv_ddr_reg_init();
+
     R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_SYSTEM);
 
     R_BSP_SlaveStopRelease(BSP_BUS_SLAVE_DDRSS_A0_IF);
@@ -108,8 +110,6 @@ void bsp_ddr_init (void)
     R_SSC->SSTPCR4_b.DDRAPB = 0;
 
     R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_SYSTEM);
-
-    bsp_prv_ddr_reg_init();
 
     bsp_prv_ddr_setup_mc();
 

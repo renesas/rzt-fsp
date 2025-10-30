@@ -83,15 +83,19 @@ fsp_err_t R_POE3_Open (poe3_ctrl_t * const p_ctrl, poe3_cfg_t const * const p_cf
     FSP_ASSERT(NULL != p_cfg->p_extend);
     FSP_ASSERT(NULL != p_ctrl);
     FSP_ASSERT(NULL != p_instance_ctrl);
+    poe3_extended_cfg_t * p_extend = (poe3_extended_cfg_t *) p_cfg->p_extend;
+    FSP_ASSERT(NULL != p_extend->p_reg);
     FSP_ERROR_RETURN(POE3_OPEN != p_instance_ctrl->open, FSP_ERR_ALREADY_OPEN);
+#else
+
+    /* Get extended configuration structure pointer. */
+    poe3_extended_cfg_t * p_extend = (poe3_extended_cfg_t *) p_cfg->p_extend;
 #endif
 
-    /* Save register base address. */
-    uintptr_t base_address = (uintptr_t) R_POE3;
-    p_instance_ctrl->p_reg = (R_POE3_Type *) base_address;
     p_instance_ctrl->p_cfg = p_cfg;
 
-    poe3_extended_cfg_t * p_extend = (poe3_extended_cfg_t *) p_cfg->p_extend;
+    /* Set the base address for register. */
+    p_instance_ctrl->p_reg = (R_POE3_Type *) p_extend->p_reg;
 
     /* POE3 Setting Procedure */
     /* Set the M3SELR.M3BSEL[3:0] bits to 0x0 and M3SELR.M3DSEL[3:0] bits to 0x0. */

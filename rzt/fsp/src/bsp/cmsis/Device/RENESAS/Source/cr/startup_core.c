@@ -76,6 +76,8 @@ extern void * __SysStackLimit;
 /***********************************************************************************************************************
  * Exported global functions (to be accessed by other files)
  **********************************************************************************************************************/
+extern void R_BSP_WarmStart_StackLess(void);
+
 #if __FPU_USED
 extern void bsp_fpu_advancedsimd_init(void);
 
@@ -92,6 +94,7 @@ extern void bsp_slavetcm_enable(void);
 int32_t main(void);
 
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init(void) BSP_PLACE_IN_SECTION(".loader_text");
+BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void bsp_register_initialization(void);
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void stack_init(void);
 BSP_TARGET_ARM void                         fpu_slavetcm_init(void);
 
@@ -123,6 +126,17 @@ BSP_DONT_REMOVE static uint8_t g_heap[BSP_CFG_HEAP_BYTES] BSP_ALIGN_VARIABLE(BSP
     BSP_PLACE_IN_SECTION(BSP_SECTION_HEAP);
 #endif
 
+/* Determine whether a software reset has occurred */
+bool g_bsp_software_reset_occurred BSP_PLACE_IN_SECTION(".software_reset");
+
+/* Determine whether it is the initial startup or the state after a software reset. */
+#if (1 == _RZT_ORDINAL) || (!BSP_CFG_ESD_BOOT && !BSP_CFG_EMMC_BOOT)
+bool g_bsp_first_operation = true;
+#else
+bool g_bsp_first_operation BSP_PLACE_IN_SECTION(".first_operation") = true;
+
+#endif
+
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void __Vectors (void)
 {
     __asm volatile (
@@ -147,10 +161,6 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void __Vectors (void)
  **********************************************************************************************************************/
 void Default_Handler (void)
 {
-    /** A error has occurred. The user will need to investigate the cause. Common problems are stack corruption
-     *  or use of an invalid pointer. Use the Fault Status window in e2 studio or manually check the fault status
-     *  registers for more information.
-     */
     BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
 }
 
@@ -158,6 +168,35 @@ void Default_Handler (void)
  * After boot processing, LSI starts executing here.
  **********************************************************************************************************************/
 BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init (void)
+{
+    /* Call R_BSP_WarmStart_StackLess. Return here when processing is complete. */
+    __asm volatile (
+        "BLX  %0                                  \n"
+        ::"r" (&R_BSP_WarmStart_StackLess) : "memory");
+
+    /* g_bsp_software_reset_occurred = false */
+    __asm volatile (
+        "MOV   r0, %0    \n"
+        "MOV   r1, #0    \n"
+        "STRB  r1, [r0]  \n"
+        ::"r" (&g_bsp_software_reset_occurred) : "memory");
+
+    /* g_bsp_first_operation = true */
+    __asm volatile (
+        "MOV   r0, %0    \n"
+        "MOV   r1, #1    \n"
+        "STRB  r1, [r0]  \n"
+        ::"r" (&g_bsp_first_operation) : "memory");
+
+    __asm volatile (
+        "b bsp_register_initialization          \n"
+        ::: "memory");
+}
+
+/*******************************************************************************************************************//**
+ * Initialize each register.
+ **********************************************************************************************************************/
+BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void bsp_register_initialization (void)
 {
     __asm volatile (
         "set_hactlr:                              \n"
@@ -213,28 +252,50 @@ BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void system_init (void)
 
 #if defined(__ICCARM__)
  #define BSP_SYSTEMINIT_B_INSTRUCTION    SystemInit();
-
- #define WEAK_REF_ATTRIBUTE
-
- #pragma weak Undefined_Handler     = Default_Handler
- #pragma weak SVC_Handler           = Default_Handler
- #pragma weak Prefetch_Handler      = Default_Handler
- #pragma weak Abort_Handler         = Default_Handler
- #pragma weak Reserved_Handler      = Default_Handler
- #pragma weak FIQ_Handler           = Default_Handler
 #elif defined(__GNUC__)
-
  #define BSP_SYSTEMINIT_B_INSTRUCTION    __asm volatile ("B SystemInit");
-
- #define WEAK_REF_ATTRIBUTE              __attribute__((weak, alias("Default_Handler")))
 #endif
 
-void Undefined_Handler(void) WEAK_REF_ATTRIBUTE;
-void SVC_Handler(void) WEAK_REF_ATTRIBUTE;
-void Prefetch_Handler(void) WEAK_REF_ATTRIBUTE;
-void Abort_Handler(void) WEAK_REF_ATTRIBUTE;
-void Reserved_Handler(void) WEAK_REF_ATTRIBUTE;
-void FIQ_Handler(void) WEAK_REF_ATTRIBUTE;
+__WEAK void Undefined_Handler(void);
+__WEAK void SVC_Handler(void);
+__WEAK void Prefetch_Handler(void);
+__WEAK void Abort_Handler(void);
+__WEAK void Reserved_Handler(void);
+__WEAK void FIQ_Handler(void);
+
+/*******************************************************************************************************************//**
+ * Exception handlers
+ *********************************************************************************************************************/
+
+__WEAK void Undefined_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void SVC_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void Prefetch_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void Abort_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void Reserved_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
+
+__WEAK void FIQ_Handler (void)
+{
+    BSP_CFG_HANDLE_UNRECOVERABLE_ERROR(0);
+}
 
 /*******************************************************************************************************************//**
  * After system_init, EL1 settings start here.
@@ -292,6 +353,12 @@ BSP_TARGET_ARM void fpu_slavetcm_init (void)
  #endif
 #endif
 
+#if BSP_CFG_SEMAPHORE_ENABLE
+
+    /* Initialize semaphores required for synchronization and exclusive control between CPUs. */
+    bsp_semaphore_init();
+#endif
+
     BSP_SYSTEMINIT_B_INSTRUCTION
 }
 
@@ -311,7 +378,6 @@ __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void IRQ_Handler (void)
         "VPUSH   {d16-d31}                        \n" /* Store FPU registers. */
 #endif
 
-        "MRC     p15, #0, r3, c12, c12, #2        \n" /* Read HPPIR1 to r3. */
         "MRC     p15, #0, r0, c12, c12, #0        \n" /* Read IAR1 to r0. */
 
         "PUSH    {r0}                             \n" /* Store the INTID. */
@@ -365,6 +431,13 @@ __WEAK BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void Reset_Handler (void)
         [bsp_imp_btcmregionr_enableel_h] "i" (BSP_IMP_BTCMREGIONR_ENABLEEL_H) : "memory");
 #endif
 
-    /* Branch to system_init */
-    __asm volatile ("B system_init");
+    /* g_bsp_software_reset_occurred = true */
+    __asm volatile (
+        "MOV   r0, %0    \n"
+        "MOV   r1, #1    \n"
+        "STRB  r1, [r0]  \n"
+        ::"r" (&g_bsp_software_reset_occurred) : "memory");
+
+    /* Branch to bsp_register_initialization */
+    __asm volatile ("B bsp_register_initialization");
 }

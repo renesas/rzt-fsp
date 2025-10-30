@@ -187,11 +187,19 @@ typedef enum e_adc_window_b_mode
  * This enumeration is used to specify the priority between Group A and B in group mode.  */
 typedef enum e_adc_group_a
 {
-    ADC_GROUP_A_PRIORITY_OFF             = 0,      ///< Group A ignored and does not interrupt ongoing group B scan
-    ADC_GROUP_A_GROUP_B_WAIT_FOR_TRIGGER = 1,      ///< Group A interrupts Group B(single scan) which restarts at next Group B trigger
-    ADC_GROUP_A_GROUP_B_RESTART_SCAN     = 3,      ///< Group A interrupts Group B(single scan) which restarts immediately after Group A scan is complete
-    ADC_GROUP_A_GROUP_B_RESUME_SCAN      = 0x4003, ///< Resume scanning of interrupted channels
-    ADC_GROUP_A_GROUP_B_CONTINUOUS_SCAN  = 0x8001, ///< Group A interrupts Group B(continuous scan) which continues scanning without a new Group B trigger
+    ADC_GROUP_A_PRIORITY_OFF             = 0,          ///< Deprecated - Group A ignored and does not interrupt ongoing group B scan
+    ADC_GROUP_A_GROUP_B_WAIT_FOR_TRIGGER = 1,          ///< Deprecated - Group A interrupts Group B(single scan) which restarts at next Group B trigger
+    ADC_GROUP_A_GROUP_B_RESTART_SCAN     = 3,          ///< Deprecated - Group A interrupts Group B(single scan) which restarts immediately after Group A scan is complete
+    ADC_GROUP_A_GROUP_B_RESUME_SCAN      = 0x4003,     ///< Deprecated - Resume scanning of interrupted channels
+    ADC_GROUP_A_GROUP_B_CONTINUOUS_SCAN  = 0x8001,     ///< Deprecated - Group A interrupts Group B(continuous scan) which continues scanning without a new Group B trigger
+
+    ADC_GRPA_PRIORITY_OFF                    = 0,      ///< Group A ignored and does not interrupt Group B and Group C
+    ADC_GRPA_GRPB_GRPC_WAIT_TRIG             = 1,      ///< Group B and Group C restart from the first selected channel at next trigger
+    ADC_GRPA_GRPB_GRPC_TOP_RESTART_SCAN      = 3,      ///< Group B and Group C restart immediately from the first selected channel without next trigger
+    ADC_GRPA_GRPB_GRPC_RESTART_SCAN          = 0x4003, ///< Group B and Group C restart immediately from suspended channel without next trigger
+    ADC_GRPA_GRPB_GRPC_TOP_CONT_SCAN         = 0x8001, ///< Group B and Group C restart and scan continuously from the first selected channel at next trigger
+    ADC_GRPA_GRPB_GRPC_RESTART_TOP_CONT_SCAN = 0x8003, ///< Group B and Group C restart immediately and scan continuously from the first selected channel without next trigger
+    ADC_GRPA_GRPB_GRPC_RESTART_CONT_SCAN     = 0xC003, ///< Group B and Group C restart immediately and scan continuously from suspended channel without next trigger
 } adc_group_a_t;
 
 /** Defines the registers settings for the ADC trigger. */
@@ -278,6 +286,7 @@ typedef struct st_adc_extended_cfg
     uint8_t              window_a_ipl;                ///< Priority for Window Compare A interrupts
     IRQn_Type            window_b_irq;                ///< IRQ number for Window Compare B interrupts
     uint8_t              window_b_ipl;                ///< Priority for Window Compare B interrupts
+    void               * p_reg;                       ///< Register base address for specified unit
 } adc_extended_cfg_t;
 
 /** ADC channel(s) configuration       */
@@ -339,7 +348,10 @@ extern const adc_api_t g_adc_on_adc;
  **********************************************************************************************************************/
 fsp_err_t R_ADC_Open(adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg);
 fsp_err_t R_ADC_ScanCfg(adc_ctrl_t * p_ctrl, void const * const p_channel_cfg);
-fsp_err_t R_ADC_InfoGet(adc_ctrl_t * p_ctrl, adc_info_t * p_adc_info);
+fsp_err_t R_ADC_CallbackSet(adc_ctrl_t * const          p_ctrl,
+                            void (                    * p_callback)(adc_callback_args_t *),
+                            void const * const          p_context,
+                            adc_callback_args_t * const p_callback_memory);
 fsp_err_t R_ADC_ScanStart(adc_ctrl_t * p_ctrl);
 fsp_err_t R_ADC_ScanGroupStart(adc_ctrl_t * p_ctrl, adc_group_mask_t group_mask);
 fsp_err_t R_ADC_ScanStop(adc_ctrl_t * p_ctrl);
@@ -347,13 +359,10 @@ fsp_err_t R_ADC_StatusGet(adc_ctrl_t * p_ctrl, adc_status_t * p_status);
 fsp_err_t R_ADC_Read(adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint16_t * const p_data);
 fsp_err_t R_ADC_Read32(adc_ctrl_t * p_ctrl, adc_channel_t const reg_id, uint32_t * const p_data);
 fsp_err_t R_ADC_SampleStateCountSet(adc_ctrl_t * p_ctrl, adc_sample_state_t * p_sample);
+fsp_err_t R_ADC_InfoGet(adc_ctrl_t * p_ctrl, adc_info_t * p_adc_info);
 fsp_err_t R_ADC_Close(adc_ctrl_t * p_ctrl);
-fsp_err_t R_ADC_OffsetSet(adc_ctrl_t * const p_ctrl, adc_channel_t const reg_id, int32_t offset);
 fsp_err_t R_ADC_Calibrate(adc_ctrl_t * const p_ctrl, void const * p_extend);
-fsp_err_t R_ADC_CallbackSet(adc_ctrl_t * const          p_ctrl,
-                            void (                    * p_callback)(adc_callback_args_t *),
-                            void const * const          p_context,
-                            adc_callback_args_t * const p_callback_memory);
+fsp_err_t R_ADC_OffsetSet(adc_ctrl_t * const p_ctrl, adc_channel_t const reg_id, int32_t offset);
 
 /*******************************************************************************************************************//**
  * @} (end defgroup ADC)

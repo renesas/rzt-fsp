@@ -37,8 +37,6 @@ FSP_HEADER
 /* Shift to get port in bsp_io_port_t and bsp_io_port_pin_t enums. */
 #define BSP_IO_PRV_PORT_OFFSET     (8U)
 
-#define BSP_IO_PRV_PRCR_TIMEOUT    (10000)
-
 /***********************************************************************************************************************
  * Typedef definitions
  **********************************************************************************************************************/
@@ -436,11 +434,12 @@ typedef enum e_bsp_io_region
 /***********************************************************************************************************************
  * Exported global variables
  **********************************************************************************************************************/
-extern volatile uint32_t g_protect_port_counter;
 
 /***********************************************************************************************************************
  * Exported global functions (to be accessed by other files)
  **********************************************************************************************************************/
+extern void R_BSP_RegisterProtectEnable(bsp_reg_protect_t regs_to_protect);
+extern void R_BSP_RegisterProtectDisable(bsp_reg_protect_t regs_to_unprotect);
 
 /***********************************************************************************************************************
  * Inline Functions
@@ -606,26 +605,8 @@ __STATIC_INLINE void R_BSP_PinAccessEnable (void)
 {
 #if BSP_CFG_PORT_PROTECT
 
-    /** Get the current state of interrupts */
-    FSP_CRITICAL_SECTION_DEFINE;
-    FSP_CRITICAL_SECTION_ENTER;
-
-    /** If this is first entry then allow writing of PFS. */
-    if (0 == g_protect_port_counter)
-    {
-        /** Disable protection using PRCR register. */
-
-        /** When writing to the PRCR register the upper 8-bits must be the correct key. Set lower bits to 0 to
-         * disable writes. */
-        R_RWP_NS->PRCRN = ((R_RWP_NS->PRCRN | BSP_IO_PRV_PRCR_KEY) | BSP_IO_REG_PROTECT_GPIO);
-        R_RWP_S->PRCRS  = ((R_RWP_S->PRCRS | BSP_IO_PRV_PRCR_KEY) | BSP_IO_REG_PROTECT_GPIO);
-    }
-
-    /** Increment the protect counter */
-    g_protect_port_counter++;
-
-    /** Restore the interrupt state */
-    FSP_CRITICAL_SECTION_EXIT;
+    /* Disable protection using PRCR register. */
+    R_BSP_RegisterProtectDisable(BSP_REG_PROTECT_GPIO);
 #endif
 }
 
@@ -637,35 +618,8 @@ __STATIC_INLINE void R_BSP_PinAccessDisable (void)
 {
 #if BSP_CFG_PORT_PROTECT
 
-    /** Get the current state of interrupts */
-    FSP_CRITICAL_SECTION_DEFINE;
-    FSP_CRITICAL_SECTION_ENTER;
-
-    /* If protection is already disabled, wait until protection is enabled on other cores */
-    uintptr_t timeout = BSP_IO_PRV_PRCR_TIMEOUT;
-    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_NS->PRCRN & BSP_IO_REG_PROTECT_GPIO), 0, timeout);
-    BSP_HARDWARE_REGISTER_WAIT_WITH_TIMEOUT((R_RWP_S->PRCRS & BSP_IO_REG_PROTECT_GPIO), 0, timeout);
-
-    /** Is it safe to disable PFS register? */
-    if (0 != g_protect_port_counter)
-    {
-        /* Decrement the protect counter */
-        g_protect_port_counter--;
-    }
-
-    /** Is it safe to disable writing of PFS? */
-    if (0 == g_protect_port_counter)
-    {
-        /** Enable protection using PRCR register. */
-
-        /** When writing to the PRCR register the upper 8-bits must be the correct key. Set lower bits to 0 to
-         * disable writes. */
-        R_RWP_NS->PRCRN = ((R_RWP_NS->PRCRN | BSP_IO_PRV_PRCR_KEY) & (uint16_t) (~BSP_IO_REG_PROTECT_GPIO));
-        R_RWP_S->PRCRS  = ((R_RWP_S->PRCRS | BSP_IO_PRV_PRCR_KEY) & (uint16_t) (~BSP_IO_REG_PROTECT_GPIO));
-    }
-
-    /** Restore the interrupt state */
-    FSP_CRITICAL_SECTION_EXIT;
+    /* Enable protection using PRCR register. */
+    R_BSP_RegisterProtectEnable(BSP_REG_PROTECT_GPIO);
 #endif
 }
 

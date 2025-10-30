@@ -19,8 +19,9 @@
  * Macro definitions
  **********************************************************************************************************************/
 
-#define RSIP_PRV_ADDR_BASE          (0x81080000UL)
-#define RSIP_PRV_IP_SERIES_MAJOR    (5U)
+#define RSIP_PRV_ADDR_BASE       (0x81080000UL)
+#define RSIP_PRV_ADDR_TYPE       (5U)
+#define RSIP_PRV_HASH_IP_TYPE    (5U)
 
 #if RSIP_POLLING_LOOP_LIMIT
  #define RSIP_PRV_PRIMITIVE_ENTRY       \

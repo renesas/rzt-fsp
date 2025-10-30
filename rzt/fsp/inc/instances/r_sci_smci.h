@@ -106,6 +106,7 @@ typedef struct st_sci_smci_extended_cfg
 
     /** Clock source to generate SCK can either be selected as PCLKM or SCInASYNCCLK. */
     sci_smci_clock_source_t clock_source;
+    void * p_reg;                                  ///< Register base address.
 } sci_smci_extended_cfg_t;
 
 /**********************************************************************************************************************

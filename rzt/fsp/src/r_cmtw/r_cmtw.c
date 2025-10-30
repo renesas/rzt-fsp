@@ -91,18 +91,19 @@ void cmtw_oc1_int_isr(void);
 /** CMTW Implementation of General Timer Driver  */
 const timer_api_t g_timer_on_cmtw =
 {
-    .open         = R_CMTW_Open,
-    .stop         = R_CMTW_Stop,
-    .start        = R_CMTW_Start,
-    .reset        = R_CMTW_Reset,
-    .enable       = R_CMTW_Enable,
-    .disable      = R_CMTW_Disable,
-    .periodSet    = R_CMTW_PeriodSet,
-    .dutyCycleSet = R_CMTW_DutyCycleSet,
-    .infoGet      = R_CMTW_InfoGet,
-    .statusGet    = R_CMTW_StatusGet,
-    .callbackSet  = R_CMTW_CallbackSet,
-    .close        = R_CMTW_Close,
+    .open            = R_CMTW_Open,
+    .stop            = R_CMTW_Stop,
+    .start           = R_CMTW_Start,
+    .reset           = R_CMTW_Reset,
+    .enable          = R_CMTW_Enable,
+    .disable         = R_CMTW_Disable,
+    .periodSet       = R_CMTW_PeriodSet,
+    .dutyCycleSet    = R_CMTW_DutyCycleSet,
+    .compareMatchSet = R_CMTW_CompareMatchSet,
+    .infoGet         = R_CMTW_InfoGet,
+    .statusGet       = R_CMTW_StatusGet,
+    .callbackSet     = R_CMTW_CallbackSet,
+    .close           = R_CMTW_Close,
 };
 
 /*******************************************************************************************************************//**
@@ -369,6 +370,24 @@ fsp_err_t R_CMTW_DutyCycleSet (timer_ctrl_t * const p_ctrl, uint32_t const duty_
     FSP_PARAMETER_NOT_USED(p_ctrl);
     FSP_PARAMETER_NOT_USED(duty_cycle_counts);
     FSP_PARAMETER_NOT_USED(pin);
+
+    return FSP_ERR_UNSUPPORTED;
+}
+
+/*******************************************************************************************************************//**
+ * Set value for compare match feature. Implements @ref timer_api_t::compareMatchSet.
+ *
+ * @note This API should be used when timer is stop counting. And shall not be used along with PWM operation.
+ *
+ * @retval FSP_ERR_UNSUPPORTED         CMTW compare match set is not supported.
+ **********************************************************************************************************************/
+fsp_err_t R_CMTW_CompareMatchSet (timer_ctrl_t * const        p_ctrl,
+                                  uint32_t const              compare_match_value,
+                                  timer_compare_match_t const match_channel)
+{
+    FSP_PARAMETER_NOT_USED(p_ctrl);
+    FSP_PARAMETER_NOT_USED(compare_match_value);
+    FSP_PARAMETER_NOT_USED(match_channel);
 
     return FSP_ERR_UNSUPPORTED;
 }

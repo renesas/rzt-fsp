@@ -104,10 +104,17 @@ fsp_err_t R_CRC_Open (crc_ctrl_t * const p_ctrl, crc_cfg_t const * const p_cfg)
     FSP_ERROR_RETURN(BSP_FEATURE_CRC_VALID_CHANNEL_MASK & (1U << p_cfg->channel), FSP_ERR_IP_CHANNEL_NOT_PRESENT);
 #endif
 
+    crc_extended_cfg_t * p_extend = (crc_extended_cfg_t *) p_cfg->p_extend;
+
+#if CRC_CFG_PARAM_CHECKING_ENABLE
+    FSP_ASSERT(p_extend);
+    FSP_ASSERT(p_extend->p_reg);
+#endif
+
     /* Save the configuration  */
     p_instance_ctrl->p_cfg = p_cfg;
 
-    p_instance_ctrl->p_reg = (0U == p_cfg->channel) ? R_CRC0 : R_CRC1;
+    p_instance_ctrl->p_reg = (R_CRC0_Type *) p_extend->p_reg;
 
     /* Mark driver as initialized by setting the open value to the ASCII equivalent of "CRC" */
     p_instance_ctrl->open = CRC_OPEN;

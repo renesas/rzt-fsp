@@ -182,6 +182,7 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
          * has priority over group B. */
     }
 
+    FSP_ASSERT(NULL != p_extend->p_reg);
 #else
     adc_extended_cfg_t const * p_extend = (adc_extended_cfg_t const *) p_cfg->p_extend;
 #endif
@@ -191,34 +192,7 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
     p_instance_ctrl->p_callback        = p_cfg->p_callback;
     p_instance_ctrl->p_context         = p_cfg->p_context;
     p_instance_ctrl->p_callback_memory = NULL;
-
-    /* Calculate the register base address. */
-    uintptr_t base_address = (uintptr_t) R_ADC120;
-    if (0U == p_cfg->unit)
-    {
-        base_address = (uintptr_t) R_ADC120;
-    }
-    else if (1U == p_cfg->unit)
-    {
-        base_address = (uintptr_t) R_ADC121;
-    }
-    else
-    {
-#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE || 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
-
-        /* Do Nothing */
-#elif 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
-        base_address = (uintptr_t) R_ADC122;
-#endif
-    }
-
-#if 1U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
-    p_instance_ctrl->p_reg = (R_ADC121_Type *) base_address;
-#elif 2U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
-    p_instance_ctrl->p_reg = (R_ADC120_Type *) base_address;
-#elif 3U == BSP_FEATURE_ADC_REGISTER_MASK_TYPE
-    p_instance_ctrl->p_reg = (R_ADC122_Type *) base_address;
-#endif
+    p_instance_ctrl->p_reg             = p_extend->p_reg;
 
     /* Initialize the hardware based on the configuration. */
     err = r_adc_open_sub(p_instance_ctrl, p_cfg);
@@ -245,7 +219,7 @@ fsp_err_t R_ADC_Open (adc_ctrl_t * p_ctrl, adc_cfg_t const * const p_cfg)
  * Configures the ADC scan parameters. Channel specific settings are set in this function. Pass a pointer to
  * @ref adc_channel_cfg_t to p_channel_cfg.
  *
- * @note This starts group B scans if adc_channel_cfg_t::priority_group_a is set to ADC_GROUP_A_GROUP_B_CONTINUOUS_SCAN.
+ * @note This starts group B scans if adc_channel_cfg_t::priority_group_a is set to ADC_GRPA_GRPB_GRPC_TOP_CONT_SCAN.
  *
  * @retval FSP_SUCCESS                 Channel specific settings applied.
  * @retval FSP_ERR_ASSERTION           An input argument is invalid.
@@ -330,7 +304,9 @@ fsp_err_t R_ADC_ScanStart (adc_ctrl_t * p_ctrl)
     FSP_ASSERT(NULL != p_instance_ctrl);
     FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->opened, FSP_ERR_NOT_OPEN);
     FSP_ERROR_RETURN(ADC_OPEN == p_instance_ctrl->initialized, FSP_ERR_NOT_INITIALIZED);
-    if (ADC_GROUP_A_GROUP_B_CONTINUOUS_SCAN != p_instance_ctrl->p_reg->ADGSPCR)
+    if ((ADC_GRPA_GRPB_GRPC_TOP_CONT_SCAN != p_instance_ctrl->p_reg->ADGSPCR) &&
+        (ADC_GRPA_GRPB_GRPC_RESTART_TOP_CONT_SCAN != p_instance_ctrl->p_reg->ADGSPCR) &&
+        (ADC_GRPA_GRPB_GRPC_RESTART_CONT_SCAN != p_instance_ctrl->p_reg->ADGSPCR))
     {
         FSP_ERROR_RETURN(0U == p_instance_ctrl->p_reg->ADCSR_b.ADST, FSP_ERR_IN_USE);
     }
@@ -1279,7 +1255,7 @@ static void r_adc_scan_cfg (adc_instance_ctrl_t * const p_instance_ctrl, adc_cha
     p_instance_ctrl->p_reg->ADCMPCR = adcmpcr;
 
     /* Set group A priority action (not interrupt priority!)
-     * This will also start the Group B scans if configured for ADC_GROUP_A_GROUP_B_CONTINUOUS_SCAN.
+     * This will also start the Group B scans if configured for ADC_GRPA_GRPB_GRPC_TOP_CONT_SCAN.
      */
     p_instance_ctrl->p_reg->ADGSPCR = (uint16_t) p_channel_cfg->priority_group_a;
 
