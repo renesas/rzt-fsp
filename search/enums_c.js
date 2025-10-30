@@ -10,6 +10,7 @@ var searchData=
   ['rsip_5fbyte_5fsize_5fencrypted_5fkey_5ft',['rsip_byte_size_encrypted_key_t',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga5738fc5deb16a1262b243ce41dc37afc',1,'r_rsip.h']]],
   ['rsip_5fbyte_5fsize_5fwrapped_5fdkm_5ft',['rsip_byte_size_wrapped_dkm_t',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#gab895895d16213aa6873764cb14ee4327',1,'r_rsip.h']]],
   ['rsip_5fbyte_5fsize_5fwrapped_5fkey_5ft',['rsip_byte_size_wrapped_key_t',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d.html#ga385f2388cc3e87db6a1f385351b47235',1,'r_rsip.h']]],
+  ['rsip_5fchacha_5fpoly_5fmode_5ft',['rsip_chacha_poly_mode_t',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d___a_p_i.html#ga653db507859094e0c26820a7a27e3075',1,'r_rsip_api.h']]],
   ['rsip_5fhash_5ftype_5ft',['rsip_hash_type_t',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d___a_p_i.html#ga3820283ceb2beb99656e71bbb3ba4f89',1,'r_rsip_api.h']]],
   ['rsip_5finitial_5fvector_5ftype_5ft',['rsip_initial_vector_type_t',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d___a_p_i.html#gae61f4d26c0ba8bb71e87d9d7e1a049cd',1,'r_rsip_api.h']]],
   ['rsip_5fkey_5ftype_5ft',['rsip_key_type_t',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d___a_p_i.html#ga123baeaebf3b0eb3092b446a3aeed533',1,'r_rsip_api.h']]],

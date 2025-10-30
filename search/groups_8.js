@@ -2,7 +2,6 @@ var searchData=
 [
   ['i2c_20master_20interface',['I2C Master Interface',['../group___i2_c___m_a_s_t_e_r___a_p_i.html',1,'']]],
   ['i2c_20slave_20interface',['I2C Slave Interface',['../group___i2_c___s_l_a_v_e___a_p_i.html',1,'']]],
-  ['interrupt_20controller_20unit_20_28icu_29_20error_20_28r_5ficu_5ferror_29',['Interrupt Controller Unit (ICU) ERROR (r_icu_error)',['../group___i_c_u___e_r_r_o_r.html',1,'']]],
   ['inter_2dcpu_20irq_20on_20icu_20_28r_5ficu_5finter_5fcpu_5firq_29',['Inter-CPU IRQ on ICU (r_icu_inter_cpu_irq)',['../group___i_c_u___i_n_t_e_r___c_p_u___i_r_q.html',1,'']]],
   ['inter_20cpu_20irq_20interface',['Inter CPU IRQ Interface',['../group___i_c_u___i_n_t_e_r___c_p_u___i_r_q___a_p_i.html',1,'']]],
   ['i2c_20master_20_28r_5fiic_5fmaster_29',['I2C Master (r_iic_master)',['../group___i_i_c___m_a_s_t_e_r.html',1,'']]],

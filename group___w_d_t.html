@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v3.0.0</span>
+   &#160;<span id="projectnumber">Release v3.1.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -305,7 +305,7 @@ Pin Configuration</h2>
 Usage Notes</h1>
 <h2><a class="anchor" id="r-wdt-interrupt"></a>
 Interrupt</h2>
-<p>The WDT outputs an error signal to the ICU. ICU can output PERI_ERRn interrupt (Peripherals error event n) to GIC or cause error reset when ICU accepts error signal from WDT. To use PERI_ERRn interrupt or reset at WDT, <a class="el" href="group___i_c_u___e_r_r_o_r.html">Interrupt Controller Unit (ICU) ERROR (r_icu_error)</a> need to be configured. When the PERI_ERRn interrupt is configured to use interrupt and triggered, the callback function registered during open is called.</p>
+<p>The WDT outputs an error signal to the ICU. ICU can output PERI_ERRn interrupt (Peripherals error event n) to GIC or cause error reset when ICU accepts error signal from WDT. To use PERI_ERRn interrupt or reset at WDT, <a class="el" href="group___i_c_u___e_r_r_o_r.html">Error (r_icu_error)</a> need to be configured. When the PERI_ERRn interrupt is configured to use interrupt and triggered, the callback function registered during open is called.</p>
 <dl class="section note"><dt>Note</dt><dd>When using the WDT in software start mode with interrupt request signal and the timer underflows, the WDT status must be reset by calling <a class="el" href="group___w_d_t.html#gacd5b9ff42df96b9fd4603dda47b946cb">R_WDT_StatusClear</a> before restarting the timer via <a class="el" href="group___w_d_t.html#gaff080d0dcc993cfbe7e99771396feffb">R_WDT_Refresh</a>.</dd></dl>
 <h2>Period Calculation</h2>
 <p>The WDT operates from PCLKL. With a PCLKL 50 MHz, the maximum time from the last refresh to interrupt request signal generation will be just over 2.6 seconds as detailed below.</p>
@@ -621,7 +621,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.1.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

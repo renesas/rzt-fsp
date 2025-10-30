@@ -47,7 +47,6 @@ var searchData=
   ['ic0_5fcontrol',['ic0_control',['../group___c_m_t_w.html#a9b7a216779c89527ce522c447d65dcb4',1,'cmtw_extended_cfg_t']]],
   ['ic1_5fcontrol',['ic1_control',['../group___c_m_t_w.html#acffcc4d2d31fd8b21b8cada853629afa',1,'cmtw_extended_cfg_t']]],
   ['icds',['icds',['../group___g_p_t.html#ac64cd27d2480b8a9e9acdafb1f3e301c',1,'gpt_extended_cfg_t']]],
-  ['interrupt_20controller_20unit_20_28icu_29_20error_20_28r_5ficu_5ferror_29',['Interrupt Controller Unit (ICU) ERROR (r_icu_error)',['../group___i_c_u___e_r_r_o_r.html',1,'']]],
   ['icu_5ferror_5fextended_5fcfg_5ft',['icu_error_extended_cfg_t',['../structicu__error__extended__cfg__t.html',1,'']]],
   ['icu_5ferror_5finstance_5fctrl_5ft',['icu_error_instance_ctrl_t',['../structicu__error__instance__ctrl__t.html',1,'']]],
   ['icu_5finstance_5fctrl_5ft',['icu_instance_ctrl_t',['../group___i_c_u.html#structicu__instance__ctrl__t',1,'']]],

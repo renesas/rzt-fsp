@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v3.0.0</span>
+   &#160;<span id="projectnumber">Release v3.1.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -262,10 +262,27 @@ Examples</h1>
 <div class="fragment"><div class="line"></div><div class="line"><span class="keywordtype">void</span> crc_example ()</div><div class="line">{</div><div class="line">    uint32_t length;</div><div class="line">    uint32_t uint8_calculated_value;</div><div class="line"></div><div class="line">    length = <span class="keyword">sizeof</span>(g_data_8bit) / <span class="keyword">sizeof</span>(g_data_8bit[0]);</div><div class="line"></div><div class="line">    <a class="code" href="group___c_r_c___a_p_i.html#structcrc__input__t">crc_input_t</a> example_input =</div><div class="line">    {</div><div class="line">        .<a class="code" href="group___c_r_c___a_p_i.html#a0b250255a080533eb07854cbfd9ca73b">p_input_buffer</a> = g_data_8bit,</div><div class="line">        .num_bytes      = length,</div><div class="line">        .crc_seed       = 0,</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Open CRC module with 8 bit polynomial */</span></div><div class="line">    <a class="code" href="group___c_r_c.html#gae4cc2bba5d6aeaadd9f4d43948fca5ac">R_CRC_Open</a>(&amp;crc_ctrl, &amp;g_crc_test_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* 8-bit CRC calculation */</span></div><div class="line">    <a class="code" href="group___c_r_c.html#ga89b0be959ce83ac6ca053329b1fddb75">R_CRC_Calculate</a>(&amp;crc_ctrl, &amp;example_input, &amp;uint8_calculated_value);</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="nested-classes"></a>
 Data Structures</h2></td></tr>
+<tr class="memitem:structcrc__extended__cfg__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_r_c.html#structcrc__extended__cfg__t">crc_extended_cfg_t</a></td></tr>
+<tr class="separator:structcrc__extended__cfg__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:structcrc__instance__ctrl__t"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___c_r_c.html#structcrc__instance__ctrl__t">crc_instance_ctrl_t</a></td></tr>
 <tr class="separator:structcrc__instance__ctrl__t"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
+<a name="structcrc__extended__cfg__t" id="structcrc__extended__cfg__t"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#structcrc__extended__cfg__t">&#9670;&nbsp;</a></span>crc_extended_cfg_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">struct crc_extended_cfg_t</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<div class="textblock"><p>Driver extended configuration. </p>
+</div>
+</div>
+</div>
 <a name="structcrc__instance__ctrl__t" id="structcrc__instance__ctrl__t"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#structcrc__instance__ctrl__t">&#9670;&nbsp;</a></span>crc_instance_ctrl_t</h2>
 
@@ -511,7 +528,7 @@ Data Structures</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.1.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

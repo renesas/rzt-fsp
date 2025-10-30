@@ -453,8 +453,6 @@ var searchData=
   ['external_5fwait_5ftimeout_5fcounts',['external_wait_timeout_counts',['../group___b_s_c.html#a498c769dee3fd189237a3cc07b069d49',1,'bsc_extended_cfg_t']]],
   ['external_5fwait_5ftimeout_5fenable',['external_wait_timeout_enable',['../group___b_s_c.html#a5590c228da11a549e5f35eb20b7e0b53',1,'bsc_extended_cfg_t']]],
   ['external_20irq_20_28r_5ficu_29',['External IRQ (r_icu)',['../group___i_c_u.html',1,'']]],
-  ['ethercat_20ssc_20port_20_28rm_5fethercat_5fssc_5fport_29',['EtherCAT SSC Port (rm_ethercat_ssc_port)',['../group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t.html',1,'']]],
-  ['expanded_20serial_20peripheral_20interface_20_28xspi_29_20hyperbus_20_28r_5fxspi_5fhyper_29',['Expanded Serial Peripheral Interface (xSPI) HyperBus (r_xspi_hyper)',['../group___x_s_p_i___h_y_p_e_r.html',1,'']]],
-  ['expanded_20serial_20peripheral_20interface_20_28xspi_29_20ospi_20_28r_5fxspi_5fospi_29',['Expanded Serial Peripheral Interface (xSPI) OSPI (r_xspi_ospi)',['../group___x_s_p_i___o_s_p_i.html',1,'']]],
-  ['expanded_20serial_20peripheral_20interface_20_28xspi_29_20qspi_20_28r_5fxspi_5fqspi_29',['Expanded Serial Peripheral Interface (xSPI) QSPI (r_xspi_qspi)',['../group___x_s_p_i___q_s_p_i.html',1,'']]]
+  ['error_20_28r_5ficu_5ferror_29',['Error (r_icu_error)',['../group___i_c_u___e_r_r_o_r.html',1,'']]],
+  ['ethercat_20ssc_20port_20_28rm_5fethercat_5fssc_5fport_29',['EtherCAT SSC Port (rm_ethercat_ssc_port)',['../group___r_m___e_t_h_e_r_c_a_t___s_s_c___p_o_r_t.html',1,'']]]
 ];

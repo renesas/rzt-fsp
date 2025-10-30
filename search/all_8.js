@@ -73,5 +73,6 @@ var searchData=
   ['hyperbus_5fspace_5fselect_5fmemory_5fspace',['HYPERBUS_SPACE_SELECT_MEMORY_SPACE',['../group___h_y_p_e_r_b_u_s___a_p_i.html#ggaaae0706da636f984d170cd1651abf04ca3ec946779fe08d22b43f51718aacb7a1',1,'r_hyperbus_api.h']]],
   ['hyperbus_5fspace_5fselect_5fregister_5fspace',['HYPERBUS_SPACE_SELECT_REGISTER_SPACE',['../group___h_y_p_e_r_b_u_s___a_p_i.html#ggaaae0706da636f984d170cd1651abf04ca83236d9b6814def686db93fbfc6802cb',1,'r_hyperbus_api.h']]],
   ['hyperbus_5fspace_5fselect_5ft',['hyperbus_space_select_t',['../group___h_y_p_e_r_b_u_s___a_p_i.html#gaaae0706da636f984d170cd1651abf04c',1,'r_hyperbus_api.h']]],
-  ['hyperbus_5fstatus_5ft',['hyperbus_status_t',['../group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__status__t',1,'']]]
+  ['hyperbus_5fstatus_5ft',['hyperbus_status_t',['../group___h_y_p_e_r_b_u_s___a_p_i.html#structhyperbus__status__t',1,'']]],
+  ['hyperbus_20_28r_5fxspi_5fhyper_29',['HyperBus (r_xspi_hyper)',['../group___x_s_p_i___h_y_p_e_r.html',1,'']]]
 ];

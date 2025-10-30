@@ -4,7 +4,8 @@ var group___s_c_i___s_m_c_i =
     [ "sci_smci_baud_setting_t", "group___s_c_i___s_m_c_i.html#structsci__smci__baud__setting__t", null ],
     [ "sci_smci_extended_cfg_t", "group___s_c_i___s_m_c_i.html#structsci__smci__extended__cfg__t", [
       [ "p_smci_baud_setting", "group___s_c_i___s_m_c_i.html#a736fbc095dcc1d64f9761ecf8c569db6", null ],
-      [ "clock_source", "group___s_c_i___s_m_c_i.html#ab7089eb7f4a9fb1db4a3ed6b2ebcc639", null ]
+      [ "clock_source", "group___s_c_i___s_m_c_i.html#ab7089eb7f4a9fb1db4a3ed6b2ebcc639", null ],
+      [ "p_reg", "group___s_c_i___s_m_c_i.html#aced802953d64642d583086f6b65b0774", null ]
     ] ],
     [ "sci_smci_clock_source_t", "group___s_c_i___s_m_c_i.html#gab46583a926fc41ae091dfc997fb813fd", null ],
     [ "R_SCI_SMCI_Open", "group___s_c_i___s_m_c_i.html#ga325b2943fd7fe7c0ce11e5ec9359c8e5", null ],

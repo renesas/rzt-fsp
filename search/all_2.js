@@ -88,7 +88,6 @@ var searchData=
   ['bsc_5finstance_5fctrl_5ft',['bsc_instance_ctrl_t',['../group___b_s_c.html#structbsc__instance__ctrl__t',1,'']]],
   ['bsc_5fmemory_5ftype_5fsram',['BSC_MEMORY_TYPE_SRAM',['../group___b_s_c.html#gga4dcab475b25b2abe8b33dccee9434155a95cd471f97e2b07016226356efc47e63',1,'r_bsc.h']]],
   ['bsc_5fmemory_5ftype_5ft',['bsc_memory_type_t',['../group___b_s_c.html#ga4dcab475b25b2abe8b33dccee9434155',1,'r_bsc.h']]],
-  ['bus_20state_20controller_20_28bsc_29_20nor_20flash_20_28r_5fbsc_5fnor_29',['Bus State Controller (BSC) NOR Flash (r_bsc_nor)',['../group___b_s_c___n_o_r.html',1,'']]],
   ['bsc_5fnor_5faccess_5fwait_5fcycle_5f0',['BSC_NOR_ACCESS_WAIT_CYCLE_0',['../group___b_s_c___n_o_r.html#gga2b80af58cf2755224b4b2da4c19fb8e8a9a2466e68d4acfef6c282a4a098ce38a',1,'r_bsc_nor.h']]],
   ['bsc_5fnor_5faccess_5fwait_5fcycle_5f1',['BSC_NOR_ACCESS_WAIT_CYCLE_1',['../group___b_s_c___n_o_r.html#gga2b80af58cf2755224b4b2da4c19fb8e8aa2a400abb526fe860c8c9ae189d983b7',1,'r_bsc_nor.h']]],
   ['bsc_5fnor_5faccess_5fwait_5fcycle_5f10',['BSC_NOR_ACCESS_WAIT_CYCLE_10',['../group___b_s_c___n_o_r.html#gga2b80af58cf2755224b4b2da4c19fb8e8a281455e9a435468e81469f807be3e974',1,'r_bsc_nor.h']]],
@@ -124,7 +123,6 @@ var searchData=
   ['bsc_5fnor_5fmemory_5fspace_5fcs',['BSC_NOR_MEMORY_SPACE_CS',['../group___b_s_c___n_o_r.html#gga3044b91e79127fcd5c0f934efbc689dbadb1cd322b609fb0e22c5b15f75f0e2d2',1,'r_bsc_nor.h']]],
   ['bsc_5fnor_5fmemory_5fspace_5fcs_5fmirror',['BSC_NOR_MEMORY_SPACE_CS_MIRROR',['../group___b_s_c___n_o_r.html#gga3044b91e79127fcd5c0f934efbc689dba4dc70b83232fc783ab765d9fb685c33d',1,'r_bsc_nor.h']]],
   ['bsc_5fnor_5fmemory_5fspace_5ft',['bsc_nor_memory_space_t',['../group___b_s_c___n_o_r.html#ga3044b91e79127fcd5c0f934efbc689db',1,'r_bsc_nor.h']]],
-  ['bus_20state_20controller_20_28bsc_29_20sdram_20_28r_5fbsc_5fsdram_29',['Bus State Controller (BSC) SDRAM (r_bsc_sdram)',['../group___b_s_c___s_d_r_a_m.html',1,'']]],
   ['bsc_5fsdram_5fcallback_5fargs_5ft',['bsc_sdram_callback_args_t',['../group___b_s_c___s_d_r_a_m.html#structbsc__sdram__callback__args__t',1,'']]],
   ['bsc_5fsdram_5fchip_5fselect_5f2_5f3',['BSC_SDRAM_CHIP_SELECT_2_3',['../group___b_s_c___s_d_r_a_m.html#gga18786329189e0979c7835a569ac7fcb1aaf8279dc3b07bf6b554c88cd7c69c912',1,'r_bsc_sdram.h']]],
   ['bsc_5fsdram_5fchip_5fselect_5f3',['BSC_SDRAM_CHIP_SELECT_3',['../group___b_s_c___s_d_r_a_m.html#gga18786329189e0979c7835a569ac7fcb1a1cfbdbb13f78fe524ef586b0942eb953',1,'r_bsc_sdram.h']]],
@@ -532,6 +530,7 @@ var searchData=
   ['bsp_5freg_5fprotect_5flpc_5freset',['BSP_REG_PROTECT_LPC_RESET',['../group___b_s_p___m_c_u.html#gga8f69caf459fd80173db15fdee8bc6fa3af1cde6daab5fcdc9ceb1a2656683e065',1,'bsp_register_protection.h']]],
   ['bsp_5freg_5fprotect_5fsystem',['BSP_REG_PROTECT_SYSTEM',['../group___b_s_p___m_c_u.html#gga8f69caf459fd80173db15fdee8bc6fa3af3533c5b3b5871d94ac8e2551ec989c2',1,'bsp_register_protection.h']]],
   ['bsp_5freg_5fprotect_5ft',['bsp_reg_protect_t',['../group___b_s_p___m_c_u.html#ga8f69caf459fd80173db15fdee8bc6fa3',1,'bsp_register_protection.h']]],
+  ['bsp_5fregister_5finitialization',['bsp_register_initialization',['../group___b_s_p___m_c_u.html#gad12641e0dfbab99b69c1079f9d7d8240',1,'startup_core.c']]],
   ['bsp_5freset_5fca55_5f0',['BSP_RESET_CA55_0',['../group___b_s_p___m_c_u.html#gga6e8909ce807437506d18010fe094ef4ba321b415e7fce49779cbb31ac203bb733',1,'bsp_reset.h']]],
   ['bsp_5freset_5fca55_5f1',['BSP_RESET_CA55_1',['../group___b_s_p___m_c_u.html#gga6e8909ce807437506d18010fe094ef4bae4a4a8d9fd87597a5b18dac0b6911ee8',1,'bsp_reset.h']]],
   ['bsp_5freset_5fca55_5f2',['BSP_RESET_CA55_2',['../group___b_s_p___m_c_u.html#gga6e8909ce807437506d18010fe094ef4ba819bd26506f71018cfedcf561cf771fb',1,'bsp_reset.h']]],
@@ -573,5 +572,7 @@ var searchData=
   ['bytes_5frecvd',['bytes_recvd',['../group___s_m_c_i___a_p_i.html#a01380440d67d90170b2157583ab8a4df',1,'smci_status_t']]],
   ['bsp',['BSP',['../group___r_e_n_e_s_a_s___c_o_m_m_o_n.html',1,'']]],
   ['block_20media_20interface',['Block Media Interface',['../group___r_m___b_l_o_c_k___m_e_d_i_a___a_p_i.html',1,'']]],
-  ['block_20media_20sd_2fmmc_20_28rm_5fblock_5fmedia_5fsdmmc_29',['Block Media SD/MMC (rm_block_media_sdmmc)',['../group___r_m___b_l_o_c_k___m_e_d_i_a___s_d_m_m_c.html',1,'']]]
+  ['block_20media_20sd_2fmmc_20_28rm_5fblock_5fmedia_5fsdmmc_29',['Block Media SD/MMC (rm_block_media_sdmmc)',['../group___r_m___b_l_o_c_k___m_e_d_i_a___s_d_m_m_c.html',1,'']]],
+  ['block_20media_20usb_20_28rm_5fblock_5fmedia_5fusb_29',['Block Media USB (rm_block_media_usb)',['../group___r_m___b_l_o_c_k___m_e_d_i_a___u_s_b.html',1,'']]],
+  ['block_20media_20custom_20implementation_20_28rm_5fblock_5fmedia_5fuser_29',['Block Media Custom Implementation (rm_block_media_user)',['../group___r_m___b_l_o_c_k___m_e_d_i_a___u_s_e_r.html',1,'']]]
 ];

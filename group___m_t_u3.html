@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v3.0.0</span>
+   &#160;<span id="projectnumber">Release v3.1.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -213,9 +213,9 @@ Overview</h1>
 <h2><a class="anchor" id="r-mtu3-features"></a>
 Features</h2>
 <p>The MTU3 module has the following features:</p><ul>
-<li>Supports periodic mode, and PWM mode.</li>
+<li>Supports periodic mode, one-shot mode and PWM mode.</li>
 <li>The buffer operation is valid in MTU channel 0, 3, 4 and 6 to 8. In PWM mode, these channels are recommended to use.</li>
-<li>Supports phase counting mode (Only ch1 and ch2).<a class="anchor" id="um_mtu3_phase_counting"></a></li>
+<li>Supports phase counting mode (Only channel 1 and channel 2).<a class="anchor" id="um_mtu3_phase_counting"></a></li>
 <li>Supports count source of ELC events.<a class="anchor" id="um_mtu_event_count_elc"></a><a class="anchor" id="um_mtu_event_count_restart_elc"></a><a class="anchor" id="um_mtu_event_input_capture_elc"></a></li>
 <li>Supports debounce filter on MTIOC pins.</li>
 <li>Signal can be output to a pin.</li>
@@ -226,12 +226,13 @@ Features</h2>
 <li>APIs are provided to get the current period, source clock frequency, and count direction.</li>
 <li>APIs are provided to get the current timer status and counter value.</li>
 <li>Supports PWM waveform generation.<a class="anchor" id="um_mtu_pwm"></a></li>
+<li>Supports One-Shot waveform generation. (Not available for channel 1 and channel 2)</li>
 <li>Supports start an ADC scan at a compare match value and updating the compare match value.</li>
 <li>Supports setting the counter value while the timer is stopped.<a class="anchor" id="um_mtu_counter_set"></a></li>
 <li>Supports enabling and disabling output pins.<a class="anchor" id="um_mtu_output_disable"></a><a class="anchor" id="um_mtu_output_enable"></a></li>
 <li>Supports skipping overflow / comparison match interrupts for specific channels<a class="anchor" id="um_mtu_interrupt_skip"></a></li>
 <li>Supports buffer operation.</li>
-<li>Supports phase counting mode (Only ch1 and ch2).</li>
+<li>Supports phase counting mode (Only channel 1 and channel 2).</li>
 <li>Supports start an ADC scan at a compare match value and updating the compare match value.<a class="anchor" id="um_adc_a_compare_match"></a><a class="anchor" id="um_mtu_adc_trigger_update"></a><ul>
 <li>A/D Converter Activation by TGRA Input Capture/Compare Match</li>
 <li>A/D Converter Activation by A/D Converter Start Request Delaying Function</li>
@@ -325,10 +326,12 @@ Enabled</li>
 Periodic</li>
 <li>
 PWM</li>
+<li>
+One-Shot</li>
 </ul>
 </td><td>Periodic </td><td>Mode selection.<br />
 Periodic: Generates periodic interrupts or square waves.<br />
-One-shot: Generate a single interrupt or a pulse wave.<br />
+One-Shot: Generate a single interrupt or a pulse wave. Note: One-Shot mode is implemented in software. ISRs must be enabled for One-Shot even if callback is unused.<br />
 PWM: Generates basic PWM waveforms.<br />
 Triangle-Wave Symmetric PWM: Generates symmetric PWM waveforms with duty cycle determined by compare match set during a crest interrupt and updated at the next trough.<br />
 Triangle-Wave Asymmetric PWM: Generates asymmetric PWM waveforms with duty cycle determined by compare match set during a crest/trough interrupt and updated at the next trough/crest. </td></tr>
@@ -535,9 +538,9 @@ Enabled</li>
 <tr>
 <td>Custom Waveform &gt; TGRD(The Buffer Value of TGRB)</td><td>Value must be a valid non-negative integer with a maximum configurable value of 0xFFFF</td><td>0x10000 </td><td>Capture/Compare match D value. In the free-running mode, please set the same value between TGRB and TGRD </td></tr>
 <tr>
-<td>Custom Waveform &gt; MTIOCnA Pin Function</td><td>Refer to the RZT Configuration tool for available options.</td><td>No Output </td><td>Select TGRA initial output. </td></tr>
+<td>Custom Waveform &gt; TGRA I/O Pin Setting</td><td>Refer to the RZT Configuration tool for available options.</td><td>No Output </td><td>Select TGRA initial output. </td></tr>
 <tr>
-<td>Custom Waveform &gt; MTIOCnB Pin Function</td><td>Refer to the RZT Configuration tool for available options.</td><td>No Output </td><td>Select TGRB initial output. </td></tr>
+<td>Custom Waveform &gt; TGRB I/O Pin Setting</td><td>Refer to the RZT Configuration tool for available options.</td><td>No Output </td><td>Select TGRB initial output. </td></tr>
 <tr>
 <td>Custom Waveform &gt; Time Prescaler</td><td>Refer to the RZT Configuration tool for available options.</td><td>PCLKH divided by 1 (common ch) </td><td>Select time prescaler. </td></tr>
 <tr>
@@ -778,24 +781,49 @@ Usage Notes</h1>
 <h2>Maximum Period</h2>
 <p>The Configuration editor will automatically calculate the period count value and source clock divider based on the selected period time, units and clock speed.</p>
 <p>When the selected period unit is "Raw counts", the maximum period setting is 0x40000000000 on a 32-bit timer. This will configure the timer with the maximum period and a count clock divisor of 1024.</p>
-<dl class="section note"><dt>Note</dt><dd>When manually changing the timer period counts the maximum value for a 32-bit MTU3(ch8) is 0x100000000. This number overflows the 32-bit value for <a class="el" href="group___t_i_m_e_r___a_p_i.html#aa892b6997a1972de6a6ebd48e0fb9233" title="Period in raw timer counts. ">timer_cfg_t::period_counts</a>. To configure the timer for the maximum period, set <a class="el" href="group___t_i_m_e_r___a_p_i.html#aa892b6997a1972de6a6ebd48e0fb9233" title="Period in raw timer counts. ">timer_cfg_t::period_counts</a> to 0.</dd></dl>
+<dl class="section note"><dt>Note</dt><dd>When manually changing the timer period counts the maximum value for a 32-bit MTU3(channel 8) is 0x100000000. This number overflows the 32-bit value for <a class="el" href="group___t_i_m_e_r___a_p_i.html#aa892b6997a1972de6a6ebd48e0fb9233" title="Period in raw timer counts. ">timer_cfg_t::period_counts</a>. To configure the timer for the maximum period, set <a class="el" href="group___t_i_m_e_r___a_p_i.html#aa892b6997a1972de6a6ebd48e0fb9233" title="Period in raw timer counts. ">timer_cfg_t::period_counts</a> to 0.</dd></dl>
 <h2>Updating Period and Duty Cycle</h2>
 <p>The period is updated after the next counter compare match after calling <a class="el" href="group___m_t_u3.html#ga0d64e832230506418738a816a38489e4">R_MTU3_PeriodSet()</a>.</p>
 <p>The duty cycle is updated after the next counter compare match after calling <a class="el" href="group___m_t_u3.html#ga5e4eda78ae4a5cb31e85eb682d6fe248">R_MTU3_DutyCycleSet()</a>.</p>
 <p>If changing the period or duty, API need to be called before compare match event occurs for the following reasons:</p>
 <p>Avoiding Glitches: If the changes are made after the compare match event has already been scheduled, it could lead to unpredictable behavior or glitches in the output signal. Consistent Output: Making changes before the event ensures that the new settings will be used in the next cycle, providing a smooth transition.</p>
+<p>Example: For using Buffer Operation. Figure describe Compare Match B controls the period and Compare Match A controls the duty cycle, and TGRC is the buffer register for TGRA.</p>
+<div class="image">
+<object type="image/svg+xml" data="r_mtu3_pwm_operation_example_with_buffer_operation.svg">r_mtu3_pwm_operation_example_with_buffer_operation.svg</object>
+<div class="caption">
+MTU Buffer Operation Example</div></div>
+<p>.</p>
 <p>Be aware that if the interrupt processing time or overhead exceeds the time available to apply the new settings, the updates may not be implemented correctly before the next compare match event. Therefore, users should take interrupt processing time into consider when setting the period and duty cycle.</p>
 <p>If changing the period or duty, API need to be called before compare match event occurs.</p>
+<h2>One-Shot Mode</h2>
+<p><a class="anchor" id="um_timer_one_shot_mode"></a> The MTU3 timer does not support one-shot mode natively. One-shot mode is achieved by stopping the timer in the interrupt service routine before the callback is called. If the interrupt is not serviced before the timer period expires again, the timer generates more than one event. The callback is only called once in this case. The output waveform in One-Shot mode is one peripheral clock cycle less than the configured period. The configured period must be at least 2 counts to generate an output pulse.</p>
+<p>Examples of One-Shot signals that can be generated by this module are shown below:</p>
+<div class="image">
+<object type="image/svg+xml" data="r_mtu3_one_shot_output.svg">r_mtu3_one_shot_output.svg</object>
+<div class="caption">
+MTU3 One-Shot Output</div></div>
+ <h3>One-Shot Mode Output</h3>
+<p><a class="anchor" id="um_mtu3_one_shot_output"></a> The output waveform in one-shot mode is one PCLK cycle less than the configured period. The configured period must be at least 2 counts to generate an output pulse.</p>
 <h2>Periodic Output</h2>
 <p>The MTIOC pin toggles twice each time the timer expires in periodic mode. This is achieved by defining a PWM wave at a 50 percent duty cycle so that the period of the resulting square wave (from rising edge to rising edge) matches the period of the MTU3 timer. Since the periodic output is actually a PWM output, the time at the stop level is one cycle shorter than the time opposite the stop level for odd period values.</p>
+<p>Examples of periodic signals that can be generated by this module are shown below:</p>
+<div class="image">
+<object type="image/svg+xml" data="r_mtu3_periodic_output.svg">r_mtu3_periodic_output.svg</object>
+<div class="caption">
+MTU3 Periodic Output</div></div>
 <h2>PWM Output</h2>
 <p>For the PWM output signal, the signal level at the start of the cycle and at the end of the cycle (stop_level) can be selected arbitrarily, and can set the initial output level after the count starts. When set to initial output level is high, it generates a PWM waveform with a high level duty ratio, and when set to initial output level is low, it generates a PWM waveform with a low level duty ratio. Also, can be set whether to retain the output compare signal level or to the preset signal level after the count stops.</p>
-<h2>Triggering ELC Events with MTU3</h2>
+<p>Examples of PWM signals that can be generated by this module are shown below:</p>
+<div class="image">
+<object type="image/svg+xml" data="r_mtu3_pwm_output.svg">r_mtu3_pwm_output.svg</object>
+<div class="caption">
+MTU3 PWM Output</div></div>
+ <h2>Triggering ELC Events with MTU3</h2>
 <p>The MTU3 timer can trigger the start of other peripherals. The <a class="el" href="group___e_l_c.html">Event Link Controller (r_elc)</a> guide provides a list of all available peripherals.</p>
 <h2>Interrupt Skipping</h2>
 <p>When an interrupt skipping source is selected a hardware counter will increment each time the selected event occurs. Each interrupt past the first (up to the specified skip count) will be suppressed.</p>
 <h2>Phase Counting Mode</h2>
-<p>Phase count mode is provides 16-bit or 32-bit channels used in phase counting applications. The ability to set the count value of the channel and the function to obtain the count value are possible. For this operation, configure “Phase Count” appropriately. In 16-bit mode, only ch1 and ch2 can be used. In 32-bit mode, only ch1 can be set. Since ch2 is also in use, ch2 cannot operate in other modes. For information on the operation of each mode of phase counting, refer to the "Phase Counting Mode" in the user's manual. Example of setting for phase counting mode 1 are shown below. </p><table class="doxtable">
+<p>Phase count mode is provides 16-bit or 32-bit channels used in phase counting applications. The ability to set the count value of the channel and the function to obtain the count value are possible. For this operation, configure “Phase Count” appropriately. In 16-bit mode, only channel 1 and channel 2 can be used. In 32-bit mode, only channel 1 can be set. Since channel 2 is also in use, channel 2 cannot operate in other modes. For information on the operation of each mode of phase counting, refer to the "Phase Counting Mode" in the user's manual. Example of setting for phase counting mode 1 are shown below. </p><table class="doxtable">
 <tr>
 <th>Configuration</th><th>Options  </th></tr>
 <tr>
@@ -1023,6 +1051,10 @@ void *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="gr
 uint32_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#a5810e1f6e5c5f08974d4c0e119bc6d6f">channel_mask</a></td></tr>
 <tr class="memdesc:a5810e1f6e5c5f08974d4c0e119bc6d6f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Channel bitmask. <br /></td></tr>
 <tr class="separator:a5810e1f6e5c5f08974d4c0e119bc6d6f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac7eea961a6f72d04a4bbf25ecea89063"><td class="memItemLeft" align="right" valign="top"><a id="ac7eea961a6f72d04a4bbf25ecea89063"></a>
+bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#ac7eea961a6f72d04a4bbf25ecea89063">oneshot_interrupt_flag</a></td></tr>
+<tr class="memdesc:ac7eea961a6f72d04a4bbf25ecea89063"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interrupt flag when One-Shot mode. <br /></td></tr>
+<tr class="separator:ac7eea961a6f72d04a4bbf25ecea89063"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1424b0f596d7101a897b5de751c06239"><td class="memItemLeft" align="right" valign="top"><a id="a1424b0f596d7101a897b5de751c06239"></a>
 void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___m_t_u3.html#a1424b0f596d7101a897b5de751c06239">p_callback</a> )(<a class="el" href="group___t_i_m_e_r___a_p_i.html#structtimer__callback__args__t">timer_callback_args_t</a> *)</td></tr>
 <tr class="memdesc:a1424b0f596d7101a897b5de751c06239"><td class="mdescLeft">&#160;</td><td class="mdescRight">Pointer to callback. <br /></td></tr>
@@ -1139,6 +1171,12 @@ TRG7AN/TRG7BN Interrupt Skipping Count Setting(TITCR2B) </td></tr>
 <div class="textblock"><p>The MTU3 extension constitutes a unique feature of MTU3. </p>
 </div><table class="fieldtable">
 <tr><th colspan="3">Data Fields</th></tr>
+<tr><td class="fieldtype">
+<a id="adb1873d01e89937a68b7a59484b3834f"></a>void *</td>
+<td class="fieldname">
+p_reg</td>
+<td class="fielddoc">
+Base register for this channel. </td></tr>
 <tr><td class="fieldtype">
 <a id="af508e14be5476f219620a30f14531871"></a>uint32_t</td>
 <td class="fieldname">
@@ -1889,8 +1927,9 @@ custom_waveform_enabled</td>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Initialization was successful and timer has started. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required input pointer is NULL or the source divider is invalid. </td></tr>
     <tr><td class="paramname">FSP_ERR_ALREADY_OPEN</td><td>Module is already open. </td></tr>
+    <tr><td class="paramname">FSP_ERR_IRQ_BSP_DISABLED</td><td><a class="el" href="group___t_i_m_e_r___a_p_i.html#a9519afc7ea8aec3aaf1eb787b39cc97c" title="Select enumerated value from timer_mode_t. ">timer_cfg_t::mode</a> is <a class="el" href="group___t_i_m_e_r___a_p_i.html#gga6d4cd64aed5c0009ac26803efc9c13b2a140f07675d67258a7ca9a95a9a793e3a" title="Timer stops after period elapses. ">TIMER_MODE_ONE_SHOT</a> or <a class="el" href="group___t_i_m_e_r___a_p_i.html#a7d2f434f07723a53b504751e9e5ac540">timer_cfg_t::p_callback</a> is not NULL, but ISR is not enabled. ISR must be enabled to use one-shot mode or callback. </td></tr>
     <tr><td class="paramname">FSP_ERR_INVALID_MODE</td><td>PWM is only supported if MTU3_CFG_OUTPUT_SUPPORT_ENABLE is 2. </td></tr>
     <tr><td class="paramname">FSP_ERR_IP_CHANNEL_NOT_PRESENT</td><td>The channel requested in the p_cfg parameter is not available on this device. </td></tr>
   </table>
@@ -2010,7 +2049,7 @@ custom_waveform_enabled</td>
 <dl class="retval"><dt>Return values</dt><dd>
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Period value written successfully. </td></tr>
-    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL. </td></tr>
+    <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>p_ctrl was NULL, or the period was not in the valid range of 1 to 0xFFFF. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
   </table>
   </dd>
@@ -2064,6 +2103,7 @@ custom_waveform_enabled</td>
     <tr><td class="paramname">FSP_SUCCESS</td><td>Duty cycle updated successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>A required pointer was NULL, or the period was not in the valid range of 1 to 0xFFFF. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>The instance is not opened. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ARGUMENT</td><td>Duty cycle is larger than period. </td></tr>
     <tr><td class="paramname">FSP_ERR_UNSUPPORTED</td><td>MTU3_CFG_OUTPUT_SUPPORT_ENABLE is 0. </td></tr>
   </table>
   </dd>
@@ -2483,7 +2523,7 @@ custom_waveform_enabled</td>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.1.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

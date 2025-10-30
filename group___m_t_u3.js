@@ -22,6 +22,7 @@ var group___m_t_u3 =
       [ "p_reg_com", "group___m_t_u3.html#ab867c5de83802ed0b964c23e776b3702", null ],
       [ "p_reg_nf", "group___m_t_u3.html#abdb95c4611476cb60d46326fc0a79f8d", null ],
       [ "channel_mask", "group___m_t_u3.html#a5810e1f6e5c5f08974d4c0e119bc6d6f", null ],
+      [ "oneshot_interrupt_flag", "group___m_t_u3.html#ac7eea961a6f72d04a4bbf25ecea89063", null ],
       [ "p_callback", "group___m_t_u3.html#a1424b0f596d7101a897b5de751c06239", null ],
       [ "p_callback_memory", "group___m_t_u3.html#a0985147b6d048419a186f194f670f606", null ],
       [ "p_context", "group___m_t_u3.html#a4ad3258449aecadc5d9d96f7b4325cde", null ],
@@ -41,6 +42,7 @@ var group___m_t_u3 =
       [ "interrupt_skip_count_tgr7an_bn", "group___m_t_u3.html#a6952d44a04c939335d8ab1521dc6c4b4", null ]
     ] ],
     [ "mtu3_extended_cfg_t", "group___m_t_u3.html#structmtu3__extended__cfg__t", [
+      [ "p_reg", "group___m_t_u3.html#adb1873d01e89937a68b7a59484b3834f", null ],
       [ "tgra_val", "group___m_t_u3.html#af508e14be5476f219620a30f14531871", null ],
       [ "tgrb_val", "group___m_t_u3.html#af66a345b2403fb4b16c0c69babd6f96e", null ],
       [ "tgrc_val", "group___m_t_u3.html#af23edbc49f7268ad12e61a783bbbf951", null ],

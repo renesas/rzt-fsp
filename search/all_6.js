@@ -15,7 +15,7 @@ var searchData=
   ['frame_5fend_5fipl',['frame_end_ipl',['../group___l_c_d_c.html#ad2c36c8c6171f2d28f86605bfe147892',1,'lcdc_extended_cfg_t']]],
   ['frame_5fend_5firq',['frame_end_irq',['../group___l_c_d_c.html#ae1aa0e216602104452cd80ef44cddd70',1,'lcdc_extended_cfg_t']]],
   ['free_5fsectors',['free_sectors',['../group___r_m___f_r_e_e_r_t_o_s___p_l_u_s___f_a_t___a_p_i.html#ac9ea1bf75d805ed8abdcc64257a1b8c5',1,'rm_freertos_plus_fat_info_t']]],
-  ['freertos_20plus_20tcp_20_28rm_5ffreertos_5fplus_5ftcp_29',['FreeRTOS Plus TCP (rm_freertos_plus_tcp)',['../group___f_r_e_e_r_t_o_s___p_l_u_s___t_c_p.html',1,'']]],
+  ['freertos_2btcp_20wrapper_20to_20r_5fether_20_28rm_5ffreertos_5fplus_5ftcp_29',['FreeRTOS+TCP Wrapper to r_ether (rm_freertos_plus_tcp)',['../group___f_r_e_e_r_t_o_s___p_l_u_s___t_c_p.html',1,'']]],
   ['freq_5fcompare_5fvalue',['freq_compare_value',['../group___r_t_c___a_p_i.html#a85af136f6f557deb9c89e210c302a0a9',1,'rtc_cfg_t']]],
   ['friday_5fmatch',['friday_match',['../group___r_t_c___a_p_i.html#a7e1342d308cf82a786bf2f00ef7a61ad',1,'rtc_alarm_time_t']]],
   ['fsp_20architecture',['FSP Architecture',['../_f_s_p__a_r_c_h_i_t_e_c_t_u_r_e.html',1,'']]],

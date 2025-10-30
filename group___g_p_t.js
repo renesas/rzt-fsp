@@ -57,7 +57,8 @@ var group___g_p_t =
       [ "cycle_end_source_select", "group___g_p_t.html#a6095dfec68e554e48dab215dab8e1554", null ],
       [ "dead_time_error_source_select", "group___g_p_t.html#a4c2d0a899c3cb24a9fa02e8667b13221", null ],
       [ "trough_source_select", "group___g_p_t.html#a8197d0efe7b7c43a7a1ff26b1cdbe0c1", null ],
-      [ "gtior_setting", "group___g_p_t.html#ad8b8b467339a151f016017d175df2f9c", null ]
+      [ "gtior_setting", "group___g_p_t.html#ad8b8b467339a151f016017d175df2f9c", null ],
+      [ "p_reg", "group___g_p_t.html#a2ac23a360ba1091ffa01869c0f5cc184", null ]
     ] ],
     [ "gpt_io_pin_t", "group___g_p_t.html#gaabd4a03d16b1b4254cc44c7779f44c60", [
       [ "GPT_IO_PIN_GTIOCA", "group___g_p_t.html#ggaabd4a03d16b1b4254cc44c7779f44c60aec2d2c471241869efb57a9a48a5d0eda", null ],
@@ -185,6 +186,7 @@ var group___g_p_t =
     [ "R_GPT_Disable", "group___g_p_t.html#ga338dd3c38477ee40c90c13f3a4c9ecfd", null ],
     [ "R_GPT_PeriodSet", "group___g_p_t.html#gafedbfd8bc3f534d06969588ff10a351b", null ],
     [ "R_GPT_DutyCycleSet", "group___g_p_t.html#gad14bacf6fb7fce88f3e877160be529ea", null ],
+    [ "R_GPT_CompareMatchSet", "group___g_p_t.html#ga834be7c118edc5297a74cf588a447106", null ],
     [ "R_GPT_InfoGet", "group___g_p_t.html#gaca62ac33de2c05918b0fc359aeaebd97", null ],
     [ "R_GPT_StatusGet", "group___g_p_t.html#gaa6234faf45320a83382d7ea1923a2c49", null ],
     [ "R_GPT_CounterSet", "group___g_p_t.html#ga4126139a9c63f1963ffdaea6cc697fe9", null ],
@@ -192,6 +194,5 @@ var group___g_p_t =
     [ "R_GPT_OutputDisable", "group___g_p_t.html#gae204e5d6c9305923e98724005dcdf03d", null ],
     [ "R_GPT_AdcTriggerSet", "group___g_p_t.html#ga311c91c55f20338f7082fa4369e7c80f", null ],
     [ "R_GPT_CallbackSet", "group___g_p_t.html#ga8d7038dbf5dabb43acbb7b74b4980e79", null ],
-    [ "R_GPT_Close", "group___g_p_t.html#ga2fc5d6a737a00948802e2bb77fbe8d8c", null ],
-    [ "R_GPT_CompareMatchSet", "group___g_p_t.html#ga834be7c118edc5297a74cf588a447106", null ]
+    [ "R_GPT_Close", "group___g_p_t.html#ga2fc5d6a737a00948802e2bb77fbe8d8c", null ]
 ];

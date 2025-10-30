@@ -340,6 +340,8 @@ var group___b_s_p___i_o =
       [ "BSP_IO_REGION_SAFE", "group___b_s_p___i_o.html#gga221c5bcf95b3081615a699272157d00dab1f4eec7183c062158a3631a2f7e3ef7", null ],
       [ "BSP_IO_REGION_NOT_SAFE_DEDICATED", "group___b_s_p___i_o.html#gga221c5bcf95b3081615a699272157d00da06d748e1aa2c298a3f9e088feaa83b64", null ]
     ] ],
+    [ "R_BSP_RegisterProtectEnable", "group___b_s_p___i_o.html#ga6a9c6b74983237446de75a9d9b65e752", null ],
+    [ "R_BSP_RegisterProtectDisable", "group___b_s_p___i_o.html#ga1bb35164e7e044bd1878a4ce015199c3", null ],
     [ "R_BSP_PinSet", "group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043", null ],
     [ "R_BSP_PinClear", "group___b_s_p___i_o.html#ga6f6397f7883fdc9f649d359883584a7d", null ],
     [ "R_BSP_PinToggle", "group___b_s_p___i_o.html#gac04dbcd968fe8e4a99401a9459af9a3a", null ],

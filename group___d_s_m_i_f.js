@@ -13,7 +13,8 @@ var group___d_s_m_i_f =
       [ "cnt_init_trig", "group___d_s_m_i_f.html#a792bfd3a633cc003bd0d793e4a50159e", null ],
       [ "edge", "group___d_s_m_i_f.html#a253c123ce29a0c4fe59c9e67ccfe4380", null ],
       [ "p_channel_cfgs", "group___d_s_m_i_f.html#a8e74711bec338944132132e63fc94932", null ],
-      [ "channel_mask", "group___d_s_m_i_f.html#aabbd176b1fe3d8104c2ed85af5c2e9b5", null ]
+      [ "channel_mask", "group___d_s_m_i_f.html#aabbd176b1fe3d8104c2ed85af5c2e9b5", null ],
+      [ "p_reg", "group___d_s_m_i_f.html#a9057b1e0f964aefd27ed897f580aa586", null ]
     ] ],
     [ "dsmif_instance_ctrl_t", "group___d_s_m_i_f.html#structdsmif__instance__ctrl__t", null ],
     [ "dsmif_error_status_t", "group___d_s_m_i_f.html#structdsmif__error__status__t", [
@@ -113,9 +114,9 @@ var group___d_s_m_i_f =
     [ "R_DSMIF_ScanStart", "group___d_s_m_i_f.html#ga1103d4ad1679f689179bafdda2aada04", null ],
     [ "R_DSMIF_ScanStop", "group___d_s_m_i_f.html#gaf03d6083c4c81193398f21a2f3978662", null ],
     [ "R_DSMIF_CfgSet", "group___d_s_m_i_f.html#ga770d2b01f8a236171bc47c76cba8739f", null ],
-    [ "R_DSMIF_Read", "group___d_s_m_i_f.html#ga4ed64820dfdcecfd65e2571b2888f210", null ],
     [ "R_DSMIF_StatusGet", "group___d_s_m_i_f.html#ga6129f999b52c99e8d6a57835b6332fbc", null ],
+    [ "R_DSMIF_ErrorStatusGet", "group___d_s_m_i_f.html#ga229d95cef2677fd1aa53112287ee4638", null ],
+    [ "R_DSMIF_Read", "group___d_s_m_i_f.html#ga4ed64820dfdcecfd65e2571b2888f210", null ],
     [ "R_DSMIF_Close", "group___d_s_m_i_f.html#ga0291812ebf08c4fba5cb2a96b9bb4736", null ],
-    [ "R_DSMIF_CallbackSet", "group___d_s_m_i_f.html#gaffcba5da327adeaed1b0ad4b0c78d1ea", null ],
-    [ "R_DSMIF_ErrorStatusGet", "group___d_s_m_i_f.html#ga229d95cef2677fd1aa53112287ee4638", null ]
+    [ "R_DSMIF_CallbackSet", "group___d_s_m_i_f.html#gaffcba5da327adeaed1b0ad4b0c78d1ea", null ]
 ];

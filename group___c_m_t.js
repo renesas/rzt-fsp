@@ -13,5 +13,6 @@ var group___c_m_t =
     [ "R_CMT_StatusGet", "group___c_m_t.html#ga721e3133aeb356538010ef8c6f45d026", null ],
     [ "R_CMT_CounterSet", "group___c_m_t.html#ga7e8b185343222e6e6606ccb6182a3623", null ],
     [ "R_CMT_CallbackSet", "group___c_m_t.html#ga90e3caf351f14db585df9c6d7426d7d5", null ],
+    [ "R_CMT_CompareMatchSet", "group___c_m_t.html#ga054000e849f31daa817e95408c6c7ed0", null ],
     [ "R_CMT_Close", "group___c_m_t.html#gae952d81458a39ec6ebc2bddc6afa1252", null ]
 ];

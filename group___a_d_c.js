@@ -28,7 +28,8 @@ var group___a_d_c =
       [ "window_a_irq", "group___a_d_c.html#a9cdf0d84793db3e109d6795475bd5b22", null ],
       [ "window_a_ipl", "group___a_d_c.html#af4d38f88e8e629e1bec67a46f65e62dc", null ],
       [ "window_b_irq", "group___a_d_c.html#ab95bd65fa66c0d6eca6514523e1fe910", null ],
-      [ "window_b_ipl", "group___a_d_c.html#a9bbaed92b2e497b9f054b9c72f3967e3", null ]
+      [ "window_b_ipl", "group___a_d_c.html#a9bbaed92b2e497b9f054b9c72f3967e3", null ],
+      [ "p_reg", "group___a_d_c.html#a77b2da4dce9697f7b40d9d5d774ac968", null ]
     ] ],
     [ "adc_channel_cfg_t", "group___a_d_c.html#structadc__channel__cfg__t", [
       [ "scan_mask", "group___a_d_c.html#a706f698d4cd3a57b1e04503c143003dc", null ],
@@ -126,7 +127,14 @@ var group___a_d_c =
       [ "ADC_GROUP_A_GROUP_B_WAIT_FOR_TRIGGER", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100aad6bf6c403c26b6891f27a40d65359c9", null ],
       [ "ADC_GROUP_A_GROUP_B_RESTART_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a008539c98b123b9a7db52e3bf8ebc631", null ],
       [ "ADC_GROUP_A_GROUP_B_RESUME_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a8b7bf2cb86043bcba54fc36aa69fb964", null ],
-      [ "ADC_GROUP_A_GROUP_B_CONTINUOUS_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a555241a868ee8b93557c4358c21caea0", null ]
+      [ "ADC_GROUP_A_GROUP_B_CONTINUOUS_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a555241a868ee8b93557c4358c21caea0", null ],
+      [ "ADC_GRPA_PRIORITY_OFF", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100ade9a2925b511688ebeb95ba31eb92564", null ],
+      [ "ADC_GRPA_GRPB_GRPC_WAIT_TRIG", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100acb72064dd1ea91f3d2fe8eb208a2cb5a", null ],
+      [ "ADC_GRPA_GRPB_GRPC_TOP_RESTART_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a15c92962f7a23dbb461c6e21f131cea2", null ],
+      [ "ADC_GRPA_GRPB_GRPC_RESTART_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a8b37f75ae761527d8d2200929f9659f8", null ],
+      [ "ADC_GRPA_GRPB_GRPC_TOP_CONT_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a23341a45b0c37bc629a2b82c9a25311c", null ],
+      [ "ADC_GRPA_GRPB_GRPC_RESTART_TOP_CONT_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a6454bd331873fa882cb66738a986d48b", null ],
+      [ "ADC_GRPA_GRPB_GRPC_RESTART_CONT_SCAN", "group___a_d_c.html#gga79014196d08d86b161b77892bf26b100a1aa039be4f7af2f01374af6477fced17", null ]
     ] ],
     [ "adc_active_trigger_t", "group___a_d_c.html#gac8dbc21689111fadfff9dd51d612eb8e", [
       [ "ADC_ACTIVE_TRIGGER_EXTERNAL", "group___a_d_c.html#ggac8dbc21689111fadfff9dd51d612eb8ea639d721bf23a73a57e867c8ae409bc87", null ],
@@ -165,7 +173,7 @@ var group___a_d_c =
     ] ],
     [ "R_ADC_Open", "group___a_d_c.html#gade895e0810cecb3be6a9e5217f5c78ac", null ],
     [ "R_ADC_ScanCfg", "group___a_d_c.html#ga994514574730e0701dc1a6ad41889f88", null ],
-    [ "R_ADC_InfoGet", "group___a_d_c.html#ga1cc44d84e1dd1cad8fdafe1e91a3b6d0", null ],
+    [ "R_ADC_CallbackSet", "group___a_d_c.html#ga0b7b4813962829f9e25731cd88f4c708", null ],
     [ "R_ADC_ScanStart", "group___a_d_c.html#ga4a7fb2265b5a03c7586253ff28b3faf2", null ],
     [ "R_ADC_ScanGroupStart", "group___a_d_c.html#ga12d4b4406ff0aa0c7ae8f068432a72f5", null ],
     [ "R_ADC_ScanStop", "group___a_d_c.html#ga9b5242c153c6320a564ed9ffd324f144", null ],
@@ -173,8 +181,8 @@ var group___a_d_c =
     [ "R_ADC_Read", "group___a_d_c.html#gad6bfc8395b53a96ee89f266fc940e2da", null ],
     [ "R_ADC_Read32", "group___a_d_c.html#ga905e1cd6ff8ca4aaf91ee63529dc0d0d", null ],
     [ "R_ADC_SampleStateCountSet", "group___a_d_c.html#gaf0701bf45818dee071cb12e979017bce", null ],
+    [ "R_ADC_InfoGet", "group___a_d_c.html#ga1cc44d84e1dd1cad8fdafe1e91a3b6d0", null ],
     [ "R_ADC_Close", "group___a_d_c.html#ga499187b3067534e42a57239ead111797", null ],
-    [ "R_ADC_OffsetSet", "group___a_d_c.html#gaf3bc65f19ba61612e0b7517dfd41ab61", null ],
     [ "R_ADC_Calibrate", "group___a_d_c.html#gac73578543d084faf58d17474dbaad23a", null ],
-    [ "R_ADC_CallbackSet", "group___a_d_c.html#ga0b7b4813962829f9e25731cd88f4c708", null ]
+    [ "R_ADC_OffsetSet", "group___a_d_c.html#gaf3bc65f19ba61612e0b7517dfd41ab61", null ]
 ];

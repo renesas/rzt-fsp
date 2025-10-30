@@ -25,6 +25,8 @@ var group___d_m_a_c =
       [ "p_descriptor", "group___d_m_a_c.html#ad833a6755c7d4a233ea8243c903354a5", null ],
       [ "transfer_interval", "group___d_m_a_c.html#a3047f4912871cf9eb100800c9f296d87", null ],
       [ "channel_scheduling", "group___d_m_a_c.html#adcec47da500a02cb015f31beab5f6ddb", null ],
+      [ "dack_active_level", "group___d_m_a_c.html#a28be47b3eca3b7ca2dcc79e025d34927", null ],
+      [ "tend_active_level", "group___d_m_a_c.html#a53b4b32d177de1d774849e02206af0b2", null ],
       [ "p_callback", "group___d_m_a_c.html#a97ef0783415dd7cb179580d406e78ace", null ],
       [ "p_context", "group___d_m_a_c.html#a179371bb68b6d1ae0f7c1da5a2c46d34", null ]
     ] ],
@@ -59,6 +61,7 @@ var group___d_m_a_c =
     [ "dmac_detection_t", "group___d_m_a_c.html#ga3527028a6bd65a3b22f4a14be6b9829e", [
       [ "DMAC_DETECTION_FALLING_EDGE", "group___d_m_a_c.html#gga3527028a6bd65a3b22f4a14be6b9829ea1f49e45fb93bbc8ce56a75de3a11affb", null ],
       [ "DMAC_DETECTION_RISING_EDGE", "group___d_m_a_c.html#gga3527028a6bd65a3b22f4a14be6b9829ea6294b67aef9ab9ed62ba6b3bbf98223d", null ],
+      [ "DMAC_DETECTION_BOTH_EDGE", "group___d_m_a_c.html#gga3527028a6bd65a3b22f4a14be6b9829eaae1505deb0febd94f306a2ceceabbab9", null ],
       [ "DMAC_DETECTION_LOW_LEVEL", "group___d_m_a_c.html#gga3527028a6bd65a3b22f4a14be6b9829ea32226f832af2e985ccf76afc75af9971", null ],
       [ "DMAC_DETECTION_HIGH_LEVEL", "group___d_m_a_c.html#gga3527028a6bd65a3b22f4a14be6b9829ea5c2d59f791ebb7c94d0d203aa196ce92", null ]
     ] ],
@@ -73,6 +76,10 @@ var group___d_m_a_c =
     [ "dmac_mode_select_t", "group___d_m_a_c.html#ga873499bc88e96b4626d26f6591372cc7", [
       [ "DMAC_MODE_SELECT_REGISTER", "group___d_m_a_c.html#gga873499bc88e96b4626d26f6591372cc7a9c4395e96bfe849404b24faa6315b618", null ],
       [ "DMAC_MODE_SELECT_LINK", "group___d_m_a_c.html#gga873499bc88e96b4626d26f6591372cc7a8bb68933123b0a14e1324905f92f7f41", null ]
+    ] ],
+    [ "dmac_external_output_signal_active_level_t", "group___d_m_a_c.html#gada6bb48a32a3f738999cd142ccbe9958", [
+      [ "DMAC_EXTERNAL_OUTPUT_SIGNAL_ACTIVE_LEVEL_LOW_ACTIVE", "group___d_m_a_c.html#ggada6bb48a32a3f738999cd142ccbe9958ae4c812a42d2ebe0c186baab516cd5192", null ],
+      [ "DMAC_EXTERNAL_OUTPUT_SIGNAL_ACTIVE_LEVEL_HIGH_ACTIVE", "group___d_m_a_c.html#ggada6bb48a32a3f738999cd142ccbe9958afecc84f533d3129eaf527b7488bacea8", null ]
     ] ],
     [ "R_DMAC_Open", "group___d_m_a_c.html#ga7e5fda31237adb83fee8cf5a42daed48", null ],
     [ "R_DMAC_Reconfigure", "group___d_m_a_c.html#ga6e932ab91dd283665438d06813d162bf", null ],

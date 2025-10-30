@@ -1,12 +1,12 @@
 var searchData=
 [
-  ['timers',['Timers',['../group___r_e_n_e_s_a_s___t_i_m_e_r_s___i_n_t_e_r_f_a_c_e_s.html',1,'']]],
-  ['timers',['Timers',['../group___r_e_n_e_s_a_s___t_i_m_e_r_s___m_o_d_u_l_e_s.html',1,'']]],
-  ['transfer',['Transfer',['../group___r_e_n_e_s_a_s___t_r_a_n_s_f_e_r___i_n_t_e_r_f_a_c_e_s.html',1,'']]],
-  ['transfer',['Transfer',['../group___r_e_n_e_s_a_s___t_r_a_n_s_f_e_r___m_o_d_u_l_e_s.html',1,'']]],
-  ['three_2dphase_20interface',['Three-Phase Interface',['../group___t_h_r_e_e___p_h_a_s_e___a_p_i.html',1,'']]],
-  ['timer_20interface',['Timer Interface',['../group___t_i_m_e_r___a_p_i.html',1,'']]],
-  ['transfer_20interface',['Transfer Interface',['../group___t_r_a_n_s_f_e_r___a_p_i.html',1,'']]],
-  ['temperature_20sensor_20unit_20_28r_5ftsu_29',['Temperature Sensor Unit (r_tsu)',['../group___t_s_u.html',1,'']]],
-  ['temperature_20sensor_20unit_20_28r_5ftsu_5fb_29',['Temperature Sensor Unit (r_tsu_b)',['../group___t_s_u___b.html',1,'']]]
+  ['rzt2h',['RZT2H',['../group___b_s_p___m_c_u___r_z_t2_h.html',1,'']]],
+  ['rzt2l',['RZT2L',['../group___b_s_p___m_c_u___r_z_t2_l.html',1,'']]],
+  ['rzt2m',['RZT2M',['../group___b_s_p___m_c_u___r_z_t2_m.html',1,'']]],
+  ['rzt2me',['RZT2ME',['../group___b_s_p___m_c_u___r_z_t2_m_e.html',1,'']]],
+  ['rtos',['RTOS',['../group___r_e_n_e_s_a_s___r_t_o_s___m_o_d_u_l_e_s.html',1,'']]],
+  ['renesas_20secure_20ip_20_28r_5frsip_5fprotected_29',['Renesas Secure IP (r_rsip_protected)',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d.html',1,'']]],
+  ['rsip_20interface',['RSIP Interface',['../group___r_s_i_p___p_r_o_t_e_c_t_e_d___a_p_i.html',1,'']]],
+  ['real_20time_20clock_20_28r_5frtc_29',['Real Time Clock (r_rtc)',['../group___r_t_c.html',1,'']]],
+  ['rtc_20interface',['RTC Interface',['../group___r_t_c___a_p_i.html',1,'']]]
 ];

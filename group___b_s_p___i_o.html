@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v3.0.0</span>
+   &#160;<span id="projectnumber">Release v3.1.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -168,6 +168,10 @@ $(document).ready(function(){initNavTree('group___b_s_p___i_o.html','');});
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="func-members"></a>
 Functions</h2></td></tr>
+<tr class="memitem:ga6a9c6b74983237446de75a9d9b65e752"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#ga6a9c6b74983237446de75a9d9b65e752">R_BSP_RegisterProtectEnable</a> (<a class="el" href="group___b_s_p___m_c_u.html#ga8f69caf459fd80173db15fdee8bc6fa3">bsp_reg_protect_t</a> regs_to_protect)</td></tr>
+<tr class="separator:ga6a9c6b74983237446de75a9d9b65e752"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ga1bb35164e7e044bd1878a4ce015199c3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#ga1bb35164e7e044bd1878a4ce015199c3">R_BSP_RegisterProtectDisable</a> (<a class="el" href="group___b_s_p___m_c_u.html#ga8f69caf459fd80173db15fdee8bc6fa3">bsp_reg_protect_t</a> regs_to_unprotect)</td></tr>
+<tr class="separator:ga1bb35164e7e044bd1878a4ce015199c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gab04db1402991c8edf6103f7ef7a46043"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#gab04db1402991c8edf6103f7ef7a46043">R_BSP_PinSet</a> (<a class="el" href="group___b_s_p___i_o.html#ga221c5bcf95b3081615a699272157d00d">bsp_io_region_t</a> region, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin)</td></tr>
 <tr class="separator:gab04db1402991c8edf6103f7ef7a46043"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga6f6397f7883fdc9f649d359883584a7d"><td class="memItemLeft" align="right" valign="top">__STATIC_INLINE void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___i_o.html#ga6f6397f7883fdc9f649d359883584a7d">R_BSP_PinClear</a> (<a class="el" href="group___b_s_p___i_o.html#ga221c5bcf95b3081615a699272157d00d">bsp_io_region_t</a> region, <a class="el" href="group___b_s_p___i_o.html#ga0adbfd4b7db319886d667acb4804d80a">bsp_io_port_pin_t</a> pin)</td></tr>
@@ -950,6 +954,56 @@ Enumerations</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Function Documentation</h2>
+<a id="ga6a9c6b74983237446de75a9d9b65e752"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga6a9c6b74983237446de75a9d9b65e752">&#9670;&nbsp;</a></span>R_BSP_RegisterProtectEnable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void R_BSP_RegisterProtectEnable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___m_c_u.html#ga8f69caf459fd80173db15fdee8bc6fa3">bsp_reg_protect_t</a>&#160;</td>
+          <td class="paramname"><em>regs_to_protect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Enable register protection. Registers that are protected cannot be written to. Register protection is enabled by using the Protect Register (PRCR) and the MPC's Write-Protect Register (PWPR).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">regs_to_protect</td><td>Registers which have write protection enabled. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ga1bb35164e7e044bd1878a4ce015199c3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ga1bb35164e7e044bd1878a4ce015199c3">&#9670;&nbsp;</a></span>R_BSP_RegisterProtectDisable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void R_BSP_RegisterProtectDisable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="group___b_s_p___m_c_u.html#ga8f69caf459fd80173db15fdee8bc6fa3">bsp_reg_protect_t</a>&#160;</td>
+          <td class="paramname"><em>regs_to_unprotect</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Disable register protection. Registers that are protected cannot be written to. Register protection is disabled by using the Protect Register (PRCR) and the MPC's Write-Protect Register (PWPR).</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir">[in]</td><td class="paramname">regs_to_unprotect</td><td>Registers which have write protection disabled. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="gab04db1402991c8edf6103f7ef7a46043"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#gab04db1402991c8edf6103f7ef7a46043">&#9670;&nbsp;</a></span>R_BSP_PinSet()</h2>
 
@@ -1264,7 +1318,7 @@ Enumerations</h2></td></tr>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.1.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

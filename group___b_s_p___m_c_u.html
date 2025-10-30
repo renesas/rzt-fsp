@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v3.0.0</span>
+   &#160;<span id="projectnumber">Release v3.1.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -177,10 +177,14 @@ Functions</h2></td></tr>
 <tr class="separator:ga4e0c522c1bb26af24accaf20e6b87d12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabce63124d36b500645b10016916656a0"><td class="memItemLeft" align="right" valign="top">BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#gabce63124d36b500645b10016916656a0">system_init</a> (void)</td></tr>
 <tr class="separator:gabce63124d36b500645b10016916656a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gad12641e0dfbab99b69c1079f9d7d8240"><td class="memItemLeft" align="right" valign="top">BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#gad12641e0dfbab99b69c1079f9d7d8240">bsp_register_initialization</a> (void)</td></tr>
+<tr class="separator:gad12641e0dfbab99b69c1079f9d7d8240"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga93f514700ccf00d08dbdcff7f1224eb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#ga93f514700ccf00d08dbdcff7f1224eb2">SystemInit</a> (void)</td></tr>
 <tr class="separator:ga93f514700ccf00d08dbdcff7f1224eb2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga662624feaff3850ffbe7fb118ab140d7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#ga662624feaff3850ffbe7fb118ab140d7">R_BSP_WarmStart</a> (<a class="el" href="group___b_s_p___m_c_u.html#ga6fe6dc3c0813eeae8665430a31c005b4">bsp_warm_start_event_t</a> event)</td></tr>
 <tr class="separator:ga662624feaff3850ffbe7fb118ab140d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gaf7e645d0eb20aaba80d4cf1401575685"><td class="memItemLeft" align="right" valign="top">BSP_ATTRIBUTE_STACKLESS void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#gaf7e645d0eb20aaba80d4cf1401575685">R_BSP_WarmStart_StackLess</a> (void)</td></tr>
+<tr class="separator:gaf7e645d0eb20aaba80d4cf1401575685"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gac77675be24547fb6bd5d1829637e91ec"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#gac77675be24547fb6bd5d1829637e91ec">R_BSP_CacheEnableInst</a> (void)</td></tr>
 <tr class="separator:gac77675be24547fb6bd5d1829637e91ec"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:gabc01c32dcb7a3425fe60c54baa98ab06"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___b_s_p___m_c_u.html#gabc01c32dcb7a3425fe60c54baa98ab06">R_BSP_CacheEnableData</a> (void)</td></tr>
@@ -429,6 +433,8 @@ Functions</h2></td></tr>
 <li>
 <a href="#tzc400">TrustZone Address Space Controller (TZC-400)</a> </li>
 <li>
+<a href="#module-stop">Module Stop</a> </li>
+<li>
 <a href="#module-reset">Module Reset</a> </li>
 <li>
 <a href="#software-reset">Software Reset</a> </li>
@@ -439,7 +445,15 @@ Functions</h2></td></tr>
 <li>
 <a href="#linker-script">Linker Script</a> </li>
 <li>
+<a href="#change-program-location">Change Program Location</a> </li>
+<li>
 <a href="#pin-setting">Pin Setting</a> </li>
+<li>
+<a href="#bsp-esd-boot">eSD Boot</a> </li>
+<li>
+<a href="#bsp-emmc-boot">eMMC Boot</a> </li>
+<li>
+<a href="#bsp-exclusive-access">Exclusive access</a> </li>
 <li>
 <a href="#bsp-configuration">Configuration</a> </li>
 <li>
@@ -520,10 +534,10 @@ C Runtime Initialization</h3>
 <h3><a class="anchor" id="register-protection"></a>
 Register Protection</h3>
 <p><a class="anchor" id="um_bsp_register_protection"></a>The BSP register protection functions utilize reference counters to ensure that an application which has specified a certain register and subsequently calls another function doesn't have its register protection settings inadvertently modified.</p>
-<p>Each time <a class="el" href="group___b_s_p___m_c_u.html#ga1bb35164e7e044bd1878a4ce015199c3">R_BSP_RegisterProtectDisable()</a> is called, the respective reference counter is incremented.</p>
-<p>Each time <a class="el" href="group___b_s_p___m_c_u.html#ga6a9c6b74983237446de75a9d9b65e752">R_BSP_RegisterProtectEnable()</a> is called, the respective reference counter is decremented.</p>
+<p>Each time <a class="el" href="group___b_s_p___i_o.html#ga1bb35164e7e044bd1878a4ce015199c3">R_BSP_RegisterProtectDisable()</a> is called, the respective reference counter is incremented.</p>
+<p>Each time <a class="el" href="group___b_s_p___i_o.html#ga6a9c6b74983237446de75a9d9b65e752">R_BSP_RegisterProtectEnable()</a> is called, the respective reference counter is decremented.</p>
 <p>Both functions will only modify the protection state if their reference counter is zero.</p>
-<div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Enable writing to protected CGC registers */</span></div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#ga1bb35164e7e044bd1878a4ce015199c3">R_BSP_RegisterProtectDisable</a>(<a class="code" href="group___b_s_p___m_c_u.html#gga8f69caf459fd80173db15fdee8bc6fa3a331f34f99c7a66ca791edd7271144b3c">BSP_REG_PROTECT_CGC</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Insert code to modify protected CGC registers. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Disable writing to protected CGC registers */</span></div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#ga6a9c6b74983237446de75a9d9b65e752">R_BSP_RegisterProtectEnable</a>(<a class="code" href="group___b_s_p___m_c_u.html#gga8f69caf459fd80173db15fdee8bc6fa3a331f34f99c7a66ca791edd7271144b3c">BSP_REG_PROTECT_CGC</a>);</div><div class="line"></div></div><!-- fragment --> <h3><a class="anchor" id="software-delay"></a>
+<div class="fragment"><div class="line"></div><div class="line">    <span class="comment">/* Enable writing to protected CGC registers */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga1bb35164e7e044bd1878a4ce015199c3">R_BSP_RegisterProtectDisable</a>(<a class="code" href="group___b_s_p___m_c_u.html#gga8f69caf459fd80173db15fdee8bc6fa3a331f34f99c7a66ca791edd7271144b3c">BSP_REG_PROTECT_CGC</a>);</div><div class="line"></div><div class="line">    <span class="comment">/* Insert code to modify protected CGC registers. */</span></div><div class="line"></div><div class="line">    <span class="comment">/* Disable writing to protected CGC registers */</span></div><div class="line">    <a class="code" href="group___b_s_p___i_o.html#ga6a9c6b74983237446de75a9d9b65e752">R_BSP_RegisterProtectEnable</a>(<a class="code" href="group___b_s_p___m_c_u.html#gga8f69caf459fd80173db15fdee8bc6fa3a331f34f99c7a66ca791edd7271144b3c">BSP_REG_PROTECT_CGC</a>);</div><div class="line"></div></div><!-- fragment --> <h3><a class="anchor" id="software-delay"></a>
 Software Delay</h3>
 <p><a class="anchor" id="um_bsp_software_delay"></a>Do not recommend using <code>R_BSP_SoftwareDelay ()</code> for strict wait time processing. The reason we do not recommend using this API is that the Delay Time may change depending on the memory area where the execution program is placed.</p>
 <p>Implements a blocking software delay. A delay can be specified in microseconds, milliseconds or seconds. The delay is implemented based on the system clock rate.</p>
@@ -770,7 +784,7 @@ Dynamic Memory Management Unit Setting(Dynamic Memory Mapping)</h3>
 <dd>
 Only one dynamic region can be configured at setup; consequently, once <code>R_BSP_MemoryMap ()</code> has been executed, it cannot run again until <code>R_BSP_MemoryUnMap ()</code> is performed.</dd></dl>
 <p>Configure dynamic region in the <code>r_mmu_pgtbl_cfg_t</code> in the following file.<br />
- ca\bsp_mmu_core.h</p>
+ {rz device}/fsp/src/bsp/mcu/all/ca/bsp_mmu_core.h</p>
 <p>The configuration structure is show as below.<br />
  </p><div class="fragment"><div class="line"></div><div class="line"><span class="preprocessor"> #define MEMORY_MAP_VIRTUAL_ADDRESS     (0x40700000)</span></div><div class="line"><span class="preprocessor"> #define MEMORY_MAP_PHYSICAL_ADDRESS    (0x40700000)</span></div><div class="line"><span class="preprocessor"> #define MEMORY_MAP_SIZE                (0x00180000)</span></div><div class="line"></div><div class="line"><span class="keywordtype">void</span> bsp_mmu_example_ca55 (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    r_mmu_pgtbl_cfg_t dynamic_memory_map_cfg =</div><div class="line">    {</div><div class="line">        .vaddress  = MEMORY_MAP_VIRTUAL_ADDRESS,  <span class="comment">/* Virtual address */</span></div><div class="line">        .paddress  = MEMORY_MAP_PHYSICAL_ADDRESS, <span class="comment">/* Phisical address */</span></div><div class="line">        .size      = MEMORY_MAP_SIZE,             <span class="comment">/* Size */</span></div><div class="line">        .attribute = BSP_UXN_EXECUTE_ENABLE |     <span class="comment">/* Attribute */</span></div><div class="line">                     BSP_PXN_EXECUTE_ENABLE |</div><div class="line">                     BSP_INNER_SHAREABLE | BSP_EL321RW_EL0RW |</div><div class="line">                     BSP_NS_SECURE | BSP_ATTRINDEX2 |</div><div class="line">                     BSP_REGION_ENABLE</div><div class="line">    };</div><div class="line"></div><div class="line">    <span class="comment">/* Set a dynamic memory map */</span></div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#ga24d953ba20f7f126886182819176fdec">R_BSP_MemoryMap</a>(&amp;dynamic_memory_map_cfg);</div><div class="line"></div><div class="line">    <span class="comment">/* Reset the configuration to the initial setting. */</span></div><div class="line">    <a class="code" href="group___b_s_p___m_c_u.html#ga0756821ad2e6affc757f1be15e47d3aa">R_BSP_MemoryUnMap</a>();</div><div class="line">}</div><div class="line"></div></div><!-- fragment --><p> <b>Virtual address</b><br />
  Set the virtual address of the dynamic area. If the address is less than 4GB area, it must be aligned with 2M-bytes, and if it is more than 4GB area, it must be aligned with 1G-bytes.<br />
@@ -778,12 +792,12 @@ Only one dynamic region can be configured at setup; consequently, once <code>R_B
 <p><b>Physical address</b><br />
  Set the physical address of the dynamic area. If the virtual address is less than 4GB, it must be aligned to 2MB. Also, the virtual address and bit21-bit0 must match.If the virtual address exceeds 4GB, it must be aligned to 1GB. Also, the virtual address and bit30-bit0 must match.<br />
 </p>
-<p><b>size</b><br />
+<p><b>Size</b><br />
  Set the size of the dynamic region. If the virtual address is less than 4GB area, it must be aligned with 2M-bytes, and if it is more than 4GB area, it must be aligned with 1G-bytes.<br />
 </p>
 <dl class="section note"><dt>Note</dt><dd>If an unaligned virtual address, physical and size are set, these values will be dynamically configured to the nearest 2M-byte or 1G-byte boundary.<br />
 </dd></dl>
-<p><b>attribute</b><br />
+<p><b>Attribute</b><br />
  Configures the attribute properties of the dynamic memory mapping. All required properties must be specified by the user.<br />
  These setting value by using a macro of Access Permission, Shareability, Attribute Index and Other.</p>
 <p><b>Unprivileged Execute Never (UXN) macro</b> </p><table class="doxtable">
@@ -807,11 +821,11 @@ Only one dynamic region can be configured at setup; consequently, once <code>R_B
 <tr>
 <th>Name </th><th>Description  </th></tr>
 <tr>
-<td>BSP_NON_SHAREABLE</td><td>A domain limited to the local agent and do not require synchronization with other cores, processors, or devices. </td></tr>
+<td>BSP_NON_SHAREABLE</td><td>A domain limited to the local agent and do not require synchronization with other cores, processors, or devices </td></tr>
 <tr>
-<td>BSP_INNER_SHAREABLE</td><td>A domain that is shared by other agents, but not necessarily all agent in the system. </td></tr>
+<td>BSP_INNER_SHAREABLE</td><td>A domain that is shared by other agents, but not necessarily all agent in the system </td></tr>
 <tr>
-<td>BSP_OUTER_SHAREABLE</td><td>A domain that is shared by multiple agents that can consist of one or more Inner Shareable domains. </td></tr>
+<td>BSP_OUTER_SHAREABLE</td><td>A domain that is shared by multiple agents that can consist of one or more Inner Shareable domains </td></tr>
 </table>
 <p><b>Access Permision macro</b><br />
  </p><table class="doxtable">
@@ -826,26 +840,26 @@ Only one dynamic region can be configured at setup; consequently, once <code>R_B
 <tr>
 <td>BSP_EL321RO_EL0RO</td><td>Unprivileged mode(EL1,EL2,EL3): read only, Privileged mode(EL0): read only </td></tr>
 </table>
-<p><b>Attribute Index maco</b><br />
+<p><b>Attribute Index macro</b><br />
  </p><table class="doxtable">
 <tr>
 <th>Name </th><th>Description  </th></tr>
 <tr>
-<td>BSP_ATTRINDEX0</td><td>Attribute Index 0. </td></tr>
+<td>BSP_ATTRINDEX0</td><td>Attribute Index 0 </td></tr>
 <tr>
-<td>BSP_ATTRINDEX1</td><td>Attribute Index 1. </td></tr>
+<td>BSP_ATTRINDEX1</td><td>Attribute Index 1 </td></tr>
 <tr>
-<td>BSP_ATTRINDEX2</td><td>Attribute Index 2. </td></tr>
+<td>BSP_ATTRINDEX2</td><td>Attribute Index 2 </td></tr>
 <tr>
-<td>BSP_ATTRINDEX3</td><td>Attribute Index 3. </td></tr>
+<td>BSP_ATTRINDEX3</td><td>Attribute Index 3 </td></tr>
 <tr>
-<td>BSP_ATTRINDEX4</td><td>Attribute Index 4. </td></tr>
+<td>BSP_ATTRINDEX4</td><td>Attribute Index 4 </td></tr>
 <tr>
-<td>BSP_ATTRINDEX5</td><td>Attribute Index 5. </td></tr>
+<td>BSP_ATTRINDEX5</td><td>Attribute Index 5 </td></tr>
 <tr>
-<td>BSP_ATTRINDEX6</td><td>Attribute Index 6. </td></tr>
+<td>BSP_ATTRINDEX6</td><td>Attribute Index 6 </td></tr>
 <tr>
-<td>BSP_ATTRINDEX7</td><td>Attribute Index 7. </td></tr>
+<td>BSP_ATTRINDEX7</td><td>Attribute Index 7 </td></tr>
 </table>
 <p>Regarding the memory attribute properties such as Memory type and Inner/Outer Attribute settings, these will be set up in <code>CPU MMU|Attribute</code> property in FSP Configuration tool.</p>
 <p><b>Security bit(only EL3 and EL1)</b><br />
@@ -853,18 +867,18 @@ Only one dynamic region can be configured at setup; consequently, once <code>R_B
 <tr>
 <th>Name </th><th>Description  </th></tr>
 <tr>
-<td>BSP_NS_SECURE</td><td>Secure. </td></tr>
+<td>BSP_NS_SECURE</td><td>Secure </td></tr>
 <tr>
-<td>BSP_NS_NON_SECURE</td><td>Non Secure. </td></tr>
+<td>BSP_NS_NON_SECURE</td><td>Non Secure </td></tr>
 </table>
 <p><b>Other macro</b><br />
  </p><table class="doxtable">
 <tr>
 <th>Name </th><th>Description  </th></tr>
 <tr>
-<td>BSP_REGION_ENABLE</td><td>Enable the region of the specified virtual address. </td></tr>
+<td>BSP_REGION_ENABLE</td><td>Enable the region of the specified virtual address </td></tr>
 <tr>
-<td>BSP_REGION_DISABLE</td><td>Disable the region of the specified virtual address. </td></tr>
+<td>BSP_REGION_DISABLE</td><td>Disable the region of the specified virtual address </td></tr>
 </table>
 <p><b>Example of dynamically region allocated</b><br />
  The following pattern illustrates how a 2M-byte region is dynamaically allocated.<br />
@@ -895,6 +909,14 @@ TrustZone Address Space Controller (TZC-400)</h3>
 <li>Region 0: Set ID (e.g. allow unprivileged and privileged access in non-secure, allow unprivileged and privileged access in secure) in NSAID read/write enable.</li>
 </ul>
 <dl class="section note"><dt>Note</dt><dd>When using Cortex-R52 as the secondary core on the RZ/T2H for multi-core operation, set filters 0 and 1 on the TZC-400-8 to enable access to the TCM of Cortex-R52 CPU0 and CPU1.</dd></dl>
+<h3><a class="anchor" id="module-stop"></a>
+Module Stop</h3>
+<p>The BSP shall provide a method to enable or cancel module stop for a given peripheral channel.</p>
+<dl class="section note"><dt>Note</dt><dd>The module start function and module stop function for ENCIF are exclusive to RZT2M and RZT2ME.</dd>
+<dd>
+- <a class="el" href="group___b_s_p___m_c_u.html#gaf0a730b79b5bbe76759b6e8efafe2000">R_BSP_MODULE_START(FSP_IP_ENCIF, n)</a></dd>
+<dd>
+- <a class="el" href="group___b_s_p___m_c_u.html#ga2edfa2301d2ada75a9418be0e146e2bb">R_BSP_MODULE_STOP(FSP_IP_ENCIF, n)</a></dd></dl>
 <h3><a class="anchor" id="module-reset"></a>
 Module Reset</h3>
 <p><a class="anchor" id="um_bsp_module_reset"></a> The reset state and the release can be set for each peripheral module. To secure processing after release from a module reset, dummy read the same register at sevral times after writing to initiate release from the module reset.</p>
@@ -978,11 +1000,333 @@ Linker Script</h3>
 <p>.text is placed in RAM_TEXT, and .data is placed in RAM_DATA. The start address and size of both regions are the same.</p>
 <p>Also, the start address of .data is set to the end address of .ARM.exidx. Without this, .data would be placed at the beginning of RAM_DATA and would overlap with .text.</p>
 <div class="fragment"><div class="line">SECTIONS</div><div class="line">{</div><div class="line">    .text TEXT_ADDRESS:</div><div class="line">    {</div><div class="line">        _text_start = .;</div><div class="line">        *(.text*)</div><div class="line">        _text_end = .;</div><div class="line">    } &gt; RAM_TEXT</div><div class="line"></div><div class="line">    .ARM.extab :</div><div class="line">    {</div><div class="line">        __extab_start = .;</div><div class="line">        *(.ARM.extab* .gnu.linkonce.armextab.*)</div><div class="line">        __extab_end = .;</div><div class="line">    } &gt; RAM_TEXT</div><div class="line"></div><div class="line">    .ARM.exidx :</div><div class="line">    {</div><div class="line">        __exidx_start = .;</div><div class="line">        *(.ARM.exidx* .gnu.linkonce.armexidx.*)</div><div class="line">        __exidx_end = .;</div><div class="line">    } &gt; RAM_TEXT</div><div class="line"></div><div class="line">    .data __exidx_end :</div><div class="line">    {</div><div class="line">        _data_start = .;</div><div class="line">        *(.data*)</div><div class="line">        _data_end = .;</div><div class="line">    } &gt; RAM_DATA</div><div class="line">}</div></div><!-- fragment --><p> For example, if you want to move .ARM.exidx to the BTCM region, modify the end address of .ARM.extab to match the start address of .data.</p>
-<div class="fragment"><div class="line">SECTIONS</div><div class="line">{</div><div class="line">    .text TEXT_ADDRESS:</div><div class="line">    {</div><div class="line">        _text_start = .;</div><div class="line">        *(.text*)</div><div class="line">        _text_end = .;</div><div class="line">    } &gt; RAM_TEXT</div><div class="line"></div><div class="line">    .ARM.extab :</div><div class="line">    {</div><div class="line">        __extab_start = .;</div><div class="line">        *(.ARM.extab* .gnu.linkonce.armextab.*)</div><div class="line">        __extab_end = .;</div><div class="line">    } &gt; RAM_TEXT</div><div class="line"></div><div class="line">    .ARM.exidx :</div><div class="line">    {</div><div class="line">        __exidx_start = .;</div><div class="line">        *(.ARM.exidx* .gnu.linkonce.armexidx.*)</div><div class="line">        __exidx_end = .;</div><div class="line">    } &gt; BTCM                                        /* Changed from &quot;RAM_TEXT&quot; to &quot;BTCM&quot;. */</div><div class="line"></div><div class="line">    .data __extab_end :                             /* Changed from  &quot;__exidx_end&quot; to &quot;__extab_end&quot;.  */</div><div class="line">    {</div><div class="line">        _data_start = .;</div><div class="line">        *(.data*)</div><div class="line">        _data_end = .;</div><div class="line">    } &gt; RAM_DATA</div><div class="line">}</div></div><!-- fragment --> <h3><a class="anchor" id="pin-setting"></a>
+<div class="fragment"><div class="line">SECTIONS</div><div class="line">{</div><div class="line">    .text TEXT_ADDRESS:</div><div class="line">    {</div><div class="line">        _text_start = .;</div><div class="line">        *(.text*)</div><div class="line">        _text_end = .;</div><div class="line">    } &gt; RAM_TEXT</div><div class="line"></div><div class="line">    .ARM.extab :</div><div class="line">    {</div><div class="line">        __extab_start = .;</div><div class="line">        *(.ARM.extab* .gnu.linkonce.armextab.*)</div><div class="line">        __extab_end = .;</div><div class="line">    } &gt; RAM_TEXT</div><div class="line"></div><div class="line">    .ARM.exidx :</div><div class="line">    {</div><div class="line">        __exidx_start = .;</div><div class="line">        *(.ARM.exidx* .gnu.linkonce.armexidx.*)</div><div class="line">        __exidx_end = .;</div><div class="line">    } &gt; BTCM                                        /* Changed from &quot;RAM_TEXT&quot; to &quot;BTCM&quot;. */</div><div class="line"></div><div class="line">    .data __extab_end :                             /* Changed from  &quot;__exidx_end&quot; to &quot;__extab_end&quot;.  */</div><div class="line">    {</div><div class="line">        _data_start = .;</div><div class="line">        *(.data*)</div><div class="line">        _data_end = .;</div><div class="line">    } &gt; RAM_DATA</div><div class="line">}</div></div><!-- fragment --> <h3><a class="anchor" id="change-program-location"></a>
+Change Program Location</h3>
+<p>You can change the program placement region by configuring the settings described below.<br />
+ This only applies to Cortex-R52, which has a TCM implemented.<br />
+ Therefore, it does not apply to the Cortex-R52 CPU1 of RZ/T2M and RZ/T2ME.<br />
+</p>
+<dl class="section note"><dt>Note</dt><dd>If you change the program location on a device that does not have a TCM, a build error will be output.</dd></dl>
+<p>Change the location region for the following two types of programs:</p><ul>
+<li>Loader program: program used by the Second Stage Boot Loader (SSBL) (The default placement is BTCM)</li>
+<li>User program: program implemented by the user (The default placement is ATCM)</li>
+</ul>
+<p>The placement region that can be changed are as follows:</p><ul>
+<li>ATCM</li>
+<li>BTCM</li>
+<li>System SRAM</li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>Due to the specifications of the First Stage Boot Loader (FSBL), the Loader program of primary project will not function properly unless it is placed on the BTCM. If it is set to be placed anywhere other than the BTCM, a build error will be output.</dd></dl>
+<p>The symbols "LOADER_PROGRAM_LOCATION_PRV" and "USER_PROGRAM_LOCATION_PRV" are defined in the linker script, and the location is changed depending on these values.<br />
+ The values ​​correspond to the following locations:</p>
+<ul>
+<li>0: ATCM</li>
+<li>1: BTCM</li>
+<li>2: SYSTEM_RAM</li>
+</ul>
+<p>The setting method varies depending on the IDE.</p>
+<p><b>e&sup2; studio</b> The following additional properties must be set.</p><ol type="1">
+<li>In the Properties window of the project, click C/C++ Build &gt; Settings &gt; Tool Settings &gt; Cross ARM C Linker &gt; Other.</li>
+<li>Add symbols at Other linker flags. (x=0,1,2)<ul>
+<li>-Wl,&ndash;defsym=LOADER_PROGRAM_LOCATION=x</li>
+<li>-Wl,&ndash;defsym=USER_PROGRAM_LOCATION=x</li>
+</ul>
+</li>
+</ol>
+<p><b>EWARM</b> The following additional properties must be set.</p><ol type="1">
+<li>In the Options... window of the project, click Linker &gt; Config.</li>
+<li>Add symbols at Configuration file symbol definitions. (x=0,1,2)<ul>
+<li>LOADER_PROGRAM_LOCATION=x</li>
+<li>USER_PROGRAM_LOCATION=x</li>
+</ul>
+</li>
+<li>Click C/C++ Compiler &gt; Preprocessor.</li>
+<li>Add symbols at Defined symbols. (x: The same value as set in No. 2)<ul>
+<li>LOADER_PROGRAM_LOCATION=x</li>
+<li>USER_PROGRAM_LOCATION=x</li>
+</ul>
+</li>
+</ol>
+<dl class="section note"><dt>Note</dt><dd>After adding the symbol in step 2, if you do not add the symbol in step 4, a build error will occur for "duplicate definitions".</dd>
+<dd>
+If you place both the Loader program and the User program in the BTCM, you must reduce the size of the stack or HEAP.</dd></dl>
+<h3><a class="anchor" id="pin-setting"></a>
 Pin Setting</h3>
 <p>When operating in multi-core, the primary and secondary core copy code and data from ROM to RAM.</p>
 <p>Changing the pins accessed by the ROM boot during this copy process can cause it to fail. Specifically, changing the ROM boot pins in the primary's Pins tab may lead to this issue.</p>
 <p>To work around this, the Pins tab preserves the ROM boot pin settings. Instead, configure the pins using the IOPORT driver's API on the user application side after each core's startup is complete.</p>
+<h1><a class="anchor" id="bsp-esd-boot"></a>
+eSD boot</h1>
+<p>In eSD boot mode (if the device supports), device boots a program from an external eSD device (including SD card) with 4-bit data bus. In FSP, you can create a write image file for the SD card by building a project for eSD boot mode. The created image file can be written to the SD card using a tool on your PC.</p>
+<dl class="section note"><dt>Note</dt><dd>The FSP eSD boot mode project virtually use memory space 0x88000000 - 0x93FFFFFF for the eSD boot process. This area cannot be used by user's application, for example, when using the CA55 MMU.</dd>
+<dd>
+The values of loader parameters in eSD boot mode can be configured in the FSP Configurator. As the default value for the loader parameter, the loader program size LDR_SIZE_NML is set to 0x8000. Similarly, in the linker file, the loader program size is defined as <code>LOADER_PROGRAM_SIZE = 0x8000;</code> .Therefore, if LDR_SIZE_NML is changed from its default value in the FSP Configurator, the value of LOADER_PROGRAM_SIZE in the linker file must also be modified to match.</dd></dl>
+<h2><a class="anchor" id="preparation-prodecude-for-the-SD-card-image-file"></a>
+Preparation procedure for the SD card image file</h2>
+<h3><a class="anchor" id="how-to-prerape-an-image-file-for-an-sd-card-in-e2studio"></a>
+How to prepare an image file for an SD card in e² studio</h3>
+<p>When using e&sup2; studio, after building the project, the &lt;project_name&gt;.bin file is created in the Debug folder as a write image file for the SD card. Use the SD card writing tool on your PC to write the created image file to the SD card.</p>
+<div class="image">
+<img src="esd_boot_created_bin_file_e2studio.png" alt="esd_boot_created_bin_file_e2studio.png"/>
+<div class="caption">
+Created .bin file (e&sup2; studio)</div></div>
+ <h4><a class="anchor" id="how-to-prerape-an-image-file-with-multiplexed-loader-programs-in-e2studio"></a>
+How to prepare an image file with multiplexed loader programs in e² studio</h4>
+<p>To perform multiplexing of the loader program, follow the procedure below. Skip the procedure if multiplexing is not required. Note that loader parameters are multiplexed by default. Refer to "Allocation of the Loader Parameter and Loader Program" in the RZ microprocessor User's Manual for details.</p>
+<p>When the project is built, loader1.o - loader6.o are also generated in the Debug folder. To include loader1.o - loader6.o at subsequent builds, set loader1.o - loader6.o in the <b>Other objects</b> section of e&sup2; studio's Linker settings. This allows to place the loader program in spare areas #1-#6. To prevent build errors, this configuration must be set after loader1.o - loader6.o are generated in a prior build.</p>
+<p>Following additional properties must be set.</p>
+<ol type="1">
+<li>In the properties window of project, click <b>C/C++ Build &gt; Settings &gt; Tool Settings &gt; Cross ARM C Linker &gt; Miscellaneous</b>.</li>
+<li><p class="startli">Set file path of loader1.o - loader6.o files in the project to <b>Other objects</b></p>
+<p class="startli"><code>${workspace_loc:/${ProjName}/Debug/loader1.o}</code></p>
+<p class="startli"><code>${workspace_loc:/${ProjName}/Debug/loader2.o}</code></p>
+<p class="startli"><code>${workspace_loc:/${ProjName}/Debug/loader3.o}</code></p>
+<p class="startli"><code>${workspace_loc:/${ProjName}/Debug/loader4.o}</code></p>
+<p class="startli"><code>${workspace_loc:/${ProjName}/Debug/loader5.o}</code></p>
+<p class="startli"><code>${workspace_loc:/${ProjName}/Debug/loader6.o}</code></p>
+<div class="image">
+<img src="esd_boot_other_objects_setting_e2studio.png" alt="esd_boot_other_objects_setting_e2studio.png"/>
+<div class="caption">
+Linker setting for placing loader program on spare area</div></div>
+<p> When the project is built again, loader1.o -loader6.o are linked, and an image file with a multiplexed loader program is generated in the Debug folder. It can be written to the SD card.</p>
+</li>
+</ol>
+<h3><a class="anchor" id="preparation-prodecude-for-the-SD-card-image-file-in-ewarm"></a>
+How to prepare an image file for an SD card in EWARM</h3>
+<p>When using EWARM, set the <b>Output format</b> of the <b>Output Converter</b> to "Raw binary".</p>
+<p>Following additional properties must be set.</p>
+<ol type="1">
+<li>Click <b>Project &gt; Options...</b></li>
+<li>Click <b>Output Converter &gt; Output</b> and set "Raw binary" to <b>Output format</b></li>
+</ol>
+<div class="image">
+<img src="esd_boot_output_format_setting_ewarm.png" alt="esd_boot_output_format_setting_ewarm.png"/>
+<div class="caption">
+Output format setting</div></div>
+ <div class="image">
+<img src="esd_boot_crated_bin_file_ewarm.png" alt="esd_boot_crated_bin_file_ewarm.png"/>
+<div class="caption">
+Created .bin file (EWARM)</div></div>
+<p> This allows to create a &lt;project_name&gt;.bin file in the Debug/Exe folder as a write image file for the SD card. Use the SD card writing tool on your PC to write the created image file to the SD card.</p>
+<h4><a class="anchor" id="how-to-prerape-an-image-file-with-multiplexed-loader-programs-in-ewarm"></a>
+How to prepare an image file with multiplexed loader programs in EWARM</h4>
+<p>To perform multiplexing of the loader program, follow the procedure below. Skip the procedure if multiplexing is not required. Note that loader parameters are multiplexed by default. Refer to "Allocation of the Loader Parameter and Loader Program" in the RZ microprocessor User's Manual for details.</p>
+<p>To place the loader program in spare areas #1 to #6, extract the loader program.</p>
+<p>Following additional properties must be set.</p><ol type="1">
+<li>Click <b>Project &gt; Options...</b></li>
+<li>Click <b>Build Actions &gt; Build Actions Configuration &gt; New</b> and set it as follows:<ul>
+<li><p class="startli">a. Command line</p>
+<p class="startli"><code>ielftool --bin-multi=0x88001000-0x88008FFF; $TARGET_BPATH$.out $TARGET_BPATH$loader.bin</code></p>
+<dl class="section note"><dt>Note</dt><dd>If the loader program size LDR_SIZE_NML is changed from the default in FSP Configurator, the address range specified with &ndash;bin-multi for extraction must be changed accordingly. This example shows the command for the default value, LDR_SIZE_NML = 0x8000.</dd></dl>
+</li>
+<li><p class="startli">b. Build order</p>
+<p class="startli">Set "Run after Linking" for the <b>Build order</b>.</p>
+<div class="image">
+<img src="esd_boot_build_action_setting_to_extract_loader_program_ewarm.png" alt="esd_boot_build_action_setting_to_extract_loader_program_ewarm.png"/>
+<div class="caption">
+Build action setting to extract loader program</div></div>
+<p> When the project is built, &lt;project_name&gt;loader-0x88001000.bin is generated in the Debug/Exe folder as a binary for placing in spare areas #1 to #6.</p>
+</li>
+</ul>
+</li>
+</ol>
+<p>To import .bin file at subsequent builds and place it in the spare areas #1 to #6, add the image_input definition LOADER1 - LOADER6 to <b>Linker &gt; Extra Options</b> and keep LOADER1 - LOADER6 symbols at <b>Linker &gt; Input &gt; Keep symbols</b></p>
+<p>Following additional properties must be set.</p><ol type="1">
+<li><p class="startli">Click <b>Linker &gt; Extra Options</b> and add as follows:</p>
+<p class="startli"><code>--image_input=$PROJ_DIR$\Debug\Exe\&lt;project_name&gt;loader-0x88001000.bin,LOADER1,LOADER1,8</code></p>
+<p class="startli"><code>--image_input=$PROJ_DIR$\Debug\Exe\&lt;project_name&gt;loader-0x88001000.bin,LOADER2,LOADER2,8</code></p>
+<p class="startli"><code>--image_input=$PROJ_DIR$\Debug\Exe\&lt;project_name&gt;loader-0x88001000.bin,LOADER3,LOADER3,8</code></p>
+<p class="startli"><code>--image_input=$PROJ_DIR$\Debug\Exe\&lt;project_name&gt;loader-0x88001000.bin,LOADER4,LOADER4,8</code></p>
+<p class="startli"><code>--image_input=$PROJ_DIR$\Debug\Exe\&lt;project_name&gt;loader-0x88001000.bin,LOADER5,LOADER5,8</code></p>
+<p class="startli"><code>--image_input=$PROJ_DIR$\Debug\Exe\&lt;project_name&gt;loader-0x88001000.bin,LOADER6,LOADER6,8</code></p>
+<div class="image">
+<img src="esd_boot_extra_options_settings_for_placing_loader_program_on_spare_area.png" alt="esd_boot_extra_options_settings_for_placing_loader_program_on_spare_area.png"/>
+<div class="caption">
+Linker Extra Options setting for placing loader program on spare area</div></div>
+</li>
+<li><p class="startli">Click <b>Linker &gt; Input</b> and set it as follows:</p>
+<p class="startli"><b>Keep symbols</b> (one per line).</p>
+<p class="startli"><code>LOADER1</code></p>
+<p class="startli"><code>LOADER2</code></p>
+<p class="startli"><code>LOADER3</code></p>
+<p class="startli"><code>LOADER4</code></p>
+<p class="startli"><code>LOADER5</code></p>
+<p class="startli"><code>LOADER6</code></p>
+<div class="image">
+<img src="esd_boot_keep_symbols_settings_for_placing_loader_program_on_spare_area.png" alt="esd_boot_keep_symbols_settings_for_placing_loader_program_on_spare_area.png"/>
+<div class="caption">
+Linker Keep symbols setting for placing loader program on spare area</div></div>
+</li>
+</ol>
+<p>When the project is built again, &lt;project_name&gt;loader-0x88001000.bin is linked, and an image file with a multiplexed loader program is generated in the Debug/Exe folder. It can be written to the SD card.</p>
+<h2><a class="anchor" id="writing-to-the-sd-card-and-executing-esd-boot"></a>
+Writing to the SD card and executing eSD boot</h2>
+<p>Using an SD card writing tool on your PC, write the created image file to the SD card. Use a tool similar to the following:</p>
+<ul>
+<li>Win32 Disk Imager (<a href="https://sourceforge.net/projects/win32diskimager/">Win32 Disk Imager download | SourceForge.net</a>)</li>
+</ul>
+<p>This section shows how to write to an SD card using PC tool Win32 Disk Imager for example. The binary data of the image file is written starting from the first sector of the SD card.</p>
+<p>Select the generated SD card image file &lt;project_name&gt;.bin as the write image file. When selecting the file, set "*.*" to enable selection of .bin files.</p>
+<div class="image">
+<img src="esd_boot_select_image_file_win32_disk_imager.png" alt="esd_boot_select_image_file_win32_disk_imager.png"/>
+<div class="caption">
+Select image file (Win32 Disk Imager)</div></div>
+<p> Click <b>Write</b> to write the image file to the SD card.</p>
+<div class="image">
+<img src="esd_boot_write_image_file_win32_disk_imager.png" alt="esd_boot_write_image_file_win32_disk_imager.png"/>
+<div class="caption">
+Write image file (Win32 Disk Imager)</div></div>
+<p> Set the eSD boot mode using the MD pins of the device. Insert the SD card into the SD card slot connected to the device, then turn the power ON. Device boots a program from the SD card.</p>
+<h2><a class="anchor" id="how-to-debug-an-esd-boot-project"></a>
+How to debug an eSD boot project</h2>
+<p>Insert the loop part in startup_core.c according to "Appendix. How to Debug FSP Project with Flash Boot Mode" in <a href="https://www.renesas.com/document/qsg/rzt2rzn2-getting-started-flexible-software-package">RZ/T2, RZ/N2 Getting Started with Flexible Software Package</a>.</p>
+<dl class="section warning"><dt>Warning</dt><dd>Due to code size differences, the loop count value differs from that described for flash boots in the document.</dd></dl>
+<ul>
+<li>For CR52 <div class="fragment"><div class="line">BSP_ATTRIBUTE_STACKLESS <span class="keywordtype">void</span> <a class="code" href="group___b_s_p___m_c_u.html#gaf7e645d0eb20aaba80d4cf1401575685">R_BSP_WarmStart_StackLess</a> (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* The very beginning of the startup process. */</span></div><div class="line"><span class="preprocessor">#if 1 // Software loops are only needed when debugging.</span></div><div class="line">    __asm <span class="keyword">volatile</span> (</div><div class="line">        <span class="stringliteral">&quot;   mov   r0, #0                          \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   movw  r1, #0xb3ff                     \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   movt  r1, #0x4c4                      \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;software_loop:                           \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   adds  r0, #1                          \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   cmp   r0, r1                          \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;   bne   software_loop                   \n&quot;</span></div><div class="line">        ::: <span class="stringliteral">&quot;memory&quot;</span>);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line"></div><div class="line">    <span class="comment">/* Do not delete. Required to return to system_init. */</span></div><div class="line"><span class="preprocessor">#if (0 == BSP_LP64_SUPPORT)</span></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;BX lr&quot;</span>);</div><div class="line"><span class="preprocessor">#else</span></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;BR lr&quot;</span>);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line"><span class="preprocessor">}</span></div></div><!-- fragment --></li>
+<li>For CA55 <div class="fragment"><div class="line">BSP_ATTRIBUTE_STACKLESS <span class="keywordtype">void</span> <a class="code" href="group___b_s_p___m_c_u.html#gaf7e645d0eb20aaba80d4cf1401575685">R_BSP_WarmStart_StackLess</a> (<span class="keywordtype">void</span>)</div><div class="line">{</div><div class="line">    <span class="comment">/* The very beginning of the startup process. */</span></div><div class="line"><span class="preprocessor">#if 1 // Software loops are only needed when debugging.</span></div><div class="line">    __asm <span class="keyword">volatile</span> (</div><div class="line">        <span class="stringliteral">&quot;    mov   x1, #0                         \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;    movz  x2, #0xb3ff                    \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;    movk  x2, #0x4c4, LSL #16            \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;software_loop:                           \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;    adds  x1, x1, #1                     \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;    cmp   x1, x2                         \n&quot;</span></div><div class="line">        <span class="stringliteral">&quot;    b.ne   software_loop                 \n&quot;</span></div><div class="line">        ::: <span class="stringliteral">&quot;memory&quot;</span>);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line"></div><div class="line">    <span class="comment">/* Do not delete. Required to return to system_init. */</span></div><div class="line"><span class="preprocessor">#if (0 == BSP_LP64_SUPPORT)</span></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;BX lr&quot;</span>);</div><div class="line"><span class="preprocessor">#else</span></div><div class="line">    __asm <span class="keyword">volatile</span> (<span class="stringliteral">&quot;BR lr&quot;</span>);</div><div class="line"><span class="preprocessor">#endif</span></div><div class="line"><span class="preprocessor">}</span></div></div><!-- fragment --></li>
+</ul>
+<h3><a class="anchor" id="how-to-debug-an-esd-boot-project-in-e2studio"></a>
+How to debug an eSD boot project in e² studio</h3>
+<p>The eSD boot project can be debugged as the flash boot project described in <a href="https://www.renesas.com/document/qsg/rzt2rzn2-getting-started-flexible-software-package">RZ/T2, RZ/N2 Getting Started with Flexible Software Package</a>. However, the following settings are different for eSD boot project debugging:</p>
+<ul>
+<li><p class="startli">For primary project, change the <b>Load type</b> in the e&sup2; studio debugger connection settings from "Image and Symbols" to "Symbols only".</p>
+<div class="image">
+<img src="esd_boot_load_symbols_only_e2studio.png" alt="esd_boot_load_symbols_only_e2studio.png"/>
+<div class="caption">
+Load Symbols only</div></div>
+</li>
+<li><p class="startli">For secondary (or later) project, leave the <b>Load type</b> as "Image and Symbols" in the e&sup2; studio debugger connection settings. No change is necessary.</p>
+<div class="image">
+<img src="esd_boot_load_image_and_symbols_e2studio.png" alt="esd_boot_load_image_and_symbols_e2studio.png"/>
+<div class="caption">
+Load image and symbols</div></div>
+</li>
+<li>Build the project and write the image file to the SD card, then run the program by eSD boot. After that, debug the primary and secondary(or later) project.</li>
+</ul>
+<h3><a class="anchor" id="how-to-debug-an-esd-boot-project-in-ewarm"></a>
+How to debug an eSD boot project in EWARM</h3>
+<p>The eSD boot project can be debugged as the flash boot project described in <a href="https://www.renesas.com/document/qsg/rzt2rzn2-getting-started-flexible-software-package">RZ/T2, RZ/N2 Getting Started with Flexible Software Package</a>. However, establish a debug connection while the program is running.</p>
+<ul>
+<li>Build the project and write the image file to the SD card, then run the program by eSD boot. After that, debug the primary and secondary (or later) project.</li>
+</ul>
+<h2><a class="anchor" id="how-to-make-the-fsp-program-and-fat-file-system-on-an-sd-card-coexist"></a>
+How to make the FSP program and FAT file system on an SD card coexist</h2>
+<p>The SD card written with image file created by the FSP Project contain a valid MBR (Master Boot Record) area in the first sector. However, no partition table has been created. By creating a FAT partition using a disk management tool, the FSP program and the FAT file system can coexist on the SD card.</p>
+<p>For example, using the DISKPART tool provided as standard on Windows PCs, a FAT partition is created as follows.</p>
+<p>Insert the SD card written with image file created by the FSP Project into your PC. Launch the DISKPART tool on your Windows PC and execute the following command. This create a FAT partition on the SD card. When creating a FAT partition, it is recommended to add an offset of certain bytes from the beginning of the SD card to avoid overlapping with the pre-written FSP program.</p>
+<div class="fragment"><div class="line">list disk</div><div class="line">select disk n                            // Select SD card disk. &quot;n&quot; depends on the development environment.</div><div class="line">create partition primary offset = yyy    // Create a partition at yyy KB offset from the beginning so that it does not overlap with existing FSP programs.</div><div class="line">format fs=fat32 quick                    // Quick format the partition as FAT32</div><div class="line">assign</div><div class="line">exit</div></div><!-- fragment --><p>The following is an example of creating a FAT partition by adding an offset of 128MB (=131072KB) from the beginning of the SD card.</p>
+<div class="image">
+<img src="esd_boot_diskpart_create_partition.png" alt="esd_boot_diskpart_create_partition.png"/>
+<div class="caption">
+Create FAT partition on DISKPART tool</div></div>
+<p> You can check the partitions on the SD card.</p>
+<div class="fragment"><div class="line">list partition</div></div><!-- fragment --><p>The following is an example of confirming that a FAT partition has been created with an offset of 128MB (=131072KB) from the beginning of the SD card.</p>
+<div class="image">
+<img src="esd_boot_diskpart_list_partition.png" alt="esd_boot_diskpart_list_partition.png"/>
+<div class="caption">
+List partition on DISKPART tool</div></div>
+ <dl class="section warning"><dt>Warning</dt><dd>Be sure to select the target SD card when <code>select disk n</code>. "n" depends on the development environment. If selected a different disk and issue the partition management command, the disk may become unusable.</dd></dl>
+<h1><a class="anchor" id="bsp-emmc-boot"></a>
+eMMC boot</h1>
+<p>In eMMC boot mode (if the device supports), device boots a program from an external eMMC device with 8-bit data bus. In FSP, you can create a write image file for the eMMC by building a project for eMMC boot mode. The created image file can be written to the eMMC using a tool on your PC.</p>
+<dl class="section note"><dt>Note</dt><dd>The FSP eMMC boot mode project virtually use memory space 0x88000000 - 0x93FFFFFF for the eMMC boot process. This area cannot be used by user's application, for example, when using the CA55 MMU.</dd>
+<dd>
+The values of loader parameters in eMMC boot mode can be configured in the FSP Configurator. As the default value for the loader parameter, the loader program size LDR_SIZE_NML is set to 0x8000. Similarly, in the linker file, the loader program size is defined as <code>LOADER_PROGRAM_SIZE = 0x8000;</code> .Therefore, if LDR_SIZE_NML is changed from its default value in the FSP Configurator, the value of LOADER_PROGRAM_SIZE in the linker file must also be modified to match.</dd></dl>
+<h2>Preparation procedure for the eMMC image file</h2>
+<h3>How to prepare an image file for an eMMC in e² studio</h3>
+<p>When using e² studio, after building the project, the loader.srec and user.srec file is created in the Debug folder as a write image file for the eMMC. Use the eMMC writing tool on your PC to write the created image file to the eMMC.</p>
+<div class="image">
+<img src="emmc_boot_created_srec_file_e2studio.png" alt="emmc_boot_created_srec_file_e2studio.png"/>
+<div class="caption">
+Created .srec file (e&sup2; studio)</div></div>
+ <h3>How to prepare an image file for an eMMC in EWARM</h3>
+<p>Use a Motorola S-record conversion tool to split the image file into .srec files for the loader parameters/loader program and the user application. Use a tool similar to the following;</p>
+<ul>
+<li>SRecord (<a href="https://sourceforge.net/projects/srecord/">SRecord download | SourceForge.net</a>)</li>
+</ul>
+<p>This section demonstrates how to split the file using, for example, the PC tool SRecord.</p>
+<p>The following instructions assume that the SRecord executable directory has been added to the Windows PC PATH environment variable. Example: <code>C:\Program Files\srecord\bin</code></p>
+<p>Following additional properties must be set in EWARM.</p>
+<p>1.Click <b>Project &gt; Options...</b> 2.Click <b>Build Actions &gt; Build Actions Configuration &gt; New</b> and set it as follows:</p>
+<table class="doxtable">
+<tr>
+<th>No. </th><th>Command line: </th><th>Output files </th><th>Input files </th><th>Working directory </th><th>Build order  </th></tr>
+<tr>
+<td>1 </td><td><code>srec_cat $TARGET_BPATH$.srec -crop 0x88000000 0x88008FFF -offset -0x88000000 -o $PROJ_DIR$\Debug\Exe\loader.srec -motorola -address-length=4 -Output_Block_Size 16 -execution-start-address=0</code> </td><td>loader.srec </td><td>$TARGET_BPATH$.srec </td><td>$PROJ_DIR$ </td><td>Run after linking </td></tr>
+<tr>
+<td>2 </td><td><code>srec_cat $TARGET_BPATH$.srec -crop 0x88009000 0x93FFFFFF -offset -0x88009000 -o $PROJ_DIR$\Debug\Exe\user.srec -motorola -address-length=4 -Output_Block_Size 16 -execution-start-address=0</code> </td><td>user.srec </td><td>$TARGET_BPATH$.srec </td><td>$PROJ_DIR$ </td><td>Run after linking </td></tr>
+</table>
+<p>3.When the project is built, loader.srec and user.srec are generated in the <b>Debug/Exe</b> folder.</p>
+<div class="image">
+<img src="emmc_boot_crated_srec_file_ewarm.png" alt="emmc_boot_crated_srec_file_ewarm.png"/>
+<div class="caption">
+Created .srec file (EWARM)</div></div>
+ <h2>Writing to the eMMC and executing eMMC boot</h2>
+<p>Using an eMMC writing tool on your PC, write the created image file to the eMMC. Use a tool similar to the following;</p>
+<ul>
+<li>Linux Flash Programmer (<a href="https://www.renesas.com/software-tool/rzt2h-and-rzn2h-linux-software-package-v510-cip">RZ/T2H and RZ/N2H Linux Software Package [V5.10-CIP] | Renesas</a>)</li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>The above links are for the Linux Software Package for RZ/T2H and RZ/N2H. If you are using a different RZ/T2 device, please obtain the Linux Flash Programmer from the page for that specific device.</dd></dl>
+<p>This section shows how to write to an eMMC using PC tool Linux Flash Programmer for example. The binary data of the image file is written starting from the first sector of the eMMC.</p>
+<p>Execute SCI boot and download the Linux Flash Programmer to the RAM of the RZ microprocessor.</p>
+<p>1.Connect between the board and a control PC by USB serial cable.</p>
+<p>2.Launch the terminal software and specify the serial port of board.</p>
+<p>3.Select the <b>Setup &gt; Serial port</b> to set the settings about serial communication protocol on the software. Set the settings about serial communication protocol on a terminal software as below:</p>
+<ol type="1">
+<li>Speed: 115200 bps</li>
+<li>Data: 8bit</li>
+<li>Parity: none</li>
+<li>Stop bit: 1 bit</li>
+<li>Flow control: none</li>
+<li>Transmit delay: 0 msec/line</li>
+</ol>
+<p>4.Configure the SCI boot mode using the MD pins of the device.</p>
+<p>5.After finishing all settings, turn on power, the messages below are displayed on the terminal.</p>
+<div class="fragment"><div class="line">SCI Download mode (Normal SCI boot)</div></div><!-- fragment --><p>6.Below is a sample procedure with Tera Term. Drag <b>HDR NM</b> file and drop the file to the Tera Term window, then click <b>OK</b>.</p>
+<div class="image">
+<img src="emmc_boot_drag_and_drop_to_teraterm_window.png" alt="emmc_boot_drag_and_drop_to_teraterm_window.png"/>
+<div class="caption">
+Drag and Drop to Tera Term Window</div></div>
+<p> 7.The image will be sent to the board via serial connection. After completing that, send <b>Flash_Programmer_SCIF_CR52_RZT2H_EVK.mot</b> as same as <b>HDR NM</b>. Send it as soon as possible.</p>
+<div class="image">
+<img src="emmc_boot_send_file.png" alt="emmc_boot_send_file.png"/>
+<div class="caption">
+Send file of Tera Term</div></div>
+<p> 8.After successfully downloading the binary, Flash Programmer starts automatically and shows a message like below on the terminal.</p>
+<div class="fragment"><div class="line">SCI Download mode (Normal SCI boot)</div><div class="line">-- Load Program to RAM ---------------</div><div class="line">-- Start Boot Program on RAM ---------</div><div class="line"></div><div class="line">Flash Programmer Vx.xx (RZT2x)(CR52_0)</div></div><!-- fragment --><p>Next, write two image files to the eMMC.</p>
+<ul>
+<li>Write the loader.srec to the eMMC boot partition.</li>
+<li>Write the user.srec to the eMMC user area.</li>
+</ul>
+<p>Follow the steps below to operate Tera Term.</p>
+<p>9.Execute the <b>EMMCWECSD</b> command with the arguments <b>0xb3 0x9</b> to enable access to the eMMC boot partition 1.</p>
+<div class="fragment"><div class="line">&gt; EMMCWECSD 0xb3 0x9</div><div class="line">EXT_CSD[b3] = 0x9</div></div><!-- fragment --><p>10.Execute the <b>EMMCW</b> command with arguments <b>0x0 0x0</b>. When "send file" is displayed, drag <b>loader.srec</b> file and drop the file to the Tera Term window, then click “OK”. When the transfer is complete, "EMMCW Complete!" will be displayed.</p>
+<div class="fragment"><div class="line">&gt; EMMCW 0x0 0x0</div><div class="line">send file        &lt;--- Drag loader.srec</div><div class="line">EMMCW Complete!</div></div><!-- fragment --><p>11.Execute the <b>EMMCWECSD</b> command with the arguments <b>0xb3 0x8</b> to enable access to the user area.</p>
+<div class="fragment"><div class="line">&gt; EMMCWECSD 0xb3 0x8</div><div class="line">EXT_CSD[b3] = 0x8</div></div><!-- fragment --><p>12.Execute the <b>EMMCW</b> command with arguments <b>0x0 0x0</b>. When "send file" is displayed, drag <b>user.srec</b> file and drop the file to the Tera Term window, then click “OK”. When the transfer is complete, "EMMCW Complete!" will be displayed.</p>
+<div class="fragment"><div class="line">&gt; EMMCW 0x0 0x0</div><div class="line">send file        &lt;--- Drag user.srec</div><div class="line">EMMCW Complete!</div></div><!-- fragment --><p>13.Execute the <b>EMMCWECSD</b> command with the arguments <b>0xb1 0x2</b> to change the eMMC boot access bus width to 8-bit.</p>
+<div class="fragment"><div class="line">&gt; EMMCWECSD 0xb1 0x2</div><div class="line">EXT_CSD[b1] = 0x2</div></div><!-- fragment --><p>14.After writing loader.srec and user.srec files normally, turn off the power switch of the board.</p>
+<p>15.Configure the eMMC boot mode using the MD pins of the device. Then turn the power ON. Device boots a program from the eMMC.</p>
+<h2>How to debug an eMMC boot project</h2>
+<p>The debugging procedure is the same as eSD boot. Refer to the <a href="#how-to-debug-an-esd-boot-project">How to debug an eSD boot project</a> section in this document.</p>
+<h1><a class="anchor" id="bsp-exclusive-access"></a>
+Exclusive access</h1>
+<p>Exclusive access instructions for synchronization and semaphores in Cortex-R52 and Cortex-A55 are prohibited to System SRAM. For exclusive control, perform either of the below methods,</p><ul>
+<li>Use mailbox and semaphore instead of exclusive access instruction.</li>
+<li>Use exclusive access to LPDDR4 SDRAM.</li>
+<li>Use exclusive access to TCM (not via AXIS).</li>
+<li>Use exclusive access to System SRAM where is set as Cacheable and Non-shareable. In this case, transaction of exclusive access is not transferred to System SRAM.</li>
+</ul>
+<p>For details of the target instructions, see the below sections in Arm Architecture Reference Manual for A-profile architecture (DDI 0487).</p><ul>
+<li>For AArch64<ul>
+<li>B2.17 Synchronization and semaphores</li>
+</ul>
+</li>
+<li>For AArch32<ul>
+<li>E2.10 Synchronization and semaphores</li>
+</ul>
+</li>
+</ul>
+<dl class="section note"><dt>Note</dt><dd>Please refer to the RZ microprocessor's user manual to confirm whether LPDDR4 SDRAM is installed.</dd></dl>
 <h1><a class="anchor" id="bsp-configuration"></a>
 Configuration</h1>
 <p>The BSP is heavily data driven with most features and functionality being configured based on the content from configuration files. Configuration files represent the settings specified by the user and are generated when the project is built and/or when the Generate Project Content button is clicked in the FSP Configuration editor.</p>
@@ -1057,6 +1401,9 @@ Enabled</li>
 Disabled</li>
 </ul>
 </td><td>Disabled </td><td>Enable multiplex interrupt system-wide. </td></tr>
+<tr>
+<td>Register Protect Polling Count</td><td>Value must between 0x1 and 0xFFFFFFFF</td><td>0xFFFFFFFF </td><td>When the semaphore is enabled, the semaphore is acquired in order to configure the protect register. <br />
+While waiting for the semaphore to become available, the protect register is polled the number of times indicated by this counter. </td></tr>
 </table>
 </p>
 <h2>Duplication of resources</h2>
@@ -1406,7 +1753,9 @@ Variables</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>In the event of an unrecoverable error the BSP will by default call the __BKPT() intrinsic function which will alert the user of the error. The user can override this default behavior by defining their own BSP_CFG_HANDLE_UNRECOVERABLE_ERROR macro. </p>
+<p>In the event of an unrecoverable error, the BSP will by default take no action. The user can override this default behavior by defining their own BSP_CFG_HANDLE_UNRECOVERABLE_ERROR macro.</p>
+<p>When BSP_CFG_HANDLE_UNRECOVERABLE_ERROR is called from error handlers, the user will need to investigate the cause. Common problems are stack corruption or the use of an invalid pointer.</p>
+<p>Use the Fault Status window in e2 studio or manually check the fault status registers for more information. After an error handler, other interrupts may occur. Therefore, override BSP_CFG_HANDLE_UNRECOVERABLE_ERROR macro with a user-defined function and place a breakpoint inside it. This will help you catch the first interrupt and identify the root cause of the error. </p>
 
 </div>
 </div>
@@ -2953,6 +3302,25 @@ Variables</h2></td></tr>
 
 </div>
 </div>
+<a id="gad12641e0dfbab99b69c1079f9d7d8240"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gad12641e0dfbab99b69c1079f9d7d8240">&#9670;&nbsp;</a></span>bsp_register_initialization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">BSP_TARGET_ARM BSP_ATTRIBUTE_STACKLESS void bsp_register_initialization </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Initialize each register. </p>
+
+</div>
+</div>
 <a id="ga93f514700ccf00d08dbdcff7f1224eb2"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ga93f514700ccf00d08dbdcff7f1224eb2">&#9670;&nbsp;</a></span>SystemInit()</h2>
 
@@ -2995,6 +3363,26 @@ Variables</h2></td></tr>
   </dd>
 </dl>
 <dl class="section note"><dt>Note</dt><dd>All programs that are executed when a BSP_WARM_START_RESET, or BSP_WARM_START_POST_CLOCK event occurs must be placed in the LOADER section(BTCM for CR52 core, SystemRAM for CA55 core). These events occur before the copy of the application program in the startup code is executed, so the application program is on ROM and cannot be executed at that time. The FSP linker script specifies that the .warm_start section be placed in the LOADER section. Adding a section specification to the definition of a function or variable makes it easier to place it in the LOADER section. </dd></dl>
+
+</div>
+</div>
+<a id="gaf7e645d0eb20aaba80d4cf1401575685"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gaf7e645d0eb20aaba80d4cf1401575685">&#9670;&nbsp;</a></span>R_BSP_WarmStart_StackLess()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">BSP_ATTRIBUTE_STACKLESS void R_BSP_WarmStart_StackLess </td>
+          <td>(</td>
+          <td class="paramtype">void&#160;</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>This function is called without a stack at the very beginning of the startup process. This function is declared as a weak symbol higher up in this file because it is meant to be overridden by a user implemented version. To use this function just copy this function into your own code and modify it to meet your needs.</p>
+<dl class="section note"><dt>Note</dt><dd>At the point this function is called, the stack has not been initialized, so all instructions must be written in inline assembly. </dd></dl>
 
 </div>
 </div>
@@ -5975,7 +6363,7 @@ Delays may be longer than expected when compiler optimization is turned off. </d
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.1.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

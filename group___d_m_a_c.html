@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZT Flexible Software Package Documentation: Direct Memory Access Controller (r_dmac)</title>
+<title>RZT Flexible Software Package Documentation: Transfer (r_dmac)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v3.0.0</span>
+   &#160;<span id="projectnumber">Release v3.1.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -164,7 +164,7 @@ $(document).ready(function(){initNavTree('group___d_m_a_c.html','');});
 <a href="#define-members">Macros</a> &#124;
 <a href="#enum-members">Enumerations</a>  </div>
   <div class="headertitle">
-<div class="title">Direct Memory Access Controller (r_dmac)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_r_a_n_s_f_e_r___m_o_d_u_l_e_s.html">Transfer</a></div></div>  </div>
+<div class="title">Transfer (r_dmac)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___t_r_a_n_s_f_e_r___m_o_d_u_l_e_s.html">Transfer</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <table class="memberdecls">
@@ -218,7 +218,12 @@ Features</h2>
 <li>Supports 1, 2, 4, 8, 16, 32, 64(DMAC0 only) byte data units<a class="anchor" id="um_transfer_unit"></a><a class="anchor" id="um_dmac_src_unit"></a><a class="anchor" id="um_dmac_dest_unit"></a></li>
 <li>Configurable DMA transfer activation request source, detection method of DMA request signal and DACK output mode<a class="anchor" id="um_dmac_activation_request_source_set"></a><a class="anchor" id="um_dmac_request_signal_set"></a><a class="anchor" id="um_dmac_dack_output_mode_set"></a></li>
 <li>Configurable DMA transfer interval<a class="anchor" id="um_dmac_transfer_interval_set"></a></li>
-<li>Configurable DMAC channel priority<a class="anchor" id="um_dmac_channel_priority_set"></a> </li>
+<li>Configurable DMAC channel priority<a class="anchor" id="um_dmac_channel_priority_set"></a></li>
+<li>Supports DMA transfer with external devices by using the external DREQ, DACK, and TEND signals (see Pin Configuration section below)<ul>
+<li>Configurable detection method of the external DREQ input signal from Rising Edge, Falling Edge, Both Edges, Low Level, and High Level detection</li>
+<li>Configurable active level of external DACK and TEND outputs from Low Active and High Active<a class="anchor" id="um_dmac_external_signal_active_low"></a><a class="anchor" id="um_dmac_external_signal_active_high"></a> </li>
+</ul>
+</li>
 </ul>
 <h1><a class="anchor" id="r-dmac-configuration"></a>
 Configuration</h1>
@@ -259,6 +264,22 @@ Fixed</li>
 Round Robin</li>
 </ul>
 </td><td>Fixed </td><td>Select Unit1 Channel 8 - 15 channel priority </td></tr>
+<tr>
+<td>External Output Signal Active Level &gt; DACK Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Low Active</li>
+<li>
+High Active</li>
+</ul>
+</td><td>Low Active </td><td>Select DACK active level. </td></tr>
+<tr>
+<td>External Output Signal Active Level &gt; TEND Active Level</td><td><ul style="margin-top:0;margin-bottom:0;">
+<li>
+Low Active</li>
+<li>
+High Active</li>
+</ul>
+</td><td>Low Active </td><td>Select TEND active level. </td></tr>
 <tr>
 <td>Parameter Checking</td><td><ul style="margin-top:0;margin-bottom:0;">
 <li>
@@ -449,9 +470,9 @@ Clock Configuration</h2>
 <h2><a class="anchor" id="r-dmac-pin-configuration"></a>
 Pin Configuration</h2>
 <p>The following pins are available by this module.</p><ul>
-<li>DREQ: DMA transfer request</li>
-<li>DACK: Output of DMAC transfer request acceptance</li>
-<li>TEND: Output of transfer completion</li>
+<li>DREQ: DMA transfer request input from an external device to DMAC</li>
+<li>DACK: Output of DMAC transfer request acceptance from DMAC to an external device</li>
+<li>TEND: Output of transfer completion from DMAC to an external device</li>
 </ul>
 <h1><a class="anchor" id="r-dmac-usage_notes"></a>
 Usage Notes</h1>
@@ -472,7 +493,7 @@ Usage Notes</h1>
 4. Setting the link destination of the last descriptor to the address of the previous descriptor configures the descriptors in a loop. When set the descriptor to a loop, disable Parameter Checking of Build Time Configuration to avoid infinite loop operation.</dd></dl>
 <h2><a class="anchor" id="r-dmac-error-interrupt"></a>
 Error Interrupt</h2>
-<p>The DMAC outputs an error signal to the ICU when DMA error interrupt occurs. ICU can output PERI_ERRn interrupt (Peripherals error event n) to GIC or cause error reset when ICU accepts error signal from DMAC. To use PERI_ERRn interrupt or reset at DMAC, <a class="el" href="group___i_c_u___e_r_r_o_r.html">Interrupt Controller Unit (ICU) ERROR (r_icu_error)</a> need to be configured. When the PERI_ERRn interrupt is configured to use interrupt and triggered, the callback function registered during open is called.</p>
+<p>The DMAC outputs an error signal to the ICU when DMA error interrupt occurs. ICU can output PERI_ERRn interrupt (Peripherals error event n) to GIC or cause error reset when ICU accepts error signal from DMAC. To use PERI_ERRn interrupt or reset at DMAC, <a class="el" href="group___i_c_u___e_r_r_o_r.html">Error (r_icu_error)</a> need to be configured. When the PERI_ERRn interrupt is configured to use interrupt and triggered, the callback function registered during open is called.</p>
 <h2><a class="anchor" id="r-dmac-limitations"></a>
 Limitations</h2>
 <p>Developers should be aware of the following limitations when using the DMAC:</p>
@@ -537,6 +558,8 @@ Enumerations</h2></td></tr>
 <tr class="separator:ga81ff959e77bb3e4e37a7e4e68d23a02b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ga873499bc88e96b4626d26f6591372cc7"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_m_a_c.html#ga873499bc88e96b4626d26f6591372cc7">dmac_mode_select_t</a> </td></tr>
 <tr class="separator:ga873499bc88e96b4626d26f6591372cc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:gada6bb48a32a3f738999cd142ccbe9958"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_m_a_c.html#gada6bb48a32a3f738999cd142ccbe9958">dmac_external_output_signal_active_level_t</a> </td></tr>
+<tr class="separator:gada6bb48a32a3f738999cd142ccbe9958"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <hr/><h2 class="groupheader">Data Structure Documentation</h2>
 <a name="structdmac__link__cfg__t" id="structdmac__link__cfg__t"></a>
@@ -688,6 +711,14 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <a class="el" href="group___d_m_a_c.html#ga81ff959e77bb3e4e37a7e4e68d23a02b">dmac_channel_scheduling_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_m_a_c.html#adcec47da500a02cb015f31beab5f6ddb">channel_scheduling</a></td></tr>
 <tr class="memdesc:adcec47da500a02cb015f31beab5f6ddb"><td class="mdescLeft">&#160;</td><td class="mdescRight">DMA channel scheduling. <br /></td></tr>
 <tr class="separator:adcec47da500a02cb015f31beab5f6ddb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a28be47b3eca3b7ca2dcc79e025d34927"><td class="memItemLeft" align="right" valign="top"><a id="a28be47b3eca3b7ca2dcc79e025d34927"></a>
+<a class="el" href="group___d_m_a_c.html#gada6bb48a32a3f738999cd142ccbe9958">dmac_external_output_signal_active_level_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_m_a_c.html#a28be47b3eca3b7ca2dcc79e025d34927">dack_active_level</a></td></tr>
+<tr class="memdesc:a28be47b3eca3b7ca2dcc79e025d34927"><td class="mdescLeft">&#160;</td><td class="mdescRight">DACK active level. <br /></td></tr>
+<tr class="separator:a28be47b3eca3b7ca2dcc79e025d34927"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53b4b32d177de1d774849e02206af0b2"><td class="memItemLeft" align="right" valign="top"><a id="a53b4b32d177de1d774849e02206af0b2"></a>
+<a class="el" href="group___d_m_a_c.html#gada6bb48a32a3f738999cd142ccbe9958">dmac_external_output_signal_active_level_t</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_m_a_c.html#a53b4b32d177de1d774849e02206af0b2">tend_active_level</a></td></tr>
+<tr class="memdesc:a53b4b32d177de1d774849e02206af0b2"><td class="mdescLeft">&#160;</td><td class="mdescRight">TEND active level. <br /></td></tr>
+<tr class="separator:a53b4b32d177de1d774849e02206af0b2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a97ef0783415dd7cb179580d406e78ace"><td class="memItemLeft" align="right" valign="top">void(*&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_m_a_c.html#a97ef0783415dd7cb179580d406e78ace">p_callback</a> )(<a class="el" href="group___t_r_a_n_s_f_e_r___a_p_i.html#structtransfer__callback__args__t">transfer_callback_args_t</a> *cb_data)</td></tr>
 <tr class="separator:a97ef0783415dd7cb179580d406e78ace"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a179371bb68b6d1ae0f7c1da5a2c46d34"><td class="memItemLeft" align="right" valign="top">void const  *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="group___d_m_a_c.html#a179371bb68b6d1ae0f7c1da5a2c46d34">p_context</a></td></tr>
@@ -921,6 +952,8 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 </td></tr>
 <tr><td class="fieldname"><a id="gga3527028a6bd65a3b22f4a14be6b9829ea6294b67aef9ab9ed62ba6b3bbf98223d"></a>DMAC_DETECTION_RISING_EDGE&#160;</td><td class="fielddoc"><p>Rising edge detection. </p>
 </td></tr>
+<tr><td class="fieldname"><a id="gga3527028a6bd65a3b22f4a14be6b9829eaae1505deb0febd94f306a2ceceabbab9"></a>DMAC_DETECTION_BOTH_EDGE&#160;</td><td class="fielddoc"><p>Both falling and rising edge detection. </p>
+</td></tr>
 <tr><td class="fieldname"><a id="gga3527028a6bd65a3b22f4a14be6b9829ea32226f832af2e985ccf76afc75af9971"></a>DMAC_DETECTION_LOW_LEVEL&#160;</td><td class="fielddoc"><p>Low level detection. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="gga3527028a6bd65a3b22f4a14be6b9829ea5c2d59f791ebb7c94d0d203aa196ce92"></a>DMAC_DETECTION_HIGH_LEVEL&#160;</td><td class="fielddoc"><p>High level detection. </p>
@@ -987,6 +1020,27 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="gga873499bc88e96b4626d26f6591372cc7a9c4395e96bfe849404b24faa6315b618"></a>DMAC_MODE_SELECT_REGISTER&#160;</td><td class="fielddoc"><p>Register mode. </p>
 </td></tr>
 <tr><td class="fieldname"><a id="gga873499bc88e96b4626d26f6591372cc7a8bb68933123b0a14e1324905f92f7f41"></a>DMAC_MODE_SELECT_LINK&#160;</td><td class="fielddoc"><p>Link mode. </p>
+</td></tr>
+</table>
+
+</div>
+</div>
+<a id="gada6bb48a32a3f738999cd142ccbe9958"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#gada6bb48a32a3f738999cd142ccbe9958">&#9670;&nbsp;</a></span>dmac_external_output_signal_active_level_t</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="group___d_m_a_c.html#gada6bb48a32a3f738999cd142ccbe9958">dmac_external_output_signal_active_level_t</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>DMAC external output signals (DACK/TEND) active level. </p>
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="ggada6bb48a32a3f738999cd142ccbe9958ae4c812a42d2ebe0c186baab516cd5192"></a>DMAC_EXTERNAL_OUTPUT_SIGNAL_ACTIVE_LEVEL_LOW_ACTIVE&#160;</td><td class="fielddoc"><p>External DACK/TEND is active-low. </p>
+</td></tr>
+<tr><td class="fieldname"><a id="ggada6bb48a32a3f738999cd142ccbe9958afecc84f533d3129eaf527b7488bacea8"></a>DMAC_EXTERNAL_OUTPUT_SIGNAL_ACTIVE_LEVEL_HIGH_ACTIVE&#160;</td><td class="fielddoc"><p>External DACK/TEND is active-high. </p>
 </td></tr>
 </table>
 
@@ -1204,6 +1258,7 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
   <table class="retval">
     <tr><td class="paramname">FSP_SUCCESS</td><td>Counter value written successfully. </td></tr>
     <tr><td class="paramname">FSP_ERR_ASSERTION</td><td>An input parameter is invalid. </td></tr>
+    <tr><td class="paramname">FSP_ERR_INVALID_ADDRESS</td><td>Descriptor address is invalid. </td></tr>
     <tr><td class="paramname">FSP_ERR_NOT_OPEN</td><td>Handle is not initialized. Call R_DMAC_Open to initialize the control block. </td></tr>
   </table>
   </dd>
@@ -1449,7 +1504,7 @@ uint16_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.1.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

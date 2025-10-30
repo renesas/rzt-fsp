@@ -5,7 +5,7 @@
 <meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.13"/>
-<title>RZT Flexible Software Package Documentation: FreeRTOS Plus TCP (rm_freertos_plus_tcp)</title>
+<title>RZT Flexible Software Package Documentation: FreeRTOS+TCP Wrapper to r_ether (rm_freertos_plus_tcp)</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -37,7 +37,7 @@
   <td id="projectlogo"><img alt="Logo" src="logo_scaled.png"/></td>
   <td style="padding-left: 0.5em;">
    <div id="projectname">RZT Flexible Software Package Documentation
-   &#160;<span id="projectnumber">Release v3.0.0</span>
+   &#160;<span id="projectnumber">Release v3.1.0</span>
    </div>
   </td>
    <td>        <br /><div id="MSearchBox" class="MSearchBoxInactive">
@@ -159,7 +159,7 @@ $(document).ready(function(){initNavTree('group___f_r_e_e_r_t_o_s___p_l_u_s___t_
 </div>
 <div class="header">
   <div class="headertitle">
-<div class="title">FreeRTOS Plus TCP (rm_freertos_plus_tcp)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___m_o_d_u_l_e_s.html">Networking</a></div></div>  </div>
+<div class="title">FreeRTOS+TCP Wrapper to r_ether (rm_freertos_plus_tcp)<div class="ingroups"><a class="el" href="group___r_e_n_e_s_a_s___m_o_d_u_l_e_s.html">Modules</a> &raquo; <a class="el" href="group___r_e_n_e_s_a_s___n_e_t_w_o_r_k_i_n_g___m_o_d_u_l_e_s.html">Networking</a></div></div>  </div>
 </div><!--header-->
 <div class="contents">
 <p>Middleware for using TCP on RZ microprocessor. </p>
@@ -470,9 +470,9 @@ Usage Notes</h1>
 <li>Configure an r_ether instance and provide a pointer to the instance of the NetworkInterface as follows:</li>
 </ul>
 <div class="fragment"><div class="line"><span class="comment">/* Reference used by the NetworkInterface to access the ethernet instance. */</span></div><div class="line"><span class="keyword">extern</span> <a class="code" href="group___e_t_h_e_r___a_p_i.html#structether__instance__t">ether_instance_t</a> <span class="keyword">const</span> * gp_freertos_ether;</div><div class="line"></div><div class="line">...</div><div class="line"></div><div class="line"><span class="comment">/* Make it reference the configured ether instance. */</span></div><div class="line">ether_instance_t <span class="keyword">const</span> * gp_freertos_ether = &amp;g_ether_instance;</div></div><!-- fragment --><ul>
-<li>Follow the TCP stack initialization procedure as described here: <a href="https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/TCP_Networking_Tutorial_Initialising_TCP.html">FreeRTOS+TCP Networking Tutorial: Initializing the TCP/IP Stack</a></li>
+<li>Some of the stack initialisation APIs have been deprecated as of FreeRTOS V4.0.0 onwards. Please refer to <a href="https://www.freertos.org/FreeRTOS-Plus/FreeRTOS_Plus_TCP/TCP_Networking_Tutorial_Initialising_TCP.updated.html">FreeRTOS+TCP Networking Tutorial: Initializing the TCP/IP Stack</a> for the new APIs supporting IPv6, Multiple Endpoints and Multiple interfaces. To use the deprecated APIs please set it to "Yes" for the stack property "Common|Backward Compatible Mode".</li>
 </ul>
-<dl class="section note"><dt>Note</dt><dd>The MAC address passed to FreeRTOS_IPInit must match the MAC address configured in the r_ether instance. </dd>
+<dl class="section note"><dt>Note</dt><dd>The MAC address passed to FreeRTOS_FillEndPoint must match the MAC address configured in the r_ether instance. </dd>
 <dd>
 <code>g_ether_instance</code> must have <code>vEtherISRCallback</code> configured as the callback. </dd>
 <dd>
@@ -493,7 +493,7 @@ Limitations</h2>
 <!-- start footer part -->
 <div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
   <ul>
-        <li class="footer">FSP Release v3.0.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
+        <li class="footer">FSP Release v3.1.0 User's Manual Copyright © (2025) Renesas Electronics Corporation. All Rights Reserved.</li>
   </ul>
 </div>
 </body>

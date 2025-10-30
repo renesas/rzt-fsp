@@ -15,14 +15,16 @@ var group___u_s_b =
     [ "R_USB_PipeStop", "group___u_s_b.html#ga19655791655889f9cd48bd77f0806502", null ],
     [ "R_USB_UsedPipesGet", "group___u_s_b.html#ga7b0e1a432ce619b0327694b4eb0ebee3", null ],
     [ "R_USB_PipeInfoGet", "group___u_s_b.html#ga0c9fd15f07d3b97794461c14a1bf4904", null ],
-    [ "R_USB_PullUp", "group___u_s_b.html#ga20dcc463ef62fb48d15b092c0838e1df", null ],
     [ "R_USB_EventGet", "group___u_s_b.html#ga3e0c7e7ea59d19e5d3b0ae43f4ee534c", null ],
     [ "R_USB_Callback", "group___u_s_b.html#ga2560b302dca363895820a82ea6a2ba9c", null ],
+    [ "R_USB_PullUp", "group___u_s_b.html#ga20dcc463ef62fb48d15b092c0838e1df", null ],
     [ "R_USB_HostControlTransfer", "group___u_s_b.html#gad38c32ab31dc9882a150c034b3c83e11", null ],
     [ "R_USB_PeriControlDataGet", "group___u_s_b.html#ga6fb097ee987217c85584c98e98927632", null ],
     [ "R_USB_PeriControlDataSet", "group___u_s_b.html#gab75fb211c439a1d90661efd8d2e9394d", null ],
     [ "R_USB_PeriControlStatusSet", "group___u_s_b.html#gaa07078e33e3211acafed66945d24d6dd", null ],
     [ "R_USB_RemoteWakeup", "group___u_s_b.html#ga10367ade6e8293cd5bc3eff46f1d85eb", null ],
+    [ "R_USB_DriverActivate", "group___u_s_b.html#ga2f8b7813a97e21b412fc95a80c042fe3", null ],
+    [ "R_USB_CallbackMemorySet", "group___u_s_b.html#gaaedca302f2e3938e2d85e4a82c44d44b", null ],
     [ "R_USB_ModuleNumberGet", "group___u_s_b.html#gaabd53819476b2d83767a642a2a762e10", null ],
     [ "R_USB_ClassTypeGet", "group___u_s_b.html#gaa6a90cf8da5375b03e1f915003a909bf", null ],
     [ "R_USB_DeviceAddressGet", "group___u_s_b.html#ga7cc957f97451c38f85f6c025e2384aaf", null ],
@@ -31,7 +33,5 @@ var group___u_s_b =
     [ "R_USB_DataSizeGet", "group___u_s_b.html#ga75ba385ac1e98ff702947ecb5029b911", null ],
     [ "R_USB_SetupGet", "group___u_s_b.html#ga85963ff0d3179eb99e0c46f3791f02e7", null ],
     [ "R_USB_OtgCallbackSet", "group___u_s_b.html#ga66b9f21c7fc7cce60388edeaf7861d0e", null ],
-    [ "R_USB_OtgSRP", "group___u_s_b.html#ga1a52197abba908bdd990e9bca22d50a7", null ],
-    [ "R_USB_DriverActivate", "group___u_s_b.html#ga2f8b7813a97e21b412fc95a80c042fe3", null ],
-    [ "R_USB_CallbackMemorySet", "group___u_s_b.html#gaaedca302f2e3938e2d85e4a82c44d44b", null ]
+    [ "R_USB_OtgSRP", "group___u_s_b.html#ga1a52197abba908bdd990e9bca22d50a7", null ]
 ];

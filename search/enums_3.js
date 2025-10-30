@@ -16,6 +16,7 @@ var searchData=
   ['dmac_5fack_5fmode_5ft',['dmac_ack_mode_t',['../group___d_m_a_c.html#ga2fb65e50e49c0ffc2943c8c5085c0c0f',1,'r_dmac.h']]],
   ['dmac_5fchannel_5fscheduling_5ft',['dmac_channel_scheduling_t',['../group___d_m_a_c.html#ga81ff959e77bb3e4e37a7e4e68d23a02b',1,'r_dmac.h']]],
   ['dmac_5fdetection_5ft',['dmac_detection_t',['../group___d_m_a_c.html#ga3527028a6bd65a3b22f4a14be6b9829e',1,'r_dmac.h']]],
+  ['dmac_5fexternal_5foutput_5fsignal_5factive_5flevel_5ft',['dmac_external_output_signal_active_level_t',['../group___d_m_a_c.html#gada6bb48a32a3f738999cd142ccbe9958',1,'r_dmac.h']]],
   ['dmac_5flink_5fend_5ft',['dmac_link_end_t',['../group___d_m_a_c.html#ga4a4428a1a93151a05cd0b8e26a1482f5',1,'r_dmac.h']]],
   ['dmac_5flink_5finterrupt_5fmask_5ft',['dmac_link_interrupt_mask_t',['../group___d_m_a_c.html#ga26d8829b918ac50911e94bb98affd911',1,'r_dmac.h']]],
   ['dmac_5flink_5fvalid_5ft',['dmac_link_valid_t',['../group___d_m_a_c.html#gac0f8e5b884076714f7b2780fed1fee68',1,'r_dmac.h']]],
